@@ -1,0 +1,379 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{853A876D-5FC3-4243-A845-6CD92CED013D}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IronWASP</RootNamespace>
+    <AssemblyName>IronWASP</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>ironwasp_icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime">
+      <HintPath>..\..\..\dotnet_libs\Jint-0.9.0-binary\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Diff">
+      <HintPath>..\..\Diff\Diff\bin\Release\Diff.dll</HintPath>
+    </Reference>
+    <Reference Include="DiffPlex">
+      <HintPath>..\..\..\dotnet_libs\diffplex-052fd342999b\diffplex_052fd342999b\DiffPlex\bin\Release\DiffPlex.dll</HintPath>
+    </Reference>
+    <Reference Include="FiddlerCore, Version=2.3.0.9, Culture=neutral, PublicKeyToken=67cb91587178ac5a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\dotnet_libs\FiddlerCorev2.3.2.3\FiddlerCoreAPI\FiddlerCore.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.0.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.TextEditor">
+      <HintPath>..\..\AvlonEditTester\AvlonEditTester\bin\Debug\ICSharpCode.TextEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="IronDataView">
+      <HintPath>..\..\IronDataView\IronDataView\bin\Debug\IronDataView.dll</HintPath>
+    </Reference>
+    <Reference Include="IronPython">
+      <HintPath>C:\Program Files (x86)\IronPython 2.6\IronPython.dll</HintPath>
+    </Reference>
+    <Reference Include="IronPython.Modules">
+      <HintPath>C:\Program Files (x86)\IronPython 2.6\IronPython.Modules.dll</HintPath>
+    </Reference>
+    <Reference Include="IronRuby">
+      <HintPath>C:\Program Files (x86)\IronRuby 1.0\bin\IronRuby.dll</HintPath>
+    </Reference>
+    <Reference Include="IronRuby.Libraries">
+      <HintPath>C:\Program Files (x86)\IronRuby 1.0\bin\IronRuby.Libraries.dll</HintPath>
+    </Reference>
+    <Reference Include="IronRuby.Libraries.YAML">
+      <HintPath>C:\Program Files (x86)\IronRuby 1.0\bin\IronRuby.Libraries.YAML.dll</HintPath>
+    </Reference>
+    <Reference Include="Jint">
+      <HintPath>..\..\..\dotnet_libs\Jint-0.9.0-binary\Jint.dll</HintPath>
+    </Reference>
+    <Reference Include="jsbeautifylib">
+      <HintPath>..\..\jsbeautifylib\jsbeautifylib\bin\Release\jsbeautifylib.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>C:\Program Files (x86)\IronRuby 1.0\bin\Microsoft.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting">
+      <HintPath>C:\Program Files (x86)\IronRuby 1.0\bin\Microsoft.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.Core">
+      <HintPath>C:\Program Files (x86)\IronRuby 1.0\bin\Microsoft.Scripting.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.Debugging">
+      <HintPath>C:\Program Files (x86)\IronRuby 1.0\bin\Microsoft.Scripting.Debugging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.ExtensionAttribute">
+      <HintPath>C:\Program Files (x86)\IronRuby 1.0\bin\Microsoft.Scripting.ExtensionAttribute.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json.Net20, Version=4.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\dotnet_libs\Json40r1\Bin\Net20\Newtonsoft.Json.Net20.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\dotnet_libs\SQLite-1.0.66.0\bin\System.Data.SQLite.DLL</HintPath>
+    </Reference>
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutForm.Designer.cs">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ActivePlugin.cs" />
+    <Compile Include="Analyzer.cs" />
+    <Compile Include="APIDoc.cs" />
+    <Compile Include="AskUser.cs" />
+    <Compile Include="AskUserWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AskUserWindow.Designer.cs">
+      <DependentUpon>AskUserWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BodyFormatParamters.cs" />
+    <Compile Include="BodyParameters.cs" />
+    <Compile Include="CheckUpdate.cs" />
+    <Compile Include="CloseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CloseForm.Designer.cs">
+      <DependentUpon>CloseForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Config.cs" />
+    <Compile Include="ConfiguredScan.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConfiguredScan.Designer.cs">
+      <DependentUpon>ConfiguredScan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CookieParameters.cs" />
+    <Compile Include="CookieStore.cs" />
+    <Compile Include="Crawler.cs" />
+    <Compile Include="GlobalStore.cs" />
+    <Compile Include="HeaderParameters.cs" />
+    <Compile Include="IronDiffer.cs" />
+    <Compile Include="DiffResult.cs" />
+    <Compile Include="DiffWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DiffWindow.Designer.cs">
+      <DependentUpon>DiffWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditorSyntaxModesProvider.cs" />
+    <Compile Include="EncodeDecodeWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EncodeDecodeWindow.Designer.cs">
+      <DependentUpon>EncodeDecodeWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormatPlugin.cs" />
+    <Compile Include="HTML.cs" />
+    <Compile Include="HTTPMessage.cs" />
+    <Compile Include="Import.cs" />
+    <Compile Include="ImportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImportForm.Designer.cs">
+      <DependentUpon>ImportForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InjectionParameters.cs" />
+    <Compile Include="IronException.cs" />
+    <Compile Include="IronJint.cs" />
+    <Compile Include="ItemChecker.cs" />
+    <Compile Include="IronLog.cs" />
+    <Compile Include="IronLogRecord.cs" />
+    <Compile Include="IronProxy.cs" />
+    <Compile Include="IronTrace.cs" />
+    <Compile Include="JintState.cs" />
+    <Compile Include="JintItem.cs" />
+    <Compile Include="LoadForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoadForm.Designer.cs">
+      <DependentUpon>LoadForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LogRow.cs" />
+    <Compile Include="PassiveChecker.cs" />
+    <Compile Include="PluginEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PluginEditor.Designer.cs">
+      <DependentUpon>PluginEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Reflection.cs" />
+    <Compile Include="ReportPlugin.cs" />
+    <Compile Include="ScanBranch.cs" />
+    <Compile Include="ScanBranchForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ScanBranchForm.Designer.cs">
+      <DependentUpon>ScanBranchForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ScanItemUniquenessChecker.cs" />
+    <Compile Include="ScanManager.cs" />
+    <Compile Include="ScanMode.cs" />
+    <Compile Include="Scanner.cs" />
+    <Compile Include="Session.cs" />
+    <Compile Include="InteractiveShellResult.cs" />
+    <Compile Include="IronDB.cs" />
+    <Compile Include="IronScriptEngine.cs" />
+    <Compile Include="IronScripting.cs" />
+    <Compile Include="IronUI.cs" />
+    <Compile Include="IronUpdater.cs" />
+    <Compile Include="Main.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Main.Designer.cs">
+      <DependentUpon>Main.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ParameterType.cs" />
+    <Compile Include="PassivePlugin.cs" />
+    <Compile Include="Plugin.cs" />
+    <Compile Include="PluginCallingState.cs" />
+    <Compile Include="PluginCore.cs" />
+    <Compile Include="PluginResult.cs" />
+    <Compile Include="PluginResultConfidence.cs" />
+    <Compile Include="PluginResults.cs" />
+    <Compile Include="PluginResultSeverity.cs" />
+    <Compile Include="PluginResultType.cs" />
+    <Compile Include="ManualTesting.cs" />
+    <Compile Include="Parameters.cs" />
+    <Compile Include="PluginStore.cs" />
+    <Compile Include="PluginType.cs" />
+    <Compile Include="PluginWorksOn.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryParameters.cs" />
+    <Compile Include="Request.cs" />
+    <Compile Include="RequestHeaderParameters.cs" />
+    <Compile Include="RequestSource.cs" />
+    <Compile Include="Response.cs" />
+    <Compile Include="ResponseHeaderParameters.cs" />
+    <Compile Include="ScriptedSender.cs" />
+    <Compile Include="ScriptErrorReporter.cs" />
+    <Compile Include="SessionPlugin.cs" />
+    <Compile Include="SetCookie.cs" />
+    <Compile Include="ShellResultStream.cs" />
+    <Compile Include="TaintResult.cs" />
+    <Compile Include="ThreadStore.cs" />
+    <Compile Include="Tools.cs" />
+    <Compile Include="TraceResult.cs" />
+    <Compile Include="Trigger.cs" />
+    <Compile Include="Triggers.cs" />
+    <Compile Include="WaitForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WaitForm.Designer.cs">
+      <DependentUpon>WaitForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="AboutForm.resx">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AskUserWindow.resx">
+      <DependentUpon>AskUserWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CloseForm.resx">
+      <DependentUpon>CloseForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ConfiguredScan.resx">
+      <DependentUpon>ConfiguredScan.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DiffWindow.resx">
+      <DependentUpon>DiffWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EncodeDecodeWindow.resx">
+      <DependentUpon>EncodeDecodeWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImportForm.resx">
+      <DependentUpon>ImportForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LoadForm.resx">
+      <DependentUpon>LoadForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main.resx">
+      <DependentUpon>Main.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PluginEditor.resx">
+      <DependentUpon>PluginEditor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="ScanBranchForm.resx">
+      <DependentUpon>ScanBranchForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WaitForm.resx">
+      <DependentUpon>WaitForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ironwasp_icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
