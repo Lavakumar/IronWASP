@@ -207,7 +207,7 @@ namespace IronWASP
 
         public Scanner(Request Request)
         {
-            this.OriginalRequest = Request;
+            this.OriginalRequest = Request.GetClone();
         }
 
         public int LaunchScan()
@@ -825,6 +825,10 @@ namespace IronWASP
                 {
                     Plugins.Add(PluginName, ActivePlugin.Get(PluginName));
                 }
+            }
+            else
+            {
+                throw new Exception("Plugin with name ' "+ PluginName + "' not found");
             }
         }
 

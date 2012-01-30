@@ -107,7 +107,7 @@ namespace IronWASP
             this.AboutFormCopyrightTB.ReadOnly = true;
             this.AboutFormCopyrightTB.Size = new System.Drawing.Size(244, 21);
             this.AboutFormCopyrightTB.TabIndex = 2;
-            this.AboutFormCopyrightTB.Text = "Copyright © 2011 Lavakumar Kuppan";
+            this.AboutFormCopyrightTB.Text = "Copyright © 2012 Lavakumar Kuppan";
             // 
             // AboutFormVersionTB
             // 

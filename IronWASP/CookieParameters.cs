@@ -45,6 +45,10 @@ namespace IronWASP
             base.Set(Encode(Name), Position, Encode(Value));
             this.ProcessUpdate();
         }
+        new public void SetAt(string Name, int Position, string Value)
+        {
+            this.Set(Name, Position, Value);
+        }
         new public void Set(string Name, List<string> Values)
         {
             for (int i = 0; i < Values.Count; i++)

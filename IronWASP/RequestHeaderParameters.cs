@@ -53,6 +53,10 @@ namespace IronWASP
                 this.ProcessUpdate(Value);
             }
         }
+        new public void SetAt(string Name, int Position, string Value)
+        {
+            this.Set(Name, Position, Value);
+        }
         new public void Set(string Name, List<string> Values)
         {
             Name = ProcessName(Name);

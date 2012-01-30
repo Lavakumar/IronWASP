@@ -684,7 +684,7 @@ namespace IronWASP
             IronScripting.StopExecutor();
             IronUI.UpdateShellInPrompt(IronScripting.ShellPrompt);
             IronUI.ActivateinteractiveShellUI();
-            if (ScriptingShellAPITreeTabs.SelectedIndex == 1)
+            if (ScriptingShellTabs.SelectedIndex == 1)
             {
                 MultiLineShellExecuteBtn.Visible = true;
             }

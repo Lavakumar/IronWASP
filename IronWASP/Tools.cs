@@ -223,10 +223,10 @@ namespace IronWASP
         public static string Base64Encode(string Input)
         {
             byte[] BA = Encoding.UTF8.GetBytes(Input);
-            return Base64EncodeByte(BA);
+            return Base64EncodeByteArray(BA);
         }
 
-        public static string Base64EncodeByte(byte[] Input)
+        public static string Base64EncodeByteArray(byte[] Input)
         {
             return Convert.ToBase64String(Input);
         }

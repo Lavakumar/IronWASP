@@ -527,7 +527,7 @@ namespace IronWASP
             this.InitiateParameters();
             this.AbsorbRequestString(RequestString,IsSSL,false);
         }
-        public Request(string RequestString, bool IsSSL, bool OverrideSSLParameter)
+        internal Request(string RequestString, bool IsSSL, bool OverrideSSLParameter)
         {
             this.InitiateParameters();
             this.AbsorbRequestString(RequestString, IsSSL, OverrideSSLParameter);
@@ -651,6 +651,10 @@ namespace IronWASP
         public string ToShortString()
         {
             return this.GetHeadersAsStringWithoutFullURL() + this.BodyString;
+        }
+        public string ToBinaryString()
+        {
+            return Tools.Base64Encode(Tools.Base64Encode(this.GetHeadersAsString()) + ":" + Tools.Base64EncodeByteArray(this.BodyArray));
         }
         public Response SendReq()
         {
@@ -1114,6 +1118,11 @@ namespace IronWASP
         public static Request FromString(string RequestString)
         {
             return new Request(RequestString, false, true);
+        }
+        public static Request FromBinaryString(string BinaryRequestString)
+        {
+            string[] RequestParts = Tools.Base64Decode(BinaryRequestString).Split(new char[] { ':' });
+            return new Request(Tools.Base64Decode(RequestParts[0]), Tools.Base64DecodeToByteArray(RequestParts[1]));
         }
 
         public static List<Request> FromProxyLog()

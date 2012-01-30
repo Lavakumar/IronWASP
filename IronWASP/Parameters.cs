@@ -76,6 +76,10 @@ namespace IronWASP
                 ParameterStore[Name] = new List<string>() { Value };   
             }
         }
+        public void SetAt(string Name, int Position, string Value)
+        {
+            this.Set(Name, Position, Value);
+        }
         public void Set(string Name, List<string> Values)
         {
             if (Name.Trim().Length == 0) return;

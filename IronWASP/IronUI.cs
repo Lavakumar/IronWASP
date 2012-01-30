@@ -3585,6 +3585,7 @@ namespace IronWASP
                 ShowWaitFormGridMessage(7, "Failed", 3, false);
                 Success = false;
             }
+
             while (ProbeLogRecords.Count > 0)
             {
                 foreach (LogRow Fields in ProbeLogRecords)
@@ -3598,6 +3599,18 @@ namespace IronWASP
                     {
                         ProbeRows.Add(new object[] { Fields.ID, Fields.Host, Fields.Method, Fields.Url, Fields.File, Fields.SSL, Fields.Parameters, null, null, "", false });
                     }
+                    if (Fields.Code == 200)
+                    {
+                        try
+                        {
+                            Request Req = new Request("http://" + Fields.Host + Fields.Url);
+                            Urls.Add(IronUpdater.GetUrlForList(Req));
+                        }
+                        catch
+                        {
+                            //IronException.Report("Error creating Request from ProxyLogRow", Exp.Message, Exp.StackTrace);
+                        }
+                    }
                 }
                 try
                 {
@@ -3610,7 +3623,7 @@ namespace IronWASP
                     Success = false;
                 }
             }
-            AddProbeGridRows(ScanRows);
+            AddProbeGridRows(ProbeRows);
             Config.ProbeRequestsCount = StartID;
             if (Success) ShowWaitFormGridMessage(7, "Done", 1, false);
 
