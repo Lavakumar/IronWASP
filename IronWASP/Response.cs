@@ -54,6 +54,7 @@ namespace IronWASP
         List<SetCookie> setCookies = new List<SetCookie>();
         string DefaultEncoding = "ISO-8859-1";
         bool isSSlValid = true;
+        bool isHtml = true;
 
         internal int TTL = 0;
 
@@ -172,23 +173,7 @@ namespace IronWASP
         {
             get
             {
-                try
-                {
-                    this.ProcessHtml();
-                    if (this.Html == null) return false;
-                    if (this.Html.Html == null) return false;
-                    if (this.html.Html.DocumentNode == null) return false;
-                    if (this.html.Html.DocumentNode.InnerHtml == null) return false;
-                    if (this.html.Html.DocumentNode.InnerText == null) return false;
-                    if (this.html.Html.DocumentNode.InnerText == this.html.Html.DocumentNode.InnerHtml) return false;
-                    if (Tools.IsJavaScript(this.BodyString)) return false;
-                    if (Tools.IsJson(this.BodyString)) return false;
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
+                return isHtml;
             }
         }
 
@@ -518,18 +503,42 @@ namespace IronWASP
             return HTTPMessage.GetFullMessageAsByteArray(HeaderArray, this.BodyArray);
         }
         void CheckForHtmlAndHandleIt()
-        {
-            try
-            {
-                this.ProcessHtml();
-            }
-            catch
-            {}
+        {            
+            this.ProcessHtml();
         }
         public void ProcessHtml()
         {
-            this.Html.Load(this.BodyString);
+            try
+            {
+                this.Html.Load(this.BodyString);
+            }
+            catch { }
+
+            this.isHtml = true;
+            if (this.Html == null) this.isHtml = false;
+            if (this.Html.Html == null) this.isHtml = false;
+            if (this.html.Html.DocumentNode == null) this.isHtml = false;
+            if (this.html.Html.DocumentNode.InnerHtml == null) this.isHtml = false;
+            if (this.html.Html.DocumentNode.InnerText == null) this.isHtml = false;
+            if (this.html.Html.DocumentNode.InnerText == this.html.Html.DocumentNode.InnerHtml) this.isHtml = false;
+            if (!(this.BodyString.Contains("<") && this.BodyString.Contains(">"))) this.isHtml = false;
+            
+            if (!this.isHtml) return;
+            
+            string LowerCaseBodyString = this.BodyString.ToLower();
+            if (LowerCaseBodyString.Contains("<html") || LowerCaseBodyString.Contains("<a ") || LowerCaseBodyString.Contains("<div") || LowerCaseBodyString.Contains("<form") || LowerCaseBodyString.Contains("<span") || LowerCaseBodyString.Contains("<textarea") || LowerCaseBodyString.Contains("<style") || LowerCaseBodyString.Contains("<script") || LowerCaseBodyString.Contains("<input"))
+                this.isHtml = true;
+            else
+                this.isHtml = false;
+
+            if (!this.isHtml) return;
+
+            if (Tools.IsJavaScript(this.BodyString) || Tools.IsJson(this.BodyString))
+                this.isHtml = false;
+            else
+                this.isHtml = true;
         }
+
         public override string ToString()
         {
             return this.GetHeadersAsString() + this.BodyString;

@@ -188,6 +188,10 @@ namespace IronWASP
                         throw new Exception("Entered text does not contain valid JavaScript");
                     }
                 }
+                if (DirtyJS.Length == 0)
+                {
+                    throw new Exception("No valid JavaScript input available to trace");
+                }
                 string CleanCode = Beautify(DirtyJS);
                 IronUI.SetJSTaintTraceCode(CleanCode, false);
                 IJ.Lines = new List<string>(CleanCode.Split(new string[] { "\r\n" }, StringSplitOptions.None));

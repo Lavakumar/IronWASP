@@ -32,7 +32,7 @@ namespace IronWASP
 
         internal List<Request> Requests = new List<Request>();
 
-        internal int MaxDepth = 20;
+        internal int MaxDepth = 10;
 
         Queue<object[]> ToCrawlQueue = new Queue<object[]>();
 
@@ -175,14 +175,7 @@ namespace IronWASP
 
             if (!Res.IsHtml)
             {
-                try
-                {
-                    Res.ProcessHtml();
-                }
-                catch
-                {
-                    return;
-                }
+                return;
             }
 
             if (Depth + 1 > MaxDepth) return;
@@ -329,35 +322,34 @@ namespace IronWASP
 
         bool IsA404(Request Req, Response Res)
         {
-            Response NotFoundResponse;
-            if (NotFoundSignatures.ContainsKey(Req.SSL.ToString() + Req.Host + Req.File))
-                NotFoundResponse = NotFoundSignatures[Req.SSL.ToString() + Req.Host + Req.File];
-            else
+            Response NotFoundResponse = null;
+            lock (NotFoundSignatures)
+            {
+                if (NotFoundSignatures.ContainsKey(Req.SSL.ToString() + Req.Host + Req.UrlDir + Req.File))
+                {
+                    NotFoundResponse = NotFoundSignatures[Req.SSL.ToString() + Req.Host + Req.UrlDir + Req.File];
+                }
+            }
+            if(NotFoundResponse == null)
             {
                 Request NotFoundGetter = Req.GetClone();
                 NotFoundGetter.Method = "GET";
                 NotFoundGetter.Body.RemoveAll();
-                if(Req.File.Length > 0)
-                    NotFoundGetter.Url = NotFoundGetter.UrlDir + "should_not_xist_" + Tools.GetRandomString(10,15) + "." + Req.File;
+                if (Req.File.Length > 0)
+                    NotFoundGetter.Url = NotFoundGetter.UrlDir + "should_not_xist_" + Tools.GetRandomString(10, 15) + "." + Req.File;
                 else
                     NotFoundGetter.Url = NotFoundGetter.UrlDir + "should_not_xist_" + Tools.GetRandomString(10, 15);
                 NotFoundResponse = NotFoundGetter.Send();
                 NotFoundResponse.Flags.Add("Url", NotFoundGetter.Url);
                 lock (NotFoundSignatures)
                 {
-                    if (!NotFoundSignatures.ContainsKey(Req.SSL.ToString() + Req.Host + Req.File))
-                        NotFoundSignatures.Add(Req.SSL.ToString() + Req.Host + Req.File, NotFoundResponse);
+                    if (!NotFoundSignatures.ContainsKey(Req.SSL.ToString() + Req.Host + Req.UrlDir + Req.File))
+                        NotFoundSignatures.Add(Req.SSL.ToString() + Req.Host + Req.UrlDir + Req.File, NotFoundResponse);
                 }
             }
             if(Res.Code == 200 && NotFoundResponse.Code != 200) return false;
             if(Res.Code == 404) return true;
-            if(Res.Code == 403) 
-            {
-                if(NotFoundResponse.Code == 403)
-                    return true;
-                else
-                    return false;
-            }
+            
             if (Res.Code > 400)
             {
                 if (NotFoundResponse.Code == Res.Code) 
@@ -464,7 +456,7 @@ namespace IronWASP
             {
                 Request SubReq = Req.GetClone();
                 SubReq.Method = "GET";
-                SubReq.Body.RemoveAll();
+                SubReq.BodyString = "";
 
                 foreach (HtmlAttribute Attr in FormNode.Attributes)
                 {
@@ -472,10 +464,7 @@ namespace IronWASP
                     {
                         SubReq.Method = Attr.Value.ToUpper();
                     }
-
-                    if (SubReq.Method.Equals("GET")) SubReq.Query.RemoveAll();
-                        
-                    if (Attr.Name.Equals("action"))
+                    else if(Attr.Name.Equals("action"))
                     {
                         if (Attr.Value.StartsWith("javascript:")) continue;
                         string ActionUrl = NormalizeUrl(Req, Attr.Value.Trim());
@@ -485,6 +474,16 @@ namespace IronWASP
                         }
                     }
                 }
+
+                if (SubReq.Method == "GET")
+                {
+                    SubReq.Query.RemoveAll();
+                }
+                else
+                {
+                    SubReq.Headers.Set("Content-Type", "application/x-www-form-urlencoded");
+                }
+
                 foreach (HtmlNode InputNode in FormNode.ChildNodes)
                 {
                     string Name = "";

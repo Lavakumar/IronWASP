@@ -516,13 +516,13 @@ namespace IronWASP
             this.Method = Method;
             this.SetBody(BodyString);
         }
-        public Request(string RequestHeaders, byte[] BodyArray)
+        internal Request(string RequestHeaders, byte[] BodyArray)
         {
             this.InitiateParameters();
             this.AbsorbRequestString(RequestHeaders + "bw==", false, true);
             this.SetBody(BodyArray);
         }
-        public Request (string RequestString, bool IsSSL)
+        internal Request (string RequestString, bool IsSSL)
         {
             this.InitiateParameters();
             this.AbsorbRequestString(RequestString,IsSSL,false);
@@ -790,18 +790,57 @@ namespace IronWASP
                     if (NewUrl.StartsWith("/"))
                     {
                         NewReq.URL = NewUrl;
-                        return NewReq;
                     }
-                    if (NewUrl.StartsWith("http://") || NewUrl.StartsWith("https://"))
+                    else if (NewUrl.StartsWith("http://") || NewUrl.StartsWith("https://"))
                     {
-                        NewReq.FullURL = NewUrl;
-                        if (this.Host == NewReq.Host)
-                        {
-                            NewReq.CookieString = this.CookieString;
-                            NewReq.SetCookie(Res.SetCookies);
-                        }
-                        return NewReq;
+                        NewReq.FullURL = NewUrl;                        
                     }
+                    else if (NewUrl.StartsWith(".."))
+                    {
+                        int DirBackNumber = 0;
+                        List<string> UpdatedNewUrlPathParts = NewReq.UrlPathParts;
+                        List<string> NewUrlPathParts = new List<string>(NewUrl.Split('/'));
+                        if (!NewReq.Url.EndsWith("/") && UpdatedNewUrlPathParts.Count > 0) UpdatedNewUrlPathParts.RemoveAt(UpdatedNewUrlPathParts.Count - 1);
+                        foreach (string NewUrlPathPart in NewUrlPathParts)
+                        {
+                            if (NewUrlPathPart.Equals(".."))
+                                DirBackNumber++;
+                            else
+                                break;
+                        }
+                        
+                        while (UpdatedNewUrlPathParts.Count > 0 && DirBackNumber > 0)
+                        {
+                            UpdatedNewUrlPathParts.RemoveAt(UpdatedNewUrlPathParts.Count - 1);
+                            if (NewUrlPathParts.Count > 0) NewUrlPathParts.RemoveAt(0);
+                            DirBackNumber--;
+                        }
+                        UpdatedNewUrlPathParts.AddRange(NewUrlPathParts);
+                        NewReq.UrlPathParts = UpdatedNewUrlPathParts;
+                        if (NewUrl.EndsWith("/"))
+                        {
+                            if (!NewReq.Url.EndsWith("/")) NewReq.Url = NewReq.Url + "/";
+                        }
+                        else
+                        {
+                            if (NewReq.Url.EndsWith("/") && NewReq.Url.Length > 1) NewReq.Url = NewReq.Url.TrimEnd(new char[] { '/' });
+                        }
+                    }
+                    else
+                    {
+                        List<string> NewUrlPathParts = NewReq.UrlPathParts;
+                        if (!NewReq.Url.EndsWith("/") && NewUrlPathParts.Count > 0) NewUrlPathParts.RemoveAt(NewUrlPathParts.Count - 1);
+                        NewReq.UrlPathParts = NewUrlPathParts;
+                        if (!NewReq.Url.EndsWith("/")) NewReq.Url = NewReq.Url + "/";
+                        NewReq.Url = NewReq.Url + NewUrl;
+                    }
+                    //this check is needed since sometimes the redirect can go to a different domain
+                    if (this.Host == NewReq.Host)
+                    {
+                        NewReq.CookieString = this.CookieString;
+                        NewReq.SetCookie(Res.SetCookies);
+                    }
+                    return NewReq;
                 }
             }
             return null;

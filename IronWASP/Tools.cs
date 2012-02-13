@@ -446,10 +446,13 @@ namespace IronWASP
 
         public static bool IsJavaScript(string Text)
         {
+            string TrimmedText = Text.Trim();
+            if (TrimmedText.StartsWith("<") || TrimmedText.StartsWith("{") || TrimmedText.StartsWith("[") || TrimmedText.EndsWith(">")) 
+                return false;
+
             try
             {
-                string CleanCode = IronJint.Beautify(Text);
-                Jint.Expressions.Program Prog = JintEngine.Compile(CleanCode, false);
+                Jint.Expressions.Program Prog = JintEngine.Compile(Text, false);
                 if (Prog.Statements.Count == 0) return false;
             }
             catch { return false; }
@@ -458,23 +461,39 @@ namespace IronWASP
 
         public static bool IsJson(string Text)
         {
-            try
+            string TrimmedText = Text.Trim();
+            if ((TrimmedText.StartsWith("{") || TrimmedText.StartsWith("[{")) && (TrimmedText.EndsWith("}") || TrimmedText.EndsWith("}]")))
             {
-                JsonConvert.DeserializeXmlNode(Text);
+                try
+                {
+                    JsonConvert.DeserializeXmlNode(Text);
+                }
+                catch { return false; }
+                return true;
             }
-            catch { return false; }
-            return true;
+            else
+            {
+                return false;
+            }
         }
 
         public static bool IsXml(string Text)
         {
-            try
+            string TrimmedText = Text.Trim();
+            if (TrimmedText.StartsWith("<") && TrimmedText.EndsWith(">"))
             {
-                XmlDocument Doc = new XmlDocument();
-                Doc.InnerXml = Text;
+                try
+                {
+                    XmlDocument Doc = new XmlDocument();
+                    Doc.InnerXml = Text;
+                }
+                catch { return false; }
+                return true;
             }
-            catch { return false; }
-            return true;
+            else
+            {
+                return false;
+            }
         }
 
         public static string Shell(string Command)

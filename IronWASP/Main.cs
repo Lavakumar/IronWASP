@@ -63,7 +63,12 @@ namespace IronWASP
             DialogResult Result = DialogResult.No;
             try
             {
-                Result = MessageBox.Show("Oops, Iron encountered an unexpected error and must close.\r\n\r\nYour project details are stored in the folder - " + IronDB.LogPath + "\r\n\r\nYou can choose to continue or restart the application(recommended).\r\n\r\nIMPORTANT:\r\nPlease help avoid this from occuring again by sending the following details(screenshot) to lava@ironwasp.org\r\n\r\nMessage: " + e.Exception.Message + "\r\nStackTrace:\r\n" + e.Exception.StackTrace, "Unexpected Error - Do you wish to continue running?(not recommended)", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                try { File.Delete(Config.RootDir + "\\ironwasp_error.txt"); }
+                catch { }
+                try { File.WriteAllText(Config.RootDir + "\\ironwasp_error.txt", e.Exception.Message + "\r\nStackTrace:\r\n" + e.Exception.StackTrace); }
+                catch { }
+
+                Result = MessageBox.Show("Oops, Iron encountered an unexpected error and must close.\r\n\r\nYour project details are stored in the folder - " + IronDB.LogPath + "\r\n\r\nYou can choose to continue or restart the application(recommended).\r\n\r\nIMPORTANT:\r\nPlease help avoid this from occuring again by sending the following details(screenshot) to lava@ironwasp.org.\r\nAlternatively you can mail the file - " + Config.RootDir + "\\ironwasp_error.txt\r\n\r\nMessage: " + e.Exception.Message + "\r\nStackTrace:\r\n" + e.Exception.StackTrace, "Unexpected Error - Do you wish to continue running?(not recommended)", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
             }
             finally
             {
@@ -79,8 +84,12 @@ namespace IronWASP
             try
             {
                 Exception Exp = (Exception)e.ExceptionObject;
+                try { File.Delete(Config.RootDir + "\\ironwasp_error.txt"); }
+                catch { }
+                try { File.WriteAllText(Config.RootDir + "\\ironwasp_error.txt", Exp.Message + "\r\nStackTrace:\r\n" + Exp.StackTrace); }
+                catch { }
                 IronException.Report("Unhandled Exception", Exp.Message, Exp.StackTrace);
-                MessageBox.Show("Oops, Iron encountered an unexpected error and must close.\r\n\r\nYour project details are stored in the folder - " + IronDB.LogPath + "\r\n\r\nIMPORTANT:\r\nPlease help avoid this from occuring again by sending the following details(screenshot) to lava@ironwasp.org\r\n\r\nMessage: " + Exp.Message + "\r\nStackTrace:\r\n" + Exp.StackTrace, "Unexpected Error Occurred");
+                MessageBox.Show("Oops, Iron encountered an unexpected error and must close.\r\n\r\nYour project details are stored in the folder - " + IronDB.LogPath + "\r\n\r\nIMPORTANT:\r\nPlease help avoid this from occuring again by sending the following details(screenshot) to lava@ironwasp.org.\r\nAlternatively you can mail the file - " + Config.RootDir + "\\ironwasp_error.txt\r\n\r\nMessage: " + Exp.Message + "\r\nStackTrace:\r\n" + Exp.StackTrace, "Unexpected Error Occurred");
             }
             finally
             {

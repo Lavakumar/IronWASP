@@ -107,7 +107,7 @@ If the values of some the mis-matched parameters makes Request B unique then sel
                             List<string> UniqueParams = new List<string>();
                             for (int i = 2; i < AskUserResponse.Count; i++)
                             {
-                                UniqueParams.Add(MismatchedParameters[i]);
+                                UniqueParams.Add(MismatchedParameters[AskUserResponse[i]]);
                             }
 
                             if (UniqueParams.Count > 0 || AskUserResponse[0] == 1)
@@ -180,7 +180,7 @@ If the values of some the mis-matched parameters makes Request B unique then sel
                                 List<string> UniqueParams = new List<string>();
                                 for (int i = 2; i < AskUserResponse.Count; i++)
                                 {
-                                    UniqueParams.Add(MismatchedParameters[i]);
+                                    UniqueParams.Add(MismatchedParameters[AskUserResponse[i]]);
                                 }
 
                                 if (UniqueParams.Count > 0 || AskUserResponse[0] == 1)
@@ -281,7 +281,7 @@ If some sections of the URL path make Request B unique then select those section
                     List<int> UniquePathPartPositions = new List<int>();
                     for (int i = 2; i < AskUserResponse.Count; i++)
                     {
-                        UniquePathPartPositions.Add(i);
+                        UniquePathPartPositions.Add(AskUserResponse[i]);
                     }
 
                     if (UniquePathPartPositions.Count == 0 && AskUserResponse[1] == 1)

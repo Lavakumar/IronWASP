@@ -378,7 +378,7 @@ namespace IronWASP
         {
             ScriptEngine Engine = Python.CreateEngine();
             StringBuilder FullCode = new StringBuilder();
-            FullCode.AppendLine("from Iron import *");
+            FullCode.AppendLine("from IronWASP import *");
             FullCode.AppendLine("class ss(ScriptedSender):");
             FullCode.AppendLine("\tdef ScriptedSend(self, req):");
             string[] CodeLines = FunctionCode.Split(new string[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
@@ -399,7 +399,7 @@ namespace IronWASP
         {
             ScriptEngine Engine = Ruby.CreateEngine();
             StringBuilder FullCode = new StringBuilder();
-            FullCode.AppendLine("include Iron");
+            FullCode.AppendLine("include IronWASP");
             FullCode.AppendLine("class SS < ScriptedSender");
             FullCode.AppendLine("\tdef scripted_send(req)");
             string[] CodeLines = FunctionCode.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);

@@ -91,7 +91,8 @@ namespace IronWASP
         }
         string Encode(string Value)
         {
-            return Tools.RelaxedUrlEncode(Value);
+            //return Tools.RelaxedUrlEncode(Value);
+            return Value;//Cookie values don't need encoding
         }
     }
 }
