@@ -916,6 +916,7 @@ namespace IronWASP
             }
             DB.Close();
         }
+        
         internal static void UpdateScanStatus(int ScanID, string Status)
         {
             SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
@@ -934,6 +935,37 @@ namespace IronWASP
                 throw Exp;
             }
             DB.Close();
+        }
+
+        internal static void UpdateScanStatus(List<int> ScanIDs, string Status)
+        {
+            SQLiteConnection Log = new SQLiteConnection("data source=" + IronProjectFile);
+            Log.Open();
+
+            try
+            {
+                using (SQLiteTransaction Create = Log.BeginTransaction())
+                {
+                    using (SQLiteCommand Cmd = new SQLiteCommand(Log))
+                    {
+                        foreach (int ScanID in ScanIDs)
+                        {
+                            Cmd.CommandText = "UPDATE ScanQueue SET Status=@Status WHERE ScanID=@ScanID";
+                            Cmd.Parameters.AddWithValue("@ScanID", ScanID);
+                            Cmd.Parameters.AddWithValue("@Status", Status);
+                            Cmd.ExecuteNonQuery();
+                        }
+                    }
+                    Create.Commit();
+                }
+            }
+            catch (Exception Exp)
+            {
+                Log.Close();
+                throw Exp;
+            }
+            Log.Close();
+
         }
 
         internal static void LogPluginResults(List<PluginResult> Results)
@@ -1410,6 +1442,38 @@ namespace IronWASP
                         Cmd.Parameters.AddWithValue("@MaxScannerThreads", Scanner.MaxParallelScanCount);
                         Cmd.Parameters.AddWithValue("@MaxCrawlerThreads", Crawler.MaxCrawlThreads);
                         Cmd.Parameters.AddWithValue("@UserAgent", Crawler.UserAgent);
+                        Cmd.ExecuteNonQuery();
+                    }
+                    Create.Commit();
+                }
+            }
+            catch (Exception Exp)
+            {
+                DB.Close();
+                throw Exp;
+            }
+            DB.Close();
+        }
+
+        internal static void StorePassiveAnalysisSettings()
+        {
+            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
+            DB.Open();
+            try
+            {
+                using (SQLiteTransaction Create = DB.BeginTransaction())
+                {
+                    using (SQLiteCommand Cmd = new SQLiteCommand(DB))
+                    {
+                        Cmd.CommandText = "DELETE FROM PassiveAnalysisSettings";
+                        Cmd.ExecuteNonQuery();
+
+                        Cmd.CommandText = "INSERT INTO PassiveAnalysisSettings (Proxy, Shell, Test, Scan, Probe) VALUES (@Proxy, @Shell, @Test, @Scan, @Probe)";
+                        Cmd.Parameters.AddWithValue("@Proxy", AsInt(PassiveChecker.RunOnProxyTraffic));
+                        Cmd.Parameters.AddWithValue("@Shell", AsInt(PassiveChecker.RunOnShellTraffic));
+                        Cmd.Parameters.AddWithValue("@Test", AsInt(PassiveChecker.RunOnTestTraffic));
+                        Cmd.Parameters.AddWithValue("@Scan", AsInt(PassiveChecker.RunOnScanTraffic));
+                        Cmd.Parameters.AddWithValue("@Probe", AsInt(PassiveChecker.RunOnProbeTraffic));
                         Cmd.ExecuteNonQuery();
                     }
                     Create.Commit();
@@ -2163,6 +2227,46 @@ namespace IronWASP
             DB.Close();
         }
 
+        internal static void UpdatePassiveAnalysisSettingsFromDB()
+        {
+            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
+            DB.Open();
+            SQLiteCommand cmd = DB.CreateCommand();
+            cmd.CommandText = "SELECT Proxy, Shell, Test, Scan, Probe FROM PassiveAnalysisSettings";
+            SQLiteDataReader result = cmd.ExecuteReader();
+
+            if (result.HasRows)
+            {
+                try
+                {
+                    PassiveChecker.RunOnProxyTraffic =  Int32.Parse(result["Proxy"].ToString()) == 1;
+                }
+                catch { }
+                try
+                {
+                    PassiveChecker.RunOnShellTraffic = Int32.Parse(result["Shell"].ToString()) == 1;
+                }
+                catch { }
+                try
+                {
+                    PassiveChecker.RunOnTestTraffic = Int32.Parse(result["Test"].ToString()) == 1;
+                }
+                catch { }
+                try
+                {
+                    PassiveChecker.RunOnShellTraffic = Int32.Parse(result["Shell"].ToString()) == 1;
+                }
+                catch { }
+                try
+                {
+                    PassiveChecker.RunOnProbeTraffic = Int32.Parse(result["Probe"].ToString()) == 1;
+                }
+                catch { }
+            }
+            result.Close();
+            DB.Close();
+        }
+
         internal static void UpdateConfigFromDB()
         {
             UpdateProxyConfigFromDB();
@@ -2175,6 +2279,7 @@ namespace IronWASP
             UpdateDisplayRulesFromDB();
             UpdateJSTaintConfigFromDB();
             UpdateScannerSettingsFromDB();
+            UpdatePassiveAnalysisSettingsFromDB();
         }
 
 
@@ -2682,6 +2787,8 @@ namespace IronWASP
                     cmd.CommandText = "CREATE TABLE IF NOT EXISTS JSTaintConfig (SourceObjects TEXT, SinkObjects TEXT, ArgumentAssignedASourceMethods TEXT, ArgumentAssignedToSinkMethods TEXT, SourceReturningMethods TEXT, SinkReturningMethods TEXT, ArgumentReturningMethods TEXT)";
                     cmd.ExecuteNonQuery();
                     cmd.CommandText = "CREATE TABLE IF NOT EXISTS ScannerSettings (MaxScannerThreads INT, MaxCrawlerThreads INT, UserAgent TEXT)";
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS PassiveAnalysisSettings (Proxy INT, Shell INT, Test INT, Scan INT, Probe INT)";
                     cmd.ExecuteNonQuery();
                 }
                 create.Commit();

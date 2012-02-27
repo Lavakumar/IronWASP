@@ -548,6 +548,11 @@ namespace IronWASP
             {
                 this.TimeObject = new DateTime(long.Parse(Sess.oFlags["IronFlag-Ticks"]));
             }
+            if (Sess.oFlags.ContainsKey("IronFlag-BuiltBy"))
+            {
+                if (Sess.oFlags["IronFlag-BuiltBy"] == "ManualTestingSection")
+                    this.Source = RequestSource.Test;
+            }
             this.AbsorbFullURL(Sess.fullUrl);
             this.Method = Sess.oRequest.headers.HTTPMethod;
             foreach (Fiddler.HTTPHeaderItem HHI in Sess.oRequest.headers)

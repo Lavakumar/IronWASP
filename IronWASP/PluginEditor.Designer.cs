@@ -68,13 +68,14 @@ namespace IronWASP
             this.NewScriptFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.NewPyScriptFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.NewRbScriptFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.OpenFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ActivePluginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.passivePluginToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.formatPluginToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.sessionPluginToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.otherToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SaveWorkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SaveAsStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.LanguageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.IronPythonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.IronRubyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -178,8 +179,9 @@ namespace IronWASP
             // 
             this.PluginEditorMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.NewFileToolStripMenuItem,
-            this.saveToolStripMenuItem1,
+            this.OpenFileToolStripMenuItem,
             this.SaveWorkToolStripMenuItem,
+            this.SaveAsStripMenuItem,
             this.LanguageToolStripMenuItem,
             this.CheckSyntaxF5ToolStripMenuItem});
             this.PluginEditorMenu.Location = new System.Drawing.Point(0, 0);
@@ -315,59 +317,66 @@ namespace IronWASP
             this.NewRbScriptFileToolStripMenuItem.Text = "Ruby";
             this.NewRbScriptFileToolStripMenuItem.Click += new System.EventHandler(this.NewRbScriptFileToolStripMenuItem_Click);
             // 
-            // saveToolStripMenuItem1
+            // OpenFileToolStripMenuItem
             // 
-            this.saveToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.OpenFileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ActivePluginToolStripMenuItem,
             this.passivePluginToolStripMenuItem1,
             this.formatPluginToolStripMenuItem1,
             this.sessionPluginToolStripMenuItem1,
             this.otherToolStripMenuItem});
-            this.saveToolStripMenuItem1.Name = "saveToolStripMenuItem1";
-            this.saveToolStripMenuItem1.Size = new System.Drawing.Size(69, 20);
-            this.saveToolStripMenuItem1.Text = "Open File";
+            this.OpenFileToolStripMenuItem.Name = "OpenFileToolStripMenuItem";
+            this.OpenFileToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
+            this.OpenFileToolStripMenuItem.Text = "Open File";
             // 
             // ActivePluginToolStripMenuItem
             // 
             this.ActivePluginToolStripMenuItem.Name = "ActivePluginToolStripMenuItem";
-            this.ActivePluginToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.ActivePluginToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.ActivePluginToolStripMenuItem.Text = "Active Plugin";
             this.ActivePluginToolStripMenuItem.Click += new System.EventHandler(this.ActivePluginToolStripMenuItem_Click);
             // 
             // passivePluginToolStripMenuItem1
             // 
             this.passivePluginToolStripMenuItem1.Name = "passivePluginToolStripMenuItem1";
-            this.passivePluginToolStripMenuItem1.Size = new System.Drawing.Size(150, 22);
+            this.passivePluginToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.passivePluginToolStripMenuItem1.Text = "Passive Plugin";
             this.passivePluginToolStripMenuItem1.Click += new System.EventHandler(this.passivePluginToolStripMenuItem1_Click);
             // 
             // formatPluginToolStripMenuItem1
             // 
             this.formatPluginToolStripMenuItem1.Name = "formatPluginToolStripMenuItem1";
-            this.formatPluginToolStripMenuItem1.Size = new System.Drawing.Size(150, 22);
+            this.formatPluginToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.formatPluginToolStripMenuItem1.Text = "Format Plugin";
             this.formatPluginToolStripMenuItem1.Click += new System.EventHandler(this.formatPluginToolStripMenuItem1_Click);
             // 
             // sessionPluginToolStripMenuItem1
             // 
             this.sessionPluginToolStripMenuItem1.Name = "sessionPluginToolStripMenuItem1";
-            this.sessionPluginToolStripMenuItem1.Size = new System.Drawing.Size(150, 22);
+            this.sessionPluginToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.sessionPluginToolStripMenuItem1.Text = "Session Plugin";
             this.sessionPluginToolStripMenuItem1.Click += new System.EventHandler(this.sessionPluginToolStripMenuItem1_Click);
             // 
             // otherToolStripMenuItem
             // 
             this.otherToolStripMenuItem.Name = "otherToolStripMenuItem";
-            this.otherToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.otherToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.otherToolStripMenuItem.Text = "Other";
             this.otherToolStripMenuItem.Click += new System.EventHandler(this.otherToolStripMenuItem_Click);
             // 
             // SaveWorkToolStripMenuItem
             // 
             this.SaveWorkToolStripMenuItem.Name = "SaveWorkToolStripMenuItem";
-            this.SaveWorkToolStripMenuItem.Size = new System.Drawing.Size(74, 20);
-            this.SaveWorkToolStripMenuItem.Text = "Save Work";
+            this.SaveWorkToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
+            this.SaveWorkToolStripMenuItem.Text = "Save";
             this.SaveWorkToolStripMenuItem.Click += new System.EventHandler(this.SaveWorkToolStripMenuItem_Click);
+            // 
+            // SaveAsStripMenuItem
+            // 
+            this.SaveAsStripMenuItem.Name = "SaveAsStripMenuItem";
+            this.SaveAsStripMenuItem.Size = new System.Drawing.Size(59, 20);
+            this.SaveAsStripMenuItem.Text = "Save As";
+            this.SaveAsStripMenuItem.Click += new System.EventHandler(this.SaveAsStripMenuItem_Click);
             // 
             // LanguageToolStripMenuItem
             // 
@@ -573,7 +582,7 @@ namespace IronWASP
         private System.Windows.Forms.ToolStripMenuItem NewSessionPluginToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem NewFormatPluginToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem NewScriptFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem OpenFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem SaveWorkToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem LanguageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem IronPythonToolStripMenuItem;
@@ -608,5 +617,6 @@ namespace IronWASP
         private System.Windows.Forms.ToolStripMenuItem NewPyScriptFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem NewRbScriptFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem CheckSyntaxF5ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem SaveAsStripMenuItem;
     }
 }

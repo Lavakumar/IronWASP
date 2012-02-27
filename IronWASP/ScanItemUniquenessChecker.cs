@@ -43,7 +43,7 @@ namespace IronWASP
 
         internal bool IsUniqueToScan(Request Req, List<Request> ScannedRequests, bool IgnoreUrl )
         {
-            if (!PromptUser) return true;
+            int DuplicateNamesMatchCounter = 0;
             foreach (Request RR in ScannedRequests)
             {
                 if (!Req.Method.Equals(RR.Method)) continue;
@@ -60,65 +60,79 @@ namespace IronWASP
                     List<string> RRQueryNames = RR.Query.GetNames();
                     if (AreListValuesSame(ReqQueryNames, RRQueryNames))
                     {
-                        List<string> MismatchedParameters = GetMismatchedQueryParameterNames(Req, RR);
-                        if (IsAnyQueryParameterUnique(MismatchedParameters))
-                            return true;
-                        else if (AreAllQueryParametersNonUnique(MismatchedParameters))
+                        if (PromptUser)
                         {
-                            if (!Req.HasBody) return false;
-                        }
-                        else
-                        {
-                            StringBuilder Message = new StringBuilder();
-                            Message.Append("<i<b>><i<cg>>Request A:<i</cg>><i</b>><i<br>>");
-                            Message.Append("  "); Message.Append(RR.Method); Message.Append("  "); Message.Append(RR.UrlPath); Message.Append("?");
-                            foreach (string Name in RR.Query.GetNames())
-                            {
-                                foreach (string Value in RR.Query.GetAll(Name))
-                                {
-                                    if (MismatchedParameters.Contains(Name)) Message.Append("<i<hlo>>");
-                                    Message.Append(Name); Message.Append("="); Message.Append(Value);
-                                    if (MismatchedParameters.Contains(Name)) Message.Append("<i</hlo>>");
-                                    Message.Append("&");
-                                }
-                            }
-                            if (Message.ToString().EndsWith("&")) Message.Remove(Message.Length - 1, 1);
-                            Message.Append("<i<br>>");
-                            Message.Append("<i<b>><i<cg>>Request B:<i</cg>><i</b>><i<br>>");
-                            Message.Append("  "); Message.Append(Req.Method); Message.Append("  "); Message.Append(Req.UrlPath); Message.Append("?");
-                            foreach (string Name in Req.Query.GetNames())
-                            {
-                                foreach (string Value in Req.Query.GetAll(Name))
-                                {
-                                    if (MismatchedParameters.Contains(Name)) Message.Append("<i<hlo>>");
-                                    Message.Append(Name); Message.Append("="); Message.Append(Value);
-                                    if (MismatchedParameters.Contains(Name)) Message.Append("<i</hlo>>");
-                                    Message.Append("&");
-                                }
-                            }
-                            if (Message.ToString().EndsWith("&")) Message.Remove(Message.Length - 1, 1);
-                            Message.Append("<i<br>>");
-                            Message.Append("<i<br>>");
-                            Message.Append(@"Request A has been sent for scanning already. Request B is being considered for scanning.<i<br>>
-Request A & Request B have the same Query parameter names but some parameters have different values.<i<br>>
-If Request B can be considered a duplicate of A and not scanned then just hit 'Submit'.<i<br>>
-If the values of some the mis-matched parameters makes Request B unique then select those Query Paramters from the provided list and then hit 'Submit'");
-                            List<int> AskUserResponse = AskUser.ForList("Duplicate Scan Item Check", Message.ToString(), "Scan Request B", "Don't scan Request B", "Scan Request B and set these parameters as unique", MismatchedParameters);
-                            List<string> UniqueParams = new List<string>();
-                            for (int i = 2; i < AskUserResponse.Count; i++)
-                            {
-                                UniqueParams.Add(MismatchedParameters[AskUserResponse[i]]);
-                            }
-
-                            if (UniqueParams.Count > 0 || AskUserResponse[0] == 1)
-                            {
-                                UniqueQueryParameters.AddRange(UniqueParams);
+                            List<string> MismatchedParameters = GetMismatchedQueryParameterNames(Req, RR);
+                            if (IsAnyQueryParameterUnique(MismatchedParameters))
                                 return true;
+                            else if (AreAllQueryParametersNonUnique(MismatchedParameters))
+                            {
+                                if (!Req.HasBody) return false;
                             }
                             else
                             {
-                                NonUniqueQueryParameters.AddRange(MismatchedParameters);
-                                if (!Req.HasBody) return false;
+                                StringBuilder Message = new StringBuilder();
+                                Message.Append("<i<b>><i<cg>>Request A:<i</cg>><i</b>><i<br>>");
+                                Message.Append("  "); Message.Append(RR.Method); Message.Append("  "); Message.Append(RR.UrlPath); Message.Append("?");
+                                foreach (string Name in RR.Query.GetNames())
+                                {
+                                    foreach (string Value in RR.Query.GetAll(Name))
+                                    {
+                                        if (MismatchedParameters.Contains(Name)) Message.Append("<i<hlo>>");
+                                        Message.Append(Name); Message.Append("="); Message.Append(Value);
+                                        if (MismatchedParameters.Contains(Name)) Message.Append("<i</hlo>>");
+                                        Message.Append("&");
+                                    }
+                                }
+                                if (Message.ToString().EndsWith("&")) Message.Remove(Message.Length - 1, 1);
+                                Message.Append("<i<br>>");
+                                Message.Append("<i<b>><i<cg>>Request B:<i</cg>><i</b>><i<br>>");
+                                Message.Append("  "); Message.Append(Req.Method); Message.Append("  "); Message.Append(Req.UrlPath); Message.Append("?");
+                                foreach (string Name in Req.Query.GetNames())
+                                {
+                                    foreach (string Value in Req.Query.GetAll(Name))
+                                    {
+                                        if (MismatchedParameters.Contains(Name)) Message.Append("<i<hlo>>");
+                                        Message.Append(Name); Message.Append("="); Message.Append(Value);
+                                        if (MismatchedParameters.Contains(Name)) Message.Append("<i</hlo>>");
+                                        Message.Append("&");
+                                    }
+                                }
+                                if (Message.ToString().EndsWith("&")) Message.Remove(Message.Length - 1, 1);
+                                Message.Append("<i<br>>");
+                                Message.Append("<i<br>>");
+                                Message.Append(@"Request A has been sent for scanning already. Request B is being considered for scanning.<i<br>>
+Request A & Request B have the same Query parameter names but some parameters have different values.<i<br>>
+If Request B can be considered a duplicate of A and not scanned then just hit 'Submit'.<i<br>>
+If the values of some the mis-matched parameters makes Request B unique then select those Query Paramters from the provided list and then hit 'Submit'");
+                                List<int> AskUserResponse = AskUser.ForList("Duplicate Scan Item Check", Message.ToString(), "Scan Request B", "Don't scan Request B", "Scan Request B and set these parameters as unique", MismatchedParameters);
+                                List<string> UniqueParams = new List<string>();
+                                for (int i = 2; i < AskUserResponse.Count; i++)
+                                {
+                                    UniqueParams.Add(MismatchedParameters[AskUserResponse[i]]);
+                                }
+
+                                if (UniqueParams.Count > 0 || AskUserResponse[0] == 1)
+                                {
+                                    UniqueQueryParameters.AddRange(UniqueParams);
+                                    return true;
+                                }
+                                else
+                                {
+                                    NonUniqueQueryParameters.AddRange(MismatchedParameters);
+                                    if (!Req.HasBody) return false;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (!Req.HasBody)
+                            {
+                                DuplicateNamesMatchCounter++;
+                                if (DuplicateNamesMatchCounter > 20)
+                                {
+                                    return false;
+                                }
                             }
                         }
                     }
@@ -132,65 +146,76 @@ If the values of some the mis-matched parameters makes Request B unique then sel
                         List<string> RRBodyNames = RR.Body.GetNames();
                         if (AreListValuesSame(ReqBodyNames, RRBodyNames))
                         {
-                            List<string> MismatchedParameters = GetMismatchedBodyParameterNames(Req, RR);
-                            if (IsAnyBodyParameterUnique(MismatchedParameters))
-                                return true;
-                            else if (AreAllBodyParametersNonUnique(MismatchedParameters))
+                            if (PromptUser)
                             {
-                                return false;
-                            }
-                            else
-                            {
-                                StringBuilder Message = new StringBuilder();
-                                Message.Append("<i<b>><i<cg>>Request A:<i</cg>><i</b>><i<br>>");
-                                Message.Append("  "); Message.Append(RR.Method); Message.Append("  "); Message.Append(RR.Url); Message.Append("<i<br>><i<br>>"); Message.Append("  ");
-                                foreach (string Name in RR.Body.GetNames())
-                                {
-                                    foreach (string Value in RR.Body.GetAll(Name))
-                                    {
-                                        if (MismatchedParameters.Contains(Name)) Message.Append("<i<hlo>>");
-                                        Message.Append(Name); Message.Append("="); Message.Append(Value);
-                                        if (MismatchedParameters.Contains(Name)) Message.Append("<i</hlo>>");
-                                        Message.Append("&");
-                                    }
-                                }
-                                if (Message.ToString().EndsWith("&")) Message.Remove(Message.Length - 1, 1);
-                                Message.Append("<i<br>>");
-                                Message.Append("<i<br>>");
-                                Message.Append("<i<b>><i<cg>>Request B:<i</cg>><i</b>><i<br>>");
-                                Message.Append("  "); Message.Append(Req.Method); Message.Append("  "); Message.Append(Req.Url); Message.Append("<i<br>><i<br>>"); Message.Append("  ");
-                                foreach (string Name in Req.Body.GetNames())
-                                {
-                                    foreach (string Value in Req.Body.GetAll(Name))
-                                    {
-                                        if (MismatchedParameters.Contains(Name)) Message.Append("<i<hlo>>");
-                                        Message.Append(Name); Message.Append("="); Message.Append(Value);
-                                        if (MismatchedParameters.Contains(Name)) Message.Append("<i</hlo>>");
-                                        Message.Append("&");
-                                    }
-                                }
-                                if (Message.ToString().EndsWith("&")) Message.Remove(Message.Length - 1, 1);
-                                Message.Append("<i<br>>");
-                                Message.Append("<i<br>>");
-                                Message.Append(@"Request A has been sent for scanning already. Request B is being considered for scanning.<i<br>>
-Request A & Request B have the same Body parameter names but some parameters have different values.<i<br>>
-If Request B can be considered a duplicate of A and not scanned then just hit 'Submit'.<i<br>>
-If the values of some the mis-matched parameters makes Request B unique then select those Body Paramters from the provided list and then hit 'Submit'");
-                                List<int> AskUserResponse = AskUser.ForList("Duplicate Scan Item Check", Message.ToString(), "Scan Request B", "Don't scan Request B", "Scan Request B and set these parameters as unique", MismatchedParameters);
-                                List<string> UniqueParams = new List<string>();
-                                for (int i = 2; i < AskUserResponse.Count; i++)
-                                {
-                                    UniqueParams.Add(MismatchedParameters[AskUserResponse[i]]);
-                                }
-
-                                if (UniqueParams.Count > 0 || AskUserResponse[0] == 1)
-                                {
-                                    UniqueBodyParameters.AddRange(UniqueParams);
+                                List<string> MismatchedParameters = GetMismatchedBodyParameterNames(Req, RR);
+                                if (IsAnyBodyParameterUnique(MismatchedParameters))
                                     return true;
+                                else if (AreAllBodyParametersNonUnique(MismatchedParameters))
+                                {
+                                    return false;
                                 }
                                 else
                                 {
-                                    NonUniqueBodyParameters.AddRange(MismatchedParameters);
+                                    StringBuilder Message = new StringBuilder();
+                                    Message.Append("<i<b>><i<cg>>Request A:<i</cg>><i</b>><i<br>>");
+                                    Message.Append("  "); Message.Append(RR.Method); Message.Append("  "); Message.Append(RR.Url); Message.Append("<i<br>><i<br>>"); Message.Append("  ");
+                                    foreach (string Name in RR.Body.GetNames())
+                                    {
+                                        foreach (string Value in RR.Body.GetAll(Name))
+                                        {
+                                            if (MismatchedParameters.Contains(Name)) Message.Append("<i<hlo>>");
+                                            Message.Append(Name); Message.Append("="); Message.Append(Value);
+                                            if (MismatchedParameters.Contains(Name)) Message.Append("<i</hlo>>");
+                                            Message.Append("&");
+                                        }
+                                    }
+                                    if (Message.ToString().EndsWith("&")) Message.Remove(Message.Length - 1, 1);
+                                    Message.Append("<i<br>>");
+                                    Message.Append("<i<br>>");
+                                    Message.Append("<i<b>><i<cg>>Request B:<i</cg>><i</b>><i<br>>");
+                                    Message.Append("  "); Message.Append(Req.Method); Message.Append("  "); Message.Append(Req.Url); Message.Append("<i<br>><i<br>>"); Message.Append("  ");
+                                    foreach (string Name in Req.Body.GetNames())
+                                    {
+                                        foreach (string Value in Req.Body.GetAll(Name))
+                                        {
+                                            if (MismatchedParameters.Contains(Name)) Message.Append("<i<hlo>>");
+                                            Message.Append(Name); Message.Append("="); Message.Append(Value);
+                                            if (MismatchedParameters.Contains(Name)) Message.Append("<i</hlo>>");
+                                            Message.Append("&");
+                                        }
+                                    }
+                                    if (Message.ToString().EndsWith("&")) Message.Remove(Message.Length - 1, 1);
+                                    Message.Append("<i<br>>");
+                                    Message.Append("<i<br>>");
+                                    Message.Append(@"Request A has been sent for scanning already. Request B is being considered for scanning.<i<br>>
+Request A & Request B have the same Body parameter names but some parameters have different values.<i<br>>
+If Request B can be considered a duplicate of A and not scanned then just hit 'Submit'.<i<br>>
+If the values of some the mis-matched parameters makes Request B unique then select those Body Paramters from the provided list and then hit 'Submit'");
+                                    List<int> AskUserResponse = AskUser.ForList("Duplicate Scan Item Check", Message.ToString(), "Scan Request B", "Don't scan Request B", "Scan Request B and set these parameters as unique", MismatchedParameters);
+                                    List<string> UniqueParams = new List<string>();
+                                    for (int i = 2; i < AskUserResponse.Count; i++)
+                                    {
+                                        UniqueParams.Add(MismatchedParameters[AskUserResponse[i]]);
+                                    }
+
+                                    if (UniqueParams.Count > 0 || AskUserResponse[0] == 1)
+                                    {
+                                        UniqueBodyParameters.AddRange(UniqueParams);
+                                        return true;
+                                    }
+                                    else
+                                    {
+                                        NonUniqueBodyParameters.AddRange(MismatchedParameters);
+                                        return false;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                DuplicateNamesMatchCounter++;
+                                if (DuplicateNamesMatchCounter > 20)
+                                {
                                     return false;
                                 }
                             }
@@ -203,6 +228,7 @@ If the values of some the mis-matched parameters makes Request B unique then sel
                 }
                 else
                 {
+                    if (!PromptUser) return true;
                     if (IgnoreUrl) return false;
                     if (!(Req.File.Equals("") && RR.File.Equals(""))) continue;
                     List<string> PathPartMatch = new List<string>();

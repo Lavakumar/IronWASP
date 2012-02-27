@@ -384,6 +384,15 @@ namespace IronWASP
             Crawler.UserAgent = IronUI.UI.ConfigCrawlerUserAgentTB.Text;
         }
 
+        internal static void UpdatePassiveAnalysisSettingsFromUI()
+        {
+            PassiveChecker.RunOnProxyTraffic = IronUI.UI.ConfigPassiveAnalysisOnProxyTrafficCB.Checked;
+            PassiveChecker.RunOnShellTraffic = IronUI.UI.ConfigPassiveAnalysisOnShellTrafficCB.Checked;
+            PassiveChecker.RunOnTestTraffic = IronUI.UI.ConfigPassiveAnalysisOnTestTrafficCB.Checked;
+            PassiveChecker.RunOnScanTraffic = IronUI.UI.ConfigPassiveAnalysisOnScanTrafficCB.Checked;
+            PassiveChecker.RunOnProbeTraffic = IronUI.UI.ConfigPassiveAnalysisOnProbeTrafficCB.Checked;
+        }
+
         internal static void SetRootDir()
         {
             Assembly MainAssembly = Assembly.GetExecutingAssembly();

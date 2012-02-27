@@ -94,6 +94,7 @@ namespace IronWASP
             // 
             this.AskUserMessageRTB.BackColor = System.Drawing.Color.White;
             this.AskUserMessageRTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.AskUserMessageRTB.DetectUrls = false;
             this.AskUserMessageRTB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.AskUserMessageRTB.Location = new System.Drawing.Point(0, 0);
             this.AskUserMessageRTB.Name = "AskUserMessageRTB";

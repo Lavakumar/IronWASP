@@ -3261,8 +3261,8 @@ namespace IronWASP
             }
             else
             {
-                IronUI.ShowConsoleStatus("Stopping Scan...", false);
                 ConsoleStartScanBtn.Enabled = false;
+                IronUI.ShowConsoleStatus("Stopping Scan...", false);
                 ScanManager.Stop();
             }
         }
@@ -3653,6 +3653,17 @@ namespace IronWASP
                     ConfigDefaultJSTaintConfigGrid.Height = 290;
                 }
             }
+        }
+
+        private void ConfigPassiveAnalysisSettingsApplyChangesLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Config.UpdatePassiveAnalysisSettingsFromUI();
+            IronDB.StorePassiveAnalysisSettings();
+        }
+
+        private void ConfigPassiveAnalysisSettingsCancelChangesLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            IronUI.UpdatePassiveAnalysisSettingsInUIFromConfig();
         }
     }
 }

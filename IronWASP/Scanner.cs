@@ -705,7 +705,7 @@ namespace IronWASP
         }
         public void InjectHeaders(string ParameterName, int SubParameterPosition)
         {
-            if(!(ParameterName.Equals("Cookie", StringComparison.InvariantCultureIgnoreCase) || ParameterName.Equals("Host", StringComparison.InvariantCultureIgnoreCase)))
+            if (!(ParameterName.Equals("Cookie", StringComparison.InvariantCultureIgnoreCase) || ParameterName.Equals("Host", StringComparison.InvariantCultureIgnoreCase) || ParameterName.Equals("Content-Length", StringComparison.InvariantCultureIgnoreCase)))
             {
                 if (this.HeadersInjections.Has(ParameterName))
                 {
@@ -1192,16 +1192,6 @@ namespace IronWASP
                     ToStop.Add(Scan.ScanID);
                 }
             }
-            foreach (int ScanID in ToStop)
-            {
-                try
-                {
-                    IronDB.UpdateScanStatus(ScanID, "Stopped");
-                    IronUI.UpdateScanQueueStatus(ScanID, "Stopped");
-                }
-                catch
-                { }
-            }
 
             List<int> Running = new List<int>(ActiveScanIDs);
 
@@ -1211,6 +1201,15 @@ namespace IronWASP
                 { Scanner.ScanThreads[ScanID].Abort(); }
                 catch { }
             }
+
+            try
+            {
+                IronDB.UpdateScanStatus(ToStop, "Stopped");
+                IronUI.UpdateScanQueueStatuses(ToStop, "Stopped");
+            }
+            catch
+            { }
+            
             NewScansAllowed = true;
         }
 

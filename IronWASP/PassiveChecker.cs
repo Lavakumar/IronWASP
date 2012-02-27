@@ -33,6 +33,12 @@ namespace IronWASP
         static Queue<Session> CheckRequest = new Queue<Session>();
         static Queue<Session> CheckResponse = new Queue<Session>();
 
+        internal static bool RunOnProxyTraffic = true;
+        internal static bool RunOnShellTraffic = true;
+        internal static bool RunOnTestTraffic = true;
+        internal static bool RunOnScanTraffic = false;
+        internal static bool RunOnProbeTraffic = true;
+
         internal static int RequestQueueLength
         {
             get
@@ -58,6 +64,24 @@ namespace IronWASP
 
         internal static void AddToCheckRequest(Session Sess)
         {
+            switch (Sess.Request.Source)
+            {
+                case RequestSource.Proxy:
+                    if (!RunOnProxyTraffic) return;
+                    break;
+                case RequestSource.Shell:
+                    if (!RunOnShellTraffic) return;
+                    break;
+                case RequestSource.Test:
+                    if (!RunOnTestTraffic) return;
+                    break;
+                case RequestSource.Scan:
+                    if (!RunOnScanTraffic) return;
+                    break;
+                case RequestSource.Probe:
+                    if (!RunOnProbeTraffic) return;
+                    break;
+            }
             lock (CheckRequest)
             {
                 CheckRequest.Enqueue(Sess);
@@ -66,9 +90,30 @@ namespace IronWASP
 
         internal static void AddToCheckResponse(Session Sess)
         {
-            lock (CheckResponse)
+            if (Sess.Response != null)
             {
-                CheckResponse.Enqueue(Sess);
+                switch(Sess.Request.Source)
+                {
+                    case RequestSource.Proxy:
+                        if (!RunOnProxyTraffic) return;
+                        break;
+                    case RequestSource.Shell:
+                        if (!RunOnShellTraffic) return;
+                        break;
+                    case RequestSource.Test:
+                        if (!RunOnTestTraffic) return;
+                        break;
+                    case RequestSource.Scan:
+                        if (!RunOnScanTraffic) return;
+                        break;
+                    case RequestSource.Probe:
+                        if (!RunOnProbeTraffic) return;
+                        break;
+                }
+                lock (CheckResponse)
+                {
+                    CheckResponse.Enqueue(Sess);
+                }
             }
         }
 

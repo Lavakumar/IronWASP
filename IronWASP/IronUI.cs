@@ -862,6 +862,23 @@ namespace IronWASP
             }
         }
 
+        delegate void UpdateScanQueueStatuses_d(List<int> ScanIDs, string Status);
+        internal static void UpdateScanQueueStatuses(List<int> ScanIDs, string Status)
+        {
+            if (UI.ASQueueGrid.InvokeRequired)
+            {
+                UpdateScanQueueStatuses_d USQS_d = new UpdateScanQueueStatuses_d(UpdateScanQueueStatuses);
+                UI.Invoke(USQS_d, new object[] { ScanIDs, Status });
+            }
+            else
+            {
+                foreach (int ScanID in ScanIDs)
+                {
+                    UpdateScanQueueStatus(ScanID, Status);
+                }
+            }
+        }
+
         delegate void UpdateScanQueueStatus_d(int ScanID, string Status);
         internal static void UpdateScanQueueStatus(int ScanID, string Status)
         {
@@ -872,6 +889,18 @@ namespace IronWASP
             }
             else
             {
+                if (UI.ASQueueGrid.Rows.Count >= ScanID)
+                {
+                    try
+                    {
+                        if ((int)UI.ASQueueGrid.Rows[ScanID - 1].Cells[0].Value == ScanID)
+                        {
+                            SetScanRowStatus(UI.ASQueueGrid.Rows[ScanID -1], Status);
+                            return;
+                        }
+                    }
+                    catch { }
+                }
                 
                 foreach (DataGridViewRow Row in UI.ASQueueGrid.Rows)
                 {
@@ -886,29 +915,34 @@ namespace IronWASP
                     }
                     if (RowScanID == ScanID)
                     {
-                        Row.Cells[1].Value = Status;
-                        switch (Status)
-                        {
-                            case "Running":
-                                Row.DefaultCellStyle.BackColor = Color.Green;
-                                break;
-                            case "Aborted":
-                                Row.DefaultCellStyle.BackColor = Color.Red;
-                                break;
-                            case "Completed":
-                                Row.DefaultCellStyle.BackColor = Color.Gray;
-                                break;
-                            case "Incomplete":
-                            case "Stopped":
-                                Row.DefaultCellStyle.BackColor = Color.IndianRed;
-                                break;
-                            default:
-                                Row.DefaultCellStyle.BackColor = Color.White;
-                                break;
-                        }
+                        SetScanRowStatus(Row, Status);
                         return;
                     }
                 }
+            }
+        }
+
+        static void SetScanRowStatus(DataGridViewRow Row, string Status)
+        {
+            Row.Cells[1].Value = Status;
+            switch (Status)
+            {
+                case "Running":
+                    Row.DefaultCellStyle.BackColor = Color.Green;
+                    break;
+                case "Aborted":
+                    Row.DefaultCellStyle.BackColor = Color.Red;
+                    break;
+                case "Completed":
+                    Row.DefaultCellStyle.BackColor = Color.Gray;
+                    break;
+                case "Incomplete":
+                case "Stopped":
+                    Row.DefaultCellStyle.BackColor = Color.IndianRed;
+                    break;
+                default:
+                    Row.DefaultCellStyle.BackColor = Color.White;
+                    break;
             }
         }
 
@@ -2110,7 +2144,7 @@ namespace IronWASP
             UI.ASRequestScanHeadersGrid.Rows.Clear();
             foreach (string Name in Scanner.CurrentScanner.OriginalRequest.Headers.GetNames())
             {
-                if (!(Name.Equals("Cookie", StringComparison.InvariantCultureIgnoreCase) || Name.Equals("Host", StringComparison.InvariantCultureIgnoreCase)))
+                if (!(Name.Equals("Cookie", StringComparison.InvariantCultureIgnoreCase) || Name.Equals("Host", StringComparison.InvariantCultureIgnoreCase) || Name.Equals("Content-Length", StringComparison.InvariantCultureIgnoreCase)))
                 {
                     foreach (string Value in Scanner.CurrentScanner.OriginalRequest.Headers.GetAll(Name))
                     {
@@ -2270,7 +2304,7 @@ namespace IronWASP
                 SB.Append(@" \b \fs30 "); SB.Append(Tools.RtfSafe(IrEx.Title)); SB.Append(@"\b0 ");
                 SB.Append(@" \par"); SB.Append(@" \par"); SB.Append(@" \fs20 ");
                 SB.AppendLine(Tools.RtfSafe(IrEx.Message)); SB.Append(@" \par \par ");
-                SB.Append(@" \cf1 \b StackTrace: \b0 \cf0 "); SB.Append(@" \par "); SB.AppendLine(Tools.RtfSafe(IrEx.StackTrace));
+                SB.Append(@" \cf1 \b StackTrace: \b0 \cf0 "); SB.Append(@" \par "); SB.AppendLine(Tools.RtfSafe(IrEx.StackTrace.Replace("\r\n","<i<br>>")));
                 SB.Append(@" \par "); SB.Append(@" \par ");
                 UI.ResultsDisplayRTB.Rtf = SB.ToString();
                 UI.ResultsTriggersGrid.Rows.Clear();
@@ -2553,6 +2587,7 @@ namespace IronWASP
                 UpdateInterceptionRulesInUIFromConfig();
                 UpdateJSTaintConfigInUIFromConfig();
                 UpdateScannerSettingsInUIFromConfig();
+                UpdatePassiveAnalysisSettingsInUIFromConfig();
             }
         }
 
@@ -2745,6 +2780,15 @@ namespace IronWASP
             UI.ConfigCrawlerThreadMaxCountTB.Value = Crawler.MaxCrawlThreads;
             UI.ConfigCrawlerThreadMaxCountLbl.Text = UI.ConfigCrawlerThreadMaxCountTB.Value.ToString();
             UI.ConfigCrawlerUserAgentTB.Text = Crawler.UserAgent;
+        }
+
+        internal static void UpdatePassiveAnalysisSettingsInUIFromConfig()
+        {
+            UI.ConfigPassiveAnalysisOnProxyTrafficCB.Checked = PassiveChecker.RunOnProxyTraffic;
+            UI.ConfigPassiveAnalysisOnShellTrafficCB.Checked = PassiveChecker.RunOnShellTraffic;
+            UI.ConfigPassiveAnalysisOnTestTrafficCB.Checked = PassiveChecker.RunOnTestTraffic;
+            UI.ConfigPassiveAnalysisOnScanTrafficCB.Checked = PassiveChecker.RunOnScanTraffic;
+            UI.ConfigPassiveAnalysisOnProbeTrafficCB.Checked = PassiveChecker.RunOnProbeTraffic;
         }
 
         delegate void UpdateProxyLogBasedOnDisplayFilter_d();

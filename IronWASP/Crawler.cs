@@ -55,6 +55,19 @@ namespace IronWASP
         List<string> FileNamesToCheck = new List<string>();
         List<string> DirNamesToCheck = new List<string>();
 
+        //This differs slightly from the list in ScanManager:
+        //htm, html, xhtml should be crawled to extract links, forms etc
+        //xml should be crawled for checks like crossdomain.xml etc
+        static List<string> ExtenionsToAvoid = new List<string>() { 
+            "jpg", "png", "gif","bmp", "ico","exif","jpeg",//image files
+            "7z", "zip", "rar","tar", "gz","tgz","bzip", "bzip2","dmg","cab",//compressed files
+            "js", "css","svg","svgz","bak",//static web content
+            "swf","exe", "jar", "msi","deb","bin","class","war",//executable content
+            "rtf", "txt", "pdf", "doc", "docx", "ppt", "pptx","xls","xlsx", "iso","json","xps","tex","csv","pps","tsv","db","log","rss",//document formats
+            "mp3","wav","m4a","m4p","aac","dat",//audio content
+            "mp4","aaf","3gp","wmv","avi","fla","sol","mov","mpeg","mpg","mpe","ogg","rm",//video content
+               };
+
         //Settings
         internal List<string> UrlsToAvoid = new List<string>();
         internal List<string> HostsToInclude = new List<string>();
@@ -293,6 +306,7 @@ namespace IronWASP
         {
             if (!((Req.SSL && HTTPS) || (!Req.SSL && HTTP))) return false;
             if(!IsHostAllowed(Req.Host)) return false;
+            if (!IsCrawlableExtension(Req)) return false;
             if (!Req.Url.Equals(BaseUrl))
             {
                 if (BaseUrl.EndsWith("/"))
@@ -306,6 +320,15 @@ namespace IronWASP
             }
             if (UrlsToAvoid.Contains(Req.Url) || UrlsToAvoid.Contains(Req.UrlPath)) return false;
             return true;
+        }
+
+        bool IsCrawlableExtension(Request Req)
+        {
+            string Ext = Req.File.ToLower().Trim();
+            if (ExtenionsToAvoid.Contains(Ext))
+                return false;
+            else
+                return true;
         }
 
         bool IsHostAllowed(string Host)

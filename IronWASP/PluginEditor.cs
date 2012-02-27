@@ -322,29 +322,23 @@ namespace IronWASP
 
         private void SaveWorkToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (OpenedFile != null)
+            if (OpenedFile != null && OpenedFile.Name.Length > 0 && !OpenedFile.Name.Equals("Enter an unique name.py") && !OpenedFile.Name.Equals("Enter an unique name.rb"))
             {
-                PluginEditorSaveFileDialog.InitialDirectory = OpenedFile.DirectoryName;
-                if (OpenedFile.Name.Length > 0)
-                {
-                    PluginEditorSaveFileDialog.FileName = OpenedFile.Name;
-                }
-            }
-            while (PluginEditorSaveFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                FileInfo Info = new FileInfo(PluginEditorSaveFileDialog.FileName);
-                string Content = PluginEditorTE.Text;
                 try
                 {
-                    StreamWriter Writer = new StreamWriter(Info.FullName);
+                    string Content = PluginEditorTE.Text;
+                    StreamWriter Writer = new StreamWriter(OpenedFile.FullName);
                     Writer.Write(Content);
                     Writer.Close();
                 }
-                catch(Exception Exp)
+                catch (Exception Exp)
                 {
-                    MessageBox.Show(string.Format("Unable to save file: {0}", new object[]{Exp.Message}));
+                    MessageBox.Show(string.Format("Unable to save file: {0}", new object[] { Exp.Message }));
                 }
-                break;
+            }
+            else
+            {
+                GetFileNameFromUserAndSave();
             }
         }
 
@@ -510,6 +504,47 @@ namespace IronWASP
         private void CheckSyntaxF5ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CheckSyntax();
+        }
+
+        private void SaveAsStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GetFileNameFromUserAndSave();
+        }
+
+        void GetFileNameFromUserAndSave()
+        {
+            if (OpenedFile != null)
+            {
+                PluginEditorSaveFileDialog.InitialDirectory = OpenedFile.DirectoryName;
+                if (OpenedFile.Name.Length > 0)
+                {
+                    PluginEditorSaveFileDialog.FileName = OpenedFile.Name;
+                }
+            }
+            while (PluginEditorSaveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                FileInfo Info = new FileInfo(PluginEditorSaveFileDialog.FileName);
+                string Content = PluginEditorTE.Text;
+                if (!Info.Name.StartsWith("Enter an unique name"))
+                {
+                    try
+                    {
+                        StreamWriter Writer = new StreamWriter(Info.FullName);
+                        Writer.Write(Content);
+                        Writer.Close();
+                        OpenedFile = new FileInfo(Info.FullName);
+                    }
+                    catch (Exception Exp)
+                    {
+                        MessageBox.Show(string.Format("Unable to save file: {0}", new object[] { Exp.Message }));
+                    }
+                    break;
+                }
+                else
+                {
+                    MessageBox.Show("Please select a different name");
+                }
+            }
         }
     }
 }

@@ -88,7 +88,7 @@ namespace IronWASP
 
             Spider.Start();
             ScanItemUniquenessChecker UniqueChecker = new ScanItemUniquenessChecker(Mode != ScanMode.Default);
-            Thread.Sleep(5000);
+            
             List<int> ScanIDs = new List<int>();
             bool ScanActive = true;
             List<string> ActivePlugins = ActivePlugin.List();
@@ -96,7 +96,8 @@ namespace IronWASP
             int TotalScanJobsCreated = 0;
             int TotalScanJobsCompleted = 0;
             List<Request> ScannedRequests = new List<Request>();
-            
+            int SleepCounter = 0;
+
             while (ScanActive)
             {
                 ScanActive = false;
@@ -111,10 +112,17 @@ namespace IronWASP
                         foreach (Request Req in Requests)
                         {
                             if (!CanScan(Req)) continue;
-                            if (Mode == ScanMode.UserConfigured && !UniqueChecker.IsUniqueToScan(Req, ScannedRequests, false)) continue;
+                            if (!UniqueChecker.IsUniqueToScan(Req, ScannedRequests, false)) continue;
                             Scanner S = new Scanner(Req);
                             S.CheckAll();
-                            S.InjectAll();
+
+                            if (S.OriginalRequest.Query.Count == 0 && S.OriginalRequest.File.Length != 3 && S.OriginalRequest.File.Length != 4)
+                                S.InjectUrl();
+                            S.InjectQuery();
+                            S.InjectBody();
+                            S.InjectHeaders();
+                            S.InjectCookie();
+
                             if (!FormatPlugin.IsNormal(Req))
                             {
                                 List<FormatPlugin> RightList = FormatPlugin.Get(Req);
@@ -167,6 +175,12 @@ namespace IronWASP
                     {
                         ScanActive = true;
                         Thread.Sleep(5000);
+                    }
+                    else if (SleepCounter < 10)
+                    {
+                        ScanActive = true;
+                        Thread.Sleep(2000);
+                        SleepCounter = SleepCounter + 2;
                     }
                 }
                 IronUI.UpdateConsoleCrawledRequestsCount(TotalRequestsCrawled);
@@ -261,7 +275,7 @@ namespace IronWASP
 
         static bool CanScan(Request Req)
         {
-            string File = Req.File.ToLower();
+            string File = Req.File.Trim().ToLower();
             if (ExtenionsToAvoid.Contains(File))
                 return false;
             else

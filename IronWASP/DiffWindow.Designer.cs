@@ -51,9 +51,11 @@ namespace IronWASP
             this.SourceResultRTB = new System.Windows.Forms.RichTextBox();
             this.DestinationResultRTB = new System.Windows.Forms.RichTextBox();
             this.DiffWindowLeftSplit = new System.Windows.Forms.SplitContainer();
+            this.DiffSourceTB = new System.Windows.Forms.TextBox();
             this.PasteSourceBtn = new System.Windows.Forms.Button();
             this.ClearSourceBtn = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
+            this.DiffDestinationTB = new System.Windows.Forms.TextBox();
             this.PasteDestinationBtn = new System.Windows.Forms.Button();
             this.ClearDestinationBtn = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
@@ -74,8 +76,6 @@ namespace IronWASP
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.DiffSourceTB = new System.Windows.Forms.TextBox();
-            this.DiffDestinationTB = new System.Windows.Forms.TextBox();
             this.SideBySideSplit.Panel1.SuspendLayout();
             this.SideBySideSplit.Panel2.SuspendLayout();
             this.SideBySideSplit.SuspendLayout();
@@ -113,6 +113,7 @@ namespace IronWASP
             // 
             this.SourceResultRTB.BackColor = System.Drawing.Color.White;
             this.SourceResultRTB.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.SourceResultRTB.DetectUrls = false;
             this.SourceResultRTB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.SourceResultRTB.Location = new System.Drawing.Point(0, 0);
             this.SourceResultRTB.Name = "SourceResultRTB";
@@ -125,6 +126,7 @@ namespace IronWASP
             // 
             this.DestinationResultRTB.BackColor = System.Drawing.Color.White;
             this.DestinationResultRTB.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.DestinationResultRTB.DetectUrls = false;
             this.DestinationResultRTB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.DestinationResultRTB.Location = new System.Drawing.Point(0, 0);
             this.DestinationResultRTB.Name = "DestinationResultRTB";
@@ -159,6 +161,18 @@ namespace IronWASP
             this.DiffWindowLeftSplit.SplitterWidth = 2;
             this.DiffWindowLeftSplit.TabIndex = 0;
             // 
+            // DiffSourceTB
+            // 
+            this.DiffSourceTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.DiffSourceTB.Location = new System.Drawing.Point(0, 25);
+            this.DiffSourceTB.MaxLength = 2147483647;
+            this.DiffSourceTB.Multiline = true;
+            this.DiffSourceTB.Name = "DiffSourceTB";
+            this.DiffSourceTB.Size = new System.Drawing.Size(676, 234);
+            this.DiffSourceTB.TabIndex = 3;
+            // 
             // PasteSourceBtn
             // 
             this.PasteSourceBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -191,6 +205,20 @@ namespace IronWASP
             this.label3.Size = new System.Drawing.Size(96, 13);
             this.label3.TabIndex = 0;
             this.label3.Text = "Enter Source Text:";
+            // 
+            // DiffDestinationTB
+            // 
+            this.DiffDestinationTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.DiffDestinationTB.BackColor = System.Drawing.SystemColors.Window;
+            this.DiffDestinationTB.Location = new System.Drawing.Point(0, 25);
+            this.DiffDestinationTB.MaxLength = 2147483647;
+            this.DiffDestinationTB.Multiline = true;
+            this.DiffDestinationTB.Name = "DiffDestinationTB";
+            this.DiffDestinationTB.ReadOnly = true;
+            this.DiffDestinationTB.Size = new System.Drawing.Size(676, 220);
+            this.DiffDestinationTB.TabIndex = 4;
             // 
             // PasteDestinationBtn
             // 
@@ -415,32 +443,6 @@ namespace IronWASP
             this.label6.Size = new System.Drawing.Size(63, 13);
             this.label6.TabIndex = 8;
             this.label6.Text = "Unchanged";
-            // 
-            // DiffSourceTB
-            // 
-            this.DiffSourceTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.DiffSourceTB.Location = new System.Drawing.Point(0, 25);
-            this.DiffSourceTB.MaxLength = 2147483647;
-            this.DiffSourceTB.Multiline = true;
-            this.DiffSourceTB.Name = "DiffSourceTB";
-            this.DiffSourceTB.Size = new System.Drawing.Size(676, 234);
-            this.DiffSourceTB.TabIndex = 3;
-            // 
-            // DiffDestinationTB
-            // 
-            this.DiffDestinationTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.DiffDestinationTB.BackColor = System.Drawing.SystemColors.Window;
-            this.DiffDestinationTB.Location = new System.Drawing.Point(0, 25);
-            this.DiffDestinationTB.MaxLength = 2147483647;
-            this.DiffDestinationTB.Multiline = true;
-            this.DiffDestinationTB.Name = "DiffDestinationTB";
-            this.DiffDestinationTB.ReadOnly = true;
-            this.DiffDestinationTB.Size = new System.Drawing.Size(676, 220);
-            this.DiffDestinationTB.TabIndex = 4;
             // 
             // DiffWindow
             // 
