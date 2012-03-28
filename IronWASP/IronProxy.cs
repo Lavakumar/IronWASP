@@ -178,16 +178,21 @@ namespace IronWASP
                     string SSLError = sslPolicyErrors.ToString();
                     if (!SSLError.Equals("None"))
                     {
-                        PluginResult PR = new PluginResult(Sess.host);
-                        PR.Plugin = "Internal SSL Checker";
-                        PR.Severity = PluginResultSeverity.Medium;
-                        PR.Confidence = PluginResultConfidence.High;
-                        PR.Title = string.Format("SSL Certificate Error for {0}:{1} ", new object[]{Sess.host, Sess.port.ToString()});
-                        PR.Summary = string.Format("The remote server running Host: {0} and Port: {1} returned an invalid SSL certificate.<i<br>> <i<h>>Error:<i</h>> {2}. <i<br>> <i<h>>Certificate Details:<i</h>> {3}", new object[] { Sess.host, Sess.port.ToString() , sslPolicyErrors.ToString(), ServerCertificate.Subject });
-                        PR.Signature = string.Format("SSLCertificateChecker|{0}|{1}|{2}", new object[] { Sess.host, Sess.port.ToString(), sslPolicyErrors.ToString() });
-                        IronUpdater.AddPluginResult(PR);
-                        bTreatCertificateAsValid = false;
+                        string PluginName = "Internal SSL Checker";
+                        string Signature = string.Format("SSLCertificateChecker|{0}|{1}|{2}", new object[] { Sess.host, Sess.port.ToString(), sslPolicyErrors.ToString() });
+                        if (PluginResult.IsSignatureUnique(PluginName, Sess.host, PluginResultType.Vulnerability, Signature))
+                        {
+                            PluginResult PR = new PluginResult(Sess.host);
+                            PR.Plugin = PluginName;
+                            PR.Severity = PluginResultSeverity.Medium;
+                            PR.Confidence = PluginResultConfidence.High;
+                            PR.Title = string.Format("SSL Certificate Error for {0}:{1} ", new object[] { Sess.host, Sess.port.ToString() });
+                            PR.Summary = string.Format("The remote server running Host: {0} and Port: {1} returned an invalid SSL certificate.<i<br>> <i<h>>Error:<i</h>> {2}. <i<br>> <i<h>>Certificate Details:<i</h>> {3}", new object[] { Sess.host, Sess.port.ToString(), sslPolicyErrors.ToString(), ServerCertificate.Subject });
+                            PR.Signature = Signature;
+                            PR.Report();
+                        }
                         Sess.oFlags.Add("IronFlag-SslError", "Yes");
+                        bTreatCertificateAsValid = false;
                         return false;
                     }
                     else

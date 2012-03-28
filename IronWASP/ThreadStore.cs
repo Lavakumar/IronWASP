@@ -29,8 +29,6 @@ namespace IronWASP
 
         static Dictionary<int, Thread> Threads = new Dictionary<int, Thread>();
 
-        static int CleanUpCounter = 0;
-
         public static int ThisThread()
         {
             return Thread.CurrentThread.ManagedThreadId;
@@ -43,11 +41,7 @@ namespace IronWASP
             {
                 lock (Threads)
                 {
-                    try
-                    {
-                        Threads.Add(ThreadID, Thread.CurrentThread);
-                    }
-                    catch { }
+                    Threads.Add(ThreadID, Thread.CurrentThread);
                 }
             }
             if (!InternalStore.ContainsKey(ThreadID))
@@ -72,28 +66,21 @@ namespace IronWASP
 
         public static object Get(string Name)
         {
-            try
+            int ThreadID = Thread.CurrentThread.ManagedThreadId;
+            if (InternalStore.ContainsKey(ThreadID))
             {
-                int ThreadID = Thread.CurrentThread.ManagedThreadId;
-                if (InternalStore.ContainsKey(ThreadID))
+                if (InternalStore[ThreadID].ContainsKey(Name))
                 {
-                    if (InternalStore[ThreadID].ContainsKey(Name))
-                    {
-                        return InternalStore[ThreadID][Name];
-                    }
-                    else
-                    {
-                        return null;
-                    }
+                    return InternalStore[ThreadID][Name];
                 }
                 else
                 {
-                    return null;
+                    throw new Exception(String.Format("Item {0} is missing in ThreadStore", Name));
                 }
             }
-            catch
+            else
             {
-                return null;
+                throw new Exception("ThreadStore is empty");
             }
         }
 
@@ -156,7 +143,16 @@ namespace IronWASP
                 {
                     lock (InternalStore)
                     {
-                        InternalStore.Remove(ThreadID);
+                        try
+                        {
+                            InternalStore[ThreadID].Clear();
+                        }
+                        catch { }
+                        try
+                        {
+                            InternalStore.Remove(ThreadID);
+                        }
+                        catch { }
                     }
                 }
             }
@@ -165,10 +161,6 @@ namespace IronWASP
 
         internal static void CleanUp()
         {
-            CleanUpCounter++;
-            if (CleanUpCounter < 20) return;
-            CleanUpCounter = 0;
-
             List<int> DeadThreads = new List<int>();
             foreach (int ThreadID in Threads.Keys)
             {
@@ -178,7 +170,7 @@ namespace IronWASP
                     {
                         DeadThreads.Add(ThreadID);
                     }
-                    else if (Threads[ThreadID].ThreadState == ThreadState.Aborted || Threads[ThreadID].ThreadState == ThreadState.Stopped || Threads[ThreadID].ThreadState == ThreadState.Suspended)
+                    else if (!(Threads[ThreadID].ThreadState == ThreadState.Running || Threads[ThreadID].ThreadState == ThreadState.WaitSleepJoin))
                     {
                         DeadThreads.Add(ThreadID);
                     }
@@ -194,14 +186,19 @@ namespace IronWASP
                 {
                     foreach (int ThreadID in DeadThreads)
                     {
-                        try
+                        if (InternalStore.ContainsKey(ThreadID))
                         {
-                            if (InternalStore.ContainsKey(ThreadID))
+                            try
+                            {
+                                InternalStore[ThreadID].Clear();
+                            }
+                            catch { }
+                            try
                             {
                                 InternalStore.Remove(ThreadID);
                             }
+                            catch { }
                         }
-                        catch { }
                     }
                 }
                 lock (Threads)

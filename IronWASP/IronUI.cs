@@ -2879,18 +2879,18 @@ namespace IronWASP
             IronUI.WF.WaitFormProgressBar.Maximum = 12;
             IronUI.WF.WaitFormProgressBar.Value = 1;
             IronUI.WF.WaitFormProgressBar.Step = 1;
-            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Tasks", "Status" });
-            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Proxy Logs", "Not Done" });
-            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Manual Testing Logs", "Not Done" });
-            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Scripting Shell Logs", "Not Done" });
-            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Automated Scanning Queue", "Not Done" });
-            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load ScanTrace Messages", "Not Done" });
-            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Automated Scanning Logs", "Not Done" });
-            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Probe Logs", "Not Done" });
-            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Plugin Results", "Not Done" });
-            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Exceptions", "Not Done" });
-            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Sitemap", "Not Done" });
-            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Trace Messages", "Not Done" });
+            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Tasks", "Count", "Status" });
+            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Proxy Logs", "0", "Not Done" });
+            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Manual Testing Logs", "0", "Not Done" });
+            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Scripting Shell Logs", "0", "Not Done" });
+            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Automated Scanning Queue", "0", "Not Done" });
+            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load ScanTrace Messages", "0", "Not Done" });
+            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Automated Scanning Logs", "0", "Not Done" });
+            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Probe Logs", "0", "Not Done" });
+            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Plugin Results", "0", "Not Done" });
+            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Exceptions", "0", "Not Done" });
+            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Sitemap", "0", "Not Done" });
+            IronUI.WF.ProjectLoadGrid.Rows.Add(new object[] { "Load Trace Messages", "0", "Not Done" });
             IronUI.WF.ProjectLoadGrid.Rows[0].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             IronUI.WF.ShowDialog();
         }
@@ -3203,30 +3203,31 @@ namespace IronWASP
             }
         }
 
-        delegate void ShowWaitFormGridMessage_d(int ID, string Message, int Colour, bool Step);
-        static void ShowWaitFormGridMessage(int ID, string Message, int Colour, bool Step)
+        delegate void ShowWaitFormGridMessage_d(int ID, int Count, string Message, int Colour, bool Step);
+        static void ShowWaitFormGridMessage(int ID, int Count, string Message, int Colour, bool Step)
         {
             if (IronUI.WF.InvokeRequired)
             {
                 ShowWaitFormGridMessage_d SWFGM_d = new ShowWaitFormGridMessage_d(ShowWaitFormGridMessage);
-                IronUI.WF.Invoke(SWFGM_d, new object[] { ID, Message, Colour, Step });
+                IronUI.WF.Invoke(SWFGM_d, new object[] { ID, Count, Message, Colour, Step });
             }
             else
             {
-                IronUI.WF.ProjectLoadGrid.Rows[ID].Cells[1].Value = Message;
+                IronUI.WF.ProjectLoadGrid.Rows[ID].Cells[1].Value = Count.ToString();
+                IronUI.WF.ProjectLoadGrid.Rows[ID].Cells[2].Value = Message;
                 switch(Colour)
                 {
                     case(1):
-                        IronUI.WF.ProjectLoadGrid.Rows[ID].Cells[1].Style.ForeColor = Color.Green;
+                        IronUI.WF.ProjectLoadGrid.Rows[ID].Cells[2].Style.ForeColor = Color.Green;
                         break;
                     case (2):
-                        IronUI.WF.ProjectLoadGrid.Rows[ID].Cells[1].Style.ForeColor = Color.Orange;
+                        IronUI.WF.ProjectLoadGrid.Rows[ID].Cells[2].Style.ForeColor = Color.Orange;
                         break;
                     case (3):
-                        IronUI.WF.ProjectLoadGrid.Rows[ID].Cells[1].Style.ForeColor = Color.Red;
+                        IronUI.WF.ProjectLoadGrid.Rows[ID].Cells[2].Style.ForeColor = Color.Red;
                         break;
                 }
-                IronUI.WF.ProjectLoadGrid.Rows[0].Cells[1].Value = "Status";
+                IronUI.WF.ProjectLoadGrid.Rows[0].Cells[2].Value = "Status";
                 if(Step) IronUI.WF.WaitFormProgressBar.PerformStep();
             }
         }
@@ -3250,9 +3251,12 @@ namespace IronWASP
             bool Success = true;
 
             List<List<string>> Urls = new List<List<string>>();
-            
+
+            int StartID = 0;
+            int Counter = 0;
+
             //StepWaitFormProgressBar();
-            ShowWaitFormGridMessage(1, "In Progress", 2, true);
+            ShowWaitFormGridMessage(1, Counter, "In Progress", 2, true);
             ShowWaitFormMessage("Updating Proxy Logs..");
             
             //Thread.Sleep(500);
@@ -3261,8 +3265,6 @@ namespace IronWASP
 
             List<LogRow> ProxyLogRecords = new List<LogRow>();
             
-            int StartID = 0;
-
             ClearAllProxyGridRows();
             try
             {
@@ -3271,11 +3273,12 @@ namespace IronWASP
             catch
             {
                 ShowWaitFormMessage("Error reading Proxy Log DB..");
-                ShowWaitFormGridMessage(1, "Failed", 3, false);
+                ShowWaitFormGridMessage(1, 0, "Failed", 3, false);
                 Success = false;
             }
             while (ProxyLogRecords.Count > 0)
             {
+                Counter = Counter + ProxyLogRecords.Count;
                 foreach (LogRow Fields in ProxyLogRecords)
                 {
                     if (Fields.ID > StartID) StartID = Fields.ID;
@@ -3311,6 +3314,7 @@ namespace IronWASP
                         }
                     }
                 }
+                ShowWaitFormGridMessage(1, Counter, "In Progress", 2, true);
                 try
                 {
                     ProxyLogRecords = IronDB.GetProxyLogRecords(StartID);
@@ -3318,7 +3322,7 @@ namespace IronWASP
                 catch 
                 { 
                     ShowWaitFormMessage("Error reading Proxy Log DB..");
-                    ShowWaitFormGridMessage(1, "Failed", 3, false);
+                    ShowWaitFormGridMessage(1, Counter, "Failed", 3, false);
                     Success = false;
                 }
             }
@@ -3327,7 +3331,7 @@ namespace IronWASP
 
             UpdateProxyLogBasedOnDisplayFilter();
             Config.ProxyRequestsCount = StartID;
-            if (Success) ShowWaitFormGridMessage(1, "Done", 1, false);
+            if (Success) ShowWaitFormGridMessage(1, Counter, "Done", 1, false);
 
             //test groups
             IronDB.LoadTestGroups();
@@ -3337,11 +3341,11 @@ namespace IronWASP
             IronUI.ResetMTDisplayFields();
             IronUI.UpdateTestGroupLogGrid(ManualTesting.RedGroupSessions);
             ManualTesting.ShowSession(ManualTesting.RedGroupID);
-
+            Counter = 0;
 
             //StepWaitFormProgressBar();
             Success = true;
-            ShowWaitFormGridMessage(2, "In Progress", 2, true);
+            ShowWaitFormGridMessage(2, Counter, "In Progress", 2, true);
             ShowWaitFormMessage("Updating Manual Testing Logs..");
             
             //Thread.Sleep(500);
@@ -3358,12 +3362,13 @@ namespace IronWASP
             catch
             {
                 ShowWaitFormMessage("Error reading MT Log DB..");
-                ShowWaitFormGridMessage(2, "Failed", 3, false);
+                ShowWaitFormGridMessage(2, 0, "Failed", 3, false);
                 Success = false;
             }
             
             while (MTLogRecords.Count > 0)
             {
+                Counter = Counter + MTLogRecords.Count;
                 foreach (LogRow Fields in MTLogRecords)
                 {
                     if (Fields.ID > StartID) StartID = Fields.ID;
@@ -3378,6 +3383,7 @@ namespace IronWASP
                     }
 
                 }
+                ShowWaitFormGridMessage(2, Counter, "In Progress", 2, true);
                 try
                 {
                     MTLogRecords = IronDB.GetTestLogRecords(StartID);
@@ -3385,19 +3391,20 @@ namespace IronWASP
                 catch
                 {
                     ShowWaitFormMessage("Error reading MT Log DB..");
-                    ShowWaitFormGridMessage(2, "Failed", 3, false);
+                    ShowWaitFormGridMessage(2, Counter, "Failed", 3, false);
                     Success = false;
                 }
             }
             AddMTGridRows(MTRows);
             Config.ManualRequestsCount = StartID;
-            if (Success) ShowWaitFormGridMessage(2, "Done", 1, false);
+            if (Success) ShowWaitFormGridMessage(2, Counter, "Done", 1, false);
 
             //StepWaitFormProgressBar();
 
+            Counter = 0;
             Success = true;
             ShowWaitFormMessage("Updating Scripting Logs..");
-            ShowWaitFormGridMessage(3, "In Progress", 2, true);
+            ShowWaitFormGridMessage(3, Counter, "In Progress", 2, true);
             //Thread.Sleep(500);
 
             StartID = 0;
@@ -3412,11 +3419,12 @@ namespace IronWASP
             catch
             { 
                 ShowWaitFormMessage("Error reading Shell Log DB..");
-                ShowWaitFormGridMessage(3, "Failed", 3, false);
+                ShowWaitFormGridMessage(3, 0, "Failed", 3, false);
                 Success = false;
             }
             while (ShellLogRecords.Count > 0)
             {
+                Counter = Counter + ShellLogRecords.Count;
                 foreach (LogRow Fields in ShellLogRecords)
                 {
                     if (Fields.ID > StartID) StartID = Fields.ID;
@@ -3429,6 +3437,7 @@ namespace IronWASP
                         ShellRows.Add(new object[] { Fields.ID, Fields.Host, Fields.Method, Fields.Url, Fields.File, Fields.SSL, Fields.Parameters, null, null, "", false });
                     }
                 }
+                ShowWaitFormGridMessage(3, Counter, "In Progress", 2, true);
                 try
                 {
                     ShellLogRecords = IronDB.GetShellLogRecords(StartID);
@@ -3436,20 +3445,21 @@ namespace IronWASP
                 catch
                 {
                     ShowWaitFormMessage("Error reading Shell Log DB..");
-                    ShowWaitFormGridMessage(3, "Failed", 3, false);
+                    ShowWaitFormGridMessage(3, Counter, "Failed", 3, false);
                     Success = false;
                 }
             }
             Config.ShellRequestsCount = StartID;
             AddShellGridRows(ShellRows);
-            if(Success) ShowWaitFormGridMessage(3, "Done", 1, false);
+            if(Success) ShowWaitFormGridMessage(3, Counter, "Done", 1, false);
 
             //WF.WaitFormProgressBar.PerformStep();
             //StepWaitFormProgressBar();
             Success = true;
+            Counter = 0;
             //WF.Text = "Updating Automated Scanning Queue..";
             ShowWaitFormMessage("Updating Automated Scanning Queue..");
-            ShowWaitFormGridMessage(4, "In Progress", 2, true);
+            ShowWaitFormGridMessage(4, Counter, "In Progress", 2, true);
             //Thread.Sleep(500);
 
             StartID = 0;
@@ -3464,11 +3474,12 @@ namespace IronWASP
             catch
             {
                 ShowWaitFormMessage("Error reading ScanQueue Log DB..");
-                ShowWaitFormGridMessage(4, "Failed", 3, false);
+                ShowWaitFormGridMessage(4, 0, "Failed", 3, false);
                 Success = false;
             }
             while (ScanQueueRecords.Count > 0)
             {
+                Counter = Counter + ScanQueueRecords.Count;
                 foreach (string[] Fields in ScanQueueRecords)
                 {
                     int ID = 0;
@@ -3486,6 +3497,7 @@ namespace IronWASP
 
                     ScanQueueRows.Add(new object[] { ID, Status, Fields[2], Fields[3] });
                 }
+                ShowWaitFormGridMessage(4, Counter, "In Progress", 2, true);
                 try
                 {
                     ScanQueueRecords = IronDB.GetScanQueueRecords(StartID);
@@ -3493,7 +3505,7 @@ namespace IronWASP
                 catch
                 {
                     ShowWaitFormMessage("Error reading ScanQueue Log DB..");
-                    ShowWaitFormGridMessage(4, "Failed", 3, false);
+                    ShowWaitFormGridMessage(4, Counter, "Failed", 3, false);
                     Success = false;
                 }
             }
@@ -3511,14 +3523,15 @@ namespace IronWASP
                 finally { ScanCount++; }
             }
 
-            if(Success) ShowWaitFormGridMessage(4, "Done", 1, false);
+            if(Success) ShowWaitFormGridMessage(4, Counter, "Done", 1, false);
 
             //WF.WaitFormProgressBar.PerformStep();
             //StepWaitFormProgressBar();
 
             StartID = 0;
+            Counter = 0;
             //WF.Text = "Updating Sitemap...";
-            ShowWaitFormGridMessage(5, "In Progress", 2, true);
+            ShowWaitFormGridMessage(5, Counter, "In Progress", 2, true);
             Success = true;
             ShowWaitFormMessage("Updating ScanTrace Messages...");
             ClearAllTraceGridRows();
@@ -3531,34 +3544,37 @@ namespace IronWASP
             catch
             {
                 ShowWaitFormMessage("Error ScanTrace Log DB..");
-                ShowWaitFormGridMessage(5, "Failed", 3, false);
+                ShowWaitFormGridMessage(5, 0, "Failed", 3, false);
                 Success = false;
             }
             while (ScanTraces.Count > 0)
             {
+                Counter = Counter + ScanTraces.Count;
                 foreach (IronTrace Trace in ScanTraces)
                 {
                     if (Trace.ID > StartID) StartID = Trace.ID;
                 }
                 //UpdatePluginResultTree(PluginResultLogRecords);
                 AllScanTraces.AddRange(ScanTraces);
+                ShowWaitFormGridMessage(5, Counter, "In Progress", 2, true);
                 try
                 {
-                    ScanTraces = IronDB.GetTraceRecords(StartID);
+                    ScanTraces = IronDB.GetScanTraceRecords(StartID);
                 }
                 catch
                 {
                     ShowWaitFormMessage("Error Trace Log DB..");
-                    ShowWaitFormGridMessage(5, "Failed", 3, false);
+                    ShowWaitFormGridMessage(5, Counter, "Failed", 3, false);
                     Success = false;
                 }
             }
             UpdateScanTraceGrid(AllScanTraces);
             Config.ScanTraceCount = StartID;
-            if(Success) ShowWaitFormGridMessage(5, "Done", 1, false);
+            if(Success) ShowWaitFormGridMessage(5, Counter, "Done", 1, false);
 
             //WF.Text = "Updating Automated Scanning Logs..";
-            ShowWaitFormGridMessage(6, "In Progress", 2, true);
+            Counter = 0;
+            ShowWaitFormGridMessage(6, Counter, "In Progress", 2, true);
             Success = true;
             ShowWaitFormMessage("Updating Automated Scanning Logs..");
             //Thread.Sleep(500);
@@ -3575,11 +3591,12 @@ namespace IronWASP
             catch
             {
                 ShowWaitFormMessage("Error reading Scan Log DB..");
-                ShowWaitFormGridMessage(6, "Failed", 3, false);
+                ShowWaitFormGridMessage(6, 0, "Failed", 3, false);
                 Success = false;
             }
             while (ScanLogRecords.Count > 0)
             {
+                Counter = Counter + ScanLogRecords.Count;
                 foreach (LogRow Fields in ScanLogRecords)
                 {
                     if (Fields.ID > StartID) StartID = Fields.ID;
@@ -3592,6 +3609,7 @@ namespace IronWASP
                         ScanRows.Add(new object[] { Fields.ID, Fields.ScanID, Fields.Host, Fields.Method, Fields.Url, Fields.File, Fields.SSL, Fields.Parameters, null, null, "", false });
                     }
                 }
+                ShowWaitFormGridMessage(6, Counter, "In Progress", 2, true);
                 try
                 {
                     ScanLogRecords = IronDB.GetScanLogRecords(StartID);
@@ -3599,17 +3617,18 @@ namespace IronWASP
                 catch
                 {
                     ShowWaitFormMessage("Error reading Scan Log DB..");
-                    ShowWaitFormGridMessage(6, "Failed", 3, false);
+                    ShowWaitFormGridMessage(6, Counter, "Failed", 3, false);
                     Success = false;
                 }
             }
             AddScanGridRows(ScanRows);
             Config.PluginRequestsCount = StartID;
-            if(Success) ShowWaitFormGridMessage(6, "Done", 1, false);
+            if(Success) ShowWaitFormGridMessage(6, Counter, "Done", 1, false);
 
 
             //Probe Log
-            ShowWaitFormGridMessage(7, "In Progress", 2, true);
+            Counter = 0;
+            ShowWaitFormGridMessage(7, Counter, "In Progress", 2, true);
             Success = true;
             ShowWaitFormMessage("Updating Automated Scanning Logs..");
             //Thread.Sleep(500);
@@ -3626,12 +3645,13 @@ namespace IronWASP
             catch
             {
                 ShowWaitFormMessage("Error reading Probe Log DB..");
-                ShowWaitFormGridMessage(7, "Failed", 3, false);
+                ShowWaitFormGridMessage(7, 0, "Failed", 3, false);
                 Success = false;
             }
 
             while (ProbeLogRecords.Count > 0)
             {
+                Counter = Counter + ProbeLogRecords.Count;
                 foreach (LogRow Fields in ProbeLogRecords)
                 {
                     if (Fields.ID > StartID) StartID = Fields.ID;
@@ -3656,6 +3676,7 @@ namespace IronWASP
                         }
                     }
                 }
+                ShowWaitFormGridMessage(7, Counter, "In Progress", 2, true);
                 try
                 {
                     ProbeLogRecords = IronDB.GetProbeLogRecords(StartID);
@@ -3663,19 +3684,20 @@ namespace IronWASP
                 catch
                 {
                     ShowWaitFormMessage("Error reading Probe Log DB..");
-                    ShowWaitFormGridMessage(7, "Failed", 3, false);
+                    ShowWaitFormGridMessage(7, Counter, "Failed", 3, false);
                     Success = false;
                 }
             }
             AddProbeGridRows(ProbeRows);
             Config.ProbeRequestsCount = StartID;
-            if (Success) ShowWaitFormGridMessage(7, "Done", 1, false);
+            if (Success) ShowWaitFormGridMessage(7, Counter, "Done", 1, false);
 
 
             //WF.WaitFormProgressBar.PerformStep();
             //StepWaitFormProgressBar();
             //WF.Text = "Updating Plugin Results Information...";
-            ShowWaitFormGridMessage(8, "In Progress", 2, true);
+            Counter = 0;
+            ShowWaitFormGridMessage(8, Counter, "In Progress", 2, true);
             Success = true;
             ShowWaitFormMessage("Updating Plugin Results Information...");
             //Thread.Sleep(500);
@@ -3687,7 +3709,7 @@ namespace IronWASP
             StartID = 0;
             List<PluginResult> AllPluginResultLogRecords = new List<PluginResult>();
             List<PluginResult> PluginResultLogRecords = new List<PluginResult>();
-            List<string> UniquenessStrings = new List<string>();
+
             try
             {
                 PluginResultLogRecords = IronDB.GetPluginResultsLogRecords(StartID);
@@ -3695,18 +3717,20 @@ namespace IronWASP
             catch
             {
                 ShowWaitFormMessage("Error reading PluginResult Log DB..");
-                ShowWaitFormGridMessage(8, "Failed", 3, false);
+                ShowWaitFormGridMessage(8, 0, "Failed", 3, false);
                 Success = false;
             }
             while (PluginResultLogRecords.Count > 0)
             {
+                Counter = Counter + PluginResultLogRecords.Count;
                 foreach (PluginResult PR in PluginResultLogRecords)
                 {
                     if (PR.Id > StartID) StartID = PR.Id;
-                    UniquenessStrings.Add(PR.Signature);
+                    PluginResult.IsSignatureUnique(PR.Plugin, PR.AffectedHost, PR.ResultType, PR.Signature, true);
                 }
 
                 AllPluginResultLogRecords.AddRange(PluginResultLogRecords);
+                ShowWaitFormGridMessage(8, Counter, "In Progress", 2, true);
                 try
                 {
                     PluginResultLogRecords = IronDB.GetPluginResultsLogRecords(StartID);
@@ -3714,19 +3738,20 @@ namespace IronWASP
                 catch
                 {
                     ShowWaitFormMessage("Error reading PluginResult Log DB..");
-                    ShowWaitFormGridMessage(8, "Failed", 3, false);
+                    ShowWaitFormGridMessage(8, Counter, "Failed", 3, false);
                     Success = false;
                 }
             }
-            IronUpdater.SetPluginResultUniquenessStrings(UniquenessStrings);
+
             UpdatePluginResultTree(AllPluginResultLogRecords);
             Config.PluginResultCount = StartID;
-            if (Success) ShowWaitFormGridMessage(8, "Done", 1, false);
+            if (Success) ShowWaitFormGridMessage(8, Counter, "Done", 1, false);
             
 
             //WF.WaitFormProgressBar.PerformStep();
             //StepWaitFormProgressBar();
-            ShowWaitFormGridMessage(9, "In Progress", 2, true);
+            Counter = 0;
+            ShowWaitFormGridMessage(9, Counter, "In Progress", 2, true);
             Success = true;
             //WF.Text = "Exceptions Information...";
             ShowWaitFormMessage("Updating Exceptions Information...");
@@ -3744,16 +3769,18 @@ namespace IronWASP
             catch
             {
                 ShowWaitFormMessage("Error reading Exception Log DB..");
-                ShowWaitFormGridMessage(9, "Failed", 3, false);
+                ShowWaitFormGridMessage(9, 0, "Failed", 3, false);
                 Success = false;
             }
             while (ExceptionLogRecords.Count > 0)
             {
+                Counter = Counter + ExceptionLogRecords.Count;
                 foreach (IronException IrEx in ExceptionLogRecords)
                 {
                     if (IrEx.ID > StartID) StartID = IrEx.ID;
                 }
                 AllExceptionLogRecords.AddRange(ExceptionLogRecords);
+                ShowWaitFormGridMessage(9, Counter, "In Progress", 2, true);
                 try
                 {
                     ExceptionLogRecords = IronDB.GetExceptionLogRecords(StartID);
@@ -3761,28 +3788,30 @@ namespace IronWASP
                 catch
                 {
                     ShowWaitFormMessage("Error reading Exception Log DB..");
-                    ShowWaitFormGridMessage(9, "Failed", 3, false);
+                    ShowWaitFormGridMessage(9, Counter, "Failed", 3, false);
                     Success = false;
                 }
             }
             Config.ExceptionsCount = StartID;
             UpdateExceptions(AllExceptionLogRecords);
-            if(Success) ShowWaitFormGridMessage(9, "Done", 1, false);
+            if(Success) ShowWaitFormGridMessage(9, Counter, "Done", 1, false);
             Success = false;
             //WF.WaitFormProgressBar.PerformStep();
             //StepWaitFormProgressBar();
             //WF.Text = "Updating Sitemap...";
-            ShowWaitFormGridMessage(10, "In Progress", 2, true);
+            Counter = 0;
+            ShowWaitFormGridMessage(10, Counter, "In Progress", 2, true);
             Success = true;
             ShowWaitFormMessage("Updating Sitemap...");
             UpdateSitemapTree(Urls);
-            if(Success) ShowWaitFormGridMessage(10, "Done", 1, false);
+            if(Success) ShowWaitFormGridMessage(10, Urls.Count, "Done", 1, false);
             
 
             //StepWaitFormProgressBar();
             StartID = 0;
+            Counter = 0;
             //WF.Text = "Updating Sitemap...";
-            ShowWaitFormGridMessage(11, "In Progress", 2, true);
+            ShowWaitFormGridMessage(11, Counter, "In Progress", 2, true);
             Success = true;
             ShowWaitFormMessage("Updating Trace Messages...");
             ClearAllTraceGridRows();
@@ -3795,16 +3824,18 @@ namespace IronWASP
             catch
             {
                 ShowWaitFormMessage("Error Trace Log DB..");
-                ShowWaitFormGridMessage(11, "Failed", 3, false);
+                ShowWaitFormGridMessage(11, 0, "Failed", 3, false);
                 Success = false;
             }
             while (Traces.Count > 0)
             {
+                Counter = Counter + Traces.Count;
                 foreach (IronTrace Trace in Traces)
                 {
                     if (Trace.ID > StartID) StartID = Trace.ID;
                 }
                 AllTraces.AddRange(Traces);
+                ShowWaitFormGridMessage(11, Counter, "In Progress", 2, true);
                 try
                 {
                     Traces = IronDB.GetTraceRecords(StartID);
@@ -3812,13 +3843,13 @@ namespace IronWASP
                 catch
                 {
                     ShowWaitFormMessage("Error Trace Log DB..");
-                    ShowWaitFormGridMessage(11, "Failed", 3, false);
+                    ShowWaitFormGridMessage(11, Counter, "Failed", 3, false);
                     Success = false;
                 }
             }
             UpdateTraceGrid(AllTraces);
             Config.TraceCount = StartID;
-            if(Success) ShowWaitFormGridMessage(11, "Done", 1, false);
+            if(Success) ShowWaitFormGridMessage(11, Counter, "Done", 1, false);
             
             StartID = 0;
 

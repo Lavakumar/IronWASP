@@ -69,12 +69,12 @@ namespace IronWASP
             this.LoadFormCopyrightTB.BackColor = System.Drawing.Color.White;
             this.LoadFormCopyrightTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.LoadFormCopyrightTB.Font = new System.Drawing.Font("Palatino Linotype", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LoadFormCopyrightTB.Location = new System.Drawing.Point(140, 127);
+            this.LoadFormCopyrightTB.Location = new System.Drawing.Point(133, 127);
             this.LoadFormCopyrightTB.Name = "LoadFormCopyrightTB";
             this.LoadFormCopyrightTB.ReadOnly = true;
-            this.LoadFormCopyrightTB.Size = new System.Drawing.Size(247, 18);
+            this.LoadFormCopyrightTB.Size = new System.Drawing.Size(250, 18);
             this.LoadFormCopyrightTB.TabIndex = 3;
-            this.LoadFormCopyrightTB.Text = "Copyright © 2011 Lavakumar Kuppan";
+            this.LoadFormCopyrightTB.Text = "Copyright © 2011-12 Lavakumar Kuppan";
             // 
             // StatusTB
             // 

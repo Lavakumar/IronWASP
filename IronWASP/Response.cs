@@ -54,7 +54,10 @@ namespace IronWASP
         List<SetCookie> setCookies = new List<SetCookie>();
         string DefaultEncoding = "ISO-8859-1";
         bool isSSlValid = true;
-        bool isHtml = true;
+        bool isHtml = false;
+        bool isJavaScript = false;
+        bool isJson = false;
+        bool isXml = false;
 
         internal int TTL = 0;
 
@@ -174,6 +177,30 @@ namespace IronWASP
             get
             {
                 return isHtml;
+            }
+        }
+
+        public bool IsJavaScript
+        {
+            get
+            {
+                return isJavaScript;
+            }
+        }
+
+        public bool IsJson
+        {
+            get
+            {
+                return isJson;
+            }
+        }
+
+        public bool IsXml
+        {
+            get
+            {
+                return isXml;
             }
         }
 
@@ -363,23 +390,25 @@ namespace IronWASP
 
         internal void SetBody(string BodyString)
         {
+            this.html = new HTML();
             if (BodyString == null)
             {
-
+                this.SetEmptyBody();
                 return;
             }
             else if(BodyString.Length == 0)
             {
-
+                this.SetEmptyBody();
                 return;
             }
             this.bodyString = BodyString;
             this.bodyArray = Encoding.GetEncoding(this.GetEncoding()).GetBytes(this.bodyString);
-            this.CheckForHtmlAndHandleIt();
+            this.CheckBodyFormatAndHandleIt();
         }
 
         internal void SetBody(byte[] BodyArray)
         {
+            this.html = new HTML();
             if (BodyArray == null)
             {
                 this.SetEmptyBody();
@@ -392,7 +421,7 @@ namespace IronWASP
             }
             this.bodyArray = BodyArray;
             this.bodyString = Encoding.GetEncoding(this.GetEncoding(BodyArray)).GetString(this.bodyArray);
-            this.CheckForHtmlAndHandleIt();
+            this.CheckBodyFormatAndHandleIt();
         }
 
         void SetEmptyBody()
@@ -502,11 +531,67 @@ namespace IronWASP
             byte[] HeaderArray = Encoding.GetEncoding("ISO-8859-1").GetBytes(this.GetHeadersAsString());
             return HTTPMessage.GetFullMessageAsByteArray(HeaderArray, this.BodyArray);
         }
-        void CheckForHtmlAndHandleIt()
-        {            
-            this.ProcessHtml();
+
+        void CheckBodyFormatAndHandleIt()
+        {
+            this.isJson = false;
+            this.isHtml = false;
+            this.isJavaScript = false;
+            this.isXml = false;
+
+            string LowerCaseBodyString = this.BodyString.Trim().ToLower();
+
+            if (LowerCaseBodyString.StartsWith("<") || LowerCaseBodyString.EndsWith(">"))
+            {
+                if (LowerCaseBodyString.Contains("<html ") || LowerCaseBodyString.Contains("<html>") ||
+                    LowerCaseBodyString.Contains("</html>") || LowerCaseBodyString.Contains("<a ") ||
+                    LowerCaseBodyString.Contains("<div ") || LowerCaseBodyString.Contains("<div>") ||
+                    LowerCaseBodyString.Contains("<form ") || LowerCaseBodyString.Contains("<form>") ||
+                    LowerCaseBodyString.Contains("<span ") || LowerCaseBodyString.Contains("<span>") ||
+                    LowerCaseBodyString.Contains("<textarea ") || LowerCaseBodyString.Contains("<textarea>") ||
+                    LowerCaseBodyString.Contains("<style ") || LowerCaseBodyString.Contains("<style>") ||
+                    LowerCaseBodyString.Contains("<script ") || LowerCaseBodyString.Contains("<script>") ||
+                    LowerCaseBodyString.Contains("<input ") || LowerCaseBodyString.Contains("<input>"))
+                {
+                    if (this.ProcessHtml())
+                    {
+                        this.isHtml = true;
+                        return;
+                    }
+                }
+                else
+                {
+                    if (Tools.IsXml(this.BodyString))
+                    {
+                        this.isXml = true;
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                if (!Tools.IsBinary(this.BodyArray))
+                {
+                    if (Tools.IsJson(this.BodyString))
+                    {
+                        this.isJson = true;
+                        return;
+                    }
+                    if (Tools.IsJavaScript(this.BodyString))
+                    {
+                        this.isJavaScript = true;
+                        return;
+                    }
+                    if (this.ProcessHtml())
+                    {
+                        this.isHtml = true;
+                        return;
+                    }
+                }
+            }
         }
-        public void ProcessHtml()
+
+        public bool ProcessHtml()
         {
             try
             {
@@ -514,35 +599,24 @@ namespace IronWASP
             }
             catch { }
 
-            this.isHtml = true;
-            if (this.Html == null) this.isHtml = false;
-            if (this.Html.Html == null) this.isHtml = false;
-            if (this.html.Html.DocumentNode == null) this.isHtml = false;
-            if (this.html.Html.DocumentNode.InnerHtml == null) this.isHtml = false;
-            if (this.html.Html.DocumentNode.InnerText == null) this.isHtml = false;
-            if (this.html.Html.DocumentNode.InnerText == this.html.Html.DocumentNode.InnerHtml) this.isHtml = false;
-            if (!(this.BodyString.Contains("<") && this.BodyString.Contains(">"))) this.isHtml = false;
-            
-            if (!this.isHtml) return;
-            
-            string LowerCaseBodyString = this.BodyString.ToLower();
-            if (LowerCaseBodyString.Contains("<html") || LowerCaseBodyString.Contains("<a ") || LowerCaseBodyString.Contains("<div") || LowerCaseBodyString.Contains("<form") || LowerCaseBodyString.Contains("<span") || LowerCaseBodyString.Contains("<textarea") || LowerCaseBodyString.Contains("<style") || LowerCaseBodyString.Contains("<script") || LowerCaseBodyString.Contains("<input"))
-                this.isHtml = true;
-            else
-                this.isHtml = false;
-
-            if (!this.isHtml) return;
-
-            if (Tools.IsJavaScript(this.BodyString) || Tools.IsJson(this.BodyString))
-                this.isHtml = false;
-            else
-                this.isHtml = true;
+            if (this.Html == null) return false;
+            if (this.Html.Html == null) return false;
+            if (this.html.Html.DocumentNode == null) return false;
+            if (this.html.Html.DocumentNode.InnerHtml == null) return false;
+            if (this.html.Html.DocumentNode.InnerText == null) return false;
+            if (this.html.Html.DocumentNode.InnerText == this.html.Html.DocumentNode.InnerHtml) return false;
+        
+            return true;
         }
 
         public override string ToString()
         {
-            return this.GetHeadersAsString() + this.BodyString;
+            StringBuilder SB = new StringBuilder();
+            SB.Append(this.GetHeadersAsString());
+            SB.Append(this.BodyString);
+            return SB.ToString();
         }
+
         internal void CreateSetCookieListFromHeaders()
         {
             CreateSetCookieListFromParameters(this.Headers);

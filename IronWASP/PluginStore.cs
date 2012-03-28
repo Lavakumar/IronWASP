@@ -446,7 +446,7 @@ namespace IronWASP
             foreach (PluginResult PR in Results.GetAll())
             {
                 PR.Plugin = P.Name;
-                IronUpdater.AddPluginResult(PR);
+                PR.Report();
             }
             return Results;
         }

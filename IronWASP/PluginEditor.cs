@@ -54,6 +54,12 @@ namespace IronWASP
 
         static Stack<string> EditorTextStack = new Stack<string>();
 
+        //Search Related Values
+        string Keyword = "";
+        List<int[]> MatchSpots = new List<int[]>();
+        int CurrentSpot = 0;
+        bool InResetState = true;
+
         public PluginEditor()
         {
             InitializeComponent();
@@ -78,6 +84,7 @@ namespace IronWASP
             Engine = RunTime.GetEngine("py");
             APIDoc.BuildPluginEditorTrees();
             PluginEditorTE.ActiveTextAreaControl.TextArea.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PluginEditorTE_KeyUp);
+            PluginEditorTE.Document.DocumentChanged  += new DocumentEventHandler(this.PluginEditorTE_Change);
         }
 
         private void PluginEditorPythonAPITree_AfterSelect(object sender, TreeViewEventArgs e)
@@ -138,6 +145,16 @@ namespace IronWASP
             {
                 CheckSyntax();
             }
+        }
+
+        private void PluginEditorTE_Change(object sender, DocumentEventArgs e)
+        {
+            ResetSearchValues();
+        }
+
+        private void PluginEditorTE_TextChanged(object sender, EventArgs e)
+        {
+            ResetSearchValues();
         }
 
         void CheckSyntax()
@@ -227,7 +244,7 @@ namespace IronWASP
                     {
                         SetLanguageAsIronRuby();
                     }
-                                        
+                    Search();
                     break;
             }
         }
@@ -250,6 +267,7 @@ namespace IronWASP
                 {
                     SetLanguageAsIronRuby();
                 }
+                Search();
                 break;
             }
         }
@@ -272,6 +290,7 @@ namespace IronWASP
                 {
                     SetLanguageAsIronRuby();
                 }
+                Search();
                 break;
             }
         }
@@ -294,6 +313,7 @@ namespace IronWASP
                 {
                     SetLanguageAsIronRuby();
                 }
+                Search();
                 break;
             }
         }
@@ -316,6 +336,7 @@ namespace IronWASP
                 {
                     SetLanguageAsIronRuby();
                 }
+                Search();
                 break;
             }
         }
@@ -545,6 +566,143 @@ namespace IronWASP
                     MessageBox.Show("Please select a different name");
                 }
             }
+        }
+
+        private void PluginEditorSearchTB_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (PluginEditorSearchTB.Text.Equals(Keyword))
+                {
+                    FindNext();
+                }
+                else
+                {
+                    Search();
+                }
+                return;
+            }
+            if (e.KeyCode == Keys.PageUp)
+            {
+                FindPrevious();
+            }
+            else if (e.KeyCode == Keys.PageDown)
+            {
+                FindNext();
+            }
+            else
+            {
+                ResetSearchValues();
+            }
+        }
+
+        void Search()
+        {
+            ResetSearchValues();
+            InResetState = false;
+            Keyword = PluginEditorSearchTB.Text;
+            if (Keyword.Length == 0) return;
+            
+            List<string> Lines = new List<string>(PluginEditorTE.Text.Split(new string[] {"\n"}, StringSplitOptions.None));
+            for (int LineNo = 0; LineNo < Lines.Count; LineNo++)
+            {
+                bool Loop = true;
+                int StartIndex = 0;
+                while (Loop)
+                {
+                    Loop = false;
+                    int MatchSpot = Lines[LineNo].IndexOf(Keyword, StartIndex, StringComparison.CurrentCultureIgnoreCase);
+                    if (MatchSpot >= 0)
+                    {
+                        MatchSpots.Add(new int[]{LineNo, MatchSpot});
+                        if ((MatchSpot + Keyword.Length) < Lines[LineNo].Length)
+                        {
+                            StartIndex = MatchSpot + 1;
+                            Loop = true;
+                        }
+                    }
+                }
+            }
+            
+            MatchCountLbl.Text = MatchSpots.Count.ToString();
+            if (MatchSpots.Count > 0)
+            {
+                TextAreaControl TAC = PluginEditorTE.ActiveTextAreaControl;
+                TAC.SelectionManager.SetSelection(new Point(MatchSpots[0][1], MatchSpots[0][0]), new Point(MatchSpots[0][1] + Keyword.Length, MatchSpots[0][0]));
+                TAC.ScrollTo(MatchSpots[0][0]);
+            }
+            else
+            {
+                ClearSelection();
+            }
+        }
+
+        void FindNext()
+        {
+            if (MatchSpots.Count == 0)
+            {
+                ClearSelection();
+                return;
+            }
+            if (CurrentSpot == (MatchSpots.Count - 1))
+            {
+                CurrentSpot = 0;
+            }
+            else
+            {
+                CurrentSpot++;
+            }
+            TextAreaControl TAC = PluginEditorTE.ActiveTextAreaControl;
+            TAC.SelectionManager.SetSelection(new Point(MatchSpots[CurrentSpot][1], MatchSpots[CurrentSpot][0]), new Point(MatchSpots[CurrentSpot][1] + Keyword.Length, MatchSpots[CurrentSpot][0]));
+            TAC.ScrollTo(MatchSpots[CurrentSpot][0]);
+        }
+
+        void FindPrevious()
+        {
+            if (MatchSpots.Count == 0)
+            {
+                ClearSelection();
+                return;
+            }
+            if (CurrentSpot == 0)
+            {
+                CurrentSpot = MatchSpots.Count - 1;
+            }
+            else
+            {
+                CurrentSpot--;
+            }
+            TextAreaControl TAC = PluginEditorTE.ActiveTextAreaControl;
+            TAC.SelectionManager.SetSelection(new Point(MatchSpots[CurrentSpot][1], MatchSpots[CurrentSpot][0]), new Point(MatchSpots[CurrentSpot][1] + Keyword.Length, MatchSpots[CurrentSpot][0]));
+            TAC.ScrollTo(MatchSpots[CurrentSpot][0]);
+        }
+
+        void ResetSearchValues()
+        {
+            if (!InResetState)
+            {
+                Keyword = "";
+                MatchSpots = new List<int[]>();
+                CurrentSpot = 0;
+                MatchCountLbl.Text = "";
+                InResetState = true;
+            }
+        }
+
+        void ClearSelection()
+        {
+            TextAreaControl TAC = PluginEditorTE.ActiveTextAreaControl;
+            TAC.SelectionManager.ClearSelection();
+        }
+
+        private void SearchMoveNextBtn_Click(object sender, EventArgs e)
+        {
+            FindNext();
+        }
+
+        private void SearchMovePreviousBtn_Click(object sender, EventArgs e)
+        {
+            FindPrevious();
         }
     }
 }

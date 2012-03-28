@@ -46,12 +46,14 @@ namespace IronWASP
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(WaitForm));
             this.WaitFormProgressBar = new System.Windows.Forms.ProgressBar();
             this.ProjectLoadGrid = new System.Windows.Forms.DataGridView();
             this.Section = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Count = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.OK = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.ProjectLoadGrid)).BeginInit();
@@ -81,6 +83,7 @@ namespace IronWASP
             this.ProjectLoadGrid.ColumnHeadersVisible = false;
             this.ProjectLoadGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Section,
+            this.Count,
             this.Status});
             this.ProjectLoadGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.ProjectLoadGrid.EnableHeadersVisualStyles = false;
@@ -89,14 +92,14 @@ namespace IronWASP
             this.ProjectLoadGrid.MultiSelect = false;
             this.ProjectLoadGrid.Name = "ProjectLoadGrid";
             this.ProjectLoadGrid.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ProjectLoadGrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ProjectLoadGrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.ProjectLoadGrid.RowHeadersVisible = false;
             this.ProjectLoadGrid.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.ProjectLoadGrid.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.White;
@@ -117,14 +120,24 @@ namespace IronWASP
             this.Section.Name = "Section";
             this.Section.ReadOnly = true;
             // 
+            // Count
+            // 
+            this.Count.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Count.DefaultCellStyle = dataGridViewCellStyle1;
+            this.Count.HeaderText = "Count";
+            this.Count.MinimumWidth = 100;
+            this.Count.Name = "Count";
+            this.Count.ReadOnly = true;
+            // 
             // Status
             // 
             this.Status.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Black;
-            this.Status.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.Black;
+            this.Status.DefaultCellStyle = dataGridViewCellStyle2;
             this.Status.HeaderText = "Status";
             this.Status.MinimumWidth = 100;
             this.Status.Name = "Status";
@@ -152,6 +165,8 @@ namespace IronWASP
             this.Controls.Add(this.WaitFormProgressBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximumSize = new System.Drawing.Size(424, 400);
+            this.MinimumSize = new System.Drawing.Size(424, 400);
             this.Name = "WaitForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Please wait....";
@@ -164,8 +179,9 @@ namespace IronWASP
 
         internal System.Windows.Forms.ProgressBar WaitFormProgressBar;
         internal System.Windows.Forms.DataGridView ProjectLoadGrid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Section;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Status;
         internal System.Windows.Forms.Button OK;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Section;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Count;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Status;
     }
 }

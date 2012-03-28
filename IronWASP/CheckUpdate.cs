@@ -27,7 +27,7 @@ namespace IronWASP
 {
     class CheckUpdate
     {
-        static string CurrentVersion = "0.9.0.2";
+        static string CurrentVersion = "0.9.0.3";
 
         static string PluginManifestUrl = "https://ironwasp.org/update/plugin.manifest";
         static string IronWASPManifestUrl = "https://ironwasp.org/update/ironwasp.manifest";

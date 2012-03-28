@@ -217,6 +217,7 @@ namespace IronWASP
             IronUI.ShowLoadMessage("Done!");
             IronUI.ShowLoadMessage("0");
             this.Activate();
+            PluginEditorInTE.Document.ReadOnly = true;
         }
 
         static void Splash()
@@ -2588,10 +2589,12 @@ namespace IronWASP
             if (e.TabPageIndex == 1)
             {
                 MultiLineShellExecuteBtn.Visible = true;
+                ClearShellDisplayBtn.Visible = false;
             }
             else
             {
                 MultiLineShellExecuteBtn.Visible = false;
+                ClearShellDisplayBtn.Visible = true;
             }
         }
 
@@ -3664,6 +3667,11 @@ namespace IronWASP
         private void ConfigPassiveAnalysisSettingsCancelChangesLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             IronUI.UpdatePassiveAnalysisSettingsInUIFromConfig();
+        }
+
+        private void ClearShellDisplayBtn_Click(object sender, EventArgs e)
+        {
+            InteractiveShellOut.Text = "";
         }
     }
 }

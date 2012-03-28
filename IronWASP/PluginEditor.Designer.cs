@@ -50,6 +50,11 @@ namespace IronWASP
             this.PluginEditorBaseSplit = new System.Windows.Forms.SplitContainer();
             this.PluginEditorRightSplit = new System.Windows.Forms.SplitContainer();
             this.PluginEditorTE = new ICSharpCode.TextEditor.TextEditorControl();
+            this.SearchMoveNextBtn = new System.Windows.Forms.Button();
+            this.SearchMovePreviousBtn = new System.Windows.Forms.Button();
+            this.MatchCountLbl = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.PluginEditorSearchTB = new System.Windows.Forms.TextBox();
             this.PluginEditorErrorTB = new System.Windows.Forms.TextBox();
             this.PluginEditorMenu = new System.Windows.Forms.MenuStrip();
             this.NewFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -123,8 +128,8 @@ namespace IronWASP
             // PluginEditorBaseSplit.Panel2
             // 
             this.PluginEditorBaseSplit.Panel2.Controls.Add(this.PluginEditorAPISplit);
-            this.PluginEditorBaseSplit.Size = new System.Drawing.Size(684, 462);
-            this.PluginEditorBaseSplit.SplitterDistance = 453;
+            this.PluginEditorBaseSplit.Size = new System.Drawing.Size(884, 562);
+            this.PluginEditorBaseSplit.SplitterDistance = 674;
             this.PluginEditorBaseSplit.SplitterWidth = 2;
             this.PluginEditorBaseSplit.TabIndex = 0;
             // 
@@ -142,9 +147,14 @@ namespace IronWASP
             // 
             // PluginEditorRightSplit.Panel2
             // 
+            this.PluginEditorRightSplit.Panel2.Controls.Add(this.SearchMoveNextBtn);
+            this.PluginEditorRightSplit.Panel2.Controls.Add(this.SearchMovePreviousBtn);
+            this.PluginEditorRightSplit.Panel2.Controls.Add(this.MatchCountLbl);
+            this.PluginEditorRightSplit.Panel2.Controls.Add(this.label1);
+            this.PluginEditorRightSplit.Panel2.Controls.Add(this.PluginEditorSearchTB);
             this.PluginEditorRightSplit.Panel2.Controls.Add(this.PluginEditorErrorTB);
-            this.PluginEditorRightSplit.Size = new System.Drawing.Size(453, 438);
-            this.PluginEditorRightSplit.SplitterDistance = 343;
+            this.PluginEditorRightSplit.Size = new System.Drawing.Size(674, 538);
+            this.PluginEditorRightSplit.SplitterDistance = 421;
             this.PluginEditorRightSplit.SplitterWidth = 2;
             this.PluginEditorRightSplit.TabIndex = 5;
             // 
@@ -159,20 +169,77 @@ namespace IronWASP
             this.PluginEditorTE.ShowSpaces = true;
             this.PluginEditorTE.ShowTabs = true;
             this.PluginEditorTE.ShowVRuler = true;
-            this.PluginEditorTE.Size = new System.Drawing.Size(453, 343);
+            this.PluginEditorTE.Size = new System.Drawing.Size(674, 421);
             this.PluginEditorTE.TabIndex = 3;
+            // 
+            // SearchMoveNextBtn
+            // 
+            this.SearchMoveNextBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SearchMoveNextBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.SearchMoveNextBtn.Location = new System.Drawing.Point(589, 3);
+            this.SearchMoveNextBtn.Name = "SearchMoveNextBtn";
+            this.SearchMoveNextBtn.Size = new System.Drawing.Size(27, 23);
+            this.SearchMoveNextBtn.TabIndex = 9;
+            this.SearchMoveNextBtn.Text = ">";
+            this.SearchMoveNextBtn.UseVisualStyleBackColor = true;
+            this.SearchMoveNextBtn.Click += new System.EventHandler(this.SearchMoveNextBtn_Click);
+            // 
+            // SearchMovePreviousBtn
+            // 
+            this.SearchMovePreviousBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SearchMovePreviousBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.SearchMovePreviousBtn.Location = new System.Drawing.Point(558, 3);
+            this.SearchMovePreviousBtn.Name = "SearchMovePreviousBtn";
+            this.SearchMovePreviousBtn.Size = new System.Drawing.Size(27, 23);
+            this.SearchMovePreviousBtn.TabIndex = 8;
+            this.SearchMovePreviousBtn.Text = "<";
+            this.SearchMovePreviousBtn.UseVisualStyleBackColor = true;
+            this.SearchMovePreviousBtn.Click += new System.EventHandler(this.SearchMovePreviousBtn_Click);
+            // 
+            // MatchCountLbl
+            // 
+            this.MatchCountLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.MatchCountLbl.AutoSize = true;
+            this.MatchCountLbl.Location = new System.Drawing.Point(629, 9);
+            this.MatchCountLbl.Margin = new System.Windows.Forms.Padding(0);
+            this.MatchCountLbl.Name = "MatchCountLbl";
+            this.MatchCountLbl.Size = new System.Drawing.Size(0, 13);
+            this.MatchCountLbl.TabIndex = 7;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(4, 8);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(59, 13);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "Search for:";
+            // 
+            // PluginEditorSearchTB
+            // 
+            this.PluginEditorSearchTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.PluginEditorSearchTB.Location = new System.Drawing.Point(66, 5);
+            this.PluginEditorSearchTB.Margin = new System.Windows.Forms.Padding(0);
+            this.PluginEditorSearchTB.Name = "PluginEditorSearchTB";
+            this.PluginEditorSearchTB.Size = new System.Drawing.Size(488, 20);
+            this.PluginEditorSearchTB.TabIndex = 5;
+            this.PluginEditorSearchTB.KeyUp += new System.Windows.Forms.KeyEventHandler(this.PluginEditorSearchTB_KeyUp);
             // 
             // PluginEditorErrorTB
             // 
+            this.PluginEditorErrorTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.PluginEditorErrorTB.BackColor = System.Drawing.Color.White;
             this.PluginEditorErrorTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.PluginEditorErrorTB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PluginEditorErrorTB.Location = new System.Drawing.Point(0, 0);
+            this.PluginEditorErrorTB.Location = new System.Drawing.Point(0, 28);
+            this.PluginEditorErrorTB.Margin = new System.Windows.Forms.Padding(0);
             this.PluginEditorErrorTB.Multiline = true;
             this.PluginEditorErrorTB.Name = "PluginEditorErrorTB";
             this.PluginEditorErrorTB.ReadOnly = true;
             this.PluginEditorErrorTB.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.PluginEditorErrorTB.Size = new System.Drawing.Size(453, 93);
+            this.PluginEditorErrorTB.Size = new System.Drawing.Size(674, 87);
             this.PluginEditorErrorTB.TabIndex = 4;
             // 
             // PluginEditorMenu
@@ -186,7 +253,7 @@ namespace IronWASP
             this.CheckSyntaxF5ToolStripMenuItem});
             this.PluginEditorMenu.Location = new System.Drawing.Point(0, 0);
             this.PluginEditorMenu.Name = "PluginEditorMenu";
-            this.PluginEditorMenu.Size = new System.Drawing.Size(453, 24);
+            this.PluginEditorMenu.Size = new System.Drawing.Size(674, 24);
             this.PluginEditorMenu.TabIndex = 2;
             this.PluginEditorMenu.Text = "menuStrip1";
             // 
@@ -332,35 +399,35 @@ namespace IronWASP
             // ActivePluginToolStripMenuItem
             // 
             this.ActivePluginToolStripMenuItem.Name = "ActivePluginToolStripMenuItem";
-            this.ActivePluginToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.ActivePluginToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.ActivePluginToolStripMenuItem.Text = "Active Plugin";
             this.ActivePluginToolStripMenuItem.Click += new System.EventHandler(this.ActivePluginToolStripMenuItem_Click);
             // 
             // passivePluginToolStripMenuItem1
             // 
             this.passivePluginToolStripMenuItem1.Name = "passivePluginToolStripMenuItem1";
-            this.passivePluginToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.passivePluginToolStripMenuItem1.Size = new System.Drawing.Size(150, 22);
             this.passivePluginToolStripMenuItem1.Text = "Passive Plugin";
             this.passivePluginToolStripMenuItem1.Click += new System.EventHandler(this.passivePluginToolStripMenuItem1_Click);
             // 
             // formatPluginToolStripMenuItem1
             // 
             this.formatPluginToolStripMenuItem1.Name = "formatPluginToolStripMenuItem1";
-            this.formatPluginToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.formatPluginToolStripMenuItem1.Size = new System.Drawing.Size(150, 22);
             this.formatPluginToolStripMenuItem1.Text = "Format Plugin";
             this.formatPluginToolStripMenuItem1.Click += new System.EventHandler(this.formatPluginToolStripMenuItem1_Click);
             // 
             // sessionPluginToolStripMenuItem1
             // 
             this.sessionPluginToolStripMenuItem1.Name = "sessionPluginToolStripMenuItem1";
-            this.sessionPluginToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.sessionPluginToolStripMenuItem1.Size = new System.Drawing.Size(150, 22);
             this.sessionPluginToolStripMenuItem1.Text = "Session Plugin";
             this.sessionPluginToolStripMenuItem1.Click += new System.EventHandler(this.sessionPluginToolStripMenuItem1_Click);
             // 
             // otherToolStripMenuItem
             // 
             this.otherToolStripMenuItem.Name = "otherToolStripMenuItem";
-            this.otherToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.otherToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.otherToolStripMenuItem.Text = "Other";
             this.otherToolStripMenuItem.Click += new System.EventHandler(this.otherToolStripMenuItem_Click);
             // 
@@ -423,8 +490,8 @@ namespace IronWASP
             // PluginEditorAPISplit.Panel2
             // 
             this.PluginEditorAPISplit.Panel2.Controls.Add(this.PluginEditorAPIDetailsRTB);
-            this.PluginEditorAPISplit.Size = new System.Drawing.Size(229, 462);
-            this.PluginEditorAPISplit.SplitterDistance = 251;
+            this.PluginEditorAPISplit.Size = new System.Drawing.Size(208, 562);
+            this.PluginEditorAPISplit.SplitterDistance = 305;
             this.PluginEditorAPISplit.SplitterWidth = 2;
             this.PluginEditorAPISplit.TabIndex = 2;
             // 
@@ -438,7 +505,7 @@ namespace IronWASP
             this.PluginEditorAPITreeTabs.Name = "PluginEditorAPITreeTabs";
             this.PluginEditorAPITreeTabs.Padding = new System.Drawing.Point(0, 0);
             this.PluginEditorAPITreeTabs.SelectedIndex = 0;
-            this.PluginEditorAPITreeTabs.Size = new System.Drawing.Size(229, 251);
+            this.PluginEditorAPITreeTabs.Size = new System.Drawing.Size(208, 305);
             this.PluginEditorAPITreeTabs.TabIndex = 0;
             // 
             // PluginEditorPythonAPITreeTab
@@ -447,7 +514,7 @@ namespace IronWASP
             this.PluginEditorPythonAPITreeTab.Location = new System.Drawing.Point(4, 22);
             this.PluginEditorPythonAPITreeTab.Margin = new System.Windows.Forms.Padding(0);
             this.PluginEditorPythonAPITreeTab.Name = "PluginEditorPythonAPITreeTab";
-            this.PluginEditorPythonAPITreeTab.Size = new System.Drawing.Size(221, 225);
+            this.PluginEditorPythonAPITreeTab.Size = new System.Drawing.Size(200, 279);
             this.PluginEditorPythonAPITreeTab.TabIndex = 0;
             this.PluginEditorPythonAPITreeTab.Text = "Python";
             this.PluginEditorPythonAPITreeTab.UseVisualStyleBackColor = true;
@@ -459,7 +526,7 @@ namespace IronWASP
             this.PluginEditorPythonAPITree.Location = new System.Drawing.Point(0, 0);
             this.PluginEditorPythonAPITree.Margin = new System.Windows.Forms.Padding(0);
             this.PluginEditorPythonAPITree.Name = "PluginEditorPythonAPITree";
-            this.PluginEditorPythonAPITree.Size = new System.Drawing.Size(221, 225);
+            this.PluginEditorPythonAPITree.Size = new System.Drawing.Size(200, 279);
             this.PluginEditorPythonAPITree.TabIndex = 0;
             this.PluginEditorPythonAPITree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.PluginEditorPythonAPITree_AfterSelect);
             // 
@@ -469,7 +536,7 @@ namespace IronWASP
             this.PluginEditorRubyAPITreeTab.Location = new System.Drawing.Point(4, 22);
             this.PluginEditorRubyAPITreeTab.Margin = new System.Windows.Forms.Padding(0);
             this.PluginEditorRubyAPITreeTab.Name = "PluginEditorRubyAPITreeTab";
-            this.PluginEditorRubyAPITreeTab.Size = new System.Drawing.Size(221, 225);
+            this.PluginEditorRubyAPITreeTab.Size = new System.Drawing.Size(200, 279);
             this.PluginEditorRubyAPITreeTab.TabIndex = 1;
             this.PluginEditorRubyAPITreeTab.Text = "Ruby";
             this.PluginEditorRubyAPITreeTab.UseVisualStyleBackColor = true;
@@ -481,7 +548,7 @@ namespace IronWASP
             this.PluginEditorRubyAPITree.Location = new System.Drawing.Point(0, 0);
             this.PluginEditorRubyAPITree.Margin = new System.Windows.Forms.Padding(0);
             this.PluginEditorRubyAPITree.Name = "PluginEditorRubyAPITree";
-            this.PluginEditorRubyAPITree.Size = new System.Drawing.Size(221, 225);
+            this.PluginEditorRubyAPITree.Size = new System.Drawing.Size(200, 279);
             this.PluginEditorRubyAPITree.TabIndex = 1;
             this.PluginEditorRubyAPITree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.PluginEditorRubyAPITree_AfterSelect);
             // 
@@ -493,7 +560,7 @@ namespace IronWASP
             this.PluginEditorAPIDetailsRTB.Margin = new System.Windows.Forms.Padding(0);
             this.PluginEditorAPIDetailsRTB.Name = "PluginEditorAPIDetailsRTB";
             this.PluginEditorAPIDetailsRTB.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.PluginEditorAPIDetailsRTB.Size = new System.Drawing.Size(229, 209);
+            this.PluginEditorAPIDetailsRTB.Size = new System.Drawing.Size(208, 255);
             this.PluginEditorAPIDetailsRTB.TabIndex = 0;
             this.PluginEditorAPIDetailsRTB.Text = "";
             // 
@@ -543,7 +610,7 @@ namespace IronWASP
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(684, 462);
+            this.ClientSize = new System.Drawing.Size(884, 562);
             this.Controls.Add(this.PluginEditorBaseSplit);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "PluginEditor";
@@ -618,5 +685,10 @@ namespace IronWASP
         private System.Windows.Forms.ToolStripMenuItem NewRbScriptFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem CheckSyntaxF5ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem SaveAsStripMenuItem;
+        private System.Windows.Forms.Label label1;
+        internal System.Windows.Forms.TextBox PluginEditorSearchTB;
+        private System.Windows.Forms.Label MatchCountLbl;
+        private System.Windows.Forms.Button SearchMovePreviousBtn;
+        private System.Windows.Forms.Button SearchMoveNextBtn;
     }
 }

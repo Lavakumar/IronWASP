@@ -48,7 +48,6 @@ namespace IronWASP
     {
         static bool IsOn = true;
         static Queue<PluginResult> PluginResultQ = new Queue<PluginResult>();
-        static List<string> PluginResultUniquenessStrings = new List<string>();
 
         static Queue<Request> ScanRequestQ = new Queue<Request>();
         static Queue<Response> ScanResponseQ = new Queue<Response>();
@@ -132,7 +131,7 @@ namespace IronWASP
                 {
                     if (Counter == 5) ThreadStore.CleanUp(); 
                 }
-                catch { }
+                catch (Exception Exp) { IronException.Report("Error cleaning up ThreadStore", Exp.Message, Exp.StackTrace); }
             }
         }
         internal static void Stop()
@@ -165,25 +164,21 @@ namespace IronWASP
             {
                 try
                 {
-                    if (PR.Signature.Length == 0 || !PluginResultUniquenessStrings.Contains(PR.Signature))
+                    foreach (Trigger T in PR.Triggers.GetTriggers())
                     {
-                        foreach (Trigger T in PR.Triggers.GetTriggers())
+                        if (T.Request != null)
                         {
-                            if (T.Request != null)
-                            {
-                                T.Request.StoredHeadersString = T.Request.GetHeadersAsString();
-                                if (T.Request.IsBinary) T.Request.StoredBinaryBodyString = T.Request.BinaryBodyString;
-                            }
-                            if (T.Response != null)
-                            {
-                                T.Response.StoredHeadersString = T.Response.GetHeadersAsString();
-                                if (T.Response.IsBinary) T.Response.StoredBinaryBodyString = T.Response.BinaryBodyString;
-                            }
+                            T.Request.StoredHeadersString = T.Request.GetHeadersAsString();
+                            if (T.Request.IsBinary) T.Request.StoredBinaryBodyString = T.Request.BinaryBodyString;
                         }
-                        PR.Id = Interlocked.Increment(ref Config.PluginResultCount);
-                        PRs.Add(PR);
-                        if (!PR.Signature.Equals("")) PluginResultUniquenessStrings.Add(PR.Signature);
+                        if (T.Response != null)
+                        {
+                            T.Response.StoredHeadersString = T.Response.GetHeadersAsString();
+                            if (T.Response.IsBinary) T.Response.StoredBinaryBodyString = T.Response.BinaryBodyString;
+                        }
                     }
+                    PR.Id = Interlocked.Increment(ref Config.PluginResultCount);
+                    PRs.Add(PR);
                 }
                 catch (InvalidOperationException)
                 {
@@ -903,12 +898,6 @@ namespace IronWASP
                 }
                 IronUI.UpdateSitemapTree(UrlsToBeUpdated);
             }
-        }
-
-        internal static void SetPluginResultUniquenessStrings(List<string> UniquenessStrings)
-        {
-            PluginResultUniquenessStrings.Clear();
-            PluginResultUniquenessStrings.AddRange(UniquenessStrings);
         }
     }
 }

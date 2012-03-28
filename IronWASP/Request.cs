@@ -651,15 +651,25 @@ namespace IronWASP
         }
         public override string ToString()
         {
-            return this.GetHeadersAsString() + this.BodyString;
+            StringBuilder SB = new StringBuilder();
+            SB.Append(this.GetHeadersAsString());
+            SB.Append(this.BodyString);
+            return SB.ToString();
         }
         public string ToShortString()
         {
-            return this.GetHeadersAsStringWithoutFullURL() + this.BodyString;
+            StringBuilder SB = new StringBuilder();
+            SB.Append(this.GetHeadersAsStringWithoutFullURL());
+            SB.Append(this.BodyString);
+            return SB.ToString();
         }
         public string ToBinaryString()
         {
-            return Tools.Base64Encode(Tools.Base64Encode(this.GetHeadersAsString()) + ":" + Tools.Base64EncodeByteArray(this.BodyArray));
+            StringBuilder SB = new StringBuilder();
+            SB.Append(Tools.Base64Encode(this.GetHeadersAsString()));
+            SB.Append(":");
+            SB.Append(Tools.Base64EncodeByteArray(this.BodyArray));
+            return SB.ToString();
         }
         public Response SendReq()
         {

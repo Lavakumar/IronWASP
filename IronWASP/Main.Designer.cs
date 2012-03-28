@@ -48,18 +48,18 @@ namespace IronWASP
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle28 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle25 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle29 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle26 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle23 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle30 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             this.split_main = new System.Windows.Forms.SplitContainer();
             this.IronTree = new System.Windows.Forms.TreeView();
             this.IronTreeMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -243,6 +243,7 @@ namespace IronWASP
             this.TestRedGroupBtn = new System.Windows.Forms.Button();
             this.MTScriptingTP = new System.Windows.Forms.TabPage();
             this.ScriptingShellSplit = new System.Windows.Forms.SplitContainer();
+            this.ClearShellDisplayBtn = new System.Windows.Forms.Button();
             this.MultiLineShellExecuteBtn = new System.Windows.Forms.Button();
             this.InteractiveShellCtrlCBtn = new System.Windows.Forms.Button();
             this.ScriptingShellTabs = new System.Windows.Forms.TabControl();
@@ -718,6 +719,15 @@ namespace IronWASP
             this.ConfigScannerThreadMaxCountLbl = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
             this.ConfigScannerThreadMaxCountTB = new System.Windows.Forms.TrackBar();
+            this.ConfigPassiveAnalysisTab = new System.Windows.Forms.TabPage();
+            this.ConfigPassiveAnalysisOnProbeTrafficCB = new System.Windows.Forms.CheckBox();
+            this.ConfigPassiveAnalysisOnScanTrafficCB = new System.Windows.Forms.CheckBox();
+            this.ConfigPassiveAnalysisOnTestTrafficCB = new System.Windows.Forms.CheckBox();
+            this.ConfigPassiveAnalysisOnShellTrafficCB = new System.Windows.Forms.CheckBox();
+            this.ConfigPassiveAnalysisOnProxyTrafficCB = new System.Windows.Forms.CheckBox();
+            this.label34 = new System.Windows.Forms.Label();
+            this.ConfigPassiveAnalysisSettingsCancelChangesLL = new System.Windows.Forms.LinkLabel();
+            this.ConfigPassiveAnalysisSettingsApplyChangesLL = new System.Windows.Forms.LinkLabel();
             this.TopMenu = new System.Windows.Forms.MenuStrip();
             this.projectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -733,15 +743,6 @@ namespace IronWASP
             this.BurpLogOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.ConfigViewHideLL = new System.Windows.Forms.LinkLabel();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.ConfigPassiveAnalysisTab = new System.Windows.Forms.TabPage();
-            this.ConfigPassiveAnalysisSettingsCancelChangesLL = new System.Windows.Forms.LinkLabel();
-            this.ConfigPassiveAnalysisSettingsApplyChangesLL = new System.Windows.Forms.LinkLabel();
-            this.label34 = new System.Windows.Forms.Label();
-            this.ConfigPassiveAnalysisOnProxyTrafficCB = new System.Windows.Forms.CheckBox();
-            this.ConfigPassiveAnalysisOnShellTrafficCB = new System.Windows.Forms.CheckBox();
-            this.ConfigPassiveAnalysisOnTestTrafficCB = new System.Windows.Forms.CheckBox();
-            this.ConfigPassiveAnalysisOnScanTrafficCB = new System.Windows.Forms.CheckBox();
-            this.ConfigPassiveAnalysisOnProbeTrafficCB = new System.Windows.Forms.CheckBox();
             this.split_main.Panel1.SuspendLayout();
             this.split_main.Panel2.SuspendLayout();
             this.split_main.SuspendLayout();
@@ -992,9 +993,9 @@ namespace IronWASP
             this.ConfigScannerTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ConfigCrawlerThreadMaxCountTB)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ConfigScannerThreadMaxCountTB)).BeginInit();
+            this.ConfigPassiveAnalysisTab.SuspendLayout();
             this.TopMenu.SuspendLayout();
             this.panel1.SuspendLayout();
-            this.ConfigPassiveAnalysisTab.SuspendLayout();
             this.SuspendLayout();
             // 
             // split_main
@@ -1241,16 +1242,17 @@ namespace IronWASP
             // 
             // ConsoleRTB
             // 
+            this.ConsoleRTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.ConsoleRTB.BackColor = System.Drawing.Color.White;
             this.ConsoleRTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.ConsoleRTB.Dock = System.Windows.Forms.DockStyle.Top;
             this.ConsoleRTB.Font = new System.Drawing.Font("Palatino Linotype", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ConsoleRTB.ForeColor = System.Drawing.Color.Gray;
             this.ConsoleRTB.Location = new System.Drawing.Point(0, 0);
             this.ConsoleRTB.Margin = new System.Windows.Forms.Padding(0);
             this.ConsoleRTB.Name = "ConsoleRTB";
             this.ConsoleRTB.ReadOnly = true;
-            this.ConsoleRTB.Size = new System.Drawing.Size(705, 87);
+            this.ConsoleRTB.Size = new System.Drawing.Size(705, 101);
             this.ConsoleRTB.TabIndex = 3;
             this.ConsoleRTB.Text = resources.GetString("ConsoleRTB.Text");
             // 
@@ -2026,14 +2028,14 @@ namespace IronWASP
             this.ASQueueGrid.AllowUserToResizeRows = false;
             this.ASQueueGrid.BackgroundColor = System.Drawing.Color.White;
             this.ASQueueGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle28.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle28.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle28.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle28.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle28.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle28.SelectionForeColor = System.Drawing.Color.Blue;
-            dataGridViewCellStyle28.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ASQueueGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle28;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Blue;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ASQueueGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.ASQueueGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ASQueueGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ASQueueGridScanID,
@@ -2152,14 +2154,14 @@ namespace IronWASP
             this.ScanTraceGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ScanTraceGrid.BackgroundColor = System.Drawing.Color.White;
             this.ScanTraceGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle25.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle25.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle25.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle25.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle25.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle25.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle25.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ScanTraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle25;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ScanTraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.ScanTraceGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ScanTraceGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn32,
@@ -3181,6 +3183,7 @@ namespace IronWASP
             // 
             // ScriptingShellSplit.Panel1
             // 
+            this.ScriptingShellSplit.Panel1.Controls.Add(this.ClearShellDisplayBtn);
             this.ScriptingShellSplit.Panel1.Controls.Add(this.MultiLineShellExecuteBtn);
             this.ScriptingShellSplit.Panel1.Controls.Add(this.InteractiveShellCtrlCBtn);
             this.ScriptingShellSplit.Panel1.Controls.Add(this.ScriptingShellTabs);
@@ -3196,16 +3199,31 @@ namespace IronWASP
             this.ScriptingShellSplit.SplitterWidth = 2;
             this.ScriptingShellSplit.TabIndex = 6;
             // 
+            // ClearShellDisplayBtn
+            // 
+            this.ClearShellDisplayBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ClearShellDisplayBtn.BackColor = System.Drawing.Color.Transparent;
+            this.ClearShellDisplayBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ClearShellDisplayBtn.ForeColor = System.Drawing.Color.Black;
+            this.ClearShellDisplayBtn.Location = new System.Drawing.Point(358, 3);
+            this.ClearShellDisplayBtn.Margin = new System.Windows.Forms.Padding(0);
+            this.ClearShellDisplayBtn.Name = "ClearShellDisplayBtn";
+            this.ClearShellDisplayBtn.Size = new System.Drawing.Size(100, 20);
+            this.ClearShellDisplayBtn.TabIndex = 7;
+            this.ClearShellDisplayBtn.Text = "Clear Shell Output";
+            this.ClearShellDisplayBtn.UseVisualStyleBackColor = false;
+            this.ClearShellDisplayBtn.Click += new System.EventHandler(this.ClearShellDisplayBtn_Click);
+            // 
             // MultiLineShellExecuteBtn
             // 
             this.MultiLineShellExecuteBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.MultiLineShellExecuteBtn.BackColor = System.Drawing.Color.Transparent;
             this.MultiLineShellExecuteBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MultiLineShellExecuteBtn.ForeColor = System.Drawing.Color.Black;
-            this.MultiLineShellExecuteBtn.Location = new System.Drawing.Point(303, 3);
+            this.MultiLineShellExecuteBtn.Location = new System.Drawing.Point(221, 3);
             this.MultiLineShellExecuteBtn.Margin = new System.Windows.Forms.Padding(0);
             this.MultiLineShellExecuteBtn.Name = "MultiLineShellExecuteBtn";
-            this.MultiLineShellExecuteBtn.Size = new System.Drawing.Size(142, 20);
+            this.MultiLineShellExecuteBtn.Size = new System.Drawing.Size(129, 20);
             this.MultiLineShellExecuteBtn.TabIndex = 6;
             this.MultiLineShellExecuteBtn.Text = "Execute MutliLine Script";
             this.MultiLineShellExecuteBtn.UseVisualStyleBackColor = false;
@@ -3236,12 +3254,12 @@ namespace IronWASP
             this.ScriptingShellTabs.Controls.Add(this.InteractiveShellTP);
             this.ScriptingShellTabs.Controls.Add(this.MultiLineShellTP);
             this.ScriptingShellTabs.Controls.Add(this.ScriptedSendTP);
-            this.ScriptingShellTabs.Location = new System.Drawing.Point(0, 18);
+            this.ScriptingShellTabs.Location = new System.Drawing.Point(0, 25);
             this.ScriptingShellTabs.Margin = new System.Windows.Forms.Padding(0);
             this.ScriptingShellTabs.Name = "ScriptingShellTabs";
             this.ScriptingShellTabs.Padding = new System.Drawing.Point(0, 0);
             this.ScriptingShellTabs.SelectedIndex = 0;
-            this.ScriptingShellTabs.Size = new System.Drawing.Size(533, 468);
+            this.ScriptingShellTabs.Size = new System.Drawing.Size(533, 461);
             this.ScriptingShellTabs.TabIndex = 3;
             this.ScriptingShellTabs.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.ScriptingShellTabs_Selecting);
             // 
@@ -3254,7 +3272,7 @@ namespace IronWASP
             this.InteractiveShellTP.Location = new System.Drawing.Point(4, 22);
             this.InteractiveShellTP.Margin = new System.Windows.Forms.Padding(0);
             this.InteractiveShellTP.Name = "InteractiveShellTP";
-            this.InteractiveShellTP.Size = new System.Drawing.Size(525, 442);
+            this.InteractiveShellTP.Size = new System.Drawing.Size(525, 435);
             this.InteractiveShellTP.TabIndex = 0;
             this.InteractiveShellTP.Text = "Interactive Shell";
             // 
@@ -3265,7 +3283,7 @@ namespace IronWASP
             this.InteractiveShellPromptBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.InteractiveShellPromptBox.Font = new System.Drawing.Font("Lucida Console", 9.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.InteractiveShellPromptBox.ForeColor = System.Drawing.Color.Lime;
-            this.InteractiveShellPromptBox.Location = new System.Drawing.Point(0, 426);
+            this.InteractiveShellPromptBox.Location = new System.Drawing.Point(0, 419);
             this.InteractiveShellPromptBox.Margin = new System.Windows.Forms.Padding(0);
             this.InteractiveShellPromptBox.Name = "InteractiveShellPromptBox";
             this.InteractiveShellPromptBox.ReadOnly = true;
@@ -3290,7 +3308,7 @@ namespace IronWASP
             this.InteractiveShellOut.Name = "InteractiveShellOut";
             this.InteractiveShellOut.ReadOnly = true;
             this.InteractiveShellOut.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.InteractiveShellOut.Size = new System.Drawing.Size(525, 426);
+            this.InteractiveShellOut.Size = new System.Drawing.Size(525, 412);
             this.InteractiveShellOut.TabIndex = 1;
             // 
             // InteractiveShellIn
@@ -3302,7 +3320,7 @@ namespace IronWASP
             this.InteractiveShellIn.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.InteractiveShellIn.Font = new System.Drawing.Font("Lucida Console", 9.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.InteractiveShellIn.ForeColor = System.Drawing.Color.Lime;
-            this.InteractiveShellIn.Location = new System.Drawing.Point(27, 426);
+            this.InteractiveShellIn.Location = new System.Drawing.Point(27, 419);
             this.InteractiveShellIn.Margin = new System.Windows.Forms.Padding(0);
             this.InteractiveShellIn.Multiline = true;
             this.InteractiveShellIn.Name = "InteractiveShellIn";
@@ -3317,7 +3335,7 @@ namespace IronWASP
             this.MultiLineShellTP.Location = new System.Drawing.Point(4, 22);
             this.MultiLineShellTP.Margin = new System.Windows.Forms.Padding(0);
             this.MultiLineShellTP.Name = "MultiLineShellTP";
-            this.MultiLineShellTP.Size = new System.Drawing.Size(525, 442);
+            this.MultiLineShellTP.Size = new System.Drawing.Size(525, 435);
             this.MultiLineShellTP.TabIndex = 1;
             this.MultiLineShellTP.Text = "Multi-Line Shell";
             this.MultiLineShellTP.UseVisualStyleBackColor = true;
@@ -3333,7 +3351,7 @@ namespace IronWASP
             this.MultiLineShellInTE.ShowSpaces = true;
             this.MultiLineShellInTE.ShowTabs = true;
             this.MultiLineShellInTE.ShowVRuler = true;
-            this.MultiLineShellInTE.Size = new System.Drawing.Size(525, 442);
+            this.MultiLineShellInTE.Size = new System.Drawing.Size(525, 435);
             this.MultiLineShellInTE.TabIndex = 4;
             // 
             // ScriptedSendTP
@@ -3349,7 +3367,7 @@ namespace IronWASP
             this.ScriptedSendTP.Location = new System.Drawing.Point(4, 22);
             this.ScriptedSendTP.Margin = new System.Windows.Forms.Padding(0);
             this.ScriptedSendTP.Name = "ScriptedSendTP";
-            this.ScriptedSendTP.Size = new System.Drawing.Size(525, 442);
+            this.ScriptedSendTP.Size = new System.Drawing.Size(525, 435);
             this.ScriptedSendTP.TabIndex = 2;
             this.ScriptedSendTP.Text = "Scripted Send";
             this.ScriptedSendTP.UseVisualStyleBackColor = true;
@@ -3359,7 +3377,7 @@ namespace IronWASP
             this.CustomSendErrorTB.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
             this.CustomSendErrorTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.CustomSendErrorTB.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.CustomSendErrorTB.Location = new System.Drawing.Point(0, 378);
+            this.CustomSendErrorTB.Location = new System.Drawing.Point(0, 371);
             this.CustomSendErrorTB.Multiline = true;
             this.CustomSendErrorTB.Name = "CustomSendErrorTB";
             this.CustomSendErrorTB.ReadOnly = true;
@@ -3381,7 +3399,7 @@ namespace IronWASP
             this.CustomSendTE.ShowSpaces = true;
             this.CustomSendTE.ShowTabs = true;
             this.CustomSendTE.ShowVRuler = true;
-            this.CustomSendTE.Size = new System.Drawing.Size(525, 251);
+            this.CustomSendTE.Size = new System.Drawing.Size(525, 244);
             this.CustomSendTE.TabIndex = 14;
             // 
             // CustomSendBottomRtb
@@ -3390,7 +3408,7 @@ namespace IronWASP
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.CustomSendBottomRtb.BackColor = System.Drawing.SystemColors.Window;
             this.CustomSendBottomRtb.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.CustomSendBottomRtb.Location = new System.Drawing.Point(0, 325);
+            this.CustomSendBottomRtb.Location = new System.Drawing.Point(0, 318);
             this.CustomSendBottomRtb.Margin = new System.Windows.Forms.Padding(0);
             this.CustomSendBottomRtb.Name = "CustomSendBottomRtb";
             this.CustomSendBottomRtb.ReadOnly = true;
@@ -3935,14 +3953,14 @@ namespace IronWASP
             this.JSTaintResultLineColumn,
             this.JSTaintResultCodeColumn});
             this.JSTaintResultGrid.ContextMenuStrip = this.JSTainTraceEditMenu;
-            dataGridViewCellStyle29.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle29.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle29.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle29.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle29.SelectionBackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle29.SelectionForeColor = System.Drawing.Color.LimeGreen;
-            dataGridViewCellStyle29.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.JSTaintResultGrid.DefaultCellStyle = dataGridViewCellStyle29;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.LimeGreen;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.JSTaintResultGrid.DefaultCellStyle = dataGridViewCellStyle3;
             this.JSTaintResultGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.JSTaintResultGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.JSTaintResultGrid.GridColor = System.Drawing.Color.White;
@@ -5501,14 +5519,14 @@ namespace IronWASP
             this.ProxyLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ProxyLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.ProxyLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle26.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle26.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle26.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle26.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle26.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle26.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle26.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ProxyLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle26;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ProxyLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.ProxyLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ProxyLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ProxyLogGridColumnForID,
@@ -5668,14 +5686,14 @@ namespace IronWASP
             this.ScanLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ScanLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.ScanLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle23.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle23.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle23.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle23.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle23.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle23.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle23.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ScanLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle23;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ScanLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.ScanLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ScanLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ScanLogGridColumnForID,
@@ -5816,14 +5834,14 @@ namespace IronWASP
             this.TestLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.TestLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.TestLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle20.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle20.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle20.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle20.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle20.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle20.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.TestLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle20;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.TestLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.TestLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.TestLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.MTLogGridColumnForID,
@@ -5963,14 +5981,14 @@ namespace IronWASP
             this.ShellLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ShellLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.ShellLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle17.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle17.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle17.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle17.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle17.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ShellLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle17;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ShellLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
             this.ShellLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ShellLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ScriptingLogGridColumnForID,
@@ -6101,14 +6119,14 @@ namespace IronWASP
             this.ProbeLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ProbeLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.ProbeLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle14.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle14.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ProbeLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ProbeLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle8;
             this.ProbeLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ProbeLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ProbeLogGridColumnForID,
@@ -6239,14 +6257,14 @@ namespace IronWASP
             this.SiteMapLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.SiteMapLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.SiteMapLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.SiteMapLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.SiteMapLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle9;
             this.SiteMapLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.SiteMapLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.SiteMapLogGridColumnForID,
@@ -6459,14 +6477,14 @@ namespace IronWASP
             this.ResultsTriggersGrid.BackgroundColor = System.Drawing.SystemColors.Window;
             this.ResultsTriggersGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.ResultsTriggersGrid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ResultsTriggersGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ResultsTriggersGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle10;
             this.ResultsTriggersGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ResultsTriggersGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ResultsTriggerGridNumberColumn});
@@ -6489,8 +6507,8 @@ namespace IronWASP
             // ResultsTriggerGridNumberColumn
             // 
             this.ResultsTriggerGridNumberColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle30.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.ResultsTriggerGridNumberColumn.DefaultCellStyle = dataGridViewCellStyle30;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.ResultsTriggerGridNumberColumn.DefaultCellStyle = dataGridViewCellStyle11;
             this.ResultsTriggerGridNumberColumn.HeaderText = "Triggers:";
             this.ResultsTriggerGridNumberColumn.Name = "ResultsTriggerGridNumberColumn";
             this.ResultsTriggerGridNumberColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -6999,14 +7017,14 @@ namespace IronWASP
             this.TraceGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.TraceGrid.BackgroundColor = System.Drawing.Color.White;
             this.TraceGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.TraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.TraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle12;
             this.TraceGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.TraceGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn26,
@@ -7226,7 +7244,7 @@ namespace IronWASP
             this.ConfigInterceptRulesTab.Controls.Add(this.ConfigRuleContentXMLCB);
             this.ConfigInterceptRulesTab.Location = new System.Drawing.Point(4, 22);
             this.ConfigInterceptRulesTab.Name = "ConfigInterceptRulesTab";
-            this.ConfigInterceptRulesTab.Size = new System.Drawing.Size(873, 322);
+            this.ConfigInterceptRulesTab.Size = new System.Drawing.Size(873, 0);
             this.ConfigInterceptRulesTab.TabIndex = 4;
             this.ConfigInterceptRulesTab.Text = "Proxy Traffic Interception Rules";
             this.ConfigInterceptRulesTab.UseVisualStyleBackColor = true;
@@ -7854,7 +7872,7 @@ namespace IronWASP
             this.ConfigDisplayRulesTab.Controls.Add(this.ConfigDisplayRuleContentXMLCB);
             this.ConfigDisplayRulesTab.Location = new System.Drawing.Point(4, 22);
             this.ConfigDisplayRulesTab.Name = "ConfigDisplayRulesTab";
-            this.ConfigDisplayRulesTab.Size = new System.Drawing.Size(873, 322);
+            this.ConfigDisplayRulesTab.Size = new System.Drawing.Size(873, 0);
             this.ConfigDisplayRulesTab.TabIndex = 5;
             this.ConfigDisplayRulesTab.Text = "Proxy Traffic Display Rules";
             this.ConfigDisplayRulesTab.UseVisualStyleBackColor = true;
@@ -8297,7 +8315,7 @@ namespace IronWASP
             this.ConfigScriptingTab.Controls.Add(this.ConfigScriptBaseSplit);
             this.ConfigScriptingTab.Location = new System.Drawing.Point(4, 22);
             this.ConfigScriptingTab.Name = "ConfigScriptingTab";
-            this.ConfigScriptingTab.Size = new System.Drawing.Size(873, 322);
+            this.ConfigScriptingTab.Size = new System.Drawing.Size(873, 0);
             this.ConfigScriptingTab.TabIndex = 2;
             this.ConfigScriptingTab.Text = "Scripting Engines";
             this.ConfigScriptingTab.UseVisualStyleBackColor = true;
@@ -8322,7 +8340,7 @@ namespace IronWASP
             this.ConfigScriptBaseSplit.Panel2.Controls.Add(this.ConfigScriptCommandApplyChangesLL);
             this.ConfigScriptBaseSplit.Panel2.Controls.Add(this.ConfigScriptCommandCancelChangesLL);
             this.ConfigScriptBaseSplit.Panel2.Controls.Add(this.ConfigScriptCommandSplit);
-            this.ConfigScriptBaseSplit.Size = new System.Drawing.Size(873, 322);
+            this.ConfigScriptBaseSplit.Size = new System.Drawing.Size(873, 0);
             this.ConfigScriptBaseSplit.SplitterDistance = 425;
             this.ConfigScriptBaseSplit.SplitterWidth = 2;
             this.ConfigScriptBaseSplit.TabIndex = 0;
@@ -8384,8 +8402,8 @@ namespace IronWASP
             // 
             this.ConfigScriptPathSplit.Panel2.Controls.Add(this.label16);
             this.ConfigScriptPathSplit.Panel2.Controls.Add(this.ConfigScriptRbPathsTB);
-            this.ConfigScriptPathSplit.Size = new System.Drawing.Size(425, 376);
-            this.ConfigScriptPathSplit.SplitterDistance = 146;
+            this.ConfigScriptPathSplit.Size = new System.Drawing.Size(425, 54);
+            this.ConfigScriptPathSplit.SplitterDistance = 25;
             this.ConfigScriptPathSplit.SplitterWidth = 2;
             this.ConfigScriptPathSplit.TabIndex = 0;
             // 
@@ -8407,7 +8425,7 @@ namespace IronWASP
             this.ConfigScriptPyPathsTB.Multiline = true;
             this.ConfigScriptPyPathsTB.Name = "ConfigScriptPyPathsTB";
             this.ConfigScriptPyPathsTB.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.ConfigScriptPyPathsTB.Size = new System.Drawing.Size(425, 129);
+            this.ConfigScriptPyPathsTB.Size = new System.Drawing.Size(425, 8);
             this.ConfigScriptPyPathsTB.TabIndex = 0;
             // 
             // label16
@@ -8428,7 +8446,7 @@ namespace IronWASP
             this.ConfigScriptRbPathsTB.Multiline = true;
             this.ConfigScriptRbPathsTB.Name = "ConfigScriptRbPathsTB";
             this.ConfigScriptRbPathsTB.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.ConfigScriptRbPathsTB.Size = new System.Drawing.Size(425, 134);
+            this.ConfigScriptRbPathsTB.Size = new System.Drawing.Size(425, 0);
             this.ConfigScriptRbPathsTB.TabIndex = 1;
             // 
             // label12
@@ -8488,8 +8506,8 @@ namespace IronWASP
             // 
             this.ConfigScriptCommandSplit.Panel2.Controls.Add(this.label18);
             this.ConfigScriptCommandSplit.Panel2.Controls.Add(this.ConfigScriptRbCommandsTB);
-            this.ConfigScriptCommandSplit.Size = new System.Drawing.Size(446, 376);
-            this.ConfigScriptCommandSplit.SplitterDistance = 146;
+            this.ConfigScriptCommandSplit.Size = new System.Drawing.Size(446, 54);
+            this.ConfigScriptCommandSplit.SplitterDistance = 25;
             this.ConfigScriptCommandSplit.SplitterWidth = 2;
             this.ConfigScriptCommandSplit.TabIndex = 1;
             // 
@@ -8511,7 +8529,7 @@ namespace IronWASP
             this.ConfigScriptPyCommandsTB.Multiline = true;
             this.ConfigScriptPyCommandsTB.Name = "ConfigScriptPyCommandsTB";
             this.ConfigScriptPyCommandsTB.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.ConfigScriptPyCommandsTB.Size = new System.Drawing.Size(446, 128);
+            this.ConfigScriptPyCommandsTB.Size = new System.Drawing.Size(446, 7);
             this.ConfigScriptPyCommandsTB.TabIndex = 0;
             // 
             // label18
@@ -8532,7 +8550,7 @@ namespace IronWASP
             this.ConfigScriptRbCommandsTB.Multiline = true;
             this.ConfigScriptRbCommandsTB.Name = "ConfigScriptRbCommandsTB";
             this.ConfigScriptRbCommandsTB.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.ConfigScriptRbCommandsTB.Size = new System.Drawing.Size(446, 134);
+            this.ConfigScriptRbCommandsTB.Size = new System.Drawing.Size(446, 0);
             this.ConfigScriptRbCommandsTB.TabIndex = 1;
             // 
             // ConfigHTTPAPITab
@@ -8540,7 +8558,7 @@ namespace IronWASP
             this.ConfigHTTPAPITab.Controls.Add(this.ConfigHTTPAPIBaseSplit);
             this.ConfigHTTPAPITab.Location = new System.Drawing.Point(4, 22);
             this.ConfigHTTPAPITab.Name = "ConfigHTTPAPITab";
-            this.ConfigHTTPAPITab.Size = new System.Drawing.Size(873, 322);
+            this.ConfigHTTPAPITab.Size = new System.Drawing.Size(873, 0);
             this.ConfigHTTPAPITab.TabIndex = 3;
             this.ConfigHTTPAPITab.Text = "HTTP API";
             this.ConfigHTTPAPITab.UseVisualStyleBackColor = true;
@@ -8565,7 +8583,7 @@ namespace IronWASP
             this.ConfigHTTPAPIBaseSplit.Panel2.Controls.Add(this.label22);
             this.ConfigHTTPAPIBaseSplit.Panel2.Controls.Add(this.ConfigResponseTypesApplyChangesLL);
             this.ConfigHTTPAPIBaseSplit.Panel2.Controls.Add(this.ConfigResponseTypesCancelChangesLL);
-            this.ConfigHTTPAPIBaseSplit.Size = new System.Drawing.Size(873, 322);
+            this.ConfigHTTPAPIBaseSplit.Size = new System.Drawing.Size(873, 0);
             this.ConfigHTTPAPIBaseSplit.SplitterDistance = 425;
             this.ConfigHTTPAPIBaseSplit.SplitterWidth = 2;
             this.ConfigHTTPAPIBaseSplit.TabIndex = 1;
@@ -8579,7 +8597,7 @@ namespace IronWASP
             this.ConfigRequestTypesTB.Multiline = true;
             this.ConfigRequestTypesTB.Name = "ConfigRequestTypesTB";
             this.ConfigRequestTypesTB.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.ConfigRequestTypesTB.Size = new System.Drawing.Size(425, 302);
+            this.ConfigRequestTypesTB.Size = new System.Drawing.Size(425, 0);
             this.ConfigRequestTypesTB.TabIndex = 69;
             // 
             // label19
@@ -8629,7 +8647,7 @@ namespace IronWASP
             this.ConfigResponseTypesTB.Multiline = true;
             this.ConfigResponseTypesTB.Name = "ConfigResponseTypesTB";
             this.ConfigResponseTypesTB.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.ConfigResponseTypesTB.Size = new System.Drawing.Size(446, 302);
+            this.ConfigResponseTypesTB.Size = new System.Drawing.Size(446, 0);
             this.ConfigResponseTypesTB.TabIndex = 65;
             // 
             // label22
@@ -8678,7 +8696,7 @@ namespace IronWASP
             this.ConfigTaintConfigTab.Location = new System.Drawing.Point(4, 22);
             this.ConfigTaintConfigTab.Margin = new System.Windows.Forms.Padding(0);
             this.ConfigTaintConfigTab.Name = "ConfigTaintConfigTab";
-            this.ConfigTaintConfigTab.Size = new System.Drawing.Size(873, 322);
+            this.ConfigTaintConfigTab.Size = new System.Drawing.Size(873, 0);
             this.ConfigTaintConfigTab.TabIndex = 6;
             this.ConfigTaintConfigTab.Text = "Default JS Taint Config";
             this.ConfigTaintConfigTab.UseVisualStyleBackColor = true;
@@ -8783,7 +8801,7 @@ namespace IronWASP
             this.ConfigScannerTab.Controls.Add(this.ConfigScannerThreadMaxCountTB);
             this.ConfigScannerTab.Location = new System.Drawing.Point(4, 22);
             this.ConfigScannerTab.Name = "ConfigScannerTab";
-            this.ConfigScannerTab.Size = new System.Drawing.Size(873, 322);
+            this.ConfigScannerTab.Size = new System.Drawing.Size(873, 0);
             this.ConfigScannerTab.TabIndex = 7;
             this.ConfigScannerTab.Text = "Scanner Settings";
             this.ConfigScannerTab.UseVisualStyleBackColor = true;
@@ -8897,6 +8915,119 @@ namespace IronWASP
             this.ConfigScannerThreadMaxCountTB.TabIndex = 0;
             this.ConfigScannerThreadMaxCountTB.Value = 3;
             this.ConfigScannerThreadMaxCountTB.Scroll += new System.EventHandler(this.ConfigScannerThreadMaxCountTB_Scroll);
+            // 
+            // ConfigPassiveAnalysisTab
+            // 
+            this.ConfigPassiveAnalysisTab.Controls.Add(this.ConfigPassiveAnalysisOnProbeTrafficCB);
+            this.ConfigPassiveAnalysisTab.Controls.Add(this.ConfigPassiveAnalysisOnScanTrafficCB);
+            this.ConfigPassiveAnalysisTab.Controls.Add(this.ConfigPassiveAnalysisOnTestTrafficCB);
+            this.ConfigPassiveAnalysisTab.Controls.Add(this.ConfigPassiveAnalysisOnShellTrafficCB);
+            this.ConfigPassiveAnalysisTab.Controls.Add(this.ConfigPassiveAnalysisOnProxyTrafficCB);
+            this.ConfigPassiveAnalysisTab.Controls.Add(this.label34);
+            this.ConfigPassiveAnalysisTab.Controls.Add(this.ConfigPassiveAnalysisSettingsCancelChangesLL);
+            this.ConfigPassiveAnalysisTab.Controls.Add(this.ConfigPassiveAnalysisSettingsApplyChangesLL);
+            this.ConfigPassiveAnalysisTab.Location = new System.Drawing.Point(4, 22);
+            this.ConfigPassiveAnalysisTab.Name = "ConfigPassiveAnalysisTab";
+            this.ConfigPassiveAnalysisTab.Size = new System.Drawing.Size(873, 0);
+            this.ConfigPassiveAnalysisTab.TabIndex = 8;
+            this.ConfigPassiveAnalysisTab.Text = "Passive Analysis";
+            this.ConfigPassiveAnalysisTab.UseVisualStyleBackColor = true;
+            // 
+            // ConfigPassiveAnalysisOnProbeTrafficCB
+            // 
+            this.ConfigPassiveAnalysisOnProbeTrafficCB.AutoSize = true;
+            this.ConfigPassiveAnalysisOnProbeTrafficCB.Checked = true;
+            this.ConfigPassiveAnalysisOnProbeTrafficCB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ConfigPassiveAnalysisOnProbeTrafficCB.Location = new System.Drawing.Point(54, 159);
+            this.ConfigPassiveAnalysisOnProbeTrafficCB.Name = "ConfigPassiveAnalysisOnProbeTrafficCB";
+            this.ConfigPassiveAnalysisOnProbeTrafficCB.Size = new System.Drawing.Size(61, 17);
+            this.ConfigPassiveAnalysisOnProbeTrafficCB.TabIndex = 79;
+            this.ConfigPassiveAnalysisOnProbeTrafficCB.Text = "Crawler";
+            this.ConfigPassiveAnalysisOnProbeTrafficCB.UseVisualStyleBackColor = true;
+            // 
+            // ConfigPassiveAnalysisOnScanTrafficCB
+            // 
+            this.ConfigPassiveAnalysisOnScanTrafficCB.AutoSize = true;
+            this.ConfigPassiveAnalysisOnScanTrafficCB.Location = new System.Drawing.Point(54, 136);
+            this.ConfigPassiveAnalysisOnScanTrafficCB.Name = "ConfigPassiveAnalysisOnScanTrafficCB";
+            this.ConfigPassiveAnalysisOnScanTrafficCB.Size = new System.Drawing.Size(125, 17);
+            this.ConfigPassiveAnalysisOnScanTrafficCB.TabIndex = 78;
+            this.ConfigPassiveAnalysisOnScanTrafficCB.Text = "Automated Scanning";
+            this.ConfigPassiveAnalysisOnScanTrafficCB.UseVisualStyleBackColor = true;
+            // 
+            // ConfigPassiveAnalysisOnTestTrafficCB
+            // 
+            this.ConfigPassiveAnalysisOnTestTrafficCB.AutoSize = true;
+            this.ConfigPassiveAnalysisOnTestTrafficCB.Checked = true;
+            this.ConfigPassiveAnalysisOnTestTrafficCB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ConfigPassiveAnalysisOnTestTrafficCB.Location = new System.Drawing.Point(54, 113);
+            this.ConfigPassiveAnalysisOnTestTrafficCB.Name = "ConfigPassiveAnalysisOnTestTrafficCB";
+            this.ConfigPassiveAnalysisOnTestTrafficCB.Size = new System.Drawing.Size(99, 17);
+            this.ConfigPassiveAnalysisOnTestTrafficCB.TabIndex = 77;
+            this.ConfigPassiveAnalysisOnTestTrafficCB.Text = "Manual Testing";
+            this.ConfigPassiveAnalysisOnTestTrafficCB.UseVisualStyleBackColor = true;
+            // 
+            // ConfigPassiveAnalysisOnShellTrafficCB
+            // 
+            this.ConfigPassiveAnalysisOnShellTrafficCB.AutoSize = true;
+            this.ConfigPassiveAnalysisOnShellTrafficCB.Checked = true;
+            this.ConfigPassiveAnalysisOnShellTrafficCB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ConfigPassiveAnalysisOnShellTrafficCB.Location = new System.Drawing.Point(54, 90);
+            this.ConfigPassiveAnalysisOnShellTrafficCB.Name = "ConfigPassiveAnalysisOnShellTrafficCB";
+            this.ConfigPassiveAnalysisOnShellTrafficCB.Size = new System.Drawing.Size(93, 17);
+            this.ConfigPassiveAnalysisOnShellTrafficCB.TabIndex = 76;
+            this.ConfigPassiveAnalysisOnShellTrafficCB.Text = "Scripting Shell";
+            this.ConfigPassiveAnalysisOnShellTrafficCB.UseVisualStyleBackColor = true;
+            // 
+            // ConfigPassiveAnalysisOnProxyTrafficCB
+            // 
+            this.ConfigPassiveAnalysisOnProxyTrafficCB.AutoSize = true;
+            this.ConfigPassiveAnalysisOnProxyTrafficCB.Checked = true;
+            this.ConfigPassiveAnalysisOnProxyTrafficCB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ConfigPassiveAnalysisOnProxyTrafficCB.Location = new System.Drawing.Point(54, 67);
+            this.ConfigPassiveAnalysisOnProxyTrafficCB.Name = "ConfigPassiveAnalysisOnProxyTrafficCB";
+            this.ConfigPassiveAnalysisOnProxyTrafficCB.Size = new System.Drawing.Size(52, 17);
+            this.ConfigPassiveAnalysisOnProxyTrafficCB.TabIndex = 75;
+            this.ConfigPassiveAnalysisOnProxyTrafficCB.Text = "Proxy";
+            this.ConfigPassiveAnalysisOnProxyTrafficCB.UseVisualStyleBackColor = true;
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Location = new System.Drawing.Point(19, 35);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(307, 13);
+            this.label34.TabIndex = 74;
+            this.label34.Text = "Run Passive Plugins on HTTP traffic from the selected sources:";
+            // 
+            // ConfigPassiveAnalysisSettingsCancelChangesLL
+            // 
+            this.ConfigPassiveAnalysisSettingsCancelChangesLL.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ConfigPassiveAnalysisSettingsCancelChangesLL.AutoSize = true;
+            this.ConfigPassiveAnalysisSettingsCancelChangesLL.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ConfigPassiveAnalysisSettingsCancelChangesLL.Location = new System.Drawing.Point(815, 15);
+            this.ConfigPassiveAnalysisSettingsCancelChangesLL.Name = "ConfigPassiveAnalysisSettingsCancelChangesLL";
+            this.ConfigPassiveAnalysisSettingsCancelChangesLL.Size = new System.Drawing.Size(46, 13);
+            this.ConfigPassiveAnalysisSettingsCancelChangesLL.TabIndex = 72;
+            this.ConfigPassiveAnalysisSettingsCancelChangesLL.TabStop = true;
+            this.ConfigPassiveAnalysisSettingsCancelChangesLL.Text = "Cancel";
+            this.ConfigPassiveAnalysisSettingsCancelChangesLL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ConfigPassiveAnalysisSettingsCancelChangesLL_LinkClicked);
+            // 
+            // ConfigPassiveAnalysisSettingsApplyChangesLL
+            // 
+            this.ConfigPassiveAnalysisSettingsApplyChangesLL.ActiveLinkColor = System.Drawing.Color.Red;
+            this.ConfigPassiveAnalysisSettingsApplyChangesLL.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ConfigPassiveAnalysisSettingsApplyChangesLL.AutoSize = true;
+            this.ConfigPassiveAnalysisSettingsApplyChangesLL.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ConfigPassiveAnalysisSettingsApplyChangesLL.LinkBehavior = System.Windows.Forms.LinkBehavior.AlwaysUnderline;
+            this.ConfigPassiveAnalysisSettingsApplyChangesLL.Location = new System.Drawing.Point(767, 15);
+            this.ConfigPassiveAnalysisSettingsApplyChangesLL.Name = "ConfigPassiveAnalysisSettingsApplyChangesLL";
+            this.ConfigPassiveAnalysisSettingsApplyChangesLL.Size = new System.Drawing.Size(38, 13);
+            this.ConfigPassiveAnalysisSettingsApplyChangesLL.TabIndex = 73;
+            this.ConfigPassiveAnalysisSettingsApplyChangesLL.TabStop = true;
+            this.ConfigPassiveAnalysisSettingsApplyChangesLL.Text = "Apply";
+            this.ConfigPassiveAnalysisSettingsApplyChangesLL.VisitedLinkColor = System.Drawing.Color.Blue;
+            this.ConfigPassiveAnalysisSettingsApplyChangesLL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ConfigPassiveAnalysisSettingsApplyChangesLL_LinkClicked);
             // 
             // TopMenu
             // 
@@ -9015,119 +9146,6 @@ namespace IronWASP
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(72, 23);
             this.panel1.TabIndex = 14;
-            // 
-            // ConfigPassiveAnalysisTab
-            // 
-            this.ConfigPassiveAnalysisTab.Controls.Add(this.ConfigPassiveAnalysisOnProbeTrafficCB);
-            this.ConfigPassiveAnalysisTab.Controls.Add(this.ConfigPassiveAnalysisOnScanTrafficCB);
-            this.ConfigPassiveAnalysisTab.Controls.Add(this.ConfigPassiveAnalysisOnTestTrafficCB);
-            this.ConfigPassiveAnalysisTab.Controls.Add(this.ConfigPassiveAnalysisOnShellTrafficCB);
-            this.ConfigPassiveAnalysisTab.Controls.Add(this.ConfigPassiveAnalysisOnProxyTrafficCB);
-            this.ConfigPassiveAnalysisTab.Controls.Add(this.label34);
-            this.ConfigPassiveAnalysisTab.Controls.Add(this.ConfigPassiveAnalysisSettingsCancelChangesLL);
-            this.ConfigPassiveAnalysisTab.Controls.Add(this.ConfigPassiveAnalysisSettingsApplyChangesLL);
-            this.ConfigPassiveAnalysisTab.Location = new System.Drawing.Point(4, 22);
-            this.ConfigPassiveAnalysisTab.Name = "ConfigPassiveAnalysisTab";
-            this.ConfigPassiveAnalysisTab.Size = new System.Drawing.Size(873, 322);
-            this.ConfigPassiveAnalysisTab.TabIndex = 8;
-            this.ConfigPassiveAnalysisTab.Text = "Passive Analysis";
-            this.ConfigPassiveAnalysisTab.UseVisualStyleBackColor = true;
-            // 
-            // ConfigPassiveAnalysisSettingsCancelChangesLL
-            // 
-            this.ConfigPassiveAnalysisSettingsCancelChangesLL.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ConfigPassiveAnalysisSettingsCancelChangesLL.AutoSize = true;
-            this.ConfigPassiveAnalysisSettingsCancelChangesLL.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ConfigPassiveAnalysisSettingsCancelChangesLL.Location = new System.Drawing.Point(815, 15);
-            this.ConfigPassiveAnalysisSettingsCancelChangesLL.Name = "ConfigPassiveAnalysisSettingsCancelChangesLL";
-            this.ConfigPassiveAnalysisSettingsCancelChangesLL.Size = new System.Drawing.Size(46, 13);
-            this.ConfigPassiveAnalysisSettingsCancelChangesLL.TabIndex = 72;
-            this.ConfigPassiveAnalysisSettingsCancelChangesLL.TabStop = true;
-            this.ConfigPassiveAnalysisSettingsCancelChangesLL.Text = "Cancel";
-            this.ConfigPassiveAnalysisSettingsCancelChangesLL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ConfigPassiveAnalysisSettingsCancelChangesLL_LinkClicked);
-            // 
-            // ConfigPassiveAnalysisSettingsApplyChangesLL
-            // 
-            this.ConfigPassiveAnalysisSettingsApplyChangesLL.ActiveLinkColor = System.Drawing.Color.Red;
-            this.ConfigPassiveAnalysisSettingsApplyChangesLL.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ConfigPassiveAnalysisSettingsApplyChangesLL.AutoSize = true;
-            this.ConfigPassiveAnalysisSettingsApplyChangesLL.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ConfigPassiveAnalysisSettingsApplyChangesLL.LinkBehavior = System.Windows.Forms.LinkBehavior.AlwaysUnderline;
-            this.ConfigPassiveAnalysisSettingsApplyChangesLL.Location = new System.Drawing.Point(767, 15);
-            this.ConfigPassiveAnalysisSettingsApplyChangesLL.Name = "ConfigPassiveAnalysisSettingsApplyChangesLL";
-            this.ConfigPassiveAnalysisSettingsApplyChangesLL.Size = new System.Drawing.Size(38, 13);
-            this.ConfigPassiveAnalysisSettingsApplyChangesLL.TabIndex = 73;
-            this.ConfigPassiveAnalysisSettingsApplyChangesLL.TabStop = true;
-            this.ConfigPassiveAnalysisSettingsApplyChangesLL.Text = "Apply";
-            this.ConfigPassiveAnalysisSettingsApplyChangesLL.VisitedLinkColor = System.Drawing.Color.Blue;
-            this.ConfigPassiveAnalysisSettingsApplyChangesLL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ConfigPassiveAnalysisSettingsApplyChangesLL_LinkClicked);
-            // 
-            // label34
-            // 
-            this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(19, 35);
-            this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(307, 13);
-            this.label34.TabIndex = 74;
-            this.label34.Text = "Run Passive Plugins on HTTP traffic from the selected sources:";
-            // 
-            // ConfigPassiveAnalysisOnProxyTrafficCB
-            // 
-            this.ConfigPassiveAnalysisOnProxyTrafficCB.AutoSize = true;
-            this.ConfigPassiveAnalysisOnProxyTrafficCB.Checked = true;
-            this.ConfigPassiveAnalysisOnProxyTrafficCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ConfigPassiveAnalysisOnProxyTrafficCB.Location = new System.Drawing.Point(54, 67);
-            this.ConfigPassiveAnalysisOnProxyTrafficCB.Name = "ConfigPassiveAnalysisOnProxyTrafficCB";
-            this.ConfigPassiveAnalysisOnProxyTrafficCB.Size = new System.Drawing.Size(52, 17);
-            this.ConfigPassiveAnalysisOnProxyTrafficCB.TabIndex = 75;
-            this.ConfigPassiveAnalysisOnProxyTrafficCB.Text = "Proxy";
-            this.ConfigPassiveAnalysisOnProxyTrafficCB.UseVisualStyleBackColor = true;
-            // 
-            // ConfigPassiveAnalysisOnShellTrafficCB
-            // 
-            this.ConfigPassiveAnalysisOnShellTrafficCB.AutoSize = true;
-            this.ConfigPassiveAnalysisOnShellTrafficCB.Checked = true;
-            this.ConfigPassiveAnalysisOnShellTrafficCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ConfigPassiveAnalysisOnShellTrafficCB.Location = new System.Drawing.Point(54, 90);
-            this.ConfigPassiveAnalysisOnShellTrafficCB.Name = "ConfigPassiveAnalysisOnShellTrafficCB";
-            this.ConfigPassiveAnalysisOnShellTrafficCB.Size = new System.Drawing.Size(93, 17);
-            this.ConfigPassiveAnalysisOnShellTrafficCB.TabIndex = 76;
-            this.ConfigPassiveAnalysisOnShellTrafficCB.Text = "Scripting Shell";
-            this.ConfigPassiveAnalysisOnShellTrafficCB.UseVisualStyleBackColor = true;
-            // 
-            // ConfigPassiveAnalysisOnTestTrafficCB
-            // 
-            this.ConfigPassiveAnalysisOnTestTrafficCB.AutoSize = true;
-            this.ConfigPassiveAnalysisOnTestTrafficCB.Checked = true;
-            this.ConfigPassiveAnalysisOnTestTrafficCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ConfigPassiveAnalysisOnTestTrafficCB.Location = new System.Drawing.Point(54, 113);
-            this.ConfigPassiveAnalysisOnTestTrafficCB.Name = "ConfigPassiveAnalysisOnTestTrafficCB";
-            this.ConfigPassiveAnalysisOnTestTrafficCB.Size = new System.Drawing.Size(99, 17);
-            this.ConfigPassiveAnalysisOnTestTrafficCB.TabIndex = 77;
-            this.ConfigPassiveAnalysisOnTestTrafficCB.Text = "Manual Testing";
-            this.ConfigPassiveAnalysisOnTestTrafficCB.UseVisualStyleBackColor = true;
-            // 
-            // ConfigPassiveAnalysisOnScanTrafficCB
-            // 
-            this.ConfigPassiveAnalysisOnScanTrafficCB.AutoSize = true;
-            this.ConfigPassiveAnalysisOnScanTrafficCB.Location = new System.Drawing.Point(54, 136);
-            this.ConfigPassiveAnalysisOnScanTrafficCB.Name = "ConfigPassiveAnalysisOnScanTrafficCB";
-            this.ConfigPassiveAnalysisOnScanTrafficCB.Size = new System.Drawing.Size(125, 17);
-            this.ConfigPassiveAnalysisOnScanTrafficCB.TabIndex = 78;
-            this.ConfigPassiveAnalysisOnScanTrafficCB.Text = "Automated Scanning";
-            this.ConfigPassiveAnalysisOnScanTrafficCB.UseVisualStyleBackColor = true;
-            // 
-            // ConfigPassiveAnalysisOnProbeTrafficCB
-            // 
-            this.ConfigPassiveAnalysisOnProbeTrafficCB.AutoSize = true;
-            this.ConfigPassiveAnalysisOnProbeTrafficCB.Checked = true;
-            this.ConfigPassiveAnalysisOnProbeTrafficCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ConfigPassiveAnalysisOnProbeTrafficCB.Location = new System.Drawing.Point(54, 159);
-            this.ConfigPassiveAnalysisOnProbeTrafficCB.Name = "ConfigPassiveAnalysisOnProbeTrafficCB";
-            this.ConfigPassiveAnalysisOnProbeTrafficCB.Size = new System.Drawing.Size(61, 17);
-            this.ConfigPassiveAnalysisOnProbeTrafficCB.TabIndex = 79;
-            this.ConfigPassiveAnalysisOnProbeTrafficCB.Text = "Crawler";
-            this.ConfigPassiveAnalysisOnProbeTrafficCB.UseVisualStyleBackColor = true;
             // 
             // Main
             // 
@@ -9448,12 +9466,12 @@ namespace IronWASP
             this.ConfigScannerTab.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ConfigCrawlerThreadMaxCountTB)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ConfigScannerThreadMaxCountTB)).EndInit();
+            this.ConfigPassiveAnalysisTab.ResumeLayout(false);
+            this.ConfigPassiveAnalysisTab.PerformLayout();
             this.TopMenu.ResumeLayout(false);
             this.TopMenu.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.ConfigPassiveAnalysisTab.ResumeLayout(false);
-            this.ConfigPassiveAnalysisTab.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -10143,6 +10161,7 @@ namespace IronWASP
         internal System.Windows.Forms.CheckBox ConfigPassiveAnalysisOnScanTrafficCB;
         internal System.Windows.Forms.CheckBox ConfigPassiveAnalysisOnTestTrafficCB;
         internal System.Windows.Forms.CheckBox ConfigPassiveAnalysisOnShellTrafficCB;
+        internal System.Windows.Forms.Button ClearShellDisplayBtn;
     }
 }
 

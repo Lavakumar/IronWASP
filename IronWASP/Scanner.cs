@@ -808,7 +808,7 @@ namespace IronWASP
         {
             this.PRs.Add(PR);
             PR.Plugin = this.ActivePluginName;
-            IronUpdater.AddPluginResult(PR);
+            PR.Report();
         }
         public void CheckAll()
         {

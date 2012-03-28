@@ -102,6 +102,7 @@ namespace IronWASP
             {
                 ScanActive = false;
                 List<Request> Requests = Spider.GetCrawledRequests();
+                if (Stopped) return;
                 if (Requests.Count > 0 || Spider.IsActive())
                 {
                     ScanActive = true;
@@ -111,6 +112,7 @@ namespace IronWASP
                         //update the ui with the number of requests crawled
                         foreach (Request Req in Requests)
                         {
+                            if (Stopped) return;
                             if (!CanScan(Req)) continue;
                             if (!UniqueChecker.IsUniqueToScan(Req, ScannedRequests, false)) continue;
                             Scanner S = new Scanner(Req);
@@ -135,6 +137,11 @@ namespace IronWASP
                             TotalScanJobsCreated++;
                             if (Stopped) return;
                             int ScanID = S.LaunchScan();
+                            if (Stopped)
+                            {
+                                Stop(true);
+                                return;
+                            }
                             if (ScanID > 0)
                             {
                                 ScannedRequests.Add(Req);
@@ -150,6 +157,7 @@ namespace IronWASP
                     List<int> CompletedScanIDs = Scanner.GetCompletedScanIDs();
                     for (int i = 0; i < ScanIDs.Count; i++)
                     {
+                        if (Stopped) return;
                         if (CompletedScanIDs.Contains(ScanIDs[i]))
                         {
                             ScanIDsToRemove.Add(i);
@@ -162,6 +170,7 @@ namespace IronWASP
                     }
                     for (int i = 0; i < ScanIDsToRemove.Count; i++)
                     {
+                        if (Stopped) return;
                         ScanIDs.RemoveAt(ScanIDsToRemove[i] - i);
                     }
                 }
@@ -183,10 +192,12 @@ namespace IronWASP
                         SleepCounter = SleepCounter + 2;
                     }
                 }
+                if (Stopped) return;
                 IronUI.UpdateConsoleCrawledRequestsCount(TotalRequestsCrawled);
                 IronUI.UpdateConsoleScanJobsCreatedCount(TotalScanJobsCreated);
                 IronUI.UpdateConsoleScanJobsCompletedCount(TotalScanJobsCompleted);
             }
+            if (Stopped) return;
             Stop();
         }
 
@@ -228,36 +239,12 @@ namespace IronWASP
                 {
                     if (ScanManagerThread.ThreadState == ThreadState.Running && !CanStop)
                     {
-                        //ask if user is sure about stopping scan
-                        try
-                        {
-                            if(Thread.CurrentThread.ManagedThreadId != ScanManagerThread.ManagedThreadId)
-                                ScanManagerThread.Abort();
-                        }
-                        catch { }
-                        try
-                        {
-                            Spider.Stop();
-                        }
-                        catch { }
-                        Scanner.StopAll();
-                        IronUI.UpdateConsoleControlsStatus(false);
+                        //ask if user is sure about stopping scan and then call...
+                        EndAll();
                     }
                     else
                     {
-                        try
-                        {
-                            if (Thread.CurrentThread.ManagedThreadId != ScanManagerThread.ManagedThreadId)
-                                ScanManagerThread.Abort();
-                        }
-                        catch { }
-                        try
-                        {
-                            Spider.Stop();
-                        }
-                        catch { }
-                        Scanner.StopAll();
-                        IronUI.UpdateConsoleControlsStatus(false);
+                        EndAll();
                     }
                 }
                 else
@@ -266,6 +253,23 @@ namespace IronWASP
                 }
             }
             catch { }
+        }
+
+        static void EndAll()
+        {
+            try
+            {
+                //if (Thread.CurrentThread.ManagedThreadId != ScanManagerThread.ManagedThreadId)
+                //ScanManagerThread.Abort();
+            }
+            catch { }
+            try
+            {
+                Spider.Stop();
+            }
+            catch { }
+            Scanner.StopAll();
+            IronUI.UpdateConsoleControlsStatus(false);
         }
 
         static bool IsScanActive()

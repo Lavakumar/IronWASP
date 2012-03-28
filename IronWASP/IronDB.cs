@@ -54,7 +54,7 @@ namespace IronWASP
                         //Insert Request/Response in to DB
                         foreach (Session IrSe in IronSessions)
                         {
-                            Cmd.CommandText = "INSERT INTO ProxyLog (ID , SSL, HostName, Method, URL, Edited, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, OriginalRequestHeaders, OriginalRequestBody, BinaryOriginalRequest, Code, Length, MIME, SetCookie, ResponseHeaders, ResponseBody, BinaryResponse, OriginalResponseHeaders, OriginalResponseBody, BinaryOriginalResponse, Notes) VALUES (@ID , @SSL, @HostName, @Method, @URL, @Edited, @File, @RequestHeaders, @RequestBody, @BinaryRequest, @OriginalRequestHeaders, @OriginalRequestBody, @BinaryOriginalRequest, @Code, @Length, @MIME, @SetCookie, @ResponseHeaders, @ResponseBody, @BinaryResponse, @OriginalResponseHeaders, @OriginalResponseBody, @BinaryOriginalResponse, @Notes)";
+                            Cmd.CommandText = "INSERT INTO ProxyLog (ID , SSL, HostName, Method, URL, Edited, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, OriginalRequestHeaders, OriginalRequestBody, BinaryOriginalRequest, Code, Length, MIME, SetCookie, ResponseHeaders, ResponseBody, BinaryResponse, OriginalResponseHeaders, OriginalResponseBody, BinaryOriginalResponse, Notes) VALUES (@ID , @SSL, @HostName, @Method, @URL, @Edited, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @OriginalRequestHeaders, @OriginalRequestBody, @BinaryOriginalRequest, @Code, @Length, @MIME, @SetCookie, @ResponseHeaders, @ResponseBody, @BinaryResponse, @OriginalResponseHeaders, @OriginalResponseBody, @BinaryOriginalResponse, @Notes)";
                             Cmd.Parameters.AddWithValue("@ID", IrSe.Request.ID);
                             Cmd.Parameters.AddWithValue("@SSL", AsInt(IrSe.Request.SSL));
                             Cmd.Parameters.AddWithValue("@HostName", IrSe.Request.Host);
@@ -230,9 +230,9 @@ namespace IronWASP
                             //Cmd.Parameters.AddWithValue("@ResponseHeaders", Res.GetHeadersAsString());
                             Cmd.Parameters.AddWithValue("@ResponseHeaders", Res.StoredHeadersString);
                             if (Res.IsBinary)
-                                Cmd.Parameters.AddWithValue("@RequestBody", Res.StoredBinaryBodyString);
+                                Cmd.Parameters.AddWithValue("@ResponseBody", Res.StoredBinaryBodyString);
                             else
-                                Cmd.Parameters.AddWithValue("@RequestBody", Res.BodyString);
+                                Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
                             //Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
                             Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(Res.IsBinary));
                             Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
@@ -805,7 +805,7 @@ namespace IronWASP
                 Cmd.Parameters.AddWithValue("@BinaryRequest", AsInt(Req.IsBinary));
                 Cmd.Parameters.AddWithValue("@Status", "Not Started");
                 Cmd.Parameters.AddWithValue("@Method", Req.Method);
-                Cmd.Parameters.AddWithValue("@URL", Req.URL);
+                Cmd.Parameters.AddWithValue("@URL", Req.FullUrl);
                 Cmd.ExecuteNonQuery();
             }
             catch(Exception Exp)
@@ -902,7 +902,7 @@ namespace IronWASP
                 Cmd.Parameters.AddWithValue("@BinaryRequest", AsInt(Req.IsBinary));
                 Cmd.Parameters.AddWithValue("@Status", Status);
                 Cmd.Parameters.AddWithValue("@Method", Req.Method);
-                Cmd.Parameters.AddWithValue("@URL", Req.URL);
+                Cmd.Parameters.AddWithValue("@URL", Req.FullUrl);
                 Cmd.Parameters.AddWithValue("@SessionPlugin", SessionPlugin);
                 Cmd.Parameters.AddWithValue("@InjectionPoints", InjectionPoints);
                 Cmd.Parameters.AddWithValue("@FormatPlugin", FormatPlugin);

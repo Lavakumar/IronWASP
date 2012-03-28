@@ -363,6 +363,15 @@ namespace IronWASP
                 else
                     NotFoundGetter.Url = NotFoundGetter.UrlDir + "should_not_xist_" + Tools.GetRandomString(10, 15);
                 NotFoundResponse = NotFoundGetter.Send();
+                NotFoundResponse.BodyString = "";
+                List<string> HeaderNames = NotFoundResponse.Headers.GetNames();
+                foreach (string HeaderName in HeaderNames)
+                {
+                    if (!HeaderName.Equals("Location"))
+                    {
+                        NotFoundResponse.Headers.Remove(HeaderName);
+                    }
+                }
                 NotFoundResponse.Flags.Add("Url", NotFoundGetter.Url);
                 lock (NotFoundSignatures)
                 {
@@ -683,6 +692,10 @@ namespace IronWASP
                     }
                     catch { }
                 }
+            }
+            lock (NotFoundSignatures)
+            {
+                NotFoundSignatures.Clear();
             }
         }
     }

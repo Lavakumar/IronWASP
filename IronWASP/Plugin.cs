@@ -28,5 +28,15 @@ namespace IronWASP
         public string Description = "";
         public string Version = "0.0";
         internal string FileName = "";
+
+        public bool IsSignatureUnique(string Host, PluginResultType Type, string Signature)
+        {
+            return PluginResult.IsSignatureUnique(this.Name, Host, Type, Signature);
+        }
+
+        public List<string> GetSignatureList(string Host, PluginResultType Type)
+        {
+            return PluginResult.GetSignatureList(this.Name, Host, Type);
+        }
     }
 }

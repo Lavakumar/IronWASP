@@ -449,6 +449,8 @@ namespace IronWASP
             string TrimmedText = Text.Trim();
             if (TrimmedText.StartsWith("<") || TrimmedText.StartsWith("{") || TrimmedText.StartsWith("[") || TrimmedText.EndsWith(">")) 
                 return false;
+            if (!(TrimmedText.Contains("=") || TrimmedText.Contains(";") || TrimmedText.Contains("(") || TrimmedText.Contains(")")))
+                return false;
 
             try
             {
@@ -494,6 +496,19 @@ namespace IronWASP
             {
                 return false;
             }
+        }
+
+        public static bool IsBinary(byte[] Bytes)
+        {
+            if (Bytes.Length > 10)
+            {
+                if (Bytes[0] == 255 && Bytes[1] == 216 && Bytes[2] == 255) return true;//jpeg
+                if (Bytes[0] == 71 && Bytes[1] == 73 && Bytes[2] == 70 && Bytes[Bytes.Length - 2] == 0 && Bytes[Bytes.Length - 1] == 59) return true;//gif
+                if (Bytes[0] == 137 && Bytes[1] == 80 && Bytes[2] == 78 && Bytes[3] == 71 && Bytes[4] == 13 && Bytes[5] == 10 && Bytes[6] == 26 && Bytes[7] == 10) return true;//png
+                if (Bytes[0] == 80 && Bytes[1] == 75 && Bytes[2] == 3 && Bytes[3] == 4) return true;//zip
+                if (Bytes[0] == 37 && Bytes[1] == 80 && Bytes[2] == 68 && Bytes[3] == 70) return true;//pdf
+            }
+            return false;
         }
 
         public static string Shell(string Command)
