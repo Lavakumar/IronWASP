@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 using System;
@@ -32,13 +32,19 @@ namespace IronWASP
         
         public HTML(string HtmlString)
         {
+            //http://stackoverflow.com/questions/2385840/how-to-get-all-input-elements-in-a-form-with-htmlagilitypack
             HtmlNode.ElementsFlags.Remove("form");
+            //http://htmlagilitypack.codeplex.com/discussions/76550
+            if (!HtmlNode.ElementsFlags.ContainsKey("textarea"))
+                HtmlNode.ElementsFlags.Add("textarea", HtmlElementFlag.CData);
             this.Html.LoadHtml(HtmlString);
         }
 
         public HTML()
         {
             HtmlNode.ElementsFlags.Remove("form");
+            if (!HtmlNode.ElementsFlags.ContainsKey("textarea"))
+                HtmlNode.ElementsFlags.Add("textarea", HtmlElementFlag.CData);
         }
 
         public List<string> Links
@@ -73,36 +79,77 @@ namespace IronWASP
 
         public List<string> Get(string ElementName)
         {
-            return Query(string.Format("//{0}", ElementName));
+            return Query(string.Format("//{0}", ElementName.ToLower()));
         }
 
         public List<string> Get(string ElementName, string AttributeName)
         {
-            return Query(string.Format("//{0}[@{1}]", ElementName, AttributeName));
+            return Query(string.Format("//{0}[@{1}]", ElementName.ToLower(), AttributeName.ToLower()));
         }
 
         public List<string> GetValues(string ElementName, string AttributeName)
         {
-            return QueryValues(string.Format("//{0}[@{1}]", ElementName, AttributeName), AttributeName);
+            return QueryValues(string.Format("//{0}[@{1}]", ElementName.ToLower(), AttributeName.ToLower()), AttributeName.ToLower());
         }
+
+        public List<string> GetValues(string ElementName, string AttributeName, string AttributeValue, string InterestedAttributeName)
+        {
+            return QueryValues(string.Format("//{0}[@{1}={2}]", ElementName.ToLower(), AttributeName.ToLower(), XpathSafe(AttributeValue)), InterestedAttributeName.ToLower());
+        }
+
+        public List<string> GetValuesIgnoreValueCase(string ElementName, string AttributeName, string AttributeValue, string InterestedAttributeName)
+        {
+            List<string> Values = new List<string>();
+            AttributeName = AttributeName.ToLower();
+            InterestedAttributeName = InterestedAttributeName.ToLower();
+            HtmlNodeCollection Nodes = GetNodes(ElementName, AttributeName);
+            if (Nodes == null) return Values;
+            foreach (HtmlNode Node in Nodes)
+            {
+                string Value = "";
+                bool CorrectTag = false;
+                foreach (HtmlAttribute Attr in Node.Attributes)
+                {
+                    if (Attr.Name.Equals(InterestedAttributeName))
+                    {
+                        Value = Attr.Value;
+                    }
+                    if (Attr.Name.Equals(AttributeName) && Attr.Value.Equals(AttributeValue, StringComparison.OrdinalIgnoreCase))
+                    {
+                        CorrectTag = true;
+                    }
+                }
+                if (CorrectTag)
+                {
+                    Values.Add(Value);
+                }
+            }
+            return Values;
+        }
+
         public List<string> Get(string ElementName, string AttributeName, string AttributeValue)
         {
-            return Query(string.Format("//{0}[@{1}={2}]", ElementName, AttributeName, XpathSafe(AttributeValue)));
+            return Query(string.Format("//{0}[@{1}={2}]", ElementName.ToLower(), AttributeName.ToLower(), XpathSafe(AttributeValue)));
+        }
+
+        public List<string> GetMetaContent(string Attribute, string AttributeValue)
+        {
+            return GetValuesIgnoreValueCase("meta", Attribute, AttributeValue, "content");
         }
 
         public HtmlNodeCollection GetNodes(string ElementName)
         {
-            return QueryNodes(string.Format("//{0}", ElementName));
+            return QueryNodes(string.Format("//{0}", ElementName.ToLower()));
         }
 
         public HtmlNodeCollection GetNodes(string ElementName, string AttributeName)
         {
-            return QueryNodes(string.Format("//{0}[@{1}]", ElementName, AttributeName));
+            return QueryNodes(string.Format("//{0}[@{1}]", ElementName.ToLower(), AttributeName.ToLower()));
         }
 
         public HtmlNodeCollection GetNodes(string ElementName, string AttributeName, string AttributeValue)
         {
-            return QueryNodes(string.Format("//{0}[@{1}={2}]", ElementName, AttributeName, XpathSafe(AttributeValue)));
+            return QueryNodes(string.Format("//{0}[@{1}={2}]", ElementName.ToLower(), AttributeName.ToLower(), XpathSafe(AttributeValue)));
         }
 
         public HtmlNodeCollection QueryNodes(string Xpath)
@@ -128,6 +175,7 @@ namespace IronWASP
 
         public List<string> QueryValues(string Xpath, string AttributeName)
         {
+            AttributeName = AttributeName.ToLower();
             List<string> Result = new List<string>();
             try
             {
@@ -216,11 +264,37 @@ namespace IronWASP
                 {
                     if (Node.ParentNode.Name.Equals("script", StringComparison.OrdinalIgnoreCase))
                     {
-                        Contexts.Add("InLineJS");
+                        bool IsJS = true;
+                        if(Node.ParentNode.Attributes.Contains("type"))
+                        {
+                            if(Node.ParentNode.Attributes["type"].Value.IndexOf("vbscript", StringComparison.OrdinalIgnoreCase) > -1)
+                            {
+                                IsJS = false;
+                            }
+                        }
+                        else if(Node.ParentNode.Attributes.Contains("language"))
+                        {
+                            if(Node.ParentNode.Attributes["language"].Value.IndexOf("vbscript", StringComparison.OrdinalIgnoreCase) > -1)
+                            {
+                                IsJS = false;
+                            }
+                        }
+                        if (IsJS)
+                        {
+                            Contexts.Add("InLineJS"); 
+                        }
+                        else
+                        {
+                            Contexts.Add("InLineVB");
+                        }
                     }
                     else if (Node.ParentNode.Name.Equals("style", StringComparison.OrdinalIgnoreCase))
                     {
                         Contexts.Add("InLineCSS");
+                    }
+                    else if (Node.ParentNode.Name.Equals("textarea"))
+                    {
+                        Contexts.Add("Textarea");
                     }
                     else
                     {
@@ -258,16 +332,69 @@ namespace IronWASP
                         {
                             Contexts.Add("AttributeValueWithDoubleQuote");
                         }
-                        if ((Node.Name.Equals("iframe") && Attribute.Name.Equals("src")) || (Node.Name.Equals("a") && Attribute.Name.Equals("href")) || (Node.Name.Equals("form") && Attribute.Name.Equals("action")))
+                        if (IsUrlAttribute(Node.Name, Attribute.Name))
                         {
-                            if (Attribute.Value.StartsWith(Parameter, StringComparison.OrdinalIgnoreCase))
+                            if (Attribute.Value.StartsWith("javascript:", StringComparison.OrdinalIgnoreCase))
+                            {
+                                string JSAttributeValue = Attribute.Value.Substring(11);
+                                if (JSAttributeValue.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
+                                {
+                                    Contexts.Add("JSUrl");
+                                }
+                                else
+                                {
+                                    Contexts.Add("UrlAttribute");
+                                }
+                            }
+                            else
+                            {
                                 Contexts.Add("UrlAttribute");
-                            else if (Attribute.Value.StartsWith("javascript:", StringComparison.OrdinalIgnoreCase))
-                                Contexts.Add("InLineJS");
+                            }
+                        }
+                        else if (Attribute.Name.Equals("style", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Contexts.Add("AttributeCSS");
                         }
                         else if (EventAttributes.Contains(Attribute.Name.ToLower()))
                         {
                             Contexts.Add("EventAttribute");
+                        }
+
+                        if(Node.Name.Equals("meta", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Contexts.Add("MetaAttribute");
+                            if(Attribute.Name.Equals("content", StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (Node.Attributes.Contains("http-equiv"))
+                                {
+                                    if (Node.Attributes["http-equiv"].Value.Equals("refresh", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        string[] RedirectParts = Attribute.Value.Split(new char[] { ';' }, 2);
+                                        if (RedirectParts.Length == 2)
+                                        {
+                                            string RedirectUrl = RedirectParts[1].Trim();
+                                            RedirectUrl = RedirectUrl.Substring(4);//strip off 'url='
+                                            RedirectUrl = RedirectUrl.Trim('"').Trim('\'');
+                                            if (RedirectUrl.StartsWith("javascript:", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                string JSAttributeValue = RedirectUrl.Substring(11);
+                                                if (JSAttributeValue.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
+                                                {
+                                                    Contexts.Add("JSUrl");
+                                                }
+                                                else if (RedirectUrl.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
+                                                {
+                                                    Contexts.Add("UrlAttribute");
+                                                }
+                                            }
+                                            else if (RedirectUrl.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
+                                            {
+                                                Contexts.Add("UrlAttribute");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -289,21 +416,67 @@ namespace IronWASP
 
         public List<string> GetJavaScript(string Keyword)
         {
-            List<string> JavaScripts = new List<string>();
+            return GetScript(Keyword, true);
+        }
+
+        public List<string> GetVisualBasic()
+        {
+            return GetVisualBasic("");
+        }
+
+        public List<string> GetVisualBasic(string Keyword)
+        {
+            return GetScript(Keyword, false);
+        }
+
+        public List<string> GetScript(string Keyword, bool ShouldGetJavaScript)
+        {
+            List<string> Scripts = new List<string>();
             HtmlNodeCollection JSNodes = this.GetNodes("script");
-            if (JSNodes == null) return JavaScripts;
-            foreach (HtmlNode Node in JSNodes)
+            if(JSNodes != null)
             {
-                if (!Node.Attributes.Contains("src"))
+                foreach (HtmlNode Node in JSNodes)
                 {
-                    if (Keyword.Length == 0 || Node.InnerText.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0)
+                    if (!Node.Attributes.Contains("src"))
                     {
-                        JavaScripts.Add(Node.InnerText);
+                        if (Keyword.Length == 0 || Node.InnerText.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            bool IsJS = true;
+                            if (Node.Attributes.Contains("type"))
+                            {
+                                if (Node.Attributes["type"].Value.IndexOf("vbscript", StringComparison.OrdinalIgnoreCase) > -1)
+                                {
+                                    IsJS = false;
+                                }
+                            }
+                            else if (Node.Attributes.Contains("language"))
+                            {
+                                if (Node.Attributes["language"].Value.IndexOf("vbscript", StringComparison.OrdinalIgnoreCase) > -1)
+                                {
+                                    IsJS = false;
+                                }
+                            }
+                            if (ShouldGetJavaScript)
+                            {
+                                if (IsJS)
+                                {
+                                    Scripts.Add(StripHtmlComment(Node.InnerText));
+                                }
+                            }
+                            else
+                            {
+                                if (!IsJS)
+                                {
+                                    Scripts.Add(StripHtmlComment(Node.InnerText));
+                                }
+                            }
+                        }
                     }
                 }
             }
-            JavaScripts.AddRange(GetJavaScript(this.Html.DocumentNode, Keyword));
-            return JavaScripts;
+            if (ShouldGetJavaScript)
+                Scripts.AddRange(GetJavaScript(this.Html.DocumentNode, Keyword));
+            return Scripts;
         }
 
         public List<string> GetJavaScript(HtmlNode Node, string Keyword)
@@ -316,16 +489,16 @@ namespace IronWASP
                 {
                     if (Attr.Value != null)
                     {
-                        if (EventAttributes.Contains(Attr.Name) && (Keyword.Length == 0 || Node.InnerText.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0))
+                        if (EventAttributes.Contains(Attr.Name) && (Keyword.Length == 0 || Attr.Value.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0))
                         {
                             if(Attr.Value.EndsWith(";"))
                                 JavaScripts.Add(Attr.Value);
                             else
                                 JavaScripts.Add(Attr.Value + ";");
                         }
-                        else if (Attr.Value.StartsWith("javascript:") && (Keyword.Length == 0 || Node.InnerText.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0))
+                        else if (IsUrlAttribute(Node.Name, Attr.Name) && Attr.Value.StartsWith("javascript:", StringComparison.OrdinalIgnoreCase) && (Keyword.Length == 0 || Attr.Value.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0))
                         {
-                            JavaScripts.AddRange(GetJavaScriptUrlScripts(new List<string>() { Attr.Value}));
+                            JavaScripts.AddRange(GetJavaScriptUrlScripts(new List<string>() { Attr.Value }));
                         }
                     }
                 }
@@ -345,12 +518,63 @@ namespace IronWASP
             List<string> JavaScriptUrlScripts = new List<string>();
             foreach (string Url in JavaScriptUrls)
             {
-                if (Url.StartsWith("javascript:"))
+                if (Url.StartsWith("javascript:", StringComparison.OrdinalIgnoreCase))
                 {
-                    JavaScriptUrlScripts.Add(Url.Substring(11));
+                    string JSWithinUrl = Url.Substring(11);
+                    JSWithinUrl = JSWithinUrl.Trim();
+                    if (JSWithinUrl.StartsWith("\"") && JSWithinUrl.EndsWith("\""))
+                        JSWithinUrl = JSWithinUrl.Trim('"');
+                    else if (JSWithinUrl.StartsWith("'") && JSWithinUrl.EndsWith("'"))
+                        JSWithinUrl = JSWithinUrl.Trim('\'');
+                    JavaScriptUrlScripts.Add(JSWithinUrl);
                 }
             }
             return JavaScriptUrlScripts;
+        }
+
+        public List<string> GetCss()
+        {
+            return GetCss(false);
+        }
+
+        public List<string> GetCss(bool WrapInLineCss)
+        {
+            return GetCss("", WrapInLineCss);
+        }
+
+        public List<string> GetCss(string Keyword)
+        {
+            return GetCss(Keyword, false);
+        }
+
+        public List<string> GetCss(string Keyword, bool WrapInLineCss)
+        {
+            List<string> CssStrings = new List<string>();
+            HtmlNodeCollection CssNodes = this.GetNodes("style");
+            if (CssNodes != null)
+            {
+                foreach (HtmlNode Node in CssNodes)
+                {
+                    if (Keyword.Length == 0 || Node.InnerText.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        CssStrings.Add(StripHtmlComment(Node.InnerText));
+                    }
+                }
+            }
+            if (WrapInLineCss)
+            {
+                List<string> InLineCssStrings = new List<string>();
+                InLineCssStrings.AddRange(this.GetValues("*", "style"));
+                foreach (string InLineCssString in InLineCssStrings)
+                {
+                    CssStrings.Add(string.Format("x{{{0}}}", InLineCssString));
+                }
+            }
+            else
+            {
+                CssStrings.AddRange(this.GetValues("*", "style"));
+            }
+            return CssStrings;
         }
 
         public string XpathSafe(string Input)
@@ -377,6 +601,70 @@ namespace IronWASP
             else
             {
                 return "'" + Input + "'";
+            }
+        }
+
+        public static string StripHtmlComment(string Input)
+        {
+            string ActualInput = Input;
+            bool Processed = false;
+            string ProcessedInput = Input.Trim();
+            if (ProcessedInput.StartsWith("<!"))
+            {
+                ProcessedInput = ProcessedInput.TrimStart('<');
+                ProcessedInput = ProcessedInput.TrimStart('!');
+                string ProcessedInputCopy = ProcessedInput;
+                foreach (Char C in ProcessedInputCopy)
+                {
+                    if (C == '-')
+                    {
+                        ProcessedInput = ProcessedInput.TrimStart('-');
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                ProcessedInput = ProcessedInput.TrimEnd('>');
+                ProcessedInputCopy = ProcessedInput;
+                for (int i = ProcessedInputCopy.Length - 1; i >= 0; i--)
+                {
+                    if (ProcessedInputCopy[i] == '-')
+                    {
+                        Processed = true;
+                        ProcessedInput = ProcessedInput.TrimEnd('-');
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (Processed)
+            {
+                return ProcessedInput;
+            }
+            else
+            {
+                return ActualInput;
+            }
+        }
+
+        public static bool IsUrlAttribute(string TagName, string AttributeName)
+        {
+            if ((TagName.Equals("iframe", StringComparison.OrdinalIgnoreCase) && AttributeName.Equals("src", StringComparison.OrdinalIgnoreCase))
+               || (TagName.Equals("a", StringComparison.OrdinalIgnoreCase) && AttributeName.Equals("href", StringComparison.OrdinalIgnoreCase))
+               || (TagName.Equals("form", StringComparison.OrdinalIgnoreCase) && AttributeName.Equals("action", StringComparison.OrdinalIgnoreCase))
+               || (TagName.Equals("base", StringComparison.OrdinalIgnoreCase) && AttributeName.Equals("href", StringComparison.OrdinalIgnoreCase))
+               || (TagName.Equals("embed", StringComparison.OrdinalIgnoreCase) && AttributeName.Equals("src", StringComparison.OrdinalIgnoreCase))
+               || (TagName.Equals("button", StringComparison.OrdinalIgnoreCase) && AttributeName.Equals("formaction", StringComparison.OrdinalIgnoreCase)))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }

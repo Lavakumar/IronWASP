@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 namespace IronWASP
@@ -9159,7 +9159,7 @@ namespace IronWASP
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.TopMenu;
             this.Name = "Main";
-            this.Text = "IronWASP - Securitybyte Edition";
+            this.Text = "IronWASP Beta";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
             this.Load += new System.EventHandler(this.Main_Load);
             this.split_main.Panel1.ResumeLayout(false);

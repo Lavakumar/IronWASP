@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 using System;
@@ -46,7 +46,7 @@ namespace IronWASP
         internal Request CurrentRequest;
 
         PluginResults PRs = new PluginResults();
-        Dictionary<string, ActivePlugin> Plugins = new Dictionary<string, ActivePlugin>();
+        Dictionary<string, string> Plugins = new Dictionary<string, string>();
         
         internal List<int> URLInjections = new List<int>();
         internal InjectionParameters QueryInjections = new InjectionParameters();
@@ -87,6 +87,8 @@ namespace IronWASP
 
         StringBuilder TraceMsg = new StringBuilder();
         string RequestTraceMsg = "";
+        string TraceTitle = "";
+        int TraceTitleWeight = 0;
         string CurrentPlugin = "";
 
         bool StartedFromASTab = false;
@@ -299,9 +301,9 @@ namespace IronWASP
                 this.CurrentRequest = this.OriginalRequest;
                 this.TestResponse = this.OriginalResponse;
 
-                foreach (ActivePlugin AP in this.Plugins.Values)
+                foreach (string AP in this.Plugins.Keys)
                 {
-                    this.CurrentPlugin = AP.Name;
+                    this.CurrentPlugin = AP;
                     this.CurrentSection = "URL";
                     foreach (int URLPartPosition in this.URLInjections)
                     {
@@ -479,7 +481,7 @@ namespace IronWASP
         public void InjectUrl() { this.InjectURL(); }
         public void InjectURL()
         {
-            List<string> URLParts = OriginalRequest.URLPathParts;
+            List<string> URLParts = OriginalRequest.UrlPathParts;
             for (int i = 0; i < URLParts.Count; i++)
             {
                 this.InjectURL(i);
@@ -718,17 +720,22 @@ namespace IronWASP
             }
         }
 
-        public Response Inject(string RawPayload)
+        public Response RawInject(string Payload)
         {
-            return this.Inject(RawPayload, 0, false);
+            return this.Inject(Payload, 0, false, true);
+        }
+        
+        public Response Inject(string Payload)
+        {
+            return this.Inject(Payload, 0, false, false);
         }
 
         public Response Inject()
         {
-            return this.Inject("", 0, true);
+            return this.Inject("", 0, true, false);
         }
-
-        private Response Inject(string RawPayload, int ReDoCount, bool DummmyInjection)
+        
+        private Response Inject(string RawPayload, int ReDoCount, bool DummmyInjection, bool Raw)
         {
             this.CurrentRequest = SessionHandler.Update(this.CurrentRequest, this.TestResponse);
             this.TestRequest = SessionHandler.PrepareForInjection(this.CurrentRequest.GetClone());
@@ -739,23 +746,42 @@ namespace IronWASP
             {
                 if (this.CurrentSection.Equals("URL"))
                 {
-                    List<string> URLParts = this.TestRequest.URLPathParts;
+                    List<string> URLParts = new List<string>();
+                    if(Raw)
+                        URLParts = this.TestRequest.RawUrlPathParts;
+                    else
+                        URLParts = this.TestRequest.UrlPathParts;
                     URLParts[this.CurrentURLPartPosition] = Payload;
-                    this.TestRequest.URLPathParts = URLParts;
+                    if(Raw)
+                        this.TestRequest.RawUrlPathParts = URLParts;
+                    else
+                        this.TestRequest.UrlPathParts = URLParts;
                 }
                 else if (this.CurrentSection.Equals("Query"))
                 {
-                    SubValues = this.TestRequest.Query.GetAll(this.CurrentParameterName);
+                    if(Raw)
+                        SubValues = this.TestRequest.Query.RawGetAll(this.CurrentParameterName);
+                    else
+                        SubValues = this.TestRequest.Query.GetAll(this.CurrentParameterName);
                     SubValues[this.CurrentSubParameterPosition] = Payload;
-                    this.TestRequest.Query.Set(this.CurrentParameterName, SubValues);
+                    if(Raw)
+                        this.TestRequest.Query.RawSet(this.CurrentParameterName, SubValues);
+                    else
+                        this.TestRequest.Query.Set(this.CurrentParameterName, SubValues);
                 }
                 else if (this.CurrentSection.Equals("Body"))
                 {
                     if (BodyFormat.Name.Length == 0)
                     {
-                        SubValues = this.TestRequest.Body.GetAll(this.CurrentParameterName);
+                        if(Raw)
+                            SubValues = this.TestRequest.Body.RawGetAll(this.CurrentParameterName);
+                        else
+                            SubValues = this.TestRequest.Body.GetAll(this.CurrentParameterName);
                         SubValues[this.CurrentSubParameterPosition] = Payload;
-                        this.TestRequest.Body.Set(this.CurrentParameterName, SubValues);
+                        if(Raw)
+                            this.TestRequest.Body.RawSet(this.CurrentParameterName, SubValues);
+                        else
+                            this.TestRequest.Body.Set(this.CurrentParameterName, SubValues);
                     }
                     else
                     {
@@ -765,15 +791,27 @@ namespace IronWASP
                 }
                 else if (this.CurrentSection.Equals("Cookie"))
                 {
-                    SubValues = this.TestRequest.Cookie.GetAll(this.CurrentParameterName);
+                    if(Raw)
+                        SubValues = this.TestRequest.Cookie.RawGetAll(this.CurrentParameterName);
+                    else
+                        SubValues = this.TestRequest.Cookie.GetAll(this.CurrentParameterName);
                     SubValues[this.CurrentSubParameterPosition] = Payload;
-                    this.TestRequest.Cookie.Set(this.CurrentParameterName, SubValues);
+                    if(Raw)
+                        this.TestRequest.Cookie.RawSet(this.CurrentParameterName, SubValues);
+                    else
+                        this.TestRequest.Cookie.Set(this.CurrentParameterName, SubValues);
                 }
                 else if (this.CurrentSection.Equals("Headers"))
                 {
-                    SubValues = this.TestRequest.Headers.GetAll(this.CurrentParameterName);
+                    if(Raw)
+                        SubValues = this.TestRequest.Headers.RawGetAll(this.CurrentParameterName);
+                    else
+                        SubValues = this.TestRequest.Headers.GetAll(this.CurrentParameterName);
                     SubValues[this.CurrentSubParameterPosition] = Payload;
-                    this.TestRequest.Headers.Set(this.CurrentParameterName, SubValues);
+                    if(Raw)
+                        this.TestRequest.Headers.RawSet(this.CurrentParameterName, SubValues);
+                    else
+                        this.TestRequest.Headers.Set(this.CurrentParameterName, SubValues);
                 }
             }
             this.TestResponse = this.TestRequest.Send();
@@ -783,7 +821,7 @@ namespace IronWASP
             {
                 if (SessionHandler.MaxReDoCount > ReDoCount)
                 {
-                    return Inject(Payload, ReDoCount + 1, false);
+                    return Inject(Payload, ReDoCount + 1, false, Raw);
                 }
                 else
                 {
@@ -823,7 +861,7 @@ namespace IronWASP
             {
                 if (!Plugins.ContainsKey(PluginName))
                 {
-                    Plugins.Add(PluginName, ActivePlugin.Get(PluginName));
+                    Plugins.Add(PluginName, "");
                 }
             }
             else
@@ -842,7 +880,7 @@ namespace IronWASP
         
         public void ClearChecks()
         {
-            this.Plugins = new Dictionary<string, ActivePlugin>();
+            this.Plugins = new Dictionary<string, string>();
         }
         
 
@@ -865,14 +903,24 @@ namespace IronWASP
             this.CookieInjections = new InjectionParameters();
             this.HeadersInjections = new InjectionParameters();
         }
-        void CheckWithActivePlugin(ActivePlugin AP)
+        void CheckWithActivePlugin(string PluginName)
         {
+            ActivePlugin AP = ActivePlugin.Get(PluginName);
             this.ActivePluginName = AP.Name;
             if (!SessionHandler.CanInject(this, this.CurrentRequest))
             {
                 return;
             }
-            AP.Check(this.CurrentRequest.GetClone(), this);
+            try
+            {
+                AP.Check(this);
+            }
+            catch (ThreadAbortException)
+            {}
+            catch (Exception Exp)
+            {
+                IronException.Report(string.Format("'{0}' check for Scan ID-{1} crashed with an exception", PluginName, this.ScanID.ToString()), Exp);
+            }
         }
         internal void ReloadRequestFromString(string RequestString)
         {
@@ -1124,6 +1172,8 @@ namespace IronWASP
         {
             TraceMsg = new StringBuilder();
             RequestTraceMsg = "";
+            TraceTitle = "";
+            TraceTitleWeight = 0;
         }
         public void RequestTrace(string Message)
         {
@@ -1140,12 +1190,40 @@ namespace IronWASP
             TraceMsg.Append("<i<br>>");
             TraceMsg.Append(Message);
         }
+
+        public void SetTraceTitle(string Title, int Weight)
+        {
+            if (Weight > TraceTitleWeight)
+            {
+                TraceTitle = Title;
+                TraceTitleWeight = Weight;
+            }
+            else if (Weight == TraceTitleWeight)
+            {
+                if (TraceTitle.Length == 0 || TraceTitle == "-")
+                {
+                    TraceTitle = Title;
+                }
+                else
+                {
+                    TraceTitle = string.Format("{0} | {1}", TraceTitle, Title);
+                }
+            }
+        }
+
+        public void LogTrace()
+        {
+            this.LogTrace(TraceTitle);
+        }
+
         public void LogTrace(string Title)
         {
             IronTrace IT = new IronTrace(this.ScanID, CurrentPlugin, this.CurrentSection, this.CurrentParameterName, Title, TraceMsg.ToString());
             IT.Report();
             this.TraceMsg = new StringBuilder();
             this.RequestTraceMsg = "";
+            this.TraceTitle = "";
+            this.TraceTitleWeight = 0;
         }
 
         public string GetTrace()

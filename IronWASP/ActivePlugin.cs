@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 using System;
@@ -26,9 +26,14 @@ namespace IronWASP
     {
         internal static List<ActivePlugin> Collection = new List<ActivePlugin>();
 
-        public virtual void Check(Request Request, Scanner Scan)
+        public virtual void Check(Scanner Scan)
         {
 
+        }
+
+        public virtual ActivePlugin GetInstance()
+        {
+            return new ActivePlugin();
         }
 
         public static void Add(ActivePlugin AP)
@@ -59,7 +64,9 @@ namespace IronWASP
             {
                 if (AP.Name.Equals(Name))
                 {
-                    return AP;
+                    ActivePlugin NewInstance = AP.GetInstance();
+                    NewInstance.FileName = AP.FileName;
+                    return NewInstance;
                 }
             }
             return null;

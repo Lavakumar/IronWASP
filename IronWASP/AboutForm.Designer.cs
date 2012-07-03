@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 namespace IronWASP
@@ -120,7 +120,7 @@ namespace IronWASP
             this.AboutFormVersionTB.ReadOnly = true;
             this.AboutFormVersionTB.Size = new System.Drawing.Size(166, 23);
             this.AboutFormVersionTB.TabIndex = 3;
-            this.AboutFormVersionTB.Text = "Installed Version: 0.9.0.3";
+            this.AboutFormVersionTB.Text = "Installed Version: 0.9.1.0";
             // 
             // panel2
             // 

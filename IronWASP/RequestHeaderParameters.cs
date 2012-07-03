@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 using System;
@@ -33,7 +33,8 @@ namespace IronWASP
         {
             this.Request = Request;
         }
-        new public void Set(string Name, string Value)
+
+        public void RawSet(string Name, string Value)
         {
             Name = ProcessName(Name);
 
@@ -43,7 +44,12 @@ namespace IronWASP
                 this.ProcessUpdate(Value);
             }
         }
-        new public void Set(string Name, int Position, string Value)
+        new public void Set(string Name, string Value)
+        {
+            this.RawSet(Encode(Name), Encode(Value));
+        }
+
+        public void RawSet(string Name, int Position, string Value)
         {
             Name = ProcessName(Name);
 
@@ -53,16 +59,26 @@ namespace IronWASP
                 this.ProcessUpdate(Value);
             }
         }
+        new public void Set(string Name, int Position, string Value)
+        {
+            this.RawSet(Encode(Name), Position, Encode(Value));
+        }
+
+        public void RawSetAt(string Name, int Position, string Value)
+        {
+            this.RawSet(Name, Position, Value);
+        }
         new public void SetAt(string Name, int Position, string Value)
         {
             this.Set(Name, Position, Value);
         }
-        new public void Set(string Name, List<string> Values)
+
+        public void RawSet(string Name, List<string> Values)
         {
             Name = ProcessName(Name);
 
             if ((Name.Equals("Host") || Name.Equals("Content-Length") || Name.Equals("Content-Type") || Name.Equals("User-Agent") || Name.Equals("Cookie")) && (Values.Count > 1))
-            {                
+            {
                 throw new Exception("Hostname, Content-Length, Content-Type, User-Agent cannot take multiple entries, try Add(string Name, string Value)");
             }
             else
@@ -70,7 +86,17 @@ namespace IronWASP
                 base.Set(Name, Values);
             }
         }
-        new public void Add(string Name, string Value)
+        new public void Set(string Name, List<string> Values)
+        {
+            List<string> Vals = new List<string>();
+            foreach (string Value in Values)
+            {
+                Vals.Add(Encode(Value));
+            }
+            this.RawSet(Encode(Name), Vals);
+        }
+
+        public void RawAdd(string Name, string Value)
         {
             Name = ProcessName(Name);
 
@@ -87,7 +113,12 @@ namespace IronWASP
                 this.ProcessUpdate(Value);
             }
         }
-        new public void Remove(string Name)
+        new public void Add(string Name, string Value)
+        {
+            this.RawAdd(Encode(Name), Encode(Value));
+        }
+
+        public void RawRemove(string Name)
         {
             Name = ProcessName(Name);
 
@@ -97,6 +128,11 @@ namespace IronWASP
                 this.ProcessUpdate("");
             }
         }
+        new public void Remove(string Name)
+        {
+            this.RawRemove(Encode(Name));
+        }
+
         new public void RemoveAll()
         {
             base.RemoveAll();
@@ -109,7 +145,7 @@ namespace IronWASP
 
         void ProcessUpdate(string Value)
         {
-            this.Request.UpdateCookieParametersWithoutUpdatingHeaders(Value);
+            this.Request.UpdateCookieParametersWithoutUpdatingHeaders(SafeRaw(Value));
         }
 
         string ProcessName(string Name)
@@ -120,6 +156,16 @@ namespace IronWASP
             if (Name.Equals("User-Agent", StringComparison.OrdinalIgnoreCase)) Name = "User-Agent";
             if (Name.Equals("Cookie", StringComparison.OrdinalIgnoreCase)) Name = "Cookie";
             return Name;
+        }
+
+        string SafeRaw(string Value)
+        {
+            return Tools.HeaderEncode(Value);
+        }
+
+        string Encode(string Value)
+        {
+            return Tools.HeaderEncode(Value);
         }
     }
 }

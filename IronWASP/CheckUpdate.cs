@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 using System;
@@ -27,7 +27,7 @@ namespace IronWASP
 {
     class CheckUpdate
     {
-        static string CurrentVersion = "0.9.0.3";
+        static string CurrentVersion = "0.9.1.0";
 
         static string PluginManifestUrl = "https://ironwasp.org/update/plugin.manifest";
         static string IronWASPManifestUrl = "https://ironwasp.org/update/ironwasp.manifest";

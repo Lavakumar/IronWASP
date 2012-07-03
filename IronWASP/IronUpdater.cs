@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 using System;
@@ -868,7 +868,7 @@ namespace IronWASP
         {
             List<string> UrlParts = new List<string>();
             UrlParts.Add(Req.Host);
-            UrlParts.AddRange(Req.URLPathParts);
+            UrlParts.AddRange(Req.UrlPathParts);
             UrlParts.Add("");
             if (Req.Query.Count > 0)
             {               

@@ -22,10 +22,15 @@ using System.Text;
 
 namespace IronWASP
 {
-    public enum ScanMode
+    public class SimilarityCheckerItem
     {
-        Default,
-        UserConfigured,
-        Interactive
+        public string Key;
+        public Response Res;
+
+        internal SimilarityCheckerItem(string Key, Response Res)
+        {
+            this.Key = Key;
+            this.Res = Res;
+        }
     }
 }

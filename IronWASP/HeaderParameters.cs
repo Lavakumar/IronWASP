@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 using System;
@@ -49,8 +49,9 @@ namespace IronWASP
             this.BuildFromHeaderArray(HeaderArray);
         }
 
-        public string Get(string Name)
+        public string RawGet(string Name)
         {
+            Name = SafeRaw(Name);
             if (ParameterStore.ContainsKey(Name))
             {
                 List<string> Values = ParameterStore[Name];
@@ -61,14 +62,22 @@ namespace IronWASP
                 throw new Exception("Parameter not found");
             }
         }
+        public string Get(string Name)
+        {
+            return Decode(this.RawGet(Encode(Name)));
+        }
 
         public void Set(string Name, string Value)
         {
+            Name = SafeRaw(Name);
+            Value = SafeRaw(Value);
             if (Name.Trim().Length == 0) return;
             ParameterStore[Name] = new List<string>() { Value };
         }
         public void Set(string Name, int Position, string Value)
         {
+            Name = SafeRaw(Name);
+            Value = SafeRaw(Value);
             if (Name.Trim().Length == 0) return;
             if (Position < 0) return;
             if (ParameterStore.ContainsKey(Name))
@@ -93,19 +102,27 @@ namespace IronWASP
         }
         public void Set(string Name, List<string> Values)
         {
+            Name = SafeRaw(Name);
+            List<string> Vals = new List<string>();
+            foreach(string Value in Values)
+            {
+                Vals.Add(SafeRaw(Value));
+            }
             if (Name.Trim().Length == 0) return;
             if (ParameterStore.ContainsKey(Name))
             {
-                ParameterStore[Name] = Values;
+                ParameterStore[Name] = Vals;
             }
             else
             {
-                ParameterStore.Add(Name, Values);
+                ParameterStore.Add(Name, Vals);
             }
         }
 
         public void Add(string Name, string Value)
         {
+            Name = SafeRaw(Name);
+            Value = SafeRaw(Value);
             if (Name.Trim().Length == 0) return;
             if (ParameterStore.ContainsKey(Name))
             {
@@ -119,7 +136,7 @@ namespace IronWASP
             }
         }
 
-        public List<string> GetNames()
+        public List<string> RawGetNames()
         {
             List<string> Keys = new List<string>();
             foreach (string Key in ParameterStore.Keys)
@@ -128,9 +145,19 @@ namespace IronWASP
             }
             return Keys;
         }
-
-        public List<string> GetAll(string Name)
+        public List<string> GetNames()
         {
+            List<string> Values = this.RawGetNames();
+            for (int i = 0; i < Values.Count; i++)
+            {
+                Values[i] = Decode(Values[i]);
+            }
+            return Values;
+        }
+
+        public List<string> RawGetAll(string Name)
+        {
+            Name = SafeRaw(Name);
             if (ParameterStore.ContainsKey(Name))
             {
                 return ParameterStore[Name];
@@ -140,8 +167,17 @@ namespace IronWASP
                 throw new Exception("Parameter not found");
             }
         }
+        public List<string> GetAll(string Name)
+        {
+            List<string> Values = this.RawGetAll(Encode(Name));
+            for (int i = 0; i < Values.Count; i++)
+            {
+                Values[i] = Decode(Values[i]);
+            }
+            return Values;
+        }
 
-        public List<string> GetMultis()
+        public List<string> RawGetMultis()
         {
             List<string> Multis = new List<string>();
             foreach (string Key in ParameterStore.Keys)
@@ -153,9 +189,19 @@ namespace IronWASP
             }
             return Multis;
         }
+        public List<string> GetMultis()
+        {
+            List<string> Values = this.RawGetMultis();
+            for (int i = 0; i < Values.Count; i++)
+            {
+                Values[i] = Decode(Values[i]);
+            }
+            return Values;
+        }
 
         public void Remove(string Name)
         {
+            Name = SafeRaw(Name);
             if (ParameterStore.ContainsKey(Name))
             {
                 ParameterStore.Remove(Name);
@@ -167,8 +213,9 @@ namespace IronWASP
             this.ParameterStore = new Dictionary<string, List<string>>();
         }
 
-        public bool Has(string Name)
+        public bool RawHas(string Name)
         {
+            Name = SafeRaw(Name);
             if (ParameterStore.ContainsKey(Name))
             {
                 return true;
@@ -177,6 +224,10 @@ namespace IronWASP
             {
                 return false;
             }
+        }
+        public bool Has(string Name)
+        {
+            return this.RawHas(Encode(Name));
         }
         
         protected string GetStringFromHeaders()
@@ -238,6 +289,21 @@ namespace IronWASP
                     }
                 }
             }
+        }
+
+        string Encode(string Value)
+        {
+            return Tools.HeaderEncode(Value);
+        }
+
+        string Decode(string Value)
+        {
+            return Value;
+        }
+
+        string SafeRaw(string Value)
+        {
+            return Tools.HeaderEncode(Value);
         }
     }
 }

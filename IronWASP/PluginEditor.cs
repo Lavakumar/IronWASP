@@ -46,7 +46,7 @@ namespace IronWASP
     {
         static ScriptRuntime RunTime;
         static ScriptEngine Engine;
-
+        static string CurrentLanguage = "py";
         internal static FileInfo OpenedFile;
         internal static Thread T;
         static bool Open = true;
@@ -116,6 +116,7 @@ namespace IronWASP
                 PluginEditorTE.SetHighlighting("Python");
                 PluginEditorTE.Refresh();
                 CheckSyntax();
+                CurrentLanguage = "py";
             }
             catch (Exception Exp)
             {
@@ -132,6 +133,7 @@ namespace IronWASP
                 PluginEditorTE.SetHighlighting("Ruby");
                 PluginEditorTE.Refresh();
                 CheckSyntax();
+                CurrentLanguage = "rb";
             }
             catch (Exception Exp)
             {
@@ -542,11 +544,20 @@ namespace IronWASP
                     PluginEditorSaveFileDialog.FileName = OpenedFile.Name;
                 }
             }
+
             while (PluginEditorSaveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 FileInfo Info = new FileInfo(PluginEditorSaveFileDialog.FileName);
                 string Content = PluginEditorTE.Text;
-                if (!Info.Name.StartsWith("Enter an unique name"))
+                if (Info.Name.StartsWith("Enter an unique name"))
+                {
+                    MessageBox.Show("Please select a different name");
+                }
+                else if (!(PluginEditorSaveFileDialog.FileName.EndsWith(".py") || PluginEditorSaveFileDialog.FileName.EndsWith(".rb")))
+                {
+                    MessageBox.Show("Mention .py or .rb extension");
+                }
+                else
                 {
                     try
                     {
@@ -560,10 +571,6 @@ namespace IronWASP
                         MessageBox.Show(string.Format("Unable to save file: {0}", new object[] { Exp.Message }));
                     }
                     break;
-                }
-                else
-                {
-                    MessageBox.Show("Please select a different name");
                 }
             }
         }

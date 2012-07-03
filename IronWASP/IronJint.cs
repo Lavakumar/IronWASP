@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 using System;
@@ -109,6 +109,7 @@ namespace IronWASP
         internal bool TraceKeyword = false;
         internal string KeywordToTrace = "";
         public List<string> KeywordContexts = new List<string>();
+
         bool StartedFromUI = false;
         internal ManualResetEvent MSR = new ManualResetEvent(false);
 
@@ -194,7 +195,7 @@ namespace IronWASP
                 }
                 string CleanCode = Beautify(DirtyJS);
                 IronUI.SetJSTaintTraceCode(CleanCode, false);
-                IJ.Lines = new List<string>(CleanCode.Split(new string[] { "\r\n" }, StringSplitOptions.None));
+                IJ.Lines = SplitCodeLines(CleanCode);
                 if (PauseAtTaint) IronUI.SetJSTaintTraceResult();
                 IJ.StartedFromUI = true;
                 IJ.Analyze(CleanCode);
@@ -211,6 +212,21 @@ namespace IronWASP
                 IronUI.ShowTraceStatus("Trace Stopped due to error: " + Exp.Message, true);
                 IronException.Report("Error performing JS Taint Trace", Exp.Message, Exp.StackTrace);
             }
+        }
+
+        public static List<string> SplitCodeLines(string Code)
+        {
+            string[] UnTrimmedLines = Code.Split(new string[] { "\r\n" }, StringSplitOptions.None);
+            List<string> TrimmedLines = new List<string>();
+            foreach (string Line in UnTrimmedLines)
+            {
+                string TrimmedLine = Line.Trim();
+                if (TrimmedLine.Length > 0)
+                {
+                    TrimmedLines.Add(TrimmedLine);
+                }
+            }
+            return TrimmedLines;
         }
 
         public static TraceResult Trace(string Code)
@@ -274,41 +290,101 @@ namespace IronWASP
             return TR;
         }
 
+        public static bool IsExpressionStatement(string Code, string Keyword)
+        {
+            //string CleanCode = Beautify(Code);
+            LinkedList<Statement> Statements = GetStatementsFromCode(Code, false);
+            foreach (Statement Stmt in Statements)
+            {
+                if (Stmt.GetType().Name.Equals("ExpressionStatement"))
+                {
+                    ExpressionStatement ExS = (ExpressionStatement)Stmt;
+                    if (ExS.Expression.GetType().Name.Equals("Identifier"))
+                    {
+                        Identifier Id = (Identifier)ExS.Expression;
+                        if (Id.Text.Equals(Keyword))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
         internal void Analyze(string Code)
         {
             RawLines.Clear();
             Analyze(new List<string>() { Code });
         }
-        
+
         internal void Analyze(List<string> Codes)
         {
             RawLines.Clear();
+            foreach (string C in Codes)
+            {
+                RawLines.AddRange(SplitCodeLines(C));
+            }
+            JintStack.Clear();
+            LinkedList<Statement> Statements = GetStatementsFromCode(Codes);
+            Analyze(Statements);
+        }
+
+        internal static LinkedList<Statement> GetStatementsFromCode(string Code)
+        {
+            return GetStatementsFromCode(Code, true);
+        }
+
+        internal static LinkedList<Statement> GetStatementsFromCode(string Code, bool IgnoreErrors)
+        {
+            return GetStatementsFromCode(new List<string>() { Code }, IgnoreErrors);
+        }
+
+        internal static LinkedList<Statement> GetStatementsFromCode(List<string> Codes)
+        {
+            return GetStatementsFromCode(Codes, true);
+        }
+
+        internal static LinkedList<Statement> GetStatementsFromCode(List<string> Codes, bool IgnoreErrors)
+        {
             StringBuilder CodeBuilder = new StringBuilder();
             foreach (string C in Codes)
             {
-                RawLines.AddRange(C.Split(new string[] { "\r\n" }, StringSplitOptions.None));
                 CodeBuilder.Append(C);
+                if (!C.EndsWith("\n"))
+                {
+                    CodeBuilder.Append("\r\n");
+                }
             }
             string Code = CodeBuilder.ToString();
-            if (Code.Length == 0) return;
+            if (Code.Length == 0) return new LinkedList<Statement>();
             JintEngine Eng = new JintEngine(Options.Ecmascript3);
 
             ES3Lexer Lexer = new ES3Lexer(new ANTLRStringStream(Code));
             ES3Parser Parser = new ES3Parser(new CommonTokenStream(Lexer)) { DebugMode = true };
             Jint.Expressions.Program Prog = Parser.program().value;
-            JintStack.Clear();
-            Analyze(Prog.Statements);
+            if (Parser.Errors != null && Parser.Errors.Count > 0 && !IgnoreErrors)
+            {
+                throw new Exception("Invalid JavaScript Syntax");
+            }
+            return Prog.Statements;
         }
+
+        
 
         void Analyze(LinkedList<Statement> Statements)
         {
-            Statement[] Stmts = new Statement[Statements.Count];
-            Statements.CopyTo(Stmts, 0);
-            for (int i = 0; i < Stmts.Length; i++)
+            foreach (Statement Stmt in Statements)
             {
-                
-                if (Stmts[i] != null) Analyze(Stmts[i]);
+                if (Stmt != null) Analyze(Stmt);
             }
+            //Statement[] Stmts = new Statement[Statements.Count];
+            //Statements.CopyTo(Stmts, 0);
+            //for (int i = 0; i < Stmts.Length; i++)
+            //{
+                
+            //    if (Stmts[i] != null) Analyze(Stmts[i]);
+            //}
         }
 
         void Analyze(List<Statement> Statements)
@@ -318,37 +394,6 @@ namespace IronWASP
                 if (Statements[i] != null) Analyze(Statements[i]);
             }
         }
-
-        void Analyze(List<Expression> Statements)
-        {
-            for (int i = 0; i < Statements.Count; i++)
-            {
-                bool IsMethodArgument = false;
-                int StatusIndex = 0;
-                if (JintStack.Count > 0)
-                {
-                    JintItem LastItem = JintStack[JintStack.Count - 1];
-                    if (LastItem.State == JintState.MethodCallName || LastItem.State == JintState.MethodCallArgument)
-                    {
-                        IsMethodArgument = true;
-                        StatusIndex = AddToJintStack(Statements[i].Source, JintState.MethodCallArgument);
-                    }
-                }
-                
-                if (Statements[0] != null) Analyze(Statements[i]);
-                if (IsMethodArgument)
-                {
-                    if (JintStack.Count > 0 && (JintStack.Count > StatusIndex + 1))
-                    {
-                        List<JintItem> ArgumentItems = RemoveJintStackFrom(StatusIndex + 1);
-                        List<JintItem> ArgumentItem = RemoveJintStackFrom(StatusIndex);
-                        ArgumentItem[0].SubItems = new List<JintItem>(ArgumentItems);
-                        JintStack.Add(ArgumentItem[0]);
-                    }
-                }
-            }
-        }
-
 
         void Analyze(Jint.Expressions.Statement Stmt)
         {
@@ -528,6 +573,36 @@ namespace IronWASP
             }
         }
 
+        void Analyze(List<Expression> Statements)
+        {
+            for (int i = 0; i < Statements.Count; i++)
+            {
+                bool IsMethodArgument = false;
+                int StatusIndex = 0;
+                if (JintStack.Count > 0)
+                {
+                    JintItem LastItem = JintStack[JintStack.Count - 1];
+                    if (LastItem.State == JintState.MethodCallName || LastItem.State == JintState.MethodCallArgument)
+                    {
+                        IsMethodArgument = true;
+                        StatusIndex = AddToJintStack(Statements[i].Source, JintState.MethodCallArgument);
+                    }
+                }
+
+                if (Statements[0] != null) Analyze(Statements[i]);
+                if (IsMethodArgument)
+                {
+                    if (JintStack.Count > 0 && (JintStack.Count > StatusIndex + 1))
+                    {
+                        List<JintItem> ArgumentItems = RemoveJintStackFrom(StatusIndex + 1);
+                        List<JintItem> ArgumentItem = RemoveJintStackFrom(StatusIndex);
+                        ArgumentItem[0].SubItems = new List<JintItem>(ArgumentItems);
+                        JintStack.Add(ArgumentItem[0]);
+                    }
+                }
+            }
+        }
+
         void Analyze(ArrayDeclaration Stmt)
         {
             if (Stmt.Parameters != null)
@@ -703,6 +778,17 @@ namespace IronWASP
         {
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Expression != null) Analyze(Stmt.Expression);
+            if (TraceKeyword)
+            {
+                if(Stmt.Expression.GetType().Name.Equals("Identifier"))
+                {
+                    Identifier Id = (Identifier)Stmt.Expression;
+                    if(Id.Text.Equals(KeywordToTrace, StringComparison.OrdinalIgnoreCase))
+                    {
+                        KeywordContexts.Add("Expression");
+                    }
+                }
+            }
         }
 
         void Analyze(FinallyClause Stmt)
@@ -1121,7 +1207,7 @@ namespace IronWASP
             }
             if (TraceKeyword)
             {
-                List<string> Contexts = GetContext(RawLines[CurrentLineNo - 1], Stmt.Value.ToString());
+                List<string> Contexts = GetContextInLine(RawLines[CurrentLineNo - 1], Stmt.Value.ToString());
                 if (Contexts.Count == 0 && Stmt.Value.ToString().IndexOf(KeywordToTrace) >= 0)
                 {
                     if(Stmt.TypeCode == TypeCode.String)
@@ -1893,7 +1979,7 @@ namespace IronWASP
             return Reasons;
         }
 
-        static List<string> GetContext(string Code, string Keyword)
+        static List<string> GetContextInLine(string Code, string Keyword)
         {
             int MatchPosition = 0;
             List<string> Contexts = new List<string>();

@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 using System;
@@ -34,7 +34,8 @@ namespace IronWASP
             this.Response = Response;
             this.Response.CreateSetCookieListFromParameters(ResponseHeaders);
         }
-        new public void Set(string Name, string Value)
+
+        public void RawSet(string Name, string Value)
         {
             Name = ProcessName(Name);
             base.Set(Name, Value);
@@ -43,7 +44,12 @@ namespace IronWASP
                 this.ProcessUpdate();
             }
         }
-        new public void Set(string Name, int Position, string Value)
+        new public void Set(string Name, string Value)
+        {
+            this.RawSet(Encode(Name), Encode(Value));
+        }
+
+        public void RawSet(string Name, int Position, string Value)
         {
             Name = ProcessName(Name);
             base.Set(Name, Position, Value);
@@ -52,11 +58,21 @@ namespace IronWASP
                 this.ProcessUpdate();
             }
         }
+        new public void Set(string Name, int Position, string Value)
+        {
+            this.RawSet(Encode(Name), Position, Encode(Value));
+        }
+
+        public void RawSetAt(string Name, int Position, string Value)
+        {
+            this.RawSet(Name, Position, Value);
+        }
         new public void SetAt(string Name, int Position, string Value)
         {
             this.Set(Name, Position, Value);
         }
-        new public void Set(string Name, List<string> Values)
+
+        public void RawSet(string Name, List<string> Values)
         {
             Name = ProcessName(Name);
             base.Set(Name, Values);
@@ -65,7 +81,17 @@ namespace IronWASP
                 this.ProcessUpdate();
             }
         }
-        new public void Add(string Name, string Value)
+        new public void Set(string Name, List<string> Values)
+        {
+            List<string> Vals = new List<string>();
+            foreach (string Value in Values)
+            {
+                Vals.Add(Encode(Value));
+            }
+            this.RawSet(Encode(Name), Vals);
+        }
+
+        public void RawAdd(string Name, string Value)
         {
             Name = ProcessName(Name);
             base.Add(Name, Value);
@@ -74,7 +100,12 @@ namespace IronWASP
                 this.ProcessUpdate();
             }
         }
-        new public void Remove(string Name)
+        new public void Add(string Name, string Value)
+        {
+            this.RawAdd(Encode(Name), Encode(Value));
+        }
+
+        public void RawRemove(string Name)
         {
             Name = ProcessName(Name);
             base.Remove(Name);
@@ -83,6 +114,11 @@ namespace IronWASP
                 this.ProcessUpdate();
             }
         }
+        new public void Remove(string Name)
+        {
+            this.RawRemove(Encode(Name));
+        }
+
         new public void RemoveAll()
         {
             base.RemoveAll();
@@ -102,6 +138,16 @@ namespace IronWASP
         {
             if (Name.Equals("Set-Cookie", StringComparison.OrdinalIgnoreCase)) Name = "Set-Cookie";
             return Name;
+        }
+
+        string SafeRaw(string Value)
+        {
+            return Tools.HeaderEncode(Value);
+        }
+
+        string Encode(string Value)
+        {
+            return Tools.HeaderEncode(Value);
         }
     }
 }

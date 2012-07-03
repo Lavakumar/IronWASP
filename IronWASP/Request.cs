@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 using System;
@@ -408,7 +408,7 @@ namespace IronWASP
             }
         }
 
-        public List<string> URLPathParts
+        public List<string> RawURLPathParts
         {
             get
             {
@@ -427,7 +427,7 @@ namespace IronWASP
                 foreach (string Part in value)
                 {
                     URLBuilder.Append("/");
-                    URLBuilder.Append(Tools.UrlEncode(Part));
+                    URLBuilder.Append(SafeRaw(Part));
                 }
                 if (this.URLPath.EndsWith("/"))
                 {
@@ -437,16 +437,38 @@ namespace IronWASP
             }
         }
 
-        public List<string> UrlPathParts
+        public List<string> RawUrlPathParts
         {
             get
             {
-                return URLPathParts;
+                return RawURLPathParts;
             }
 
             set
             {
-                URLPathParts = value;
+                RawURLPathParts = value;
+            }
+        }
+
+        public List<string> UrlPathParts
+        {
+            get
+            {
+                List<string> RawPaths = RawUrlPathParts;
+                for (int i = 0; i < RawPaths.Count; i++)
+                {
+                    RawPaths[i] = Decode(RawPaths[i]);
+                }
+                return RawPaths;
+            }
+            set
+            {
+                List<string> RawPaths = new List<string>(value);
+                for (int i = 0; i < RawPaths.Count; i++)
+                {
+                    RawPaths[i] = Encode(RawPaths[i]);
+                }
+                RawUrlPathParts = RawPaths;
             }
         }
 
@@ -597,20 +619,17 @@ namespace IronWASP
             {
                 string ContentType = this.Headers.Get("Content-Type");
                 int Loc = ContentType.IndexOf("charset=");
-                if (Loc >= 0)
+                string Charset = Tools.GetCharsetFromContentType(ContentType);                
+                if (Charset.Length > 0)
                 {
-                    string Charset = ContentType.Substring(Loc + 8).Trim();
-                    if (Charset.Length > 0)
+                    try
                     {
-                        try
-                        {
-                            Encoding.GetEncoding(Charset);
-                            return Charset;
-                        }
-                        catch
-                        {
-                            return this.DefaultBodyCharset;
-                        }
+                        Encoding.GetEncoding(Charset);
+                        return Charset;
+                    }
+                    catch
+                    {
+                        return this.DefaultBodyCharset;
                     }
                 }
             }
@@ -1228,6 +1247,21 @@ namespace IronWASP
                 if (Sess.Request != null) Requests.Add(Sess.Request);
             }
             return Requests;
+        }
+
+        string Encode(string Value)
+        {
+            return Tools.UrlEncode(Value);
+        }
+
+        string Decode(string Value)
+        {
+            return Tools.UrlDecode(Value);
+        }
+
+        string SafeRaw(string Value)
+        {
+            return Tools.RelaxedUrlEncode(Value);
         }
     }
 }

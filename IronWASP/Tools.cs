@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 using System;
@@ -105,6 +105,7 @@ namespace IronWASP
             Text = Text.Replace("<i</hlo>>", " \\highlight0 ");
             return Text;
         }
+
         public static string RelaxedUrlEncode(string Input)
         {
             StringBuilder SB = new StringBuilder();
@@ -129,6 +130,78 @@ namespace IronWASP
                         break;
                     case '=':
                         SB.Append("%3d");
+                        break;
+                    case '\r':
+                        SB.Append("%0d");
+                        break;
+                    case '\n':
+                        SB.Append("%0a");
+                        break;
+                    case '\t':
+                        SB.Append("%09");
+                        break;
+                    case '\0':
+                        SB.Append("%00");
+                        break;
+                    default:
+                        SB.Append(Input[i]);
+                        break;
+                }
+            }
+            return SB.ToString();
+        }
+
+        public static string RelaxedCookieEncode(string Input)
+        {
+            StringBuilder SB = new StringBuilder();
+            for (int i = 0; i < Input.Length; i++)
+            {
+                switch (Input[i])
+                {
+                    case ' ':
+                        SB.Append("%20");
+                        break;
+                    case ';':
+                        SB.Append("%3b");
+                        break;
+                    case ',':
+                        SB.Append("%2c");
+                        break;
+                    case '\r':
+                        SB.Append("%0d");
+                        break;
+                    case '\n':
+                        SB.Append("%0a");
+                        break;
+                    case '\t':
+                        SB.Append("%09");
+                        break;
+                    case '\0':
+                        SB.Append("%00");
+                        break;
+                    default:
+                        SB.Append(Input[i]);
+                        break;
+                }
+            }
+            return SB.ToString();
+        }
+
+        public static string HeaderEncode(string Input)
+        {
+            StringBuilder SB = new StringBuilder();
+            for (int i = 0; i < Input.Length; i++)
+            {
+                switch (Input[i])
+                {
+                    case '\r':
+                        SB.Append("%0d");
+                        break;
+                    case '\n':
+                        SB.Append("%0a");
+                        break;
+                    case '\0':
+                        SB.Append("%00");
                         break;
                     default:
                         SB.Append(Input[i]);
@@ -461,6 +534,32 @@ namespace IronWASP
             return true;
         }
 
+        public static bool IsCss(string Text)
+        {
+            string TrimmedText = Text.Trim();
+            if (TrimmedText.StartsWith("<") || TrimmedText.StartsWith("{") || TrimmedText.StartsWith("[") || TrimmedText.EndsWith(">"))
+                return false;
+            if (!(TrimmedText.Contains("{") || TrimmedText.Contains("}") || TrimmedText.Contains(":") || TrimmedText.Contains(";") || TrimmedText.Contains("@")))
+                return false;
+
+            CssFx.CssStyleSheet ParsedCss = IronCss.Parse(Text);
+            if (ParsedCss == null)
+            {
+                return false;
+            }
+            else
+            {
+                if (ParsedCss.Statements.Count > 0 || ParsedCss.Comments.Count > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         public static bool IsJson(string Text)
         {
             string TrimmedText = Text.Trim();
@@ -498,6 +597,7 @@ namespace IronWASP
             }
         }
 
+
         public static bool IsBinary(byte[] Bytes)
         {
             if (Bytes.Length > 10)
@@ -509,6 +609,17 @@ namespace IronWASP
                 if (Bytes[0] == 37 && Bytes[1] == 80 && Bytes[2] == 68 && Bytes[3] == 70) return true;//pdf
             }
             return false;
+        }
+
+        public static string GetCharsetFromContentType(string ContentType)
+        {
+            string Charset = "";
+            int Loc = ContentType.IndexOf("charset=");
+            if (Loc >= 0)
+            {
+                Charset = ContentType.Substring(Loc + 8).Trim();
+            }
+            return Charset;
         }
 
         public static string Shell(string Command)
@@ -547,135 +658,22 @@ namespace IronWASP
             Process.Start(Executable);
         }
 
-        public static string SyncJsonObjectTypes(string OldJson, string NewJson)
+        public static int GetPercent(int One, int Two)
         {
-            StringReader NSR = new StringReader(NewJson);
-            JsonTextReader New = new JsonTextReader(NSR);
-            StringReader OSR = new StringReader(OldJson);
-            JsonTextReader Old = new JsonTextReader(OSR);
-            StringWriter SW = new StringWriter();
-            JsonTextWriter Writer = new JsonTextWriter(SW);
-            while (New.Read() && Old.Read())
+            Double O;
+            Double T;
+            if (Two > One)
             {
-                if ((Old.TokenType == JsonToken.Integer) && (New.TokenType != JsonToken.Integer))
-                {
-                    int NewIntValue = 0;
-                    if (Int32.TryParse(New.Value.ToString(), out NewIntValue))
-                    {
-                        Writer.WriteValue(NewIntValue);
-                    }
-                    else
-                    {
-                        Writer.WriteValue(New.Value);
-                    }
-                }
-                else if ((Old.TokenType == JsonToken.Float) && (New.TokenType != JsonToken.Float))
-                {
-                    float NewFloatValue = 0;
-                    if (float.TryParse(New.Value.ToString(), out NewFloatValue))
-                    {
-                        Writer.WriteValue(NewFloatValue);
-                    }
-                    else
-                    {
-                        Writer.WriteValue(New.Value);
-                    }
-                }
-                else if ((Old.TokenType == JsonToken.Boolean) && (New.TokenType != JsonToken.Boolean))
-                {
-                    string Value = New.Value.ToString();
-                    if (Value.Equals("true"))
-                    {
-                        Writer.WriteValue(true);
-                    }
-                    else if (Value.Equals("false"))
-                    {
-                        Writer.WriteValue(false);
-                    }
-                    else
-                    {
-                        Writer.WriteValue(New.Value);
-                    }
-                }
-                else if ((Old.TokenType == JsonToken.String) && (New.TokenType == JsonToken.Null))
-                {
-                    Writer.WriteValue("");
-                }
-                else if ((Old.TokenType == JsonToken.StartArray) && (New.TokenType == JsonToken.String))
-                {
-                    Old.Read();
-                    if (Old.TokenType == JsonToken.EndArray)
-                    {
-                        Writer.WriteValue(JsonToken.StartArray);
-                        if (New.Value.ToString() != "") Writer.WriteValue(New.Value);
-                        Writer.WriteValue(JsonToken.EndArray);
-                    }
-                    else
-                    {
-                        Writer.WriteValue(New.Value);
-                    }
-                }
-                else
-                {
-                    if (Old.TokenType != New.TokenType)
-                    {
-                        Writer.Close();
-                        New.Close();
-                        Old.Close();
-                        return NewJson;
-                    }
-                    else if (New.TokenType == JsonToken.PropertyName)
-                    {
-                        if (Old.Value == null || New.Value == null)
-                        {
-                            Writer.Close();
-                            New.Close();
-                            Old.Close();
-                            return NewJson;
-                        }
-                        else if (!Old.Value.ToString().Equals(New.Value.ToString()))
-                        {
-                            Writer.Close();
-                            New.Close();
-                            Old.Close();
-                            return NewJson;
-                        }
-                    }
-                    switch (New.TokenType)
-                    {
-                        case JsonToken.StartConstructor:
-                            Writer.WriteStartConstructor("");
-                            break;
-                        case JsonToken.EndConstructor:
-                            Writer.WriteEndConstructor();
-                            break;
-                        case JsonToken.StartObject:
-                            Writer.WriteStartObject();
-                            break;
-                        case JsonToken.EndObject:
-                            Writer.WriteEndObject();
-                            break;
-                        case JsonToken.StartArray:
-                            Writer.WriteStartArray();
-                            break;
-                        case JsonToken.EndArray:
-                            Writer.WriteEndArray();
-                            break;
-                        case JsonToken.PropertyName:
-                            Writer.WritePropertyName(New.Value.ToString());
-                            break;
-                        case JsonToken.String:
-                        case JsonToken.Integer:
-                        case JsonToken.Boolean:
-                        case JsonToken.Date:
-                        case JsonToken.Null:
-                        case JsonToken.Float:
-                            Writer.WriteValue(New.Value);
-                            break;
-                    }
-                }
+                O = (Double)One;
+                T = (Double)Two;
             }
-            return SW.ToString();
+            else
+            {
+                O = (Double)Two;
+                T = (Double)One;
+            }
+            int Per = (int)((O / T) * 100.0);
+            return 100 - Per;
         }
     }
 }

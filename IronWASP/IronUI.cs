@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 using System;
@@ -1584,6 +1584,8 @@ namespace IronWASP
                 {
                     ResetProxyRequestDisplayFields();
                     FillProxyFields(Request);
+                    IronProxy.ResetChangedStatus();
+                    IronProxy.RequestChanged = true;//only then the edited request will be updated in the logs
                 }
                 catch (Exception Exp)
                 {
@@ -1622,6 +1624,8 @@ namespace IronWASP
                 {
                     ResetProxyResponseDisplayFields();
                     FillProxyFields(Response);
+                    IronProxy.ResetChangedStatus();
+                    IronProxy.ResponseChanged = true;//only then the edited response will be updated in the logs
                 }
                 catch (Exception Exp)
                 {
@@ -2110,7 +2114,7 @@ namespace IronWASP
         internal static void UpdateScanTabsWithRequestData()
         {
             UI.ASRequestScanURLGrid.Rows.Clear();
-            List<string> URLParts = Scanner.CurrentScanner.OriginalRequest.URLPathParts;
+            List<string> URLParts = Scanner.CurrentScanner.OriginalRequest.UrlPathParts;
             for (int i = 0; i < URLParts.Count; i++)
             {
                 UI.ASRequestScanURLGrid.Rows.Add(new object[] { false, i + 1, URLParts[i] });
@@ -4545,10 +4549,16 @@ namespace IronWASP
             }
             else
             {
+                IronUI.DW.DiffResultRTB.Text = "";
+                IronUI.DW.SourceResultRTB.Text = "";
+                IronUI.DW.DestinationResultRTB.Text = "";
+                
                 IronUI.DW.DiffResultRTB.Rtf = SinglePage;
-                IronUI.DW.SourceResultRTB.Rtf = SideBySideSource;
+                IronUI.DW.SourceResultRTB.Rtf = SideBySideSource;                
                 IronUI.DW.DestinationResultRTB.Rtf = SideBySideDestination;
+
                 IronUI.DW.DiffStatusTB.Text = Status;
+
                 if (Status.Length == 0 || Status.StartsWith("Done. Diff Level - ")) IronUI.DW.BaseTabs.SelectedIndex = 1;
                 IronUI.DW.DiffWindowShowDiffBtn.Enabled = true;
             }

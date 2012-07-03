@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 using System;
@@ -53,11 +53,13 @@ namespace IronWASP
         string bodyEncoding = "ISO-8859-1";
         List<SetCookie> setCookies = new List<SetCookie>();
         string DefaultEncoding = "ISO-8859-1";
+        bool isCharsetSet = false;
         bool isSSlValid = true;
         bool isHtml = false;
         bool isJavaScript = false;
         bool isJson = false;
         bool isXml = false;
+        bool isCss = false;
 
         internal int TTL = 0;
 
@@ -156,6 +158,14 @@ namespace IronWASP
             }
         }
 
+        public bool IsCharsetSet
+        {
+            get
+            {
+                return this.isCharsetSet;
+            }
+        }
+
         public bool HasBody
         {
             get
@@ -201,6 +211,14 @@ namespace IronWASP
             get
             {
                 return isXml;
+            }
+        }
+
+        public bool IsCss
+        {
+            get
+            {
+                return isCss;
             }
         }
 
@@ -449,17 +467,40 @@ namespace IronWASP
 
         string GetEncoding(string BodyString)
         {
+            
+            string ParsedEnc = ParseOutEncoding(BodyString);
+            if (ParsedEnc == "")
+            {
+                isCharsetSet = false;
+                this.bodyEncoding = DefaultEncoding;
+                ParsedEnc = DefaultEncoding;
+            }
+            else
+            {
+                isCharsetSet = true;
+                this.bodyEncoding = ParsedEnc;
+            }
+            return ParsedEnc;
+        }
+
+        public string ParseOutEncoding()
+        {
+            return this.ParseOutEncoding(this.BodyString);
+        }
+
+        string ParseOutEncoding(string BodyString)
+        {
             try
             {
-                int Loc = this.ContentType.IndexOf("charset=");
-                if (Loc >= 0)
+                string Charset = Tools.GetCharsetFromContentType(this.ContentType);
+                if (Charset.Length > 0)
                 {
-                    string Charset = this.ContentType.Substring(Loc + 8).Trim();
-                    if (Charset.Length > 0)
+                    try
                     {
                         Encoding.GetEncoding(Charset);
                         return Charset;
                     }
+                    catch{}
                 }
                 //http://www.w3.org/International/questions/qa-html-encoding-declarations
                 //HTML4
@@ -470,8 +511,12 @@ namespace IronWASP
                 {
                     if (M.Groups[1].Value.Length > 0)
                     {
-                        Encoding.GetEncoding(M.Groups[1].Value);
-                        return M.Groups[1].Value;
+                        try
+                        {
+                            Encoding.GetEncoding(M.Groups[1].Value);
+                            return M.Groups[1].Value;
+                        }
+                        catch { }
                     }
                 }
                 //HTML5
@@ -481,8 +526,12 @@ namespace IronWASP
                 {
                     if (M.Groups[1].Value.Length > 0)
                     {
-                        Encoding.GetEncoding(M.Groups[1].Value);
-                        return M.Groups[1].Value;
+                        try
+                        {
+                            Encoding.GetEncoding(M.Groups[1].Value);
+                            return M.Groups[1].Value;
+                        }
+                        catch { }
                     }
                 }
                 //XHTML 1 as XML
@@ -492,16 +541,20 @@ namespace IronWASP
                 {
                     if (M.Groups[1].Value.Length > 0)
                     {
-                        Encoding.GetEncoding(M.Groups[1].Value);
-                        return M.Groups[1].Value;
+                        try
+                        {
+                            Encoding.GetEncoding(M.Groups[1].Value);
+                            return M.Groups[1].Value;
+                        }
+                        catch { }
                     }
                 }
             }
             catch
             {
-                return DefaultEncoding;
+                return "";
             }
-            return DefaultEncoding;
+            return "";
         }
         
         public string GetHeadersAsString()
@@ -538,6 +591,7 @@ namespace IronWASP
             this.isHtml = false;
             this.isJavaScript = false;
             this.isXml = false;
+            this.isCss = false;
 
             string LowerCaseBodyString = this.BodyString.Trim().ToLower();
 
@@ -580,6 +634,11 @@ namespace IronWASP
                     if (Tools.IsJavaScript(this.BodyString))
                     {
                         this.isJavaScript = true;
+                        return;
+                    }
+                    if (Tools.IsCss(this.BodyString))
+                    {
+                        this.isCss = true;
                         return;
                     }
                     if (this.ProcessHtml())

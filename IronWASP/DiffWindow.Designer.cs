@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 namespace IronWASP
@@ -216,7 +216,6 @@ namespace IronWASP
             this.DiffDestinationTB.MaxLength = 2147483647;
             this.DiffDestinationTB.Multiline = true;
             this.DiffDestinationTB.Name = "DiffDestinationTB";
-            this.DiffDestinationTB.ReadOnly = true;
             this.DiffDestinationTB.Size = new System.Drawing.Size(676, 220);
             this.DiffDestinationTB.TabIndex = 4;
             // 

@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with IronWASP.  If not, see <http://www.gnu.org/licenses/>.
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
 //
 
 using System;
@@ -642,6 +642,12 @@ namespace IronWASP
             IronProxy.CurrentSession.FiddlerSession.utilSetRequestBody(IronProxy.CurrentSession.Request.BodyString);
         }
 
+        internal static void UpdateFiddlerSessionWithNewRequest()
+        {
+            IronProxy.CurrentSession.FiddlerSession.oRequest.headers.AssignFromString(IronProxy.CurrentSession.Request.GetHeadersAsString());
+            IronProxy.CurrentSession.FiddlerSession.requestBodyBytes = IronProxy.CurrentSession.Request.BodyArray;
+        }
+
         internal static void UpdateCurrentSessionWithNewResponseHeader(string HeaderString)
         {
             string NewResponseHeaders = HeaderString.TrimEnd(new char[]{'\r','\n'});
@@ -657,6 +663,12 @@ namespace IronWASP
         {
             IronProxy.CurrentSession.Response.BodyString = BodyString;
             IronProxy.CurrentSession.FiddlerSession.utilSetResponseBody(IronProxy.CurrentSession.Response.BodyString);
+        }
+
+        internal static void UpdateFiddlerSessionWithNewResponse()
+        {
+            IronProxy.CurrentSession.FiddlerSession.oResponse.headers.AssignFromString(IronProxy.CurrentSession.Response.GetHeadersAsString());
+            IronProxy.CurrentSession.FiddlerSession.responseBodyBytes = IronProxy.CurrentSession.Response.BodyArray;
         }
 
         internal static void ForwardInterceptedMessage()
@@ -1299,8 +1311,10 @@ namespace IronWASP
                 PluginName = Plugin.Name;
                 string XML = BFP.XML;
 
-                Request NewRequest = Plugin.ToRequestFromXml(Request, XML);
-                IronUI.FillProxyRequestWithNewRequestFromFormatXML(NewRequest, PluginName);
+                Request = Plugin.ToRequestFromXml(Request, XML);
+                IronProxy.CurrentSession.Request = Request;
+                IronProxy.UpdateFiddlerSessionWithNewRequest();
+                IronUI.FillProxyRequestWithNewRequestFromFormatXML(Request, PluginName);
             }
             catch (ThreadAbortException)
             {
@@ -1361,9 +1375,10 @@ namespace IronWASP
                 FormatPlugin Plugin = BFP.Plugin;
                 PluginName = Plugin.Name;
                 string XML = BFP.XML;
-
-                Response NewResponse = Plugin.ToResponseFromXml(Response, XML);
-                IronUI.FillProxyResponseWithNewResponseFromFormatXML(NewResponse, PluginName);
+                IronProxy.CurrentSession.Response = Response;
+                Response = Plugin.ToResponseFromXml(Response, XML);
+                IronProxy.UpdateFiddlerSessionWithNewResponse();
+                IronUI.FillProxyResponseWithNewResponseFromFormatXML(Response, PluginName);
             }
             catch (ThreadAbortException)
             {
