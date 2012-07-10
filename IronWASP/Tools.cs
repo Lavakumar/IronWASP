@@ -221,7 +221,43 @@ namespace IronWASP
         }
         public static string UrlPathEncode(string Input)
         {
-            return HttpUtility.UrlPathEncode(Input);
+            string Path = "";
+            string Query = "";
+         
+            if (Input.Contains("?"))
+            {
+                string[] InputParts = Input.Split(new char[] { '?' }, 2);
+                if (InputParts.Length == 2)
+                {
+                    Path = InputParts[0];
+                    Query = InputParts[1];
+                }
+                else
+                {
+                    Path = Input;
+                }
+            }
+            else
+            {
+                Path = Input;
+            }
+            Path = Path.Replace("%2f","/").Replace("%2F","/");
+            StringBuilder SB = new StringBuilder();
+            SB.Append(Path);
+            if (Query.Length > 0 || Input.EndsWith("?"))
+            {
+                 SB.Append("?");
+            }
+            SB.Append(Query);
+            string ProcessedInput = SB.ToString();
+            return HttpUtility.UrlPathEncode(ProcessedInput);
+        }
+        public static string UrlPathPartEncode(string Input)
+        {
+            Input = Input.Replace("~", "%7e").Replace("/", "%2f");
+            string EncodedInput = HttpUtility.UrlEncode(Input);
+            EncodedInput = EncodedInput.Replace("+", "%20");//Server treats + in Url Path Part as + instead of space. %20 is the right representation. + is ok for Query.
+            return HttpUtility.UrlEncode(EncodedInput);
         }
         public static string HtmlEncode(string Input)
         {

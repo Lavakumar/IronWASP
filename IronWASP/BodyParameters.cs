@@ -122,7 +122,22 @@ namespace IronWASP
 
         public string RawGet(string Name)
         {
-            return base.Get(SafeRaw(Name));
+            try
+            {
+                return base.Get(SafeRaw(Name));
+            }
+            catch(Exception Exp)
+            {
+                if (Exp.Message.Equals("Parameter not found"))
+                {
+                    //lets check if the name is available in decoded form
+                    return base.Get(Decode(Name));
+                }
+                else
+                {
+                    throw Exp;
+                }
+            }
         }
         new public string Get(string Name)
         {
@@ -131,7 +146,22 @@ namespace IronWASP
 
         public List<string> RawGetAll(string Name)
         {
-            return base.GetAll(SafeRaw(Name));
+            try
+            {
+                return base.GetAll(SafeRaw(Name));
+            }
+            catch(Exception Exp)
+            {
+                if (Exp.Message.Equals("Parameter not found"))
+                {
+                    //lets check if the name is available in decoded form
+                    return base.GetAll(Decode(Name));
+                }
+                else
+                {
+                    throw Exp;
+                }
+            }
         }
         new public List<string> GetAll(string Name)
         {

@@ -187,29 +187,29 @@ namespace IronWASP
             }
         }
 
-        new void AbsorbParametersFromString(string RawString, char Splitter)
-        {
-            if (RawString.Length > 0)
-            {
-                string[] RawParameters = RawString.Split(Splitter);
-                foreach (string RequestParameter in RawParameters)
-                {
-                    string[] ParameterParts = RequestParameter.Split(new char[] { '=' }, 2);
-                    if (ParameterParts.Length == 2)
-                    {
-                        this.Add(ParameterParts[0].Trim(), ParameterParts[1].Trim());
-                    }
-                    else if (ParameterParts.Length == 1)
-                    {
-                        this.Add(ParameterParts[0].Trim(), "");
-                    }
-                }
-            }
-            else
-            {
-                base.RemoveAll();
-            }
-        }
+        //new void AbsorbParametersFromString(string RawString, char Splitter)
+        //{
+        //    if (RawString.Length > 0)
+        //    {
+        //        string[] RawParameters = RawString.Split(Splitter);
+        //        foreach (string RequestParameter in RawParameters)
+        //        {
+        //            string[] ParameterParts = RequestParameter.Split(new char[] { '=' }, 2);
+        //            if (ParameterParts.Length == 2)
+        //            {
+        //                this.RawAdd(ParameterParts[0].Trim(), ParameterParts[1].Trim());
+        //            }
+        //            else if (ParameterParts.Length == 1)
+        //            {
+        //                this.RawAdd(ParameterParts[0].Trim(), "");
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        base.RemoveAll();
+        //    }
+        //}
 
         void ProcessUpdate()
         {

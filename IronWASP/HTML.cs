@@ -561,18 +561,20 @@ namespace IronWASP
                     }
                 }
             }
-            if (WrapInLineCss)
+            List<string> InLineCssStrings = this.GetValues("*", "style");
+            foreach (string InLineCssString in InLineCssStrings)
             {
-                List<string> InLineCssStrings = new List<string>();
-                InLineCssStrings.AddRange(this.GetValues("*", "style"));
-                foreach (string InLineCssString in InLineCssStrings)
+                if (Keyword.Length == 0 || InLineCssString.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    CssStrings.Add(string.Format("x{{{0}}}", InLineCssString));
+                    if (WrapInLineCss)
+                    {
+                        CssStrings.Add(string.Format("x{{{0}}}", InLineCssString));
+                    }
+                    else
+                    {
+                        CssStrings.Add(InLineCssString);
+                    }
                 }
-            }
-            else
-            {
-                CssStrings.AddRange(this.GetValues("*", "style"));
             }
             return CssStrings;
         }

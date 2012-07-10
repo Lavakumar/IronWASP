@@ -108,7 +108,7 @@ namespace IronWASP
             }
             set
             {
-                this.AbsorbFullURL(value.Replace(" ","%20"));
+                this.AbsorbFullURL(value);
             }
         }
         //for ruby naming convention
@@ -466,7 +466,7 @@ namespace IronWASP
                 List<string> RawPaths = new List<string>(value);
                 for (int i = 0; i < RawPaths.Count; i++)
                 {
-                    RawPaths[i] = Encode(RawPaths[i]);
+                    RawPaths[i] = PathPartEncode(RawPaths[i]);
                 }
                 RawUrlPathParts = RawPaths;
             }
@@ -1249,9 +1249,9 @@ namespace IronWASP
             return Requests;
         }
 
-        string Encode(string Value)
+        string PathPartEncode(string Value)
         {
-            return Tools.UrlEncode(Value);
+            return Tools.UrlPathPartEncode(Value);
         }
 
         string Decode(string Value)

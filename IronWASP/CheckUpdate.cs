@@ -27,7 +27,7 @@ namespace IronWASP
 {
     class CheckUpdate
     {
-        static string CurrentVersion = "0.9.1.0";
+        static string CurrentVersion = "0.9.1.2";
 
         static string PluginManifestUrl = "https://ironwasp.org/update/plugin.manifest";
         static string IronWASPManifestUrl = "https://ironwasp.org/update/ironwasp.manifest";
@@ -157,7 +157,7 @@ namespace IronWASP
             }
             foreach (string[] PluginManifestInfoLine in PluginManifestInfo)
             {
-                if (PluginManifestInfoLine[0].Equals("+") || PluginManifestInfoLine[0].Equals("*"))
+                if (PluginManifestInfoLine[0].StartsWith("+") || PluginManifestInfoLine[0].StartsWith("*"))
                 {
                     bool MatchFound = false;
                     foreach (string[] CurrentPluginLineInfo in CurrentPluginInfo)
@@ -170,6 +170,19 @@ namespace IronWASP
                                 DownloadPlugin(PluginManifestInfoLine[1], PluginManifestInfoLine[3], PluginManifestInfoLine[4]);
                             }
                             break;
+                        }
+                        else if (PluginManifestInfoLine[0].Contains("_"))
+                        {
+                            string[] SupportDetailParts = PluginManifestInfoLine[0].Split(new char[] { '_' }, 2);
+                            if (PluginManifestInfoLine[1].Equals(CurrentPluginLineInfo[0]) && SupportDetailParts[1].Equals(CurrentPluginLineInfo[2]))
+                            {
+                                MatchFound = true;
+                                if (!PluginManifestInfoLine[2].Equals(CurrentPluginLineInfo[1]))
+                                {
+                                    DownloadPlugin(PluginManifestInfoLine[1], PluginManifestInfoLine[3], PluginManifestInfoLine[4]);
+                                }
+                                break;
+                            }
                         }
                     }
                     if (!MatchFound)

@@ -120,7 +120,7 @@ namespace IronWASP
             this.AboutFormVersionTB.ReadOnly = true;
             this.AboutFormVersionTB.Size = new System.Drawing.Size(166, 23);
             this.AboutFormVersionTB.TabIndex = 3;
-            this.AboutFormVersionTB.Text = "Installed Version: 0.9.1.0";
+            this.AboutFormVersionTB.Text = "Installed Version: 0.9.1.2";
             // 
             // panel2
             // 
