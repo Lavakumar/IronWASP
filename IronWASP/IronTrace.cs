@@ -38,6 +38,9 @@ namespace IronWASP
         internal string Parameter = "";
         internal string Title = "";
 
+        internal static int ScanTraceMin = 0;
+        internal static int ScanTraceMax = 0;
+
         string Type = "Normal";
 
         internal IronTrace()
@@ -78,6 +81,75 @@ namespace IronWASP
             {
                 IronUpdater.AddScanTrace(this);
             }
+        }
+
+        internal static void MoveScanTraceRecordForward(int JumpLevel)
+        {
+            IronUI.ShowScanTraceStatus("Loading please wait....", false);
+            Thread T = new Thread(MoveScanTraceRecordForward);
+            T.Start(JumpLevel);
+        }
+        internal static void MoveScanTraceRecordForward(object JumpLevelObj)
+        {
+            int JumpLevel = (int)JumpLevelObj;
+            List<IronTrace> Records = GetNextScanTraceRecords(JumpLevel);
+            if (Records.Count == 0) return;
+            IronUI.SetScanTraceGrid(Records);
+        }
+        internal static List<IronTrace> GetNextScanTraceRecords(int JumpLevel)
+        {
+            int JumpCount = IronLog.GetJumpCount(JumpLevel);
+            int StartIndex = IronTrace.ScanTraceMax + JumpCount;
+            List<IronTrace> Records = IronDB.GetScanTraceRecords(StartIndex, IronLog.MaxRowCount);
+            if (Records.Count == 0)
+            {
+                if (JumpLevel == 1)
+                    IronUI.ShowScanTraceStatus(string.Format("Reached end of Scan Traces", StartIndex), true);
+                else
+                    IronUI.ShowScanTraceStatus(string.Format("No Scan Traces with ID above {0}. Try a smaller value.", StartIndex), true);
+            }
+            return Records;
+        }
+
+
+        internal static void MoveScanTraceRecordBack(int JumpLevel)
+        {
+            IronUI.ShowScanTraceStatus("Loading please wait....", false);
+            Thread T = new Thread(MoveScanTraceRecordBack);
+            T.Start(JumpLevel);
+        }
+        internal static void MoveScanTraceRecordBack(object JumpLevelObj)
+        {
+            int JumpLevel = (int)JumpLevelObj;
+            List<IronTrace> Records = GetPreviousScanTraceRecords(JumpLevel);
+            if (Records.Count == 0) return;
+            IronUI.SetScanTraceGrid(Records);
+        }
+
+        internal static List<IronTrace> GetPreviousScanTraceRecords(int JumpLevel)
+        {
+            List<IronTrace> Records = new List<IronTrace>();
+            int CurrentMin = IronTrace.ScanTraceMin;
+            int JumpCount = IronLog.GetJumpCount(JumpLevel);
+            if (CurrentMin <= 1)
+            {
+                IronUI.ShowScanTraceStatus("Reached beginning of the log. Cannot go back further.", true);
+                return Records;
+            }
+            int StartIndex = CurrentMin - IronLog.MaxRowCount - JumpCount - 1;
+            Records = IronDB.GetScanTraceRecords(StartIndex, IronLog.MaxRowCount);
+            return Records;
+        }
+
+        static int[] GetScanTraceMinMaxIds(List<IronTrace> Records)
+        {
+            int[] MinMax = new int[] { 0, 0 };
+            if (Records.Count > 0)
+            {
+                MinMax[0] = Records[0].ID;
+                MinMax[1] = Records[Records.Count - 1].ID;
+            }
+            return MinMax;
         }
     }
 }

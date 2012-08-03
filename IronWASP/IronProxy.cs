@@ -1008,37 +1008,40 @@ namespace IronWASP
                         break;
                 }
 
-                if(Res.ContentType.ToLower().Contains("html"))
+                if (Res.BodyLength > 0)
                 {
-                    if(!InterceptHTML) return false;
-                }
-                else if(Res.ContentType.ToLower().Contains("css"))
-                {
-                    if(!InterceptCSS) return false;
-                }
-                else if(Res.ContentType.ToLower().Contains("javascript"))
-                {
-                    if(!InterceptJS) return false;
-                }
-                else if(Res.ContentType.ToLower().Contains("xml"))
-                {
-                    if(!InterceptXML) return false;
-                }
-                else if (Res.ContentType.ToLower().Contains("json"))
-                {
-                    if (!InterceptJSON) return false;
-                }
-                else if(Res.ContentType.ToLower().Contains("text"))
-                {
-                    if(!InterceptOtherText) return false;
-                }
-                else if(Res.ContentType.ToLower().Contains("jpg") || Res.ContentType.ToLower().Contains("png") || Res.ContentType.ToLower().Contains("jpeg") || Res.ContentType.ToLower().Contains("gif") || Res.ContentType.ToLower().Contains("ico"))
-                {
-                    if(!InterceptImg) return false;
-                }
-                else
-                {
-                    if(!InterceptOtherBinary) return false;
+                    if (Res.ContentType.ToLower().Contains("html"))
+                    {
+                        if (!InterceptHTML) return false;
+                    }
+                    else if (Res.ContentType.ToLower().Contains("css"))
+                    {
+                        if (!InterceptCSS) return false;
+                    }
+                    else if (Res.ContentType.ToLower().Contains("javascript"))
+                    {
+                        if (!InterceptJS) return false;
+                    }
+                    else if (Res.ContentType.ToLower().Contains("xml"))
+                    {
+                        if (!InterceptXML) return false;
+                    }
+                    else if (Res.ContentType.ToLower().Contains("json"))
+                    {
+                        if (!InterceptJSON) return false;
+                    }
+                    else if (Res.ContentType.ToLower().Contains("text"))
+                    {
+                        if (!InterceptOtherText) return false;
+                    }
+                    else if (Res.ContentType.ToLower().Contains("jpg") || Res.ContentType.ToLower().Contains("png") || Res.ContentType.ToLower().Contains("jpeg") || Res.ContentType.ToLower().Contains("gif") || Res.ContentType.ToLower().Contains("ico"))
+                    {
+                        if (!InterceptImg) return false;
+                    }
+                    else
+                    {
+                        if (!InterceptOtherBinary) return false;
+                    }
                 }
                 
                 //Check Keyword
@@ -1067,7 +1070,7 @@ namespace IronWASP
             return true;
         }
 
-        internal static bool CanDisplayRowInLogDisplay(string Method, string Host, string FileExtension, int Code, string ContentType)
+        internal static bool CanDisplayRowInLogDisplay(string Method, string Host, string FileExtension, int Code, string ContentType, bool IgnoreContentType)
         {
             if (Method != null)
             {
@@ -1202,7 +1205,7 @@ namespace IronWASP
                         break;
                 }
             }
-            if (ContentType != null)
+            if (ContentType != null && !IgnoreContentType)
             {
                 if (ContentType.ToLower().Contains("html"))
                 {

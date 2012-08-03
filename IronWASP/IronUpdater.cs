@@ -860,7 +860,7 @@ namespace IronWASP
             if (TraceList.Count > 0)
             {
                 IronDB.LogScanTraces(TraceList);
-                IronUI.UpdateScanTraceGrid(TraceList);
+                IronUI.SetScanTraceGrid(TraceList);
             }
         }
 

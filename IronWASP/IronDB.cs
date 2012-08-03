@@ -1645,6 +1645,159 @@ namespace IronWASP
             return IronLogRecords;
         }
 
+        public static List<LogRow> GetRecordsFromProxyLog(int StartIndex, int Count)
+        {
+            string DataSource = "data source=" + ProxyLogFile;
+            string Cmd = "SELECT ID , SSL, HostName, Method, URL, Edited, File, Parameters, BinaryRequest, BinaryOriginalRequest, Code, Length, MIME, SetCookie, BinaryResponse, BinaryOriginalResponse FROM ProxyLog WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
+            return GetRecordsFromDB(DataSource, Cmd, "proxy", StartIndex, Count);
+        }
+        public static List<LogRow> GetRecordsFromTestLog(int StartIndex, int Count)
+        {
+            string DataSource = "data source=" + TestLogFile;
+            string Cmd = "SELECT ID, SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse FROM TestLog WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
+            return GetRecordsFromDB(DataSource, Cmd, "test", StartIndex, Count);
+        }
+        public static List<LogRow> GetRecordsFromShellLog(int StartIndex, int Count)
+        {
+            string DataSource = "data source=" + ShellLogFile;
+            string Cmd = "SELECT ID , SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse FROM ShellLog WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
+            return GetRecordsFromDB(DataSource, Cmd, "shell", StartIndex, Count);
+        }
+        public static List<LogRow> GetRecordsFromProbeLog(int StartIndex, int Count)
+        {
+            string DataSource = "data source=" + ProbeLogFile;
+            string Cmd = "SELECT ID , SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse FROM ProbeLog WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
+            return GetRecordsFromDB(DataSource, Cmd, "probe", StartIndex, Count);
+        }
+        public static List<LogRow> GetRecordsFromScanLog(int StartIndex, int Count)
+        {
+            string DataSource = "data source=" + ScanLogFile;
+            string Cmd = "SELECT ID , ScanID, SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse FROM ScanLog WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
+            return GetRecordsFromDB(DataSource, Cmd, "scan", StartIndex, Count);
+        }
+
+        static List<LogRow> GetRecordsFromDB(string DataSource, string CmdString, string LogType, int StartIndex, int Count)
+        {
+            List<LogRow> IronLogRecords = new List<LogRow>();
+            SQLiteConnection DB = new SQLiteConnection(DataSource);
+            DB.Open();
+            try
+            {
+                SQLiteCommand cmd = DB.CreateCommand();
+                cmd.CommandText = CmdString;
+                cmd.Parameters.AddWithValue("@ID", StartIndex);
+                cmd.Parameters.AddWithValue("@LIMIT", Count);
+                SQLiteDataReader result = cmd.ExecuteReader();
+                while (result.Read())
+                {
+                    try
+                    {
+                        LogRow LR = new LogRow();
+                        try { LR.ID = Int32.Parse(result["ID"].ToString()); }
+                        catch { continue; }
+                        if (LogType.Equals("scan"))
+                        {
+                            try { LR.ScanID = Int32.Parse(result["ScanID"].ToString()); }
+                            catch { continue; }
+                        }
+                        if (LogType.Equals("proxy"))LR.Editied = result["Edited"].ToString().Equals("1");
+                        LR.Host = result["HostName"].ToString();
+                        LR.Method = result["Method"].ToString();
+                        LR.Url = result["URL"].ToString();
+                        LR.File = result["File"].ToString();
+                        LR.SSL = result["SSL"].ToString().Equals("1");
+                        LR.Parameters = result["Parameters"].ToString();
+                        try
+                        { LR.Code = Int32.Parse(result["Code"].ToString()); }
+                        catch { LR.Code = -1; }
+                        try
+                        { LR.Length = Int32.Parse(result["Length"].ToString()); }
+                        catch { LR.Length = 0; }
+                        LR.Mime = result["MIME"].ToString();
+                        LR.SetCookie = result["SetCookie"].ToString().Equals("1");
+                        IronLogRecords.Add(LR);
+                    }
+                    catch { }
+                }
+                result.Close();
+            }
+            catch (Exception Exp)
+            {
+                DB.Close();
+                throw Exp;
+            }
+            DB.Close();
+            return IronLogRecords;
+        }
+
+        public static List<LogRow> GetRecordsFromProxyLogForUrl(string Host, string Url, int StartIndex, int Count)
+        {
+            string DataSource = "data source=" + ScanLogFile;
+            string Cmd = "SELECT ID , SSL, Method, URL, File, Parameters, Code, Length, MIME, SetCookie FROM ProxyLog WHERE HostName=@HostName and URL LIKE @URL ID>@ID ORDER BY ID LIMIT @LIMIT";
+            return GetRecordsFromDBForUrl(DataSource, Cmd, Host, Url, "proxy", StartIndex, Count);
+        }
+        public static List<LogRow> GetRecordsFromProbeLogForUrl(string Host, string Url, int StartIndex, int Count)
+        {
+            string DataSource = "data source=" + ProbeLogFile;
+            string Cmd = "SELECT ID , SSL, Method, URL, File, Parameters, Code, Length, MIME, SetCookie FROM ProbeLog WHERE HostName=@HostName and URL LIKE @URL ID>@ID ORDER BY ID LIMIT @LIMIT";
+            return GetRecordsFromDBForUrl(DataSource, Cmd, Host, Url, "probe", StartIndex, Count);
+        }
+        static List<LogRow> GetRecordsFromDBForUrl(string DataSource, string CmdString, string Host, string Url, string LogType, int StartIndex, int Count)
+        {
+            List<LogRow> IronLogRecords = new List<LogRow>();
+            SQLiteConnection DB = new SQLiteConnection(DataSource);
+            DB.Open();
+            try
+            {
+                SQLiteCommand cmd = DB.CreateCommand();
+                cmd.CommandText = CmdString;
+                cmd.Parameters.AddWithValue("@HostName", Host);
+                cmd.Parameters.AddWithValue("@URL", Url);
+                cmd.Parameters.AddWithValue("@ID", StartIndex);
+                cmd.Parameters.AddWithValue("@LIMIT", Count);
+                SQLiteDataReader result = cmd.ExecuteReader();
+                while (result.Read())
+                {
+                    try
+                    {
+                        LogRow LR = new LogRow();
+                        try { LR.ID = Int32.Parse(result["ID"].ToString()); }
+                        catch { continue; }
+                        if (LogType.Equals("proxy"))
+                            LR.Source = "Proxy";
+                        else if (LogType.Equals("probe"))
+                            LR.Source = "Probe";
+                        else
+                            break;
+                        LR.Host = Host;
+                        LR.Method = result["Method"].ToString();
+                        LR.Url = result["URL"].ToString();
+                        LR.File = result["File"].ToString();
+                        LR.SSL = result["SSL"].ToString().Equals("1");
+                        LR.Parameters = result["Parameters"].ToString();
+                        try
+                        { LR.Code = Int32.Parse(result["Code"].ToString()); }
+                        catch { LR.Code = -1; }
+                        try
+                        { LR.Length = Int32.Parse(result["Length"].ToString()); }
+                        catch { LR.Length = 0; }
+                        LR.Mime = result["MIME"].ToString();
+                        LR.SetCookie = result["SetCookie"].ToString().Equals("1");
+                        IronLogRecords.Add(LR);
+                    }
+                    catch { }
+                }
+                result.Close();
+            }
+            catch (Exception Exp)
+            {
+                DB.Close();
+                throw Exp;
+            }
+            DB.Close();
+            return IronLogRecords;
+        }
+
         internal static Scanner GetScannerFromDB(int ScanID)
         {
             SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
@@ -2283,185 +2436,185 @@ namespace IronWASP
         }
 
 
-        internal static List<LogRow> GetProxyLogRecords(int StartID)
-        {
-            List<LogRow> ProxyLogRecords = new List<LogRow>();
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ProxyLogFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT ID , SSL, HostName, Method, URL, Edited, File, Parameters, Code, Length, MIME, SetCookie, Notes, OriginalRequestHeaders FROM ProxyLog WHERE ID > @StartID LIMIT 1000";
-            cmd.Parameters.AddWithValue("@StartID", StartID);
-            SQLiteDataReader result = cmd.ExecuteReader();
-            while (result.Read())
-            {
-                LogRow LR = new LogRow();
-                try { LR.ID = Int32.Parse(result["ID"].ToString()); }
-                catch { continue; }
-                LR.Host = result["HostName"].ToString();
-                LR.Method = result["Method"].ToString();
-                LR.Url = result["URL"].ToString();
-                LR.File = result["File"].ToString();
-                LR.SSL = result["SSL"].ToString().Equals("1");
-                LR.Parameters = result["Parameters"].ToString();
-                try
-                {LR.Code = Int32.Parse(result["Code"].ToString());}
-                catch { LR.Code = -1; }
-                try
-                { LR.Length = Int32.Parse(result["Length"].ToString()); }
-                catch { LR.Length = 0; }
-                LR.Mime = result["MIME"].ToString();
-                LR.SetCookie = result["SetCookie"].ToString().Equals("1");
-                LR.Editied = result["Edited"].ToString().Equals("1");
-                LR.Notes = result["Notes"].ToString();
-                LR.OriginalRequestHeaders = result["OriginalRequestHeaders"].ToString();
-                ProxyLogRecords.Add(LR);
-            }
-            result.Close();
-            DB.Close();
-            return ProxyLogRecords;
-        }
+        //internal static List<LogRow> GetProxyLogRecords(int StartID)
+        //{
+        //    List<LogRow> ProxyLogRecords = new List<LogRow>();
+        //    SQLiteConnection DB = new SQLiteConnection("data source=" + ProxyLogFile);
+        //    DB.Open();
+        //    SQLiteCommand cmd = DB.CreateCommand();
+        //    cmd.CommandText = "SELECT ID , SSL, HostName, Method, URL, Edited, File, Parameters, Code, Length, MIME, SetCookie, Notes, OriginalRequestHeaders FROM ProxyLog WHERE ID > @StartID LIMIT 1000";
+        //    cmd.Parameters.AddWithValue("@StartID", StartID);
+        //    SQLiteDataReader result = cmd.ExecuteReader();
+        //    while (result.Read())
+        //    {
+        //        LogRow LR = new LogRow();
+        //        try { LR.ID = Int32.Parse(result["ID"].ToString()); }
+        //        catch { continue; }
+        //        LR.Host = result["HostName"].ToString();
+        //        LR.Method = result["Method"].ToString();
+        //        LR.Url = result["URL"].ToString();
+        //        LR.File = result["File"].ToString();
+        //        LR.SSL = result["SSL"].ToString().Equals("1");
+        //        LR.Parameters = result["Parameters"].ToString();
+        //        try
+        //        {LR.Code = Int32.Parse(result["Code"].ToString());}
+        //        catch { LR.Code = -1; }
+        //        try
+        //        { LR.Length = Int32.Parse(result["Length"].ToString()); }
+        //        catch { LR.Length = 0; }
+        //        LR.Mime = result["MIME"].ToString();
+        //        LR.SetCookie = result["SetCookie"].ToString().Equals("1");
+        //        LR.Editied = result["Edited"].ToString().Equals("1");
+        //        LR.Notes = result["Notes"].ToString();
+        //        LR.OriginalRequestHeaders = result["OriginalRequestHeaders"].ToString();
+        //        ProxyLogRecords.Add(LR);
+        //    }
+        //    result.Close();
+        //    DB.Close();
+        //    return ProxyLogRecords;
+        //}
 
-        internal static List<LogRow> GetTestLogRecords(int StartID)
-        {
-            List<LogRow> MTLogRecords = new List<LogRow>();
-            SQLiteConnection DB = new SQLiteConnection("data source=" + TestLogFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT ID, SSL, HostName, Method, URL, File, Parameters, Code, Length, MIME, SetCookie FROM TestLog WHERE ID > @StartID LIMIT 1000";
-            cmd.Parameters.AddWithValue("@StartID", StartID);
-            SQLiteDataReader result = cmd.ExecuteReader();
-            while (result.Read())
-            {
-                LogRow LR = new LogRow();
-                try { LR.ID = Int32.Parse(result["ID"].ToString()); }
-                catch { continue; }
-                LR.Host = result["HostName"].ToString();
-                LR.Method = result["Method"].ToString();
-                LR.Url = result["URL"].ToString();
-                LR.File = result["File"].ToString();
-                LR.SSL = result["SSL"].ToString().Equals("1");
-                LR.Parameters = result["Parameters"].ToString();
-                try
-                { LR.Code = Int32.Parse(result["Code"].ToString()); }
-                catch { LR.Code = -1; }
-                try
-                { LR.Length = Int32.Parse(result["Length"].ToString()); }
-                catch { LR.Length = 0; }
-                LR.Mime = result["MIME"].ToString();
-                LR.SetCookie = result["SetCookie"].ToString().Equals("1");
-                MTLogRecords.Add(LR);
-            }
-            result.Close();
-            DB.Close();
-            return MTLogRecords;
-        }
+        //internal static List<LogRow> GetTestLogRecords(int StartID)
+        //{
+        //    List<LogRow> MTLogRecords = new List<LogRow>();
+        //    SQLiteConnection DB = new SQLiteConnection("data source=" + TestLogFile);
+        //    DB.Open();
+        //    SQLiteCommand cmd = DB.CreateCommand();
+        //    cmd.CommandText = "SELECT ID, SSL, HostName, Method, URL, File, Parameters, Code, Length, MIME, SetCookie FROM TestLog WHERE ID > @StartID LIMIT 1000";
+        //    cmd.Parameters.AddWithValue("@StartID", StartID);
+        //    SQLiteDataReader result = cmd.ExecuteReader();
+        //    while (result.Read())
+        //    {
+        //        LogRow LR = new LogRow();
+        //        try { LR.ID = Int32.Parse(result["ID"].ToString()); }
+        //        catch { continue; }
+        //        LR.Host = result["HostName"].ToString();
+        //        LR.Method = result["Method"].ToString();
+        //        LR.Url = result["URL"].ToString();
+        //        LR.File = result["File"].ToString();
+        //        LR.SSL = result["SSL"].ToString().Equals("1");
+        //        LR.Parameters = result["Parameters"].ToString();
+        //        try
+        //        { LR.Code = Int32.Parse(result["Code"].ToString()); }
+        //        catch { LR.Code = -1; }
+        //        try
+        //        { LR.Length = Int32.Parse(result["Length"].ToString()); }
+        //        catch { LR.Length = 0; }
+        //        LR.Mime = result["MIME"].ToString();
+        //        LR.SetCookie = result["SetCookie"].ToString().Equals("1");
+        //        MTLogRecords.Add(LR);
+        //    }
+        //    result.Close();
+        //    DB.Close();
+        //    return MTLogRecords;
+        //}
 
-        internal static List<LogRow> GetShellLogRecords(int StartID)
-        {
-            List<LogRow> ShellLogRecords = new List<LogRow>();
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ShellLogFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT ID , SSL, HostName, Method, URL, File, Parameters, Code, Length, MIME, SetCookie FROM ShellLog WHERE ID > @StartID LIMIT 1000";
-            cmd.Parameters.AddWithValue("@StartID", StartID);
-            SQLiteDataReader result = cmd.ExecuteReader();
-            while (result.Read())
-            {
-                LogRow LR = new LogRow();
-                try { LR.ID = Int32.Parse(result["ID"].ToString()); }
-                catch { continue; }
-                LR.Host = result["HostName"].ToString();
-                LR.Method = result["Method"].ToString();
-                LR.Url = result["URL"].ToString();
-                LR.File = result["File"].ToString();
-                LR.SSL = result["SSL"].ToString().Equals("1");
-                LR.Parameters = result["Parameters"].ToString();
-                try
-                { LR.Code = Int32.Parse(result["Code"].ToString()); }
-                catch { LR.Code = -1; }
-                try
-                { LR.Length = Int32.Parse(result["Length"].ToString()); }
-                catch { LR.Length = 0; }
-                LR.Mime = result["MIME"].ToString();
-                 LR.SetCookie = result["SetCookie"].ToString().Equals("1");
-                 ShellLogRecords.Add(LR);
-            }
-            result.Close();
-            DB.Close();
-            return ShellLogRecords;
-        }
+        //internal static List<LogRow> GetShellLogRecords(int StartID)
+        //{
+        //    List<LogRow> ShellLogRecords = new List<LogRow>();
+        //    SQLiteConnection DB = new SQLiteConnection("data source=" + ShellLogFile);
+        //    DB.Open();
+        //    SQLiteCommand cmd = DB.CreateCommand();
+        //    cmd.CommandText = "SELECT ID , SSL, HostName, Method, URL, File, Parameters, Code, Length, MIME, SetCookie FROM ShellLog WHERE ID > @StartID LIMIT 1000";
+        //    cmd.Parameters.AddWithValue("@StartID", StartID);
+        //    SQLiteDataReader result = cmd.ExecuteReader();
+        //    while (result.Read())
+        //    {
+        //        LogRow LR = new LogRow();
+        //        try { LR.ID = Int32.Parse(result["ID"].ToString()); }
+        //        catch { continue; }
+        //        LR.Host = result["HostName"].ToString();
+        //        LR.Method = result["Method"].ToString();
+        //        LR.Url = result["URL"].ToString();
+        //        LR.File = result["File"].ToString();
+        //        LR.SSL = result["SSL"].ToString().Equals("1");
+        //        LR.Parameters = result["Parameters"].ToString();
+        //        try
+        //        { LR.Code = Int32.Parse(result["Code"].ToString()); }
+        //        catch { LR.Code = -1; }
+        //        try
+        //        { LR.Length = Int32.Parse(result["Length"].ToString()); }
+        //        catch { LR.Length = 0; }
+        //        LR.Mime = result["MIME"].ToString();
+        //         LR.SetCookie = result["SetCookie"].ToString().Equals("1");
+        //         ShellLogRecords.Add(LR);
+        //    }
+        //    result.Close();
+        //    DB.Close();
+        //    return ShellLogRecords;
+        //}
 
-        internal static List<LogRow> GetProbeLogRecords(int StartID)
-        {
-            List<LogRow> ShellLogRecords = new List<LogRow>();
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ProbeLogFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT ID , SSL, HostName, Method, URL, File, Parameters, Code, Length, MIME, SetCookie FROM ProbeLog WHERE ID > @StartID LIMIT 1000";
-            cmd.Parameters.AddWithValue("@StartID", StartID);
-            SQLiteDataReader result = cmd.ExecuteReader();
-            while (result.Read())
-            {
-                LogRow LR = new LogRow();
-                try { LR.ID = Int32.Parse(result["ID"].ToString()); }
-                catch { continue; }
-                LR.Host = result["HostName"].ToString();
-                LR.Method = result["Method"].ToString();
-                LR.Url = result["URL"].ToString();
-                LR.File = result["File"].ToString();
-                LR.SSL = result["SSL"].ToString().Equals("1");
-                LR.Parameters = result["Parameters"].ToString();
-                try
-                { LR.Code = Int32.Parse(result["Code"].ToString()); }
-                catch { LR.Code = -1; }
-                try
-                { LR.Length = Int32.Parse(result["Length"].ToString()); }
-                catch { LR.Length = 0; }
-                LR.Mime = result["MIME"].ToString();
-                LR.SetCookie = result["SetCookie"].ToString().Equals("1");
-                ShellLogRecords.Add(LR);
-            }
-            result.Close();
-            DB.Close();
-            return ShellLogRecords;
-        }
+        //internal static List<LogRow> GetProbeLogRecords(int StartID)
+        //{
+        //    List<LogRow> ShellLogRecords = new List<LogRow>();
+        //    SQLiteConnection DB = new SQLiteConnection("data source=" + ProbeLogFile);
+        //    DB.Open();
+        //    SQLiteCommand cmd = DB.CreateCommand();
+        //    cmd.CommandText = "SELECT ID , SSL, HostName, Method, URL, File, Parameters, Code, Length, MIME, SetCookie FROM ProbeLog WHERE ID > @StartID LIMIT 1000";
+        //    cmd.Parameters.AddWithValue("@StartID", StartID);
+        //    SQLiteDataReader result = cmd.ExecuteReader();
+        //    while (result.Read())
+        //    {
+        //        LogRow LR = new LogRow();
+        //        try { LR.ID = Int32.Parse(result["ID"].ToString()); }
+        //        catch { continue; }
+        //        LR.Host = result["HostName"].ToString();
+        //        LR.Method = result["Method"].ToString();
+        //        LR.Url = result["URL"].ToString();
+        //        LR.File = result["File"].ToString();
+        //        LR.SSL = result["SSL"].ToString().Equals("1");
+        //        LR.Parameters = result["Parameters"].ToString();
+        //        try
+        //        { LR.Code = Int32.Parse(result["Code"].ToString()); }
+        //        catch { LR.Code = -1; }
+        //        try
+        //        { LR.Length = Int32.Parse(result["Length"].ToString()); }
+        //        catch { LR.Length = 0; }
+        //        LR.Mime = result["MIME"].ToString();
+        //        LR.SetCookie = result["SetCookie"].ToString().Equals("1");
+        //        ShellLogRecords.Add(LR);
+        //    }
+        //    result.Close();
+        //    DB.Close();
+        //    return ShellLogRecords;
+        //}
 
-        internal static List<LogRow> GetScanLogRecords(int StartID)
-        {
-            List<LogRow> ScanLogRecords = new List<LogRow>();
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ScanLogFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT ID , ScanID, SSL, HostName, Method, URL, File, Parameters, Code, Length, MIME, SetCookie FROM ScanLog WHERE ID > @StartID LIMIT 1000";
-            cmd.Parameters.AddWithValue("@StartID", StartID);
-            SQLiteDataReader result = cmd.ExecuteReader();
-            while (result.Read())
-            {
-                LogRow LR = new LogRow();
-                try { LR.ID = Int32.Parse(result["ID"].ToString()); }
-                catch { continue; }
-                try { LR.ScanID = Int32.Parse(result["ScanID"].ToString()); }
-                catch { continue; }
-                LR.Host = result["HostName"].ToString();
-                LR.Method = result["Method"].ToString();
-                LR.Url = result["URL"].ToString();
-                LR.File = result["File"].ToString();
-                LR.SSL = result["SSL"].ToString().Equals("1");
-                LR.Parameters = result["Parameters"].ToString();
-                try
-                { LR.Code = Int32.Parse(result["Code"].ToString()); }
-                catch { LR.Code = -1; }
-                try
-                { LR.Length = Int32.Parse(result["Length"].ToString()); }
-                catch { LR.Length = 0; }                
-                LR.Mime = result["MIME"].ToString();
-                LR.SetCookie = result["SetCookie"].ToString().Equals("1");
-                ScanLogRecords.Add(LR);
-            }
-            result.Close();
-            DB.Close();
-            return ScanLogRecords;
-        }
+        //internal static List<LogRow> GetScanLogRecords(int StartID)
+        //{
+        //    List<LogRow> ScanLogRecords = new List<LogRow>();
+        //    SQLiteConnection DB = new SQLiteConnection("data source=" + ScanLogFile);
+        //    DB.Open();
+        //    SQLiteCommand cmd = DB.CreateCommand();
+        //    cmd.CommandText = "SELECT ID , ScanID, SSL, HostName, Method, URL, File, Parameters, Code, Length, MIME, SetCookie FROM ScanLog WHERE ID > @StartID LIMIT 1000";
+        //    cmd.Parameters.AddWithValue("@StartID", StartID);
+        //    SQLiteDataReader result = cmd.ExecuteReader();
+        //    while (result.Read())
+        //    {
+        //        LogRow LR = new LogRow();
+        //        try { LR.ID = Int32.Parse(result["ID"].ToString()); }
+        //        catch { continue; }
+        //        try { LR.ScanID = Int32.Parse(result["ScanID"].ToString()); }
+        //        catch { continue; }
+        //        LR.Host = result["HostName"].ToString();
+        //        LR.Method = result["Method"].ToString();
+        //        LR.Url = result["URL"].ToString();
+        //        LR.File = result["File"].ToString();
+        //        LR.SSL = result["SSL"].ToString().Equals("1");
+        //        LR.Parameters = result["Parameters"].ToString();
+        //        try
+        //        { LR.Code = Int32.Parse(result["Code"].ToString()); }
+        //        catch { LR.Code = -1; }
+        //        try
+        //        { LR.Length = Int32.Parse(result["Length"].ToString()); }
+        //        catch { LR.Length = 0; }                
+        //        LR.Mime = result["MIME"].ToString();
+        //        LR.SetCookie = result["SetCookie"].ToString().Equals("1");
+        //        ScanLogRecords.Add(LR);
+        //    }
+        //    result.Close();
+        //    DB.Close();
+        //    return ScanLogRecords;
+        //}
 
         internal static List<string[]> GetScanQueueRecords(int StartID)
         {
@@ -2534,7 +2687,7 @@ namespace IronWASP
             return ExceptionLogRecords;
         }
 
-        internal static List<IronTrace> GetTraceRecords(int StartID)
+        internal static List<IronTrace> GetTraceRecords(int StartID, int Count)
         {
             List<IronTrace> TraceRecords = new List<IronTrace>();
             SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile);
@@ -2542,8 +2695,9 @@ namespace IronWASP
             try
             {
                 SQLiteCommand cmd = DB.CreateCommand();
-                cmd.CommandText = "SELECT ID, Time, Date, ThreadID, Source, Message FROM Trace WHERE ID > @StartID LIMIT 1000";
+                cmd.CommandText = "SELECT ID, Time, Date, ThreadID, Source, Message FROM Trace WHERE ID > @StartID LIMIT @LIMIT";
                 cmd.Parameters.AddWithValue("@StartID", StartID);
+                cmd.Parameters.AddWithValue("@LIMIT", Count);
                 SQLiteDataReader result = cmd.ExecuteReader();
                 while (result.Read())
                 {
@@ -2571,7 +2725,7 @@ namespace IronWASP
             return TraceRecords;
         }
 
-        internal static List<IronTrace> GetScanTraceRecords(int StartID)
+        internal static List<IronTrace> GetScanTraceRecords(int StartID, int Count)
         {
             List<IronTrace> TraceRecords = new List<IronTrace>();
             SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile);
@@ -2579,8 +2733,9 @@ namespace IronWASP
             try
             {
                 SQLiteCommand cmd = DB.CreateCommand();
-                cmd.CommandText = "SELECT ID, ScanID, PluginName, Section, Parameter, Title, Message FROM ScanTrace WHERE ID > @StartID LIMIT 1000";
+                cmd.CommandText = "SELECT ID, ScanID, PluginName, Section, Parameter, Title, Message FROM ScanTrace WHERE ID > @StartID ORDER BY ID LIMIT @LIMIT";
                 cmd.Parameters.AddWithValue("@StartID", StartID);
+                cmd.Parameters.AddWithValue("@LIMIT", Count);
                 SQLiteDataReader result = cmd.ExecuteReader();
                 while (result.Read())
                 {

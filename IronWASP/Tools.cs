@@ -211,6 +211,11 @@ namespace IronWASP
             return SB.ToString();
         }
 
+        public static string UrlPathEncode(string Input)
+        {
+            return HttpUtility.UrlPathEncode(Input);
+        }
+
         public static string UrlEncode(string Input)
         {
             return HttpUtility.UrlEncode(Input);
@@ -219,39 +224,7 @@ namespace IronWASP
         {
             return HttpUtility.UrlDecode(Input);
         }
-        public static string UrlPathEncode(string Input)
-        {
-            string Path = "";
-            string Query = "";
-         
-            if (Input.Contains("?"))
-            {
-                string[] InputParts = Input.Split(new char[] { '?' }, 2);
-                if (InputParts.Length == 2)
-                {
-                    Path = InputParts[0];
-                    Query = InputParts[1];
-                }
-                else
-                {
-                    Path = Input;
-                }
-            }
-            else
-            {
-                Path = Input;
-            }
-            Path = Path.Replace("%2f","/").Replace("%2F","/");
-            StringBuilder SB = new StringBuilder();
-            SB.Append(Path);
-            if (Query.Length > 0 || Input.EndsWith("?"))
-            {
-                 SB.Append("?");
-            }
-            SB.Append(Query);
-            string ProcessedInput = SB.ToString();
-            return HttpUtility.UrlPathEncode(ProcessedInput);
-        }
+        
         public static string UrlPathPartEncode(string Input)
         {
             Input = Input.Replace("~", "%7e").Replace("/", "%2f");
@@ -645,6 +618,11 @@ namespace IronWASP
                 if (Bytes[0] == 37 && Bytes[1] == 80 && Bytes[2] == 68 && Bytes[3] == 70) return true;//pdf
             }
             return false;
+        }
+
+        public static bool IsEven(int Num)
+        {
+            return Num % 2 == 0;
         }
 
         public static string GetCharsetFromContentType(string ContentType)

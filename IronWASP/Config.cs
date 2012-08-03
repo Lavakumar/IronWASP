@@ -42,6 +42,7 @@ namespace IronWASP
         internal static Dictionary<string, Request> APIResponseDict = new Dictionary<string, Request>();
         internal static bool OpeningIronProjectFile = false;
         internal static string RootDir = "";
+        internal static bool BlinkPrompt = true;
 
         static Dictionary<string, string> FiddlerFlags = new Dictionary<string, string>();
         internal static bool HasFiddlerFlags = false;

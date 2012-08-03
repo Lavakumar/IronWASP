@@ -346,10 +346,12 @@ namespace IronWASP
 
         private void InteractiveShellIn_KeyUp(object sender, KeyEventArgs e)
         {
-            if (this.InteractiveShellIn.ReadOnly)
+            if (this.InteractiveShellIn.ReadOnly) return;
+            if (Config.BlinkPrompt)
             {
-                return;
+                EndOfShellPromptBlink();
             }
+
             if (e.KeyCode == Keys.Up)
             {
                 string CommandFromHistory = IronScripting.GetPreviousCommandFromHistory();
@@ -546,20 +548,20 @@ namespace IronWASP
 
         private void MTLogGrid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (TestLogGrid.SelectedCells.Count < 1 || TestLogGrid.SelectedCells[0].Value == null)
+            if (TestLogGrid.SelectedCells.Count < 1 || TestLogGrid.SelectedCells[0].Value == null || TestLogGrid.SelectedRows.Count == 0)
             {
                 return;
             }
-            IronLog.ShowLog(RequestSource.Test, TestLogGrid.SelectedCells[0].Value.ToString());
+            IronLog.ShowLog(RequestSource.Test, TestLogGrid.SelectedCells[0].Value.ToString(), TestLogGrid.SelectedRows[0].Index, false);
         }
 
         private void LogGrid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (ProxyLogGrid.SelectedCells.Count < 1 || ProxyLogGrid.SelectedCells[0].Value == null)
+            if (ProxyLogGrid.SelectedCells.Count < 1 || ProxyLogGrid.SelectedCells[0].Value == null || ProxyLogGrid.SelectedRows.Count == 0)
             {
                 return;
             }
-            IronLog.ShowLog(RequestSource.Proxy, Int32.Parse(ProxyLogGrid.SelectedCells[0].Value.ToString()));
+            IronLog.ShowLog(RequestSource.Proxy, ProxyLogGrid.SelectedCells[0].Value.ToString(), ProxyLogGrid.SelectedRows[0].Index, false);
         }
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
@@ -706,11 +708,11 @@ namespace IronWASP
 
         private void ShellLogGrid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (ShellLogGrid.SelectedCells.Count < 1 || ShellLogGrid.SelectedCells[0].Value == null)
+            if (ShellLogGrid.SelectedCells.Count < 1 || ShellLogGrid.SelectedCells[0].Value == null || ShellLogGrid.SelectedRows.Count == 0)
             {
                 return;
             }
-            IronLog.ShowLog(RequestSource.Shell, ShellLogGrid.SelectedCells[0].Value.ToString());
+            IronLog.ShowLog(RequestSource.Shell, ShellLogGrid.SelectedCells[0].Value.ToString(), ShellLogGrid.SelectedRows[0].Index, false);
             return;
         }
 
@@ -1124,11 +1126,11 @@ namespace IronWASP
 
         private void ScanLogGrid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (ScanLogGrid.SelectedCells.Count < 1 || ScanLogGrid.SelectedCells[0].Value == null)
+            if (ScanLogGrid.SelectedCells.Count < 1 || ScanLogGrid.SelectedCells[0].Value == null || ScanLogGrid.SelectedRows.Count == 0)
             {
                 return;
             }
-            IronLog.ShowLog(RequestSource.Scan, ScanLogGrid.SelectedCells[0].Value.ToString());
+            IronLog.ShowLog(RequestSource.Scan, ScanLogGrid.SelectedCells[0].Value.ToString(), ScanLogGrid.SelectedRows[0].Index, false);
             return;
         }
 
@@ -1903,50 +1905,50 @@ namespace IronWASP
             IronUI.AF.AboutLogoPB.Focus();
         }
 
-        private void ProxyShowOriginalRequestCB_Click(object sender, EventArgs e)
-        {
-            if (IronProxy.CurrentSession != null)
-            {
-                if (ProxyShowOriginalRequestCB.Checked)
-                {
-                    if (IronProxy.CurrentSession.OriginalRequest != null)
-                    {
-                        IronUI.FillProxyFields(IronProxy.CurrentSession.OriginalRequest);
-                        IronUI.MakeProxyFieldsReadOnly();
-                    }
-                }
-                else
-                {
-                    if (IronProxy.CurrentSession.Request != null)
-                    {
-                        IronUI.FillProxyFields(IronProxy.CurrentSession.Request);
-                        IronUI.MakeProxyFieldsReadOnly();
-                    }
-                }
-            }
-        }
+        //private void ProxyShowOriginalRequestCB_Click(object sender, EventArgs e)
+        //{
+        //    if (IronProxy.CurrentSession != null)
+        //    {
+        //        if (ProxyShowOriginalRequestCB.Checked)
+        //        {
+        //            if (IronProxy.CurrentSession.OriginalRequest != null)
+        //            {
+        //                IronUI.FillProxyFields(IronProxy.CurrentSession.OriginalRequest);
+        //                IronUI.MakeProxyFieldsReadOnly();
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (IronProxy.CurrentSession.Request != null)
+        //            {
+        //                IronUI.FillProxyFields(IronProxy.CurrentSession.Request);
+        //                IronUI.MakeProxyFieldsReadOnly();
+        //            }
+        //        }
+        //    }
+        //}
 
-        private void ProxyShowOriginalResponseCB_Click(object sender, EventArgs e)
-        {
-            if (IronProxy.CurrentSession != null)
-            {
-                if (ProxyShowOriginalResponseCB.Checked)
-                {
-                    if (IronProxy.CurrentSession.OriginalResponse != null)
-                    {
-                        IronUI.FillProxyFields(IronProxy.CurrentSession.OriginalResponse);
-                    }
-                }
-                else
-                {
-                    if (IronProxy.CurrentSession.Response != null)
-                    {
-                        IronUI.FillProxyFields(IronProxy.CurrentSession.Response);
-                    }
-                }
-            }
-            ProxyInterceptTabs.SelectedIndex = 1;
-        }
+        //private void ProxyShowOriginalResponseCB_Click(object sender, EventArgs e)
+        //{
+        //    if (IronProxy.CurrentSession != null)
+        //    {
+        //        if (ProxyShowOriginalResponseCB.Checked)
+        //        {
+        //            if (IronProxy.CurrentSession.OriginalResponse != null)
+        //            {
+        //                IronUI.FillProxyFields(IronProxy.CurrentSession.OriginalResponse);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (IronProxy.CurrentSession.Response != null)
+        //            {
+        //                IronUI.FillProxyFields(IronProxy.CurrentSession.Response);
+        //            }
+        //        }
+        //    }
+        //    ProxyInterceptTabs.SelectedIndex = 1;
+        //}
 
         private void MTRequestHeadersIDV_IDVTextChanged()
         {
@@ -2734,29 +2736,29 @@ namespace IronWASP
 
         private void SiteMapLogGrid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (SiteMapLogGrid.SelectedCells.Count < 1 || SiteMapLogGrid.SelectedCells[0].Value == null)
+            if (SiteMapLogGrid.SelectedCells.Count < 1 || SiteMapLogGrid.SelectedCells[0].Value == null || SiteMapLogGrid.SelectedRows.Count == 0)
             {
                 return;
             }
             if (SiteMapLogGrid.SelectedCells[1].Value.ToString().Equals("Proxy"))
             {
-                IronLog.ShowLog(RequestSource.Proxy, SiteMapLogGrid.SelectedCells[0].Value.ToString()); 
+                IronLog.ShowLog(RequestSource.Proxy, SiteMapLogGrid.SelectedCells[0].Value.ToString(), SiteMapLogGrid.SelectedRows[0].Index, true); 
             }
             else if (SiteMapLogGrid.SelectedCells[1].Value.ToString().Equals("Test"))
             {
-                IronLog.ShowLog(RequestSource.Test, SiteMapLogGrid.SelectedCells[0].Value.ToString()); 
+                IronLog.ShowLog(RequestSource.Test, SiteMapLogGrid.SelectedCells[0].Value.ToString(), SiteMapLogGrid.SelectedRows[0].Index, true); 
             }
             else if (SiteMapLogGrid.SelectedCells[1].Value.ToString().Equals("Shell"))
             {
-                IronLog.ShowLog(RequestSource.Shell, SiteMapLogGrid.SelectedCells[0].Value.ToString()); 
+                IronLog.ShowLog(RequestSource.Shell, SiteMapLogGrid.SelectedCells[0].Value.ToString(), SiteMapLogGrid.SelectedRows[0].Index, true); 
             }
             else if (SiteMapLogGrid.SelectedCells[1].Value.ToString().Equals("Probe"))
             {
-                IronLog.ShowLog(RequestSource.Probe, SiteMapLogGrid.SelectedCells[0].Value.ToString()); 
+                IronLog.ShowLog(RequestSource.Probe, SiteMapLogGrid.SelectedCells[0].Value.ToString(), SiteMapLogGrid.SelectedRows[0].Index, true); 
             }
             else if (SiteMapLogGrid.SelectedCells[1].Value.ToString().Equals("Scan"))
             {
-                IronLog.ShowLog(RequestSource.Scan, SiteMapLogGrid.SelectedCells[0].Value.ToString()); 
+                IronLog.ShowLog(RequestSource.Scan, SiteMapLogGrid.SelectedCells[0].Value.ToString(), SiteMapLogGrid.SelectedRows[0].Index, true); 
             }
             else
             {
@@ -3110,13 +3112,197 @@ namespace IronWASP
 
         private void NextLogBtn_Click(object sender, EventArgs e)
         {
-            IronLog.ShowNextLog();
+            if (IronLog.CurrentID == 0) return;
+            DataGridView CurrentGrid = GetCurrentGrid();
+            int NewRowId = -1;
+            int CurrentRowId = GetCurrentRowIndex(CurrentGrid);
+            if (CurrentRowId == -1)
+            {
+                CurrentRowId = GetFirstRowIndex(CurrentGrid);
+                NewRowId = CurrentRowId;
+            }
+            if (CurrentRowId == -1)
+            {
+                //show error to user
+                IronUI.ShowLogStatus("Unable to load Request/Response from Log", true);
+                return;
+            }
+            else if(NewRowId == -1)
+            {
+                NewRowId = CurrentRowId + 1;
+            }
+            if (NewRowId >= IronLog.MaxRowCount)
+            {
+                //ask user to load next set of log from db
+                IronUI.ShowLogStatus("Reached end of visible log entries. Load next set using the '>' button below.", false);
+            }
+            else if (NewRowId >= CurrentGrid.Rows.Count)
+            {
+                //say end of log reached
+                IronUI.ShowLogStatus("Reached end of Log", false);
+            }
+            else
+            {
+                if (CurrentGrid.Rows[NewRowId].Cells.Count == 0 || CurrentGrid.Rows[NewRowId].Cells[0].Value == null)
+                {
+                    //say unable to load next log
+                    IronUI.ShowLogStatus("Unable to load next entry from Log", true);
+                }
+                else
+                {
+                    int NewId = Int32.Parse(CurrentGrid.Rows[NewRowId].Cells[0].Value.ToString());
+                    IronLog.ShowLog(IronLog.CurrentSource, NewId);
+                }
+            }
+            //IronLog.ShowNextLog();
         }
 
         private void PreviousLogBtn_Click(object sender, EventArgs e)
         {
-            IronLog.ShowPreviousLog();
+            if (IronLog.CurrentID == 0) return;
+            DataGridView CurrentGrid = GetCurrentGrid();
+            int NewRowId = -1;
+            int CurrentRowId = GetCurrentRowIndex(CurrentGrid);
+            if (CurrentRowId == -1)
+            {
+                CurrentRowId = GetLastRowIndex(CurrentGrid);
+                NewRowId = CurrentRowId;
+            }
+            if (CurrentRowId == -1)
+            {
+                //show error to user
+                IronUI.ShowLogStatus("Unable to load Request/Response from Log", true);
+                return;
+            }
+            else if (NewRowId == -1)
+            {
+                NewRowId = CurrentRowId - 1;
+            }
+            if (NewRowId == -1)
+            {
+                if (CurrentGrid.Rows.Count == IronLog.MaxRowCount)
+                {
+                    //ask user to load previous set of log from db
+                    IronUI.ShowLogStatus("Reached start of visible log entries. Load previous set using the '<' button below.", false);
+                }
+                else
+                {
+                    //say start of log reached
+                    IronUI.ShowLogStatus("Reached start of Log", false);
+                }
+            }
+            else
+            {
+                if (CurrentGrid.Rows[NewRowId].Cells.Count == 0 || CurrentGrid.Rows[NewRowId].Cells[0].Value == null)
+                {
+                    //say unable to load next log
+                    IronUI.ShowLogStatus("Unable to load previous entry from Log", true);
+                }
+                else
+                {
+                    int NewId = Int32.Parse(CurrentGrid.Rows[NewRowId].Cells[0].Value.ToString());
+                    IronLog.ShowLog(IronLog.CurrentSource, NewId);
+                }
+            }
+            //IronLog.ShowPreviousLog();
         }
+
+        DataGridView GetCurrentGrid()
+        {
+            DataGridView CurrentGrid = null;
+            if (IronLog.IsSiteMap)
+            {
+                CurrentGrid = SiteMapLogGrid;
+            }
+            switch (IronLog.CurrentSource)
+            {
+                case (RequestSource.Proxy):
+                    CurrentGrid = ProxyLogGrid;
+                    break;
+                case (RequestSource.Probe):
+                    CurrentGrid = ProbeLogGrid;
+                    break;
+                case (RequestSource.Shell):
+                    CurrentGrid = ShellLogGrid;
+                    break;
+                case (RequestSource.Scan):
+                    CurrentGrid = ScanLogGrid;
+                    break;
+                case (RequestSource.Test):
+                    CurrentGrid = TestLogGrid;
+                    break;
+                default:
+                    break;
+            }
+            return CurrentGrid;
+        }
+
+        int GetCurrentRowIndex(DataGridView CurrentGrid)
+        {
+            int CurrentRowId = -1;
+            if (CurrentGrid == null) return CurrentRowId;
+            int NewRowId = -1;
+            if (IronLog.CurrentRowID < CurrentGrid.Rows.Count)
+            {
+                if (IronLog.CurrentID.ToString().Equals(CurrentGrid.Rows[IronLog.CurrentRowID].Cells[0].Value.ToString()))
+                {
+                    CurrentRowId = IronLog.CurrentRowID;
+                }
+            }
+            if (NewRowId == -1)
+            {
+                foreach (DataGridViewRow Row in CurrentGrid.Rows)
+                {
+                    if (Row.Cells.Count == 0) continue;
+                    if (Row.Cells[0].Value == null) continue;
+                    if (Row.Cells[0].Value.ToString() == IronLog.CurrentID.ToString()) CurrentRowId = Row.Index;
+                }
+            }
+            return CurrentRowId;
+        }
+
+        int GetFirstRowIndex(DataGridView CurrentGrid)
+        {
+            int FirstRowId = -1;
+            if (CurrentGrid == null) return FirstRowId;
+            if (CurrentGrid.Rows.Count > 0)
+            {
+                try
+                {
+                    Int32.Parse(CurrentGrid.Rows[0].Cells[0].Value.ToString());
+                    FirstRowId = 0;
+                }
+                catch
+                {}
+            }
+            return FirstRowId;
+        }
+
+        int GetLastRowIndex(DataGridView CurrentGrid)
+        {
+            int LastRowId = -1;
+            if (CurrentGrid == null) return LastRowId;
+            if (CurrentGrid.Rows.Count > 0)
+            {
+                try
+                {
+                    Int32.Parse(CurrentGrid.Rows[CurrentGrid.Rows.Count - 1].Cells[0].Value.ToString());
+                    LastRowId = CurrentGrid.Rows.Count - 1;
+                }
+                catch 
+                {
+                    try
+                    {
+                        Int32.Parse(CurrentGrid.Rows[CurrentGrid.Rows.Count - 2].Cells[0].Value.ToString());
+                        LastRowId = CurrentGrid.Rows.Count - 2;
+                    }
+                    catch { }
+                }
+            }
+            return LastRowId;
+        }
+
+        
 
         private void TestGroupLogGrid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -3531,11 +3717,11 @@ namespace IronWASP
 
         private void ProbeLogGrid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (ProbeLogGrid.SelectedCells.Count < 1 || ProbeLogGrid.SelectedCells[0].Value == null)
+            if (ProbeLogGrid.SelectedCells.Count < 1 || ProbeLogGrid.SelectedCells[0].Value == null || ProbeLogGrid.SelectedRows.Count == 0)
             {
                 return;
             }
-            IronLog.ShowLog(RequestSource.Probe, ProbeLogGrid.SelectedCells[0].Value.ToString());
+            IronLog.ShowLog(RequestSource.Probe, ProbeLogGrid.SelectedCells[0].Value.ToString(), ProbeLogGrid.SelectedRows[0].Index, false);
             return;
         }
 
@@ -3672,6 +3858,185 @@ namespace IronWASP
         private void ClearShellDisplayBtn_Click(object sender, EventArgs e)
         {
             InteractiveShellOut.Text = "";
+        }
+
+        private void PromptBlinkTimer_Tick(object sender, EventArgs e)
+        {
+            if (InteractiveShellPromptBox.ForeColor == Color.Lime)
+                InteractiveShellPromptBox.ForeColor = Color.Black;
+            else
+                InteractiveShellPromptBox.ForeColor = Color.Lime;
+        }
+
+        private void EndOfShellPromptBlink()
+        {
+            Config.BlinkPrompt = false;
+            PromptBlinkTimer.Stop();
+            InteractiveShellPromptBox.ForeColor = Color.Lime;
+        }
+
+        private void main_tab_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (main_tab.SelectedTab.Name.Equals("mt_scripting"))
+            {
+                if (Config.BlinkPrompt) PromptBlinkTimer.Start();
+            }
+            else
+            {
+                if (Config.BlinkPrompt) PromptBlinkTimer.Stop();
+            }
+        }
+
+        private void LogTabs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            IronUI.ShowCurrentLogStat();
+        }
+
+        private void MainLogFrontOneBtn_Click(object sender, EventArgs e)
+        {
+            MoveLog(true, 1);
+        }
+
+        private void MainLogFrontTwoBtn_Click(object sender, EventArgs e)
+        {
+            MoveLog(true, 2);
+        }
+
+        private void MainLogFrontThreeBtn_Click(object sender, EventArgs e)
+        {
+            MoveLog(true, 3);
+        }
+
+        private void MainLogFrontFourBtn_Click(object sender, EventArgs e)
+        {
+            MoveLog(true, 4);
+        }
+
+        private void MainLogBackOneBtn_Click(object sender, EventArgs e)
+        {
+            MoveLog(false, 1);
+        }
+
+        private void MainLogBackTwoBtn_Click(object sender, EventArgs e)
+        {
+            MoveLog(false, 2);
+        }
+
+        private void MainLogBackThreeBtn_Click(object sender, EventArgs e)
+        {
+            MoveLog(false, 3);
+        }
+
+        private void MainLogBackFourBtn_Click(object sender, EventArgs e)
+        {
+            MoveLog(false, 4);
+        }
+
+        void MoveLog(bool Forward, int Level)
+        {
+            IronUI.ShowLogBottomStatus("Loading...", false);
+            switch (LogTabs.SelectedTab.Name)
+            {
+                case ("ProxyLogTab"):
+                    if (Forward)
+                        IronLog.MoveProxyLogRecordForward(Level);
+                    else
+                        IronLog.MoveProxyLogRecordBack(Level);
+                    break;
+                case ("ScanLogTab"):
+                    if (Forward)
+                        IronLog.MoveScanLogRecordForward(Level);
+                    else
+                        IronLog.MoveScanLogRecordBack(Level);
+                    break;
+                case ("TestLogTab"):
+                    if (Forward)
+                        IronLog.MoveTestLogRecordForward(Level);
+                    else
+                        IronLog.MoveTestLogRecordBack(Level);
+                    break;
+                case ("ShellLogTab"):
+                    if (Forward)
+                        IronLog.MoveShellLogRecordForward(Level);
+                    else
+                        IronLog.MoveShellLogRecordBack(Level);
+                    break;
+                case ("ProbeLogTab"):
+                    if (Forward)
+                        IronLog.MoveProbeLogRecordForward(Level);
+                    else
+                        IronLog.MoveProbeLogRecordBack(Level);
+                    break;
+                case ("SiteMapLogTab"):
+                    IronUI.ShowLogBottomStatus("Cannot move SiteMap logs. Move Proxy/Probe logs and click on the SiteMap tree to display new logs", true);
+                    break;
+            }
+        }
+
+        private void ScanTraceFrontOneBtn_Click(object sender, EventArgs e)
+        {
+            IronTrace.MoveScanTraceRecordForward(1);
+        }
+
+        private void ScanTraceFrontTwoBtn_Click(object sender, EventArgs e)
+        {
+            IronTrace.MoveScanTraceRecordForward(2);
+        }
+
+        private void ScanTraceFrontThreeBtn_Click(object sender, EventArgs e)
+        {
+            IronTrace.MoveScanTraceRecordForward(3);
+        }
+
+        private void ScanTraceFrontFourBtn_Click(object sender, EventArgs e)
+        {
+            IronTrace.MoveScanTraceRecordForward(4);
+        }
+
+        private void ScanTraceBackOneBtn_Click(object sender, EventArgs e)
+        {
+            IronTrace.MoveScanTraceRecordBack(1);
+        }
+
+        private void ScanTraceBackTwoBtn_Click(object sender, EventArgs e)
+        {
+            IronTrace.MoveScanTraceRecordBack(2);
+        }
+
+        private void ScanTraceBackThreeBtn_Click(object sender, EventArgs e)
+        {
+            IronTrace.MoveScanTraceRecordBack(3);
+        }
+
+        private void ScanTraceBackFourBtn_Click(object sender, EventArgs e)
+        {
+            IronTrace.MoveScanTraceRecordBack(4);
+        }
+
+        private void ProxyShowOriginalRequestCB_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ProxyShowOriginalRequestCB.Checked)
+            {
+                if (IronLog.CurrentSession.OriginalRequest != null)
+                    IronUI.FillLogFields(IronLog.CurrentSession.OriginalRequest);
+            }
+            else
+            {
+                IronUI.FillLogFields(IronLog.CurrentSession.Request);
+            }
+        }
+
+        private void ProxyShowOriginalResponseCB_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ProxyShowOriginalResponseCB.Checked)
+            {
+                if (IronLog.CurrentSession.OriginalResponse != null)
+                    IronUI.FillLogFields(IronLog.CurrentSession.OriginalResponse);
+            }
+            else
+            {
+                IronUI.FillLogFields(IronLog.CurrentSession.Response);
+            }
         }
     }
 }

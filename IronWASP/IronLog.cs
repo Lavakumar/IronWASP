@@ -28,9 +28,28 @@ namespace IronWASP
         internal static RequestSource CurrentSource = RequestSource.Scan;
         internal static Session CurrentSession;
         internal static int CurrentID = 0;
+        internal static int CurrentRowID = 0;
+        internal static bool IsSiteMap = false;
+        internal const int MaxRowCount = 2000;
         static Thread CurrentThread;
 
         internal static string SourceControl = "";
+
+        internal static int ProxyMin = 0;
+        internal static int ProxyMax = 0;
+        internal static int ShellMin = 0;
+        internal static int ShellMax = 0;
+        internal static int ProbeMin = 0;
+        internal static int ProbeMax = 0;
+        internal static int ScanMin = 0;
+        internal static int ScanMax = 0;
+        internal static int TestMin = 0;
+        internal static int TestMax = 0;
+
+        internal static int SitemapProxyMin = 0;
+        internal static int SitemapProxyMax = 0;
+        internal static int SitemapProbeMin = 0;
+        internal static int SitemapProbeMax = 0;
 
         internal static string CurrentSourceName
         {
@@ -40,11 +59,13 @@ namespace IronWASP
             }
         }
 
-        internal static void ShowLog(RequestSource Source, string ID)
+        internal static void ShowLog(RequestSource Source, string ID, int RowID, bool IsSiteMapSelected)
         {
             try
             {
                 int IntID = Int32.Parse(ID);
+                CurrentRowID = RowID;
+                IsSiteMap = IsSiteMapSelected;
                 ShowLog(Source, IntID);
             }
             catch { return; }
@@ -403,6 +424,323 @@ namespace IronWASP
                     return IronProxy.CurrentSession.GetClone();
             }
             return IrSe;
+        }
+
+        internal static int GetJumpCount(int Level)
+        {
+            switch (Level)
+            {
+                case(4):
+                    return IronLog.MaxRowCount * 125;
+                case (3):
+                    return IronLog.MaxRowCount * 25;
+                case (2):
+                    return IronLog.MaxRowCount * 5;
+                case (1):
+                default:
+                    return 0;
+            }
+        }
+
+        internal static void MoveProxyLogRecordForward(int JumpLevel)
+        {
+            Thread T = new Thread(MoveProxyLogRecordForward);
+            T.Start(JumpLevel);
+        }
+        internal static void MoveProxyLogRecordForward(object JumpLevelObj)
+        {
+            int JumpLevel = (int)JumpLevelObj;
+            List<LogRow> Records = GetNextProxyLogRecords(JumpLevel);
+            if (Records.Count == 0) return;
+            List<object[]> Rows = new List<object[]>();
+            foreach (LogRow Record in Records)
+            {
+                Rows.Add(Record.ToProxyGridRowObjectArray());
+            }
+            IronUI.SetProxyGridRows(Rows);
+        }
+        internal static void MoveProbeLogRecordForward(int JumpLevel)
+        {
+            Thread T = new Thread(MoveProbeLogRecordForward);
+            T.Start(JumpLevel);
+        }
+        internal static void MoveProbeLogRecordForward(object JumpLevelObj)
+        {
+            int JumpLevel = (int)JumpLevelObj;
+            List<LogRow> Records = GetNextProbeLogRecords(JumpLevel);
+            if (Records.Count == 0) return;
+            List<object[]> Rows = new List<object[]>();
+            foreach (LogRow Record in Records)
+            {
+                Rows.Add(Record.ToProbeGridRowObjectArray());
+            }
+            IronUI.SetProbeGridRows(Rows);
+        }
+        internal static void MoveScanLogRecordForward(int JumpLevel)
+        {
+            Thread T = new Thread(MoveScanLogRecordForward);
+            T.Start(JumpLevel);
+        }
+        internal static void MoveScanLogRecordForward(object JumpLevelObj)
+        {
+            int JumpLevel = (int)JumpLevelObj;
+            List<LogRow> Records = GetNextScanLogRecords(JumpLevel);
+            if (Records.Count == 0) return;
+            List<object[]> Rows = new List<object[]>();
+            foreach (LogRow Record in Records)
+            {
+                Rows.Add(Record.ToScanGridRowObjectArray());
+            }
+            IronUI.SetScanGridRows(Rows);
+        }
+        internal static void MoveShellLogRecordForward(int JumpLevel)
+        {
+            Thread T = new Thread(MoveShellLogRecordForward);
+            T.Start(JumpLevel);
+        }
+        internal static void MoveShellLogRecordForward(object JumpLevelObj)
+        {
+            int JumpLevel = (int) JumpLevelObj;
+            List<LogRow> Records = GetNextShellLogRecords(JumpLevel);
+            if (Records.Count == 0) return;
+            List<object[]> Rows = new List<object[]>();
+            foreach (LogRow Record in Records)
+            {
+                Rows.Add(Record.ToShellGridRowObjectArray());
+            }
+            IronUI.SetShellGridRows(Rows);
+        }
+        internal static void MoveTestLogRecordForward(int JumpLevel)
+        {
+            Thread T = new Thread(MoveTestLogRecordForward);
+            T.Start(JumpLevel);
+        }
+        internal static void MoveTestLogRecordForward(object JumpLevelObj)
+        {
+            int JumpLevel = (int)JumpLevelObj;
+            List<LogRow> Records = GetNextTestLogRecords(JumpLevel);
+            if (Records.Count == 0) return;
+            List<object[]> Rows = new List<object[]>();
+            foreach (LogRow Record in Records)
+            {
+                Rows.Add(Record.ToTestGridRowObjectArray());
+            }
+            IronUI.SetTestGridRows(Rows);
+        }
+
+        internal static void MoveProxyLogRecordBack(int JumpLevel)
+        {
+            Thread T = new Thread(MoveProxyLogRecordBack);
+            T.Start(JumpLevel);
+        }
+        internal static void MoveProxyLogRecordBack(object JumpLevelObj)
+        {
+            int JumpLevel = (int)JumpLevelObj;
+            List<LogRow> Records = GetPreviousProxyLogRecords(JumpLevel);
+            if (Records.Count == 0) return;
+            List<object[]> Rows = new List<object[]>();
+            foreach (LogRow Record in Records)
+            {
+                Rows.Add(Record.ToProxyGridRowObjectArray());
+            }
+            IronUI.SetProxyGridRows(Rows);
+        }
+        internal static void MoveProbeLogRecordBack(int JumpLevel)
+        {
+            Thread T = new Thread(MoveProbeLogRecordBack);
+            T.Start(JumpLevel);
+        }
+        internal static void MoveProbeLogRecordBack(object JumpLevelObj)
+        {
+            int JumpLevel = (int) JumpLevelObj;
+            List<LogRow> Records = GetPreviousProbeLogRecords(JumpLevel);
+            if (Records.Count == 0) return;
+            List<object[]> Rows = new List<object[]>();
+            foreach (LogRow Record in Records)
+            {
+                Rows.Add(Record.ToProbeGridRowObjectArray());
+            }
+            IronUI.SetProbeGridRows(Rows);
+        }
+        internal static void MoveScanLogRecordBack(int JumpLevel)
+        {
+            Thread T = new Thread(MoveScanLogRecordBack);
+            T.Start(JumpLevel);
+        }
+        internal static void MoveScanLogRecordBack(object JumpLevelObj)
+        {
+            int JumpLevel = (int) JumpLevelObj;
+            List<LogRow> Records = GetPreviousScanLogRecords(JumpLevel);
+            if (Records.Count == 0) return;
+            List<object[]> Rows = new List<object[]>();
+            foreach (LogRow Record in Records)
+            {
+                Rows.Add(Record.ToScanGridRowObjectArray());
+            }
+            IronUI.SetScanGridRows(Rows);
+        }
+        internal static void MoveShellLogRecordBack(int JumpLevel)
+        {
+            Thread T = new Thread(MoveShellLogRecordBack);
+            T.Start(JumpLevel);
+        }
+        internal static void MoveShellLogRecordBack(object JumpLevelObj)
+        {
+            int JumpLevel = (int) JumpLevelObj;
+            List<LogRow> Records = GetPreviousShellLogRecords(JumpLevel);
+            if (Records.Count == 0) return;
+            List<object[]> Rows = new List<object[]>();
+            foreach (LogRow Record in Records)
+            {
+                Rows.Add(Record.ToShellGridRowObjectArray());
+            }
+            IronUI.SetShellGridRows(Rows);
+        }
+        internal static void MoveTestLogRecordBack(int JumpLevel)
+        {
+            Thread T = new Thread(MoveTestLogRecordBack);
+            T.Start(JumpLevel);
+        }
+        internal static void MoveTestLogRecordBack(object JumpLevelObj)
+        {
+            int JumpLevel = (int) JumpLevelObj;
+            List<LogRow> Records = GetPreviousTestLogRecords(JumpLevel);
+            if (Records.Count == 0) return;
+            List<object[]> Rows = new List<object[]>();
+            foreach (LogRow Record in Records)
+            {
+                Rows.Add(Record.ToTestGridRowObjectArray());
+            }
+            IronUI.SetTestGridRows(Rows);
+        }
+
+        internal static List<LogRow> GetNextProxyLogRecords(int JumpLevel)
+        {
+            int JumpCount = GetJumpCount(JumpLevel);
+            int StartIndex = IronLog.ProxyMax + JumpCount;
+            List<LogRow> Records = IronDB.GetRecordsFromProxyLog(StartIndex, IronLog.MaxRowCount);
+            if (Records.Count == 0)
+            {
+                if(JumpLevel == 1)
+                    IronUI.ShowLogBottomStatus(string.Format("Reached end of logs", StartIndex), true);
+                else
+                    IronUI.ShowLogBottomStatus(string.Format("No logs with ID above {0}. Try a smaller value.", StartIndex), true);
+            }
+            return Records;
+        }
+        internal static List<LogRow> GetNextProbeLogRecords(int JumpLevel)
+        {
+            int JumpCount = GetJumpCount(JumpLevel);
+            int StartIndex = IronLog.ProbeMax + JumpCount;
+            List<LogRow> Records = IronDB.GetRecordsFromProbeLog(StartIndex, IronLog.MaxRowCount);
+            if (Records.Count == 0)
+            {
+                if (JumpLevel == 1)
+                    IronUI.ShowLogBottomStatus(string.Format("Reached end of logs", StartIndex), true);
+                else
+                    IronUI.ShowLogBottomStatus(string.Format("No logs with ID above {0}. Try a smaller value.", StartIndex), true);
+            }
+            return Records;
+        }
+        internal static List<LogRow> GetNextScanLogRecords(int JumpLevel)
+        {
+            int JumpCount = GetJumpCount(JumpLevel);
+            int StartIndex = IronLog.ScanMax + JumpCount;
+            List<LogRow> Records = IronDB.GetRecordsFromScanLog(StartIndex, IronLog.MaxRowCount);
+            if (Records.Count == 0)
+            {
+                if (JumpLevel == 1)
+                    IronUI.ShowLogBottomStatus(string.Format("Reached end of logs", StartIndex), true);
+                else
+                    IronUI.ShowLogBottomStatus(string.Format("No logs with ID above {0}. Try a smaller value.", StartIndex), true);
+            }
+            return Records;
+        }
+        internal static List<LogRow> GetNextShellLogRecords(int JumpLevel)
+        {
+            int JumpCount = GetJumpCount(JumpLevel);
+            int StartIndex = IronLog.ShellMax + JumpCount;
+            List<LogRow> Records = IronDB.GetRecordsFromShellLog(StartIndex, IronLog.MaxRowCount);
+            if (Records.Count == 0)
+            {
+                if (JumpLevel == 1)
+                    IronUI.ShowLogBottomStatus(string.Format("Reached end of logs", StartIndex), true);
+                else
+                    IronUI.ShowLogBottomStatus(string.Format("No logs with ID above {0}. Try a smaller value.", StartIndex), true);
+            }
+            return Records;
+        }
+        internal static List<LogRow> GetNextTestLogRecords(int JumpLevel)
+        {
+            int JumpCount = GetJumpCount(JumpLevel);
+            int StartIndex = IronLog.TestMax + JumpCount;
+            List<LogRow> Records = IronDB.GetRecordsFromTestLog(StartIndex, IronLog.MaxRowCount);
+            if (Records.Count == 0)
+            {
+                if (JumpLevel == 1)
+                    IronUI.ShowLogBottomStatus(string.Format("Reached end of logs", StartIndex), true);
+                else
+                    IronUI.ShowLogBottomStatus(string.Format("No logs with ID above {0}. Try a smaller value.", StartIndex), true);
+            }
+            return Records;
+        }
+
+        internal static List<LogRow> GetPreviousProxyLogRecords(int JumpLevel)
+        {
+            List<LogRow> Records = new List<LogRow>();
+            Records = GetPreviousLogRecords(IronDB.GetRecordsFromProxyLog, IronLog.ProxyMin, JumpLevel);
+            return Records;
+        }
+        internal static List<LogRow> GetPreviousProbeLogRecords(int JumpLevel)
+        {
+            List<LogRow> Records = new List<LogRow>();
+            Records = GetPreviousLogRecords(IronDB.GetRecordsFromProbeLog, IronLog.ProbeMin, JumpLevel);
+            return Records;
+        }
+        internal static List<LogRow> GetPreviousScanLogRecords(int JumpLevel)
+        {
+            List<LogRow> Records = new List<LogRow>();
+            Records = GetPreviousLogRecords(IronDB.GetRecordsFromScanLog, IronLog.ScanMin, JumpLevel);
+            return Records;
+        }
+        internal static List<LogRow> GetPreviousShellLogRecords(int JumpLevel)
+        {
+            List<LogRow> Records = new List<LogRow>();
+            Records = GetPreviousLogRecords(IronDB.GetRecordsFromShellLog, IronLog.ShellMin, JumpLevel);
+            return Records;
+        }
+        internal static List<LogRow> GetPreviousTestLogRecords(int JumpLevel)
+        {
+            List<LogRow> Records = new List<LogRow>();
+            Records = GetPreviousLogRecords(IronDB.GetRecordsFromTestLog, IronLog.TestMin, JumpLevel);
+            return Records;
+        }
+
+        internal static List<LogRow> GetPreviousLogRecords(GetRecordsDelegate GetRecordMethod, int CurrentMin, int JumpLevel)
+        {
+            List<LogRow> Records = new List<LogRow>();
+            int JumpCount = GetJumpCount(JumpLevel);
+            if (CurrentMin <= 1)
+            {
+                IronUI.ShowLogBottomStatus("Reached beginning of the log. Cannot go back further.", true);
+                return Records;
+            }
+            int StartIndex = CurrentMin - IronLog.MaxRowCount - JumpCount - 1;
+            Records = GetRecordMethod(StartIndex, IronLog.MaxRowCount);
+            return Records;
+        }
+
+        internal delegate List<LogRow> GetRecordsDelegate(int StartIndex, int Count);
+
+        static int[] GetMinMaxIds(List<LogRow> Records)
+        {
+            int[] MinMax = new int[] {0, 0};
+            if (Records.Count > 0)
+            {
+                MinMax[0] = Records[0].ID;
+                MinMax[1] = Records[Records.Count - 1].ID;
+            }
+            return MinMax;
         }
 
         internal static string SourceName(RequestSource Source)

@@ -255,15 +255,19 @@ namespace IronWASP
             }
             else
             {
+                if (UI.TestLogGrid.Rows.Count > IronLog.MaxRowCount) return;
                 try
                 {
                     int GridID = UI.TestLogGrid.Rows.Add(new object[] { Req.ID, Req.Host, Req.Method, Req.URL, Req.File, Req.SSL, Req.GetParametersString() });
                     IronUpdater.MTGridMap.Add(Req.ID, GridID);
+                    if (Req.ID > IronLog.TestMax) IronLog.TestMax = Req.ID;
+                    if (Req.ID < IronLog.TestMin || IronLog.TestMin < 1) IronLog.TestMin = Req.ID;
                 }
                 catch(Exception Exp)
                 {
                     IronException.Report("Error Updating MT Grid with Request", Exp.Message, Exp.StackTrace);
                 }
+                ShowCurrentLogStat();
             }
         }
 
@@ -277,29 +281,38 @@ namespace IronWASP
             }
             else
             {
-                try
+                if (IronUpdater.MTGridMap.ContainsKey(Res.ID))
                 {
-                    int GridID = IronUpdater.MTGridMap[Res.ID];
-                    if (!((int)UI.TestLogGrid.Rows[GridID].Cells["MTLogGridColumnForID"].Value == Res.ID))
+                    try
                     {
-                        foreach (DataGridViewRow Row in UI.TestLogGrid.Rows)
+                        bool MatchFound = true;
+                        int GridID = IronUpdater.MTGridMap[Res.ID];
+                        if (!((int)UI.TestLogGrid.Rows[GridID].Cells["MTLogGridColumnForID"].Value == Res.ID))
                         {
-                            if ((int)Row.Cells["MTLogGridColumnForID"].Value == Res.ID)
+                            MatchFound = false;
+                            foreach (DataGridViewRow Row in UI.TestLogGrid.Rows)
                             {
-                                GridID = Row.Index;
-                                break;
+                                if ((int)Row.Cells["MTLogGridColumnForID"].Value == Res.ID)
+                                {
+                                    GridID = Row.Index;
+                                    MatchFound = true;
+                                    break;
+                                }
                             }
                         }
+                        if (MatchFound)
+                        {
+                            UI.TestLogGrid.Rows[GridID].Cells["MTLogGridColumnForCode"].Value = Res.Code;
+                            UI.TestLogGrid.Rows[GridID].Cells["MTLogGridColumnForLength"].Value = Res.BodyArray.Length;
+                            UI.TestLogGrid.Rows[GridID].Cells["MTLogGridColumnForMIME"].Value = Res.ContentType;
+                            UI.TestLogGrid.Rows[GridID].Cells["MTLogGridColumnForSetCookie"].Value = (Res.SetCookies.Count > 0);
+                        }
+                        IronUpdater.MTGridMap.Remove(Res.ID);
                     }
-                    UI.TestLogGrid.Rows[GridID].Cells["MTLogGridColumnForCode"].Value = Res.Code;
-                    UI.TestLogGrid.Rows[GridID].Cells["MTLogGridColumnForLength"].Value = Res.BodyArray.Length;
-                    UI.TestLogGrid.Rows[GridID].Cells["MTLogGridColumnForMIME"].Value = Res.ContentType;
-                    UI.TestLogGrid.Rows[GridID].Cells["MTLogGridColumnForSetCookie"].Value = (Res.SetCookies.Count > 0);
-                    IronUpdater.MTGridMap.Remove(Res.ID);
-                }
-                catch(Exception Exp)
-                {
-                    IronException.Report("Error updating MT Response in Grid", Exp.Message, Exp.StackTrace);
+                    catch (Exception Exp)
+                    {
+                        IronException.Report("Error updating MT Response in Grid", Exp.Message, Exp.StackTrace);
+                    }
                 }
             }
         }
@@ -390,6 +403,20 @@ namespace IronWASP
             }
         }
 
+        delegate void ClearTestGroupLogGrid_d();
+        internal static void ClearTestGroupLogGrid()
+        {
+            if (UI.TestGroupLogGrid.InvokeRequired)
+            {
+                ClearTestGroupLogGrid_d CTGLG_d = new ClearTestGroupLogGrid_d(ClearTestGroupLogGrid);
+                UI.Invoke(CTGLG_d, new object[] { });
+            }
+            else
+            {
+                UI.TestGroupLogGrid.Rows.Clear();
+            }
+        }
+
         delegate void SetNewTestRequest_d(Request Req, string Group);
         internal static void SetNewTestRequest(Request Req, string Group)
         {
@@ -448,10 +475,13 @@ namespace IronWASP
             {
                 foreach (Request Req in Requests)
                 {
+                    if (UI.ShellLogGrid.Rows.Count >= IronLog.MaxRowCount) break;
                     try
                     {
                         int GridID = UI.ShellLogGrid.Rows.Add(new object[] { Req.ID, Req.Host, Req.Method, Req.URL, Req.StoredFile, Req.SSL, Req.StoredParameters });
                         IronUpdater.ShellGridMap.Add(Req.ID, GridID);
+                        if (Req.ID > IronLog.ShellMax) IronLog.ShellMax = Req.ID;
+                        if (Req.ID < IronLog.ShellMin || IronLog.ShellMin < 1) IronLog.ShellMin = Req.ID;
                     }
                     catch(Exception Exp)
                     {
@@ -460,6 +490,7 @@ namespace IronWASP
                 }
                 foreach(Response Res in Responses)
                 {
+                    bool MatchFound = true;
                     if (IronUpdater.ShellGridMap.ContainsKey(Res.ID))
                     {
                         try
@@ -467,19 +498,24 @@ namespace IronWASP
                             int GridID = IronUpdater.ShellGridMap[Res.ID];
                             if (!((int)UI.ShellLogGrid.Rows[GridID].Cells["ScriptingLogGridColumnForID"].Value == Res.ID))
                             {
+                                MatchFound = false;
                                 foreach (DataGridViewRow Row in UI.ShellLogGrid.Rows)
                                 {
                                     if ((int)Row.Cells["ScriptingLogGridColumnForID"].Value == Res.ID)
                                     {
                                         GridID = Row.Index;
+                                        MatchFound = true;
                                         break;
                                     }
                                 }
                             }
-                            UI.ShellLogGrid.Rows[GridID].Cells["ScriptingLogGridColumnForCode"].Value = Res.Code;
-                            UI.ShellLogGrid.Rows[GridID].Cells["ScriptingLogGridColumnForLength"].Value = Res.BodyArray.Length;
-                            UI.ShellLogGrid.Rows[GridID].Cells["ScriptingLogGridColumnForMIME"].Value = Res.ContentType;
-                            UI.ShellLogGrid.Rows[GridID].Cells["ScriptingLogGridColumnForSetCookie"].Value = (Res.SetCookies.Count > 0);
+                            if (MatchFound)
+                            {
+                                UI.ShellLogGrid.Rows[GridID].Cells["ScriptingLogGridColumnForCode"].Value = Res.Code;
+                                UI.ShellLogGrid.Rows[GridID].Cells["ScriptingLogGridColumnForLength"].Value = Res.BodyArray.Length;
+                                UI.ShellLogGrid.Rows[GridID].Cells["ScriptingLogGridColumnForMIME"].Value = Res.ContentType;
+                                UI.ShellLogGrid.Rows[GridID].Cells["ScriptingLogGridColumnForSetCookie"].Value = (Res.SetCookies.Count > 0);
+                            }
                             IronUpdater.ShellGridMap.Remove(Res.ID);
                         }
                         catch(Exception Exp)
@@ -489,9 +525,10 @@ namespace IronWASP
                     }
                     else
                     {
-                        IronException.Report("Matching Request missing in Shell LogGrid", string.Format("Request ID - {0} is missing from the Shell LogGrid", new object[] { Res.ID.ToString() }), Res.ToString());
+                        //IronException.Report("Matching Request missing in Shell LogGrid", string.Format("Request ID - {0} is missing from the Shell LogGrid", new object[] { Res.ID.ToString() }), Res.ToString());
                     }
                 }
+                ShowCurrentLogStat();
             }
         }
 
@@ -507,10 +544,13 @@ namespace IronWASP
             {
                 foreach (Request Req in Requests)
                 {
+                    if (UI.ProbeLogGrid.Rows.Count >= IronLog.MaxRowCount) break;
                     try
                     {
                         int GridID = UI.ProbeLogGrid.Rows.Add(new object[] { Req.ID, Req.Host, Req.Method, Req.URL, Req.StoredFile, Req.SSL, Req.StoredParameters });
                         IronUpdater.ProbeGridMap.Add(Req.ID, GridID);
+                        if (Req.ID > IronLog.ProbeMax) IronLog.ProbeMax = Req.ID;
+                        if (Req.ID < IronLog.ProbeMin || IronLog.ProbeMin < 1) IronLog.ProbeMin = Req.ID;
                     }
                     catch (Exception Exp)
                     {
@@ -521,24 +561,30 @@ namespace IronWASP
                 {
                     if (IronUpdater.ProbeGridMap.ContainsKey(Res.ID))
                     {
+                        bool MatchFound = true;
                         try
                         {
                             int GridID = IronUpdater.ProbeGridMap[Res.ID];
                             if (!((int)UI.ProbeLogGrid.Rows[GridID].Cells["ProbeLogGridColumnForID"].Value == Res.ID))
                             {
+                                MatchFound = false;
                                 foreach (DataGridViewRow Row in UI.ProbeLogGrid.Rows)
                                 {
                                     if ((int)Row.Cells["ProbeLogGridColumnForID"].Value == Res.ID)
                                     {
                                         GridID = Row.Index;
+                                        MatchFound = true;
                                         break;
                                     }
                                 }
                             }
-                            UI.ProbeLogGrid.Rows[GridID].Cells["ProbeLogGridColumnForCode"].Value = Res.Code;
-                            UI.ProbeLogGrid.Rows[GridID].Cells["ProbeLogGridColumnForLength"].Value = Res.BodyArray.Length;
-                            UI.ProbeLogGrid.Rows[GridID].Cells["ProbeLogGridColumnForMIME"].Value = Res.ContentType;
-                            UI.ProbeLogGrid.Rows[GridID].Cells["ProbeLogGridColumnForSetCookie"].Value = (Res.SetCookies.Count > 0);
+                            if (MatchFound)
+                            {
+                                UI.ProbeLogGrid.Rows[GridID].Cells["ProbeLogGridColumnForCode"].Value = Res.Code;
+                                UI.ProbeLogGrid.Rows[GridID].Cells["ProbeLogGridColumnForLength"].Value = Res.BodyArray.Length;
+                                UI.ProbeLogGrid.Rows[GridID].Cells["ProbeLogGridColumnForMIME"].Value = Res.ContentType;
+                                UI.ProbeLogGrid.Rows[GridID].Cells["ProbeLogGridColumnForSetCookie"].Value = (Res.SetCookies.Count > 0);
+                            }
                             IronUpdater.ProbeGridMap.Remove(Res.ID);
                         }
                         catch (Exception Exp)
@@ -548,9 +594,10 @@ namespace IronWASP
                     }
                     else
                     {
-                        IronException.Report("Matching Request missing in Probe LogGrid", string.Format("Request ID - {0} is missing from the Probe LogGrid", new object[] { Res.ID.ToString() }), Res.ToString());
+                        //IronException.Report("Matching Request missing in Probe LogGrid", string.Format("Request ID - {0} is missing from the Probe LogGrid", new object[] { Res.ID.ToString() }), Res.ToString());
                     }
                 }
+                ShowCurrentLogStat();
             }
         }
 
@@ -566,10 +613,13 @@ namespace IronWASP
             {
                 foreach (Request Req in Requests)
                 {
+                    if (UI.ScanLogGrid.Rows.Count >= IronLog.MaxRowCount) break;
                     try
                     {
                         int GridID = UI.ScanLogGrid.Rows.Add(new object[] { Req.ID, Req.ScanID, Req.Host, Req.Method, Req.URL, Req.StoredFile, Req.SSL, Req.StoredParameters });
                         IronUpdater.ScanGridMap.Add(Req.ID, GridID);
+                        if (Req.ID > IronLog.ScanMax) IronLog.ScanMax = Req.ID;
+                        if (Req.ID < IronLog.ScanMin || IronLog.ScanMin < 1) IronLog.ScanMin = Req.ID;
                     }
                     catch(Exception Exp)
                     {
@@ -581,24 +631,30 @@ namespace IronWASP
                 {
                     if (IronUpdater.ScanGridMap.ContainsKey(Res.ID))
                     {
+                        bool MatchFound = true;
                         try
                         {
                             int GridID = IronUpdater.ScanGridMap[Res.ID];
                             if (!((int)UI.ScanLogGrid.Rows[GridID].Cells["ScanLogGridColumnForID"].Value == Res.ID))
                             {
+                                MatchFound = false;
                                 foreach (DataGridViewRow Row in UI.ScanLogGrid.Rows)
                                 {
                                     if ((int)Row.Cells["ScanLogGridColumnForID"].Value == Res.ID)
                                     {
                                         GridID = Row.Index;
+                                        MatchFound = true;
                                         break;
                                     }
                                 }
                             }
-                            UI.ScanLogGrid.Rows[GridID].Cells["ScanLogGridColumnForCode"].Value = Res.Code;
-                            UI.ScanLogGrid.Rows[GridID].Cells["ScanLogGridColumnForLength"].Value = Res.BodyArray.Length;
-                            UI.ScanLogGrid.Rows[GridID].Cells["ScanLogGridColumnForMIME"].Value = Res.ContentType;
-                            UI.ScanLogGrid.Rows[GridID].Cells["ScanLogGridColumnForSetCookie"].Value = (Res.SetCookies.Count > 0);
+                            if (MatchFound)
+                            {
+                                UI.ScanLogGrid.Rows[GridID].Cells["ScanLogGridColumnForCode"].Value = Res.Code;
+                                UI.ScanLogGrid.Rows[GridID].Cells["ScanLogGridColumnForLength"].Value = Res.BodyArray.Length;
+                                UI.ScanLogGrid.Rows[GridID].Cells["ScanLogGridColumnForMIME"].Value = Res.ContentType;
+                                UI.ScanLogGrid.Rows[GridID].Cells["ScanLogGridColumnForSetCookie"].Value = (Res.SetCookies.Count > 0);
+                            } 
                             IronUpdater.ScanGridMap.Remove(Res.ID);
                         }
                         catch (Exception Exp)
@@ -608,9 +664,10 @@ namespace IronWASP
                     }
                     else
                     {
-                        IronException.Report("Matching Request missing in Scan LogGrid", string.Format("Request ID - {0} is missing from the Scan LogGrid", new object[] { Res.ID.ToString() }), Res.ToString());
+                        //IronException.Report("Matching Request missing in Scan LogGrid", string.Format("Request ID - {0} is missing from the Scan LogGrid", new object[] { Res.ID.ToString() }), Res.ToString());
                     }
                 }
+                ShowCurrentLogStat();
             }
         }
 
@@ -638,27 +695,72 @@ namespace IronWASP
             }
         }
 
-        delegate void UpdateScanTraceGrid_d(List<IronTrace> Traces);
-        internal static void UpdateScanTraceGrid(List<IronTrace> Traces)
+        delegate void SetScanTraceGrid_d(List<IronTrace> Traces);
+        internal static void SetScanTraceGrid(List<IronTrace> Traces)
         {
             if (UI.ScanTraceGrid.InvokeRequired)
             {
-                UpdateScanTraceGrid_d USTG_d = new UpdateScanTraceGrid_d(UpdateScanTraceGrid);
-                UI.Invoke(USTG_d, new object[] { Traces });
+                SetScanTraceGrid_d SSTG_d = new SetScanTraceGrid_d(SetScanTraceGrid);
+                UI.Invoke(SSTG_d, new object[] { Traces });
             }
             else
             {
+                UI.ScanTraceGrid.Rows.Clear();
+                IronTrace.ScanTraceMin = 0;
+                IronTrace.ScanTraceMax = 0;
                 foreach (IronTrace Trace in Traces)
                 {
+                    if (UI.ScanTraceGrid.Rows.Count >= IronLog.MaxRowCount) break;
                     try
                     {
                         UI.ScanTraceGrid.Rows.Add(new object[] { Trace.ID, Trace.ScanID, Trace.PluginName, Trace.Section, Trace.Parameter, Trace.Title, Trace.Message });
+                        if (Trace.ID > IronTrace.ScanTraceMax) IronTrace.ScanTraceMax = Trace.ID;
+                        if (Trace.ID < IronTrace.ScanTraceMin || IronTrace.ScanTraceMin < 1) IronTrace.ScanTraceMin = Trace.ID;
                     }
                     catch (Exception Exp)
                     {
                         IronException.Report("Error Updating Trace in ScanTraceGrid", Exp.Message, Exp.StackTrace);
                     }
                 }
+                ShowCurrentScanTraceStat();
+                IronUI.ShowScanTraceStatus("", false);
+            }
+        }
+
+        delegate void ShowScanTraceStatus_d(string Message, bool Error);
+        internal static void ShowScanTraceStatus(string Message, bool Error)
+        {
+            if (UI.ScanTraceStatusLbl.InvokeRequired)
+            {
+                ShowScanTraceStatus_d SSTS_d = new ShowScanTraceStatus_d(ShowScanTraceStatus);
+                UI.Invoke(SSTS_d, new object[] { Message, Error });
+            }
+            else
+            {
+                if (Error)
+                {
+                    UI.ScanTraceStatusLbl.ForeColor = Color.Red;
+                }
+                else
+                {
+                    UI.ScanTraceStatusLbl.ForeColor = Color.Black;
+                }
+                UI.ScanTraceStatusLbl.Text = Message;
+                UI.ScanTraceStatusLbl.Visible = true;
+            }
+        }
+
+        delegate void ShowCurrentScanTraceStat_d();
+        internal static void ShowCurrentScanTraceStat()
+        {
+            if (UI.ScanTraceStatLbl.InvokeRequired)
+            {
+                ShowCurrentScanTraceStat_d SCSTS_d = new ShowCurrentScanTraceStat_d(ShowCurrentScanTraceStat);
+                UI.Invoke(SCSTS_d, new object[] { });
+            }
+            else
+            {
+                UI.ScanTraceStatLbl.Text = string.Format("Showing {0} - {1} of Scan Traces", IronTrace.ScanTraceMin, IronTrace.ScanTraceMax);
             }
         }
 
@@ -724,11 +826,14 @@ namespace IronWASP
             {
                 foreach (Request Req in Requests)
                 {
+                    if (UI.ProxyLogGrid.Rows.Count >= IronLog.MaxRowCount) break;
                     try
                     {
                         int GridID = UI.ProxyLogGrid.Rows.Add(new object[] { Req.ID, Req.Host, Req.Method, Req.URL, Req.StoredFile, Req.SSL, Req.StoredParameters });
                         IronUpdater.ProxyGridMap.Add(Req.ID, GridID);
-                        UI.ProxyLogGrid.Rows[GridID].Visible = IronProxy.CanDisplayRowInLogDisplay(Req.Method, Req.Host, Req.StoredFile, 0, null);
+                        if (Req.ID > IronLog.ProxyMax) IronLog.ProxyMax = Req.ID;
+                        if (Req.ID < IronLog.ProxyMin || IronLog.ProxyMin < 1) IronLog.ProxyMin = Req.ID;
+                        UI.ProxyLogGrid.Rows[GridID].Visible = IronProxy.CanDisplayRowInLogDisplay(Req.Method, Req.Host, Req.StoredFile, 0, null, false);
                     }
                     catch(Exception exp)
                     {
@@ -740,34 +845,40 @@ namespace IronWASP
                 {
                     if (IronUpdater.ProxyGridMap.ContainsKey(Res.ID))
                     {
+                        bool MatchFound = true;
                         try
                         {
                             int GridID = IronUpdater.ProxyGridMap[Res.ID];
                             if (!((int)UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForID"].Value == Res.ID))
                             {
+                                MatchFound = false;
                                 foreach (DataGridViewRow Row in UI.ProxyLogGrid.Rows)
                                 {
                                     if ((int)Row.Cells["ProxyLogGridColumnForID"].Value == Res.ID)
                                     {
                                         GridID = Row.Index;
+                                        MatchFound = true;
                                         break;
                                     }
                                 }
                             }
-                            UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForCode"].Value = Res.Code;
-                            if (Res.BodyArray != null)
+                            if (MatchFound)
                             {
-                                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForLength"].Value = Res.BodyArray.Length;
-                            }
-                            else
-                            {
-                                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForLength"].Value = 0;
-                            }
-                            UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForMIME"].Value = Res.ContentType;
-                            UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForSetCookie"].Value = (Res.SetCookies.Count > 0);
-                            if (UI.ProxyLogGrid.Rows[GridID].Visible)
-                            {
-                                UI.ProxyLogGrid.Rows[GridID].Visible = IronProxy.CanDisplayRowInLogDisplay(null, null, null, Res.Code, Res.ContentType);
+                                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForCode"].Value = Res.Code;
+                                if (Res.BodyArray != null)
+                                {
+                                    UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForLength"].Value = Res.BodyArray.Length;
+                                }
+                                else
+                                {
+                                    UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForLength"].Value = 0;
+                                }
+                                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForMIME"].Value = Res.ContentType;
+                                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForSetCookie"].Value = (Res.SetCookies.Count > 0);
+                                if (UI.ProxyLogGrid.Rows[GridID].Visible)
+                                {
+                                    UI.ProxyLogGrid.Rows[GridID].Visible = IronProxy.CanDisplayRowInLogDisplay(null, null, null, Res.Code, Res.ContentType, Res.BodyLength == 0);
+                                }
                             }
                             IronUpdater.ProxyGridMap.Remove(Res.ID);
                         }
@@ -781,6 +892,7 @@ namespace IronWASP
                         IronException.Report("Matching Request missing in Proxy LogGrid", string.Format("Request ID - {0} is missing from the Proxy LogGrid", new object[]{ Res.ID.ToString()}), Res.ToString());
                     }
                 }
+                ShowCurrentLogStat();
             }
         }
 
@@ -810,7 +922,7 @@ namespace IronWASP
                 UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForFile"].Value = Req.File;
                 UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForParameters"].Value = Req.GetParametersString();
                 UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForEdited"].Value = true;
-                UI.ProxyLogGrid.Rows[GridID].Visible = IronProxy.CanDisplayRowInLogDisplay(Req.Method, Req.Host, Req.StoredFile, 0, null);
+                UI.ProxyLogGrid.Rows[GridID].Visible = IronProxy.CanDisplayRowInLogDisplay(Req.Method, Req.Host, Req.StoredFile, 0, null, false);
             }
             catch(Exception Exp)
             {
@@ -853,7 +965,7 @@ namespace IronWASP
                 UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForEdited"].Value = true;
                 if (UI.ProxyLogGrid.Rows[GridID].Visible)
                 {
-                    UI.ProxyLogGrid.Rows[GridID].Visible = IronProxy.CanDisplayRowInLogDisplay(null, null, null, Res.Code, Res.ContentType);
+                    UI.ProxyLogGrid.Rows[GridID].Visible = IronProxy.CanDisplayRowInLogDisplay(null, null, null, Res.Code, Res.ContentType, Res.BodyLength == 0);
                 }
             }
             catch (Exception Exp)
@@ -1041,15 +1153,18 @@ namespace IronWASP
                         string Title = "";
                         if (PR.Confidence == PluginResultConfidence.High)
                         {
-                            Title = "+++ " + PR.Title;
+                            //Title = "+++ " + PR.Title;
+                            Title = "+++ " + PR.Id.ToString();
                         }
                         else if (PR.Confidence == PluginResultConfidence.Medium)
                         {
-                            Title = "++- " + PR.Title;
+                            //Title = "++- " + PR.Title;
+                            Title = "++- " + PR.Id.ToString();
                         }
                         else if (PR.Confidence == PluginResultConfidence.Low)
                         {
-                            Title = "+-- " + PR.Title;
+                            //Title = "+-- " + PR.Title;
+                            Title = "+-- " + PR.Id.ToString();
                         }
                         if (PR.Severity == PluginResultSeverity.High)
                         {
@@ -1057,11 +1172,14 @@ namespace IronWASP
                             {
                                 UI.IronTree.Nodes[0].Nodes[0].Nodes[0].Nodes.Add(PR.AffectedHost, PR.AffectedHost);
                             }
-                            if (!UI.IronTree.Nodes[0].Nodes[0].Nodes[0].Nodes[PR.AffectedHost].Nodes.ContainsKey(PR.Plugin))
+                            //if (!UI.IronTree.Nodes[0].Nodes[0].Nodes[0].Nodes[PR.AffectedHost].Nodes.ContainsKey(PR.Plugin))
+                            if (!UI.IronTree.Nodes[0].Nodes[0].Nodes[0].Nodes[PR.AffectedHost].Nodes.ContainsKey(PR.Title))
                             {
-                                UI.IronTree.Nodes[0].Nodes[0].Nodes[0].Nodes[PR.AffectedHost].Nodes.Add(PR.Plugin, PR.Plugin);
+                                //UI.IronTree.Nodes[0].Nodes[0].Nodes[0].Nodes[PR.AffectedHost].Nodes.Add(PR.Plugin, PR.Plugin);
+                                UI.IronTree.Nodes[0].Nodes[0].Nodes[0].Nodes[PR.AffectedHost].Nodes.Add(PR.Title, PR.Title);
                             }
-                            UI.IronTree.Nodes[0].Nodes[0].Nodes[0].Nodes[PR.AffectedHost].Nodes[PR.Plugin].Nodes.Add(PR.Id.ToString(), Title);
+                            //UI.IronTree.Nodes[0].Nodes[0].Nodes[0].Nodes[PR.AffectedHost].Nodes[PR.Plugin].Nodes.Add(PR.Id.ToString(), Title);
+                            UI.IronTree.Nodes[0].Nodes[0].Nodes[0].Nodes[PR.AffectedHost].Nodes[PR.Title].Nodes.Add(PR.Id.ToString(), Title);
                         }
                         else if (PR.Severity == PluginResultSeverity.Medium)
                         {
@@ -1069,11 +1187,14 @@ namespace IronWASP
                             {
                                 UI.IronTree.Nodes[0].Nodes[0].Nodes[1].Nodes.Add(PR.AffectedHost, PR.AffectedHost);
                             }
-                            if (!UI.IronTree.Nodes[0].Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes.ContainsKey(PR.Plugin))
+                            //if (!UI.IronTree.Nodes[0].Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes.ContainsKey(PR.Plugin))
+                            if (!UI.IronTree.Nodes[0].Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes.ContainsKey(PR.Title))
                             {
-                                UI.IronTree.Nodes[0].Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes.Add(PR.Plugin, PR.Plugin);
+                                //UI.IronTree.Nodes[0].Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes.Add(PR.Plugin, PR.Plugin);
+                                UI.IronTree.Nodes[0].Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes.Add(PR.Title, PR.Title);
                             }
-                            UI.IronTree.Nodes[0].Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes[PR.Plugin].Nodes.Add(PR.Id.ToString(), Title);
+                            //UI.IronTree.Nodes[0].Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes[PR.Plugin].Nodes.Add(PR.Id.ToString(), Title);
+                            UI.IronTree.Nodes[0].Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes[PR.Title].Nodes.Add(PR.Id.ToString(), Title);
                         }
                         else if (PR.Severity == PluginResultSeverity.Low)
                         {
@@ -1081,11 +1202,14 @@ namespace IronWASP
                             {
                                 UI.IronTree.Nodes[0].Nodes[0].Nodes[2].Nodes.Add(PR.AffectedHost, PR.AffectedHost);
                             }
-                            if (!UI.IronTree.Nodes[0].Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes.ContainsKey(PR.Plugin))
+                            //if (!UI.IronTree.Nodes[0].Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes.ContainsKey(PR.Plugin))
+                            if (!UI.IronTree.Nodes[0].Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes.ContainsKey(PR.Title))
                             {
-                                UI.IronTree.Nodes[0].Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes.Add(PR.Plugin, PR.Plugin);
+                                //UI.IronTree.Nodes[0].Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes.Add(PR.Plugin, PR.Plugin);
+                                UI.IronTree.Nodes[0].Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes.Add(PR.Title, PR.Title);
                             }
-                            UI.IronTree.Nodes[0].Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes[PR.Plugin].Nodes.Add(PR.Id.ToString(), Title);
+                            //UI.IronTree.Nodes[0].Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes[PR.Plugin].Nodes.Add(PR.Id.ToString(), Title);
+                            UI.IronTree.Nodes[0].Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes[PR.Title].Nodes.Add(PR.Id.ToString(), Title);
                         }
                     }
                     else if (PR.ResultType == PluginResultType.TestLead)
@@ -1094,11 +1218,14 @@ namespace IronWASP
                         {
                             UI.IronTree.Nodes[0].Nodes[1].Nodes.Add(PR.AffectedHost, PR.AffectedHost);
                         }
-                        if (!UI.IronTree.Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes.ContainsKey(PR.Plugin))
+                        //if (!UI.IronTree.Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes.ContainsKey(PR.Plugin))
+                        if (!UI.IronTree.Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes.ContainsKey(PR.Title))
                         {
-                            UI.IronTree.Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes.Add(PR.Plugin, PR.Plugin);
+                            //UI.IronTree.Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes.Add(PR.Plugin, PR.Plugin);
+                            UI.IronTree.Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes.Add(PR.Title, PR.Title);
                         }
-                        UI.IronTree.Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes[PR.Plugin].Nodes.Add(PR.Id.ToString(), PR.Title);
+                        //UI.IronTree.Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes[PR.Plugin].Nodes.Add(PR.Id.ToString(), PR.Title);
+                        UI.IronTree.Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes[PR.Title].Nodes.Add(PR.Id.ToString(), PR.Id.ToString());
                     }
                     else if (PR.ResultType == PluginResultType.Information)
                     {
@@ -1106,11 +1233,14 @@ namespace IronWASP
                         {
                             UI.IronTree.Nodes[0].Nodes[2].Nodes.Add(PR.AffectedHost, PR.AffectedHost);
                         }
-                        if (!UI.IronTree.Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes.ContainsKey(PR.Plugin))
+                        //if (!UI.IronTree.Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes.ContainsKey(PR.Plugin))
+                        if (!UI.IronTree.Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes.ContainsKey(PR.Title))
                         {
-                            UI.IronTree.Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes.Add(PR.Plugin, PR.Plugin);
+                            //UI.IronTree.Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes.Add(PR.Plugin, PR.Plugin);
+                            UI.IronTree.Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes.Add(PR.Title, PR.Title);
                         }
-                        UI.IronTree.Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes[PR.Plugin].Nodes.Add(PR.Id.ToString(), PR.Title);
+                        //UI.IronTree.Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes[PR.Plugin].Nodes.Add(PR.Id.ToString(), PR.Title);
+                        UI.IronTree.Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes[PR.Title].Nodes.Add(PR.Id.ToString(), PR.Id.ToString());
                     }
                 }
                 int HighVulnerabilityCount = 0;
@@ -2811,7 +2941,7 @@ namespace IronWASP
                 string FileExtension = null;
                 int Code = 0;
                 string ContentType = null;
-
+                bool IgnoreContentType = false;
 
                 foreach (DataGridViewRow Row in UI.ProxyLogGrid.Rows)
                 {
@@ -2858,7 +2988,18 @@ namespace IronWASP
                     {
                         ContentType = null;
                     }
-                    Row.Visible = IronProxy.CanDisplayRowInLogDisplay(Method, Host, FileExtension, Code, ContentType);
+                    if (Row.Cells["ProxyLogGridColumnForLength"].Value != null)
+                    {
+                        if (Row.Cells["ProxyLogGridColumnForLength"].Value.ToString().Equals("0"))
+                        {
+                            IgnoreContentType = true;
+                        }
+                    }
+                    else
+                    {
+                        IgnoreContentType = false;
+                    }
+                    Row.Visible = IronProxy.CanDisplayRowInLogDisplay(Method, Host, FileExtension, Code, ContentType, IgnoreContentType);
                 }
             }
         }
@@ -2930,22 +3071,60 @@ namespace IronWASP
             }
         }
 
-        delegate void AddProxyGridRows_d(List<object[]> Rows);
-        static void AddProxyGridRows(List<object[]> Rows)
+        //delegate void AddProxyGridRows_d(List<object[]> Rows);
+        //static void AddProxyGridRows(List<object[]> Rows)
+        //{
+        //    if (UI.ProxyLogGrid.InvokeRequired)
+        //    {
+        //        AddProxyGridRows_d APGR_d = new AddProxyGridRows_d(AddProxyGridRows);
+        //        UI.Invoke(APGR_d, new object[] { Rows });
+        //    }
+        //    else
+        //    {
+        //        foreach (object[] Row in Rows)
+        //        {
+        //            if (UI.ProxyLogGrid.Rows.Count >= IronLog.MaxRowCount) break;
+        //            try 
+        //            { 
+        //                UI.ProxyLogGrid.Rows.Add(Row);
+        //                int ID = (int)Row[0];
+        //                if (ID > IronLog.ProxyMax) IronLog.ProxyMax = ID;
+        //                if (ID < IronLog.ProxyMin || IronLog.ProxyMin < 1) IronLog.ProxyMin = ID;
+        //            }
+        //            catch { }
+        //        }
+        //        Rows.Clear();
+        //    }
+        //}
+
+        delegate void SetProxyGridRows_d(List<object[]> Rows);
+        internal static void SetProxyGridRows(List<object[]> Rows)
         {
             if (UI.ProxyLogGrid.InvokeRequired)
             {
-                AddProxyGridRows_d APGR_d = new AddProxyGridRows_d(AddProxyGridRows);
-                UI.Invoke(APGR_d, new object[] { Rows });
+                SetProxyGridRows_d SPGR_d = new SetProxyGridRows_d(SetProxyGridRows);
+                UI.Invoke(SPGR_d, new object[] { Rows });
             }
             else
             {
+                UI.ProxyLogGrid.Rows.Clear();
+                IronLog.ProxyMin = 0;
+                IronLog.ProxyMax = 0;
                 foreach (object[] Row in Rows)
                 {
-                    try { UI.ProxyLogGrid.Rows.Add(Row); }
+                    if (UI.ProxyLogGrid.Rows.Count >= IronLog.MaxRowCount) break;
+                    try
+                    {
+                        UI.ProxyLogGrid.Rows.Add(Row);
+                        int ID = (int)Row[0];
+                        if (ID > IronLog.ProxyMax) IronLog.ProxyMax = ID;
+                        if (ID < IronLog.ProxyMin || IronLog.ProxyMin < 1) IronLog.ProxyMin = ID;
+                    }
                     catch { }
                 }
                 Rows.Clear();
+                ShowCurrentLogStat();
+                ShowLogBottomStatus("", false);
             }
         }
 
@@ -2963,22 +3142,60 @@ namespace IronWASP
             }
         }
 
-        delegate void AddMTGridRows_d(List<object[]> Rows);
-        static void AddMTGridRows(List<object[]> Rows)
+        //delegate void AddTestGridRows_d(List<object[]> Rows);
+        //static void AddTestGridRows(List<object[]> Rows)
+        //{
+        //    if (UI.TestLogGrid.InvokeRequired)
+        //    {
+        //        AddTestGridRows_d ATGR_d = new AddTestGridRows_d(AddTestGridRows);
+        //        UI.Invoke(ATGR_d, new object[] { Rows });
+        //    }
+        //    else
+        //    {
+        //        foreach (object[] Row in Rows)
+        //        {
+        //            if (UI.TestLogGrid.Rows.Count > IronLog.MaxRowCount) break;
+        //            try 
+        //            {
+        //                UI.TestLogGrid.Rows.Add(Row);
+        //                int ID = (int)Row[0];
+        //                if (ID > IronLog.TestMax) IronLog.TestMax = ID;
+        //                if (ID < IronLog.TestMin || IronLog.TestMin < 1) IronLog.TestMin = ID;
+        //            }
+        //            catch { }
+        //        }
+        //        Rows.Clear();
+        //    }
+        //}
+
+        delegate void SetTestGridRows_d(List<object[]> Rows);
+        internal static void SetTestGridRows(List<object[]> Rows)
         {
             if (UI.TestLogGrid.InvokeRequired)
             {
-                AddMTGridRows_d AMTGR_d = new AddMTGridRows_d(AddMTGridRows);
-                UI.Invoke(AMTGR_d, new object[] { Rows });
+                SetTestGridRows_d STGR_d = new SetTestGridRows_d(SetTestGridRows);
+                UI.Invoke(STGR_d, new object[] { Rows });
             }
             else
             {
+                UI.TestLogGrid.Rows.Clear();
+                IronLog.TestMin = 0;
+                IronLog.TestMax = 0;
                 foreach (object[] Row in Rows)
                 {
-                    try { UI.TestLogGrid.Rows.Add(Row); }
+                    if (UI.TestLogGrid.Rows.Count > IronLog.MaxRowCount) break;
+                    try
+                    {
+                        UI.TestLogGrid.Rows.Add(Row);
+                        int ID = (int)Row[0];
+                        if (ID > IronLog.TestMax) IronLog.TestMax = ID;
+                        if (ID < IronLog.TestMin || IronLog.TestMin < 1) IronLog.TestMin = ID;
+                    }
                     catch { }
                 }
                 Rows.Clear();
+                ShowCurrentLogStat();
+                ShowLogBottomStatus("", false);
             }
         }
 
@@ -2997,22 +3214,60 @@ namespace IronWASP
         }
 
         
-        delegate void AddShellGridRows_d(List<object[]> Rows);
-        static void AddShellGridRows(List<object[]> Rows)
+        //delegate void AddShellGridRows_d(List<object[]> Rows);
+        //static void AddShellGridRows(List<object[]> Rows)
+        //{
+        //    if (UI.ShellLogGrid.InvokeRequired)
+        //    {
+        //        AddShellGridRows_d ASGR_d = new AddShellGridRows_d(AddShellGridRows);
+        //        UI.Invoke(ASGR_d, new object[] { Rows });
+        //    }
+        //    else
+        //    {
+        //        foreach (object[] Row in Rows)
+        //        {
+        //            if (UI.ShellLogGrid.Rows.Count >= IronLog.MaxRowCount) break;
+        //            try
+        //            { 
+        //                UI.ShellLogGrid.Rows.Add(Row);
+        //                int ID = (int)Row[0];
+        //                if (ID > IronLog.ShellMax) IronLog.ShellMax = ID;
+        //                if (ID < IronLog.ShellMin || IronLog.ShellMin < 1) IronLog.ShellMin = ID;
+        //            }
+        //            catch { }
+        //        }
+        //        Rows.Clear();
+        //    }
+        //}
+
+        delegate void SetShellGridRows_d(List<object[]> Rows);
+        internal static void SetShellGridRows(List<object[]> Rows)
         {
             if (UI.ShellLogGrid.InvokeRequired)
             {
-                AddShellGridRows_d ASGR_d = new AddShellGridRows_d(AddShellGridRows);
-                UI.Invoke(ASGR_d, new object[] { Rows });
+                SetShellGridRows_d SSGR_d = new SetShellGridRows_d(SetShellGridRows);
+                UI.Invoke(SSGR_d, new object[] { Rows });
             }
             else
             {
+                UI.ShellLogGrid.Rows.Clear();
+                IronLog.ShellMin = 0;
+                IronLog.ShellMax = 0;
                 foreach (object[] Row in Rows)
                 {
-                    try { UI.ShellLogGrid.Rows.Add(Row); }
+                    if (UI.ShellLogGrid.Rows.Count >= IronLog.MaxRowCount) break;
+                    try
+                    {
+                        UI.ShellLogGrid.Rows.Add(Row);
+                        int ID = (int)Row[0];
+                        if (ID > IronLog.ShellMax) IronLog.ShellMax = ID;
+                        if (ID < IronLog.ShellMin || IronLog.ShellMin < 1) IronLog.ShellMin = ID;
+                    }
                     catch { }
                 }
                 Rows.Clear();
+                ShowCurrentLogStat();
+                ShowLogBottomStatus("", false);
             }
         }
 
@@ -3031,22 +3286,60 @@ namespace IronWASP
         }
 
 
-        delegate void AddProbeGridRows_d(List<object[]> Rows);
-        static void AddProbeGridRows(List<object[]> Rows)
+        //delegate void AddProbeGridRows_d(List<object[]> Rows);
+        //static void AddProbeGridRows(List<object[]> Rows)
+        //{
+        //    if (UI.ProbeLogGrid.InvokeRequired)
+        //    {
+        //        AddProbeGridRows_d APGR_d = new AddProbeGridRows_d(AddProbeGridRows);
+        //        UI.Invoke(APGR_d, new object[] { Rows });
+        //    }
+        //    else
+        //    {
+        //        foreach (object[] Row in Rows)
+        //        {
+        //            if (UI.ProbeLogGrid.Rows.Count >= IronLog.MaxRowCount) break;
+        //            try
+        //            { 
+        //                UI.ProbeLogGrid.Rows.Add(Row);
+        //                int ID = (int)Row[0];
+        //                if (ID > IronLog.ProbeMax) IronLog.ProbeMax = ID;
+        //                if (ID < IronLog.ProbeMin || IronLog.ProbeMin < 1) IronLog.ProbeMin = ID;
+        //            }
+        //            catch { }
+        //        }
+        //        Rows.Clear();
+        //    }
+        //}
+
+        delegate void SetProbeGridRows_d(List<object[]> Rows);
+        internal static void SetProbeGridRows(List<object[]> Rows)
         {
             if (UI.ProbeLogGrid.InvokeRequired)
             {
-                AddProbeGridRows_d APGR_d = new AddProbeGridRows_d(AddProbeGridRows);
-                UI.Invoke(APGR_d, new object[] { Rows });
+                SetProbeGridRows_d SPGR_d = new SetProbeGridRows_d(SetProbeGridRows);
+                UI.Invoke(SPGR_d, new object[] { Rows });
             }
             else
             {
+                UI.ProbeLogGrid.Rows.Clear();
+                IronLog.ProbeMin = 0;
+                IronLog.ProbeMax = 0;
                 foreach (object[] Row in Rows)
                 {
-                    try { UI.ProbeLogGrid.Rows.Add(Row); }
+                    if (UI.ProbeLogGrid.Rows.Count >= IronLog.MaxRowCount) break;
+                    try
+                    {
+                        UI.ProbeLogGrid.Rows.Add(Row);
+                        int ID = (int)Row[0];
+                        if (ID > IronLog.ProbeMax) IronLog.ProbeMax = ID;
+                        if (ID < IronLog.ProbeMin || IronLog.ProbeMin < 1) IronLog.ProbeMin = ID;
+                    }
                     catch { }
                 }
                 Rows.Clear();
+                ShowCurrentLogStat();
+                ShowLogBottomStatus("", false);
             }
         }
 
@@ -3064,22 +3357,60 @@ namespace IronWASP
             }
         }
 
-        delegate void AddScanGridRows_d(List<object[]> Rows);
-        static void AddScanGridRows(List<object[]> Rows)
+        //delegate void AddScanGridRows_d(List<object[]> Rows);
+        //static void AddScanGridRows(List<object[]> Rows)
+        //{
+        //    if (UI.ScanLogGrid.InvokeRequired)
+        //    {
+        //        AddScanGridRows_d ASGR_d = new AddScanGridRows_d(AddScanGridRows);
+        //        UI.Invoke(ASGR_d, new object[] { Rows });
+        //    }
+        //    else
+        //    {
+        //        foreach (object[] Row in Rows)
+        //        {
+        //            if (UI.ScanLogGrid.Rows.Count >= IronLog.MaxRowCount) break;
+        //            try
+        //            {
+        //                UI.ScanLogGrid.Rows.Add(Row);
+        //                int ID = (int)Row[0];
+        //                if (ID > IronLog.ScanMax) IronLog.ScanMax = ID;
+        //                if (ID < IronLog.ScanMin || IronLog.ScanMin < 1) IronLog.ScanMin = ID;
+        //            }
+        //            catch { }
+        //        }
+        //        Rows.Clear();
+        //    }
+        //}
+
+        delegate void SetScanGridRows_d(List<object[]> Rows);
+        internal static void SetScanGridRows(List<object[]> Rows)
         {
             if (UI.ScanLogGrid.InvokeRequired)
             {
-                AddScanGridRows_d ASGR_d = new AddScanGridRows_d(AddScanGridRows);
-                UI.Invoke(ASGR_d, new object[] { Rows });
+                SetScanGridRows_d SSGR_d = new SetScanGridRows_d(SetScanGridRows);
+                UI.Invoke(SSGR_d, new object[] { Rows });
             }
             else
             {
+                UI.ScanLogGrid.Rows.Clear();
+                IronLog.ScanMax = 0;
+                IronLog.ScanMin = 0;
                 foreach (object[] Row in Rows)
                 {
-                    try{UI.ScanLogGrid.Rows.Add(Row);}
+                    if (UI.ScanLogGrid.Rows.Count >= IronLog.MaxRowCount) break;
+                    try
+                    {
+                        UI.ScanLogGrid.Rows.Add(Row);
+                        int ID = (int)Row[0];
+                        if (ID > IronLog.ScanMax) IronLog.ScanMax = ID;
+                        if (ID < IronLog.ScanMin || IronLog.ScanMin < 1) IronLog.ScanMin = ID;
+                    }
                     catch { }
                 }
                 Rows.Clear();
+                ShowCurrentLogStat();
+                ShowLogBottomStatus("", false);
             }
         }
 
@@ -3272,7 +3603,7 @@ namespace IronWASP
             ClearAllProxyGridRows();
             try
             {
-                ProxyLogRecords = IronDB.GetProxyLogRecords(StartID);
+                ProxyLogRecords = IronDB.GetRecordsFromProxyLog(0, IronLog.MaxRowCount); //.GetProxyLogRecords(StartID);
             }
             catch
             {
@@ -3280,21 +3611,13 @@ namespace IronWASP
                 ShowWaitFormGridMessage(1, 0, "Failed", 3, false);
                 Success = false;
             }
-            while (ProxyLogRecords.Count > 0)
+            if (ProxyLogRecords.Count > 0)
             {
                 Counter = Counter + ProxyLogRecords.Count;
                 foreach (LogRow Fields in ProxyLogRecords)
                 {
                     if (Fields.ID > StartID) StartID = Fields.ID;
-                    if (Fields.Code > -1)
-                    {
-                        ProxyRows.Add(new object[] { Fields.ID, Fields.Host, Fields.Method, Fields.Url, Fields.File, Fields.SSL, Fields.Parameters, Fields.Code, Fields.Length, Fields.Mime, Fields.SetCookie, Fields.Editied, Fields.Notes });
-                    }
-                    else
-                    {
-                        ProxyRows.Add(new object[] { Fields.ID, Fields.Host, Fields.Method, Fields.Url, Fields.File, Fields.SSL, Fields.Parameters, null, null, "", false, Fields.Editied, "" });
-                    }
-
+                    ProxyRows.Add(Fields.ToProxyGridRowObjectArray());
                     try
                     {
                         Request Req = new Request("http://" + Fields.Host + Fields.Url);
@@ -3319,25 +3642,26 @@ namespace IronWASP
                     }
                 }
                 ShowWaitFormGridMessage(1, Counter, "In Progress", 2, true);
-                try
-                {
-                    ProxyLogRecords = IronDB.GetProxyLogRecords(StartID);
-                }
-                catch 
-                { 
-                    ShowWaitFormMessage("Error reading Proxy Log DB..");
-                    ShowWaitFormGridMessage(1, Counter, "Failed", 3, false);
-                    Success = false;
-                }
+                //try
+                //{
+                //    ProxyLogRecords = IronDB.GetProxyLogRecords(StartID);
+                //}
+                //catch 
+                //{ 
+                //    ShowWaitFormMessage("Error reading Proxy Log DB..");
+                //    ShowWaitFormGridMessage(1, Counter, "Failed", 3, false);
+                //    Success = false;
+                //}
             }
 
-            AddProxyGridRows(ProxyRows);
+            SetProxyGridRows(ProxyRows);
 
             UpdateProxyLogBasedOnDisplayFilter();
             Config.ProxyRequestsCount = StartID;
             if (Success) ShowWaitFormGridMessage(1, Counter, "Done", 1, false);
 
             //test groups
+            ClearTestGroupLogGrid();
             IronDB.LoadTestGroups();
             UI.TestIDLbl.BackColor = Color.Red;
             UI.TestIDLbl.Text = "ID: 0";
@@ -3361,7 +3685,7 @@ namespace IronWASP
             ClearAllMTGridRows();
             try
             {
-                MTLogRecords = IronDB.GetTestLogRecords(StartID);
+                MTLogRecords = IronDB.GetRecordsFromTestLog(0, IronLog.MaxRowCount); //.GetTestLogRecords(StartID);
             }
             catch
             {
@@ -3370,36 +3694,27 @@ namespace IronWASP
                 Success = false;
             }
             
-            while (MTLogRecords.Count > 0)
+            if (MTLogRecords.Count > 0)
             {
                 Counter = Counter + MTLogRecords.Count;
                 foreach (LogRow Fields in MTLogRecords)
                 {
                     if (Fields.ID > StartID) StartID = Fields.ID;
-
-                    if (Fields.Code > -1)
-                    {
-                        MTRows.Add(new object[] { Fields.ID, Fields.Host, Fields.Method, Fields.Url, Fields.File, Fields.SSL, Fields.Parameters, Fields.Code, Fields.Length, Fields.Mime, Fields.SetCookie });
-                    }
-                    else
-                    {
-                        MTRows.Add(new object[] { Fields.ID, Fields.Host, Fields.Method, Fields.Url, Fields.File, Fields.SSL, Fields.Parameters, null, null, "", false });
-                    }
-
+                    MTRows.Add(Fields.ToTestGridRowObjectArray());
                 }
                 ShowWaitFormGridMessage(2, Counter, "In Progress", 2, true);
-                try
-                {
-                    MTLogRecords = IronDB.GetTestLogRecords(StartID);
-                }
-                catch
-                {
-                    ShowWaitFormMessage("Error reading MT Log DB..");
-                    ShowWaitFormGridMessage(2, Counter, "Failed", 3, false);
-                    Success = false;
-                }
+                //try
+                //{
+                //    MTLogRecords = IronDB.GetTestLogRecords(StartID);
+                //}
+                //catch
+                //{
+                //    ShowWaitFormMessage("Error reading MT Log DB..");
+                //    ShowWaitFormGridMessage(2, Counter, "Failed", 3, false);
+                //    Success = false;
+                //}
             }
-            AddMTGridRows(MTRows);
+            SetTestGridRows(MTRows);
             Config.ManualRequestsCount = StartID;
             if (Success) ShowWaitFormGridMessage(2, Counter, "Done", 1, false);
 
@@ -3418,7 +3733,7 @@ namespace IronWASP
             ClearAllShellGridRows();
             try
             {
-                ShellLogRecords = IronDB.GetShellLogRecords(StartID);
+                ShellLogRecords = IronDB.GetRecordsFromShellLog(0, IronLog.MaxRowCount); //.GetShellLogRecords(StartID);
             }
             catch
             { 
@@ -3426,35 +3741,28 @@ namespace IronWASP
                 ShowWaitFormGridMessage(3, 0, "Failed", 3, false);
                 Success = false;
             }
-            while (ShellLogRecords.Count > 0)
+            if (ShellLogRecords.Count > 0)
             {
                 Counter = Counter + ShellLogRecords.Count;
                 foreach (LogRow Fields in ShellLogRecords)
                 {
                     if (Fields.ID > StartID) StartID = Fields.ID;
-                    if (Fields.Code > -1)
-                    {
-                        ShellRows.Add(new object[] { Fields.ID, Fields.Host, Fields.Method, Fields.Url, Fields.File, Fields.SSL, Fields.Parameters, Fields.Code, Fields.Length, Fields.Mime, Fields.SetCookie });
-                    }
-                    else
-                    {
-                        ShellRows.Add(new object[] { Fields.ID, Fields.Host, Fields.Method, Fields.Url, Fields.File, Fields.SSL, Fields.Parameters, null, null, "", false });
-                    }
+                    ShellRows.Add(Fields.ToShellGridRowObjectArray());
                 }
                 ShowWaitFormGridMessage(3, Counter, "In Progress", 2, true);
-                try
-                {
-                    ShellLogRecords = IronDB.GetShellLogRecords(StartID);
-                }
-                catch
-                {
-                    ShowWaitFormMessage("Error reading Shell Log DB..");
-                    ShowWaitFormGridMessage(3, Counter, "Failed", 3, false);
-                    Success = false;
-                }
+                //try
+                //{
+                //    ShellLogRecords = IronDB.GetShellLogRecords(StartID);
+                //}
+                //catch
+                //{
+                //    ShowWaitFormMessage("Error reading Shell Log DB..");
+                //    ShowWaitFormGridMessage(3, Counter, "Failed", 3, false);
+                //    Success = false;
+                //}
             }
             Config.ShellRequestsCount = StartID;
-            AddShellGridRows(ShellRows);
+            SetShellGridRows(ShellRows);
             if(Success) ShowWaitFormGridMessage(3, Counter, "Done", 1, false);
 
             //WF.WaitFormProgressBar.PerformStep();
@@ -3515,17 +3823,17 @@ namespace IronWASP
             }
             AddScanQueueGridRows(ScanQueueRows);
             Config.ScanCount = StartID;
-            int ScanCount = 1;
-            while (ScanCount <= StartID)
-            {
-                try
-                {
-                    Scanner Scan = IronDB.GetScannerFromDB(ScanCount);
-                    ScanBranch.CanScan(Scan.OriginalRequest);
-                }
-                catch { }
-                finally { ScanCount++; }
-            }
+            //int ScanCount = 1;
+            //while (ScanCount <= StartID)
+            //{
+            //    try
+            //    {
+            //        //Scanner Scan = IronDB.GetScannerFromDB(ScanCount);
+            //        //ScanBranch.CanScan(Scan.OriginalRequest);
+            //    }
+            //    catch { }
+            //    finally { ScanCount++; }
+            //}
 
             if(Success) ShowWaitFormGridMessage(4, Counter, "Done", 1, false);
 
@@ -3543,7 +3851,7 @@ namespace IronWASP
             List<IronTrace> ScanTraces = new List<IronTrace>();
             try
             {
-                ScanTraces = IronDB.GetScanTraceRecords(StartID);
+                ScanTraces = IronDB.GetScanTraceRecords(StartID, IronLog.MaxRowCount);
             }
             catch
             {
@@ -3551,7 +3859,7 @@ namespace IronWASP
                 ShowWaitFormGridMessage(5, 0, "Failed", 3, false);
                 Success = false;
             }
-            while (ScanTraces.Count > 0)
+            if (ScanTraces.Count > 0)
             {
                 Counter = Counter + ScanTraces.Count;
                 foreach (IronTrace Trace in ScanTraces)
@@ -3561,18 +3869,18 @@ namespace IronWASP
                 //UpdatePluginResultTree(PluginResultLogRecords);
                 AllScanTraces.AddRange(ScanTraces);
                 ShowWaitFormGridMessage(5, Counter, "In Progress", 2, true);
-                try
-                {
-                    ScanTraces = IronDB.GetScanTraceRecords(StartID);
-                }
-                catch
-                {
-                    ShowWaitFormMessage("Error Trace Log DB..");
-                    ShowWaitFormGridMessage(5, Counter, "Failed", 3, false);
-                    Success = false;
-                }
+                //try
+                //{
+                //    ScanTraces = IronDB.GetScanTraceRecords(StartID);
+                //}
+                //catch
+                //{
+                //    ShowWaitFormMessage("Error Trace Log DB..");
+                //    ShowWaitFormGridMessage(5, Counter, "Failed", 3, false);
+                //    Success = false;
+                //}
             }
-            UpdateScanTraceGrid(AllScanTraces);
+            SetScanTraceGrid(AllScanTraces);
             Config.ScanTraceCount = StartID;
             if(Success) ShowWaitFormGridMessage(5, Counter, "Done", 1, false);
 
@@ -3590,7 +3898,7 @@ namespace IronWASP
             ClearAllScanGridRows();
             try
             {
-                ScanLogRecords = IronDB.GetScanLogRecords(StartID);
+                ScanLogRecords = IronDB.GetRecordsFromScanLog(0, IronLog.MaxRowCount); //.GetScanLogRecords(StartID);
             }
             catch
             {
@@ -3598,34 +3906,27 @@ namespace IronWASP
                 ShowWaitFormGridMessage(6, 0, "Failed", 3, false);
                 Success = false;
             }
-            while (ScanLogRecords.Count > 0)
+            if (ScanLogRecords.Count > 0)
             {
                 Counter = Counter + ScanLogRecords.Count;
                 foreach (LogRow Fields in ScanLogRecords)
                 {
                     if (Fields.ID > StartID) StartID = Fields.ID;
-                    if (Fields.Code > -1)
-                    {
-                        ScanRows.Add(new object[] { Fields.ID, Fields.ScanID, Fields.Host, Fields.Method, Fields.Url, Fields.File, Fields.SSL, Fields.Parameters, Fields.Code, Fields.Length, Fields.Mime, Fields.SetCookie });
-                    }
-                    else
-                    {
-                        ScanRows.Add(new object[] { Fields.ID, Fields.ScanID, Fields.Host, Fields.Method, Fields.Url, Fields.File, Fields.SSL, Fields.Parameters, null, null, "", false });
-                    }
+                    ScanRows.Add(Fields.ToScanGridRowObjectArray());
                 }
                 ShowWaitFormGridMessage(6, Counter, "In Progress", 2, true);
-                try
-                {
-                    ScanLogRecords = IronDB.GetScanLogRecords(StartID);
-                }
-                catch
-                {
-                    ShowWaitFormMessage("Error reading Scan Log DB..");
-                    ShowWaitFormGridMessage(6, Counter, "Failed", 3, false);
-                    Success = false;
-                }
+                //try
+                //{
+                //    ScanLogRecords = IronDB.GetScanLogRecords(StartID);
+                //}
+                //catch
+                //{
+                //    ShowWaitFormMessage("Error reading Scan Log DB..");
+                //    ShowWaitFormGridMessage(6, Counter, "Failed", 3, false);
+                //    Success = false;
+                //}
             }
-            AddScanGridRows(ScanRows);
+            SetScanGridRows(ScanRows);
             Config.PluginRequestsCount = StartID;
             if(Success) ShowWaitFormGridMessage(6, Counter, "Done", 1, false);
 
@@ -3634,7 +3935,7 @@ namespace IronWASP
             Counter = 0;
             ShowWaitFormGridMessage(7, Counter, "In Progress", 2, true);
             Success = true;
-            ShowWaitFormMessage("Updating Automated Scanning Logs..");
+            ShowWaitFormMessage("Updating Probe Logs..");
             //Thread.Sleep(500);
 
             StartID = 0;
@@ -3644,7 +3945,7 @@ namespace IronWASP
             ClearAllProbeGridRows();
             try
             {
-                ProbeLogRecords = IronDB.GetProbeLogRecords(StartID);
+                ProbeLogRecords = IronDB.GetRecordsFromProbeLog(0, IronLog.MaxRowCount); //.GetProbeLogRecords(StartID);
             }
             catch
             {
@@ -3653,20 +3954,13 @@ namespace IronWASP
                 Success = false;
             }
 
-            while (ProbeLogRecords.Count > 0)
+            if (ProbeLogRecords.Count > 0)
             {
                 Counter = Counter + ProbeLogRecords.Count;
                 foreach (LogRow Fields in ProbeLogRecords)
                 {
                     if (Fields.ID > StartID) StartID = Fields.ID;
-                    if (Fields.Code > -1)
-                    {
-                        ProbeRows.Add(new object[] { Fields.ID, Fields.Host, Fields.Method, Fields.Url, Fields.File, Fields.SSL, Fields.Parameters, Fields.Code, Fields.Length, Fields.Mime, Fields.SetCookie });
-                    }
-                    else
-                    {
-                        ProbeRows.Add(new object[] { Fields.ID, Fields.Host, Fields.Method, Fields.Url, Fields.File, Fields.SSL, Fields.Parameters, null, null, "", false });
-                    }
+                    ProbeRows.Add(Fields.ToProbeGridRowObjectArray());
                     if (Fields.Code == 200)
                     {
                         try
@@ -3681,18 +3975,18 @@ namespace IronWASP
                     }
                 }
                 ShowWaitFormGridMessage(7, Counter, "In Progress", 2, true);
-                try
-                {
-                    ProbeLogRecords = IronDB.GetProbeLogRecords(StartID);
-                }
-                catch
-                {
-                    ShowWaitFormMessage("Error reading Probe Log DB..");
-                    ShowWaitFormGridMessage(7, Counter, "Failed", 3, false);
-                    Success = false;
-                }
+                //try
+                //{
+                //    ProbeLogRecords = IronDB.GetProbeLogRecords(StartID);
+                //}
+                //catch
+                //{
+                //    ShowWaitFormMessage("Error reading Probe Log DB..");
+                //    ShowWaitFormGridMessage(7, Counter, "Failed", 3, false);
+                //    Success = false;
+                //}
             }
-            AddProbeGridRows(ProbeRows);
+            SetProbeGridRows(ProbeRows);
             Config.ProbeRequestsCount = StartID;
             if (Success) ShowWaitFormGridMessage(7, Counter, "Done", 1, false);
 
@@ -3823,7 +4117,7 @@ namespace IronWASP
             List<IronTrace> Traces = new List<IronTrace>();
             try
             {
-                Traces = IronDB.GetTraceRecords(StartID);
+                Traces = IronDB.GetTraceRecords(StartID, 1000);
             }
             catch
             {
@@ -3842,7 +4136,7 @@ namespace IronWASP
                 ShowWaitFormGridMessage(11, Counter, "In Progress", 2, true);
                 try
                 {
-                    Traces = IronDB.GetTraceRecords(StartID);
+                    Traces = IronDB.GetTraceRecords(StartID, 1000);
                 }
                 catch
                 {
@@ -4701,6 +4995,63 @@ namespace IronWASP
             }
         }
 
+        delegate void ShowLogBottomStatus_d(string Message, bool Error);
+        internal static void ShowLogBottomStatus(string Message, bool Error)
+        {
+            if (UI.MainLogStatusLbl.InvokeRequired)
+            {
+                ShowLogBottomStatus_d SLBS_d = new ShowLogBottomStatus_d(ShowLogBottomStatus);
+                UI.Invoke(SLBS_d, new object[] { Message, Error });
+            }
+            else
+            {
+                if (Error)
+                {
+                    UI.MainLogStatusLbl.ForeColor = Color.Red;
+                }
+                else
+                {
+                    UI.MainLogStatusLbl.ForeColor = Color.Black;
+                }
+                UI.MainLogStatusLbl.Text = Message;
+                UI.MainLogStatusLbl.Visible = true;
+            }
+        }
+
+        delegate void ShowCurrentLogStat_d();
+        internal static void ShowCurrentLogStat()
+        {
+            if (UI.MainLogStatLbl.InvokeRequired)
+            {
+                ShowCurrentLogStat_d SCLS_d = new ShowCurrentLogStat_d(ShowCurrentLogStat);
+                UI.Invoke(SCLS_d, new object[] { });
+            }
+            else
+            {
+                switch (UI.LogTabs.SelectedTab.Name)
+                {
+                    case ("ProxyLogTab"):
+                        UI.MainLogStatLbl.Text = string.Format("Showing {0} - {1} of Proxy Logs", IronLog.ProxyMin, IronLog.ProxyMax);
+                        break;
+                    case ("ScanLogTab"):
+                        UI.MainLogStatLbl.Text = string.Format("Showing {0} - {1} of Scan Logs", IronLog.ScanMin, IronLog.ScanMax);
+                        break;
+                    case ("TestLogTab"):
+                        UI.MainLogStatLbl.Text = string.Format("Showing {0} - {1} of Test Logs", IronLog.TestMin, IronLog.TestMax);
+                        break;
+                    case ("ShellLogTab"):
+                        UI.MainLogStatLbl.Text = string.Format("Showing {0} - {1} of Shell Logs", IronLog.ShellMin, IronLog.ShellMax);
+                        break;
+                    case ("ProbeLogTab"):
+                        UI.MainLogStatLbl.Text = string.Format("Showing {0} - {1} of Probe Logs", IronLog.ProbeMin, IronLog.ProbeMax);
+                        break;
+                    case ("SiteMapLogTab"):
+                        UI.MainLogStatLbl.Text = string.Format("Showing Logs based on SiteMap");
+                        break;
+                }
+            }
+        }
+
         delegate void FillLogDisplayFields_d(Session IrSe, string Reflection);
         internal static void FillLogDisplayFields(Session IrSe, string Reflection)
         {
@@ -4721,6 +5072,10 @@ namespace IronWASP
                     UI.LogIDLbl.Text = "ID: " + IronLog.CurrentID.ToString();
                 }
                 catch { }
+                UI.ProxyShowOriginalRequestCB.Checked = false;
+                UI.ProxyShowOriginalResponseCB.Checked = false;
+                UI.ProxyShowOriginalRequestCB.Visible = IrSe.OriginalRequest != null;
+                UI.ProxyShowOriginalResponseCB.Visible = IrSe.OriginalResponse != null;
                 IronUI.ResetLogStatus();
             }
         }
@@ -4732,6 +5087,10 @@ namespace IronWASP
             {
                 FillLogRequestBodyFields(Request);
             }
+            else
+            {
+                FillLogRequestBodyFields(null);
+            }
             FillLogParametersFields(Request);
         }
 
@@ -4742,6 +5101,11 @@ namespace IronWASP
 
         internal static void FillLogRequestBodyFields(Request Request)
         {
+            if (Request == null)
+            {
+                UI.LogRequestBodyIDV.Text = "";
+                return;
+            }
             if (Request.IsBinary)
             {
                 UI.LogRequestBodyIDV.Text = Encoding.UTF8.GetString(Request.BodyArray);
@@ -4804,6 +5168,10 @@ namespace IronWASP
                 {
                     UI.LogResponseBodyIDV.Text = Response.BodyString;
                 }
+            }
+            else
+            {
+                UI.LogResponseBodyIDV.Text = "";
             }
         }
 

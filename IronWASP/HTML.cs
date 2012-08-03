@@ -55,10 +55,11 @@ namespace IronWASP
                 List<string> ProcessedLinks = new List<string>();
                 foreach (string RawLink in RawLinks)
                 {
-                    if(RawLink.StartsWith("%2f") || RawLink.StartsWith("%2F"))
-                        ProcessedLinks.Add(Tools.UrlDecode(RawLink));
+                    string DecodedRawLink = Tools.HtmlDecode(RawLink);
+                    if (DecodedRawLink.StartsWith("%2f") || DecodedRawLink.StartsWith("%2F"))
+                        ProcessedLinks.Add(Tools.UrlDecode(DecodedRawLink));
                     else
-                        ProcessedLinks.Add(RawLink);
+                        ProcessedLinks.Add(DecodedRawLink);
                 }
                 return ProcessedLinks;
             }
@@ -656,6 +657,7 @@ namespace IronWASP
         public static bool IsUrlAttribute(string TagName, string AttributeName)
         {
             if ((TagName.Equals("iframe", StringComparison.OrdinalIgnoreCase) && AttributeName.Equals("src", StringComparison.OrdinalIgnoreCase))
+               || (TagName.Equals("frame", StringComparison.OrdinalIgnoreCase) && AttributeName.Equals("src", StringComparison.OrdinalIgnoreCase))
                || (TagName.Equals("a", StringComparison.OrdinalIgnoreCase) && AttributeName.Equals("href", StringComparison.OrdinalIgnoreCase))
                || (TagName.Equals("form", StringComparison.OrdinalIgnoreCase) && AttributeName.Equals("action", StringComparison.OrdinalIgnoreCase))
                || (TagName.Equals("base", StringComparison.OrdinalIgnoreCase) && AttributeName.Equals("href", StringComparison.OrdinalIgnoreCase))

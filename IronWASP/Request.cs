@@ -133,7 +133,8 @@ namespace IronWASP
             set
             {
                 this.FreezeURL = true;
-                this.url = Tools.UrlPathEncode(value);
+                //this.url = Tools.UrlPathEncode(value);
+                this.url = this.ProcessAndEncodeRawInputUrl(value);
                 this.query = new QueryParameters(this, this.url);
                 this.FreezeURL = false;
             }
@@ -298,6 +299,8 @@ namespace IronWASP
                 this.scanID = value;
             }
         }
+
+        public string Hash = "";
 
         //getter properties
         public QueryParameters Query
@@ -1069,9 +1072,82 @@ namespace IronWASP
         {
             return Encoding.GetEncoding(this.GetBodyEncoding()).GetBytes(BodyString);
         }
-        
+
+        string ProcessAndEncodeRawInputUrl(string Input)
+        {
+            string Path = "";
+            string Query = "";
+            string HashPart = "";
+
+            if (Input.Contains("#"))
+            {
+                string[] InputPartsAtHash = Input.Split(new char[] { '#' }, 2);
+                {
+                    if (InputPartsAtHash.Length == 2)
+                    {
+                        Input = InputPartsAtHash[0];
+                        HashPart = InputPartsAtHash[1];
+                    }
+                }
+            }
+
+            if (Input.Contains("?"))
+            {
+                string[] InputParts = Input.Split(new char[] { '?' }, 2);
+                if (InputParts.Length == 2)
+                {
+                    Path = InputParts[0];
+                    Query = InputParts[1];
+                }
+                else
+                {
+                    Path = Input;
+                }
+            }
+            else
+            {
+                Path = Input;
+            }
+            Path = Path.Replace("%2f", "/").Replace("%2F", "/");
+            StringBuilder SB = new StringBuilder();
+            SB.Append(Path);
+            if (Query.Length > 0 || Input.EndsWith("?"))
+            {
+                SB.Append("?");
+            }
+            string[] QueryParts = Query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string QueryPart in QueryParts)
+            {
+                string[] KV = QueryPart.Split(new char[] { '=' }, 2);
+                string Key = "";
+                string Value = "";
+                if (KV.Length > 0)
+                {
+                    Key = Tools.RelaxedUrlEncode(KV[0]);
+                }
+                if (KV.Length == 2)
+                {
+                    Value = Tools.RelaxedUrlEncode(KV[1]);
+                }
+                SB.Append(Key);
+                if (Value.Length > 0 || QueryPart.EndsWith("="))
+                {
+                    SB.Append("=");
+                }
+                SB.Append(Value);
+                SB.Append("&");
+            }
+            string ProcessedInput = SB.ToString();
+            if (!Query.EndsWith("&"))
+            {
+                ProcessedInput = ProcessedInput.TrimEnd('&');
+            }
+            return Tools.UrlPathEncode(ProcessedInput);
+        }
+
         void AbsorbFullURL(string FullURL)
         {
+            FullURL = this.ProcessAndEncodeRawInputUrl(FullURL);
             if (!(FullURL.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || FullURL.StartsWith("https://", StringComparison.OrdinalIgnoreCase)))
             {
                 throw new Exception("Request URL does not start with http:// or https://");

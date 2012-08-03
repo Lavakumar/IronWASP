@@ -42,5 +42,62 @@ namespace IronWASP
         public bool Editied = false;
         public string Notes = "";
         internal string OriginalRequestHeaders = "";
+        internal string Source = "";
+
+        internal object[] ToProxyGridRowObjectArray()
+        {
+            if (this.Code > -1)
+            {
+                return new object[] { this.ID, this.Host, this.Method, this.Url, this.File, this.SSL, this.Parameters, this.Code, this.Length, this.Mime, this.SetCookie, this.Editied, this.Notes };
+            }
+            else
+            {
+                return new object[] { this.ID, this.Host, this.Method, this.Url, this.File, this.SSL, this.Parameters, null, null, "", false, this.Editied, "" };
+            }
+        }
+        internal object[] ToTestGridRowObjectArray()
+        {
+            if (this.Code > -1)
+            {
+                return new object[] { this.ID, this.Host, this.Method, this.Url, this.File, this.SSL, this.Parameters, this.Code, this.Length, this.Mime, this.SetCookie };
+            }
+            else
+            {
+                return new object[] { this.ID, this.Host, this.Method, this.Url, this.File, this.SSL, this.Parameters, null, null, "", false };
+            }
+        }
+        internal object[] ToShellGridRowObjectArray()
+        {
+            if (this.Code > -1)
+            {
+                return new object[] { this.ID, this.Host, this.Method, this.Url, this.File, this.SSL, this.Parameters, this.Code, this.Length, this.Mime, this.SetCookie };
+            }
+            else
+            {
+                return new object[] { this.ID, this.Host, this.Method, this.Url, this.File, this.SSL, this.Parameters, null, null, "", false };
+            }
+        }
+        internal object[] ToScanGridRowObjectArray()
+        {
+            if (this.Code > -1)
+            {
+                return new object[] { this.ID, this.ScanID, this.Host, this.Method, this.Url, this.File, this.SSL, this.Parameters, this.Code, this.Length, this.Mime, this.SetCookie };
+            }
+            else
+            {
+                return new object[] { this.ID, this.ScanID, this.Host, this.Method, this.Url, this.File, this.SSL, this.Parameters, null, null, "", false };
+            }
+        }
+        internal object[] ToProbeGridRowObjectArray()
+        {
+            if (this.Code > -1)
+            {
+                return new object[] { this.ID, this.Host, this.Method, this.Url, this.File, this.SSL, this.Parameters, this.Code, this.Length, this.Mime, this.SetCookie };
+            }
+            else
+            {
+                return new object[] { this.ID, this.Host, this.Method, this.Url, this.File, this.SSL, this.Parameters, null, null, "", false };
+            }
+        }
     }
 }

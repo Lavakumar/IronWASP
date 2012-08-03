@@ -192,6 +192,11 @@ namespace IronWASP
             }
 
             if (Depth + 1 > MaxDepth) return;
+            List<Request> Redirects = GetRedirects(Req, Res);
+            foreach (Request Redirect in Redirects)
+            {
+                AddToCrawlQueue(Redirect, Depth + 1, true);
+            }
             List<Request> LinkClicks = GetLinkClicks(Req, Res);
             foreach (Request LinkClick in LinkClicks)
             {
@@ -463,6 +468,23 @@ namespace IronWASP
             }
         }
 
+        List<Request> GetRedirects(Request Req, Response Res)
+        {
+            List<Request> Redirects = new List<Request>();
+            List<string> RedirectUrls = GetRedirectUrls(Req, Res);
+            foreach (string RedirectUrl in RedirectUrls)
+            {
+                try
+                {
+                    Request RedirectReq = new Request(RedirectUrl);
+                    RedirectReq.SetCookie(Cookies);
+                    Redirects.Add(RedirectReq);
+                }
+                catch { }
+            }
+            return Redirects;
+        }
+
         List<Request> GetLinkClicks(Request Req, Response Res)
         {
             List<Request> LinkClicks = new List<Request>();
@@ -499,7 +521,7 @@ namespace IronWASP
                     else if(Attr.Name.Equals("action"))
                     {
                         if (Attr.Value.StartsWith("javascript:")) continue;
-                        string ActionUrl = NormalizeUrl(Req, Attr.Value.Trim());
+                        string ActionUrl = NormalizeUrl(Req, Tools.HtmlDecode(Attr.Value.Trim()));
                         if (ActionUrl.Length > 0)
                         {
                             SubReq.FullUrl = ActionUrl;
@@ -550,6 +572,38 @@ namespace IronWASP
                 FormSubmissions.Add(SubReq);
             }
             return FormSubmissions;
+        }
+
+        List<string> GetRedirectUrls(Request Req, Response Res)
+        {
+            List<string> RedirectUrls = new List<string>();
+
+            List<string> LocationUrls = new List<string>();
+            if (Res.Headers.Has("Location")) LocationUrls.Add(Res.Headers.Get("Location"));
+            if (Res.IsHtml) LocationUrls.AddRange(Res.Html.GetMetaContent("http-equiv", "location"));
+            
+            foreach(string LocationUrl in LocationUrls)
+            {
+                string NormalizedLocation = NormalizeUrl(Req, LocationUrl);
+                if (NormalizedLocation.Length > 0) RedirectUrls.Add(NormalizedLocation);
+            }
+            
+            List<string> RefreshHeaderVals = new List<string>();
+            
+            if (Res.Headers.Has("Refresh")) RefreshHeaderVals.Add(Res.Headers.Get("Refresh"));
+            if (Res.IsHtml) RefreshHeaderVals.AddRange(Res.Html.GetMetaContent("http-equiv", "refresh"));
+            
+            foreach(string RefreshHeaderVal in RefreshHeaderVals)
+            {
+                string[] RefreshHVParts = RefreshHeaderVal.Split(new char[]{';'}, 2);
+                if (RefreshHVParts.Length == 2 && RefreshHVParts[1].Length > 0)
+                {
+                    string NormalizedRefreshUrl = NormalizeUrl(Req, RefreshHVParts[1]);
+                    if (NormalizedRefreshUrl.Length > 0) RedirectUrls.Add(NormalizedRefreshUrl);
+                }
+            }
+
+            return RedirectUrls;
         }
 
         List<string> GetLinks(Request Req, Response Res)

@@ -48,8 +48,9 @@ namespace IronWASP
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -57,9 +58,8 @@ namespace IronWASP
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             this.split_main = new System.Windows.Forms.SplitContainer();
             this.IronTree = new System.Windows.Forms.TreeView();
             this.IronTreeMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -153,6 +153,17 @@ namespace IronWASP
             this.StopThisScanJobToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ASTraceTab = new System.Windows.Forms.TabPage();
             this.ScanTraceBaseSplit = new System.Windows.Forms.SplitContainer();
+            this.ScanTraceNavPanel = new System.Windows.Forms.Panel();
+            this.ScanTraceStatusLbl = new System.Windows.Forms.Label();
+            this.ScanTraceStatLbl = new System.Windows.Forms.Label();
+            this.ScanTraceFrontFourBtn = new System.Windows.Forms.Button();
+            this.ScanTraceBackOneBtn = new System.Windows.Forms.Button();
+            this.ScanTraceFrontThreeBtn = new System.Windows.Forms.Button();
+            this.ScanTraceBackFourBtn = new System.Windows.Forms.Button();
+            this.ScanTraceFrontTwoBtn = new System.Windows.Forms.Button();
+            this.ScanTraceBackThreeBtn = new System.Windows.Forms.Button();
+            this.ScanTraceFrontOneBtn = new System.Windows.Forms.Button();
+            this.ScanTraceBackTwoBtn = new System.Windows.Forms.Button();
             this.ScanTraceGrid = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn32 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn35 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -241,37 +252,6 @@ namespace IronWASP
             this.TestBlueGroupBtn = new System.Windows.Forms.Button();
             this.TestGreenGroupBtn = new System.Windows.Forms.Button();
             this.TestRedGroupBtn = new System.Windows.Forms.Button();
-            this.MTScriptingTP = new System.Windows.Forms.TabPage();
-            this.ScriptingShellSplit = new System.Windows.Forms.SplitContainer();
-            this.ClearShellDisplayBtn = new System.Windows.Forms.Button();
-            this.MultiLineShellExecuteBtn = new System.Windows.Forms.Button();
-            this.InteractiveShellCtrlCBtn = new System.Windows.Forms.Button();
-            this.ScriptingShellTabs = new System.Windows.Forms.TabControl();
-            this.InteractiveShellTP = new System.Windows.Forms.TabPage();
-            this.InteractiveShellPromptBox = new System.Windows.Forms.TextBox();
-            this.InteractiveShellOut = new System.Windows.Forms.TextBox();
-            this.InteractiveShellIn = new System.Windows.Forms.TextBox();
-            this.MultiLineShellTP = new System.Windows.Forms.TabPage();
-            this.MultiLineShellInTE = new ICSharpCode.TextEditor.TextEditorControl();
-            this.ScriptedSendTP = new System.Windows.Forms.TabPage();
-            this.CustomSendErrorTB = new System.Windows.Forms.TextBox();
-            this.CustomSendTE = new ICSharpCode.TextEditor.TextEditorControl();
-            this.CustomSendBottomRtb = new System.Windows.Forms.RichTextBox();
-            this.CustomSendTopRtb = new System.Windows.Forms.RichTextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.CustomSendActivateCB = new System.Windows.Forms.CheckBox();
-            this.CustomSendRubyRB = new System.Windows.Forms.RadioButton();
-            this.CustomSendPythonRB = new System.Windows.Forms.RadioButton();
-            this.InteractiveShellRubyRB = new System.Windows.Forms.RadioButton();
-            this.label2 = new System.Windows.Forms.Label();
-            this.InteractiveShellPythonRB = new System.Windows.Forms.RadioButton();
-            this.ScriptingShellAPISplit = new System.Windows.Forms.SplitContainer();
-            this.ScriptingShellAPITreeTabs = new System.Windows.Forms.TabControl();
-            this.ScriptingShellAPITreePythonTab = new System.Windows.Forms.TabPage();
-            this.ScriptingShellPythonAPITree = new System.Windows.Forms.TreeView();
-            this.ScriptingShellAPITreeRubyTab = new System.Windows.Forms.TabPage();
-            this.ScriptingShellRubyAPITree = new System.Windows.Forms.TreeView();
-            this.ShellAPIDetailsRTB = new System.Windows.Forms.RichTextBox();
             this.MTJavaScriptTaintTP = new System.Windows.Forms.TabPage();
             this.JSTaintShowSourceToSinkCB = new System.Windows.Forms.CheckBox();
             this.JSTaintShowLinesLbl = new System.Windows.Forms.Label();
@@ -314,6 +294,38 @@ namespace IronWASP
             this.TaintTraceResultSourceToSinkLegendTB = new System.Windows.Forms.TextBox();
             this.TaintTraceResultSourceLegendTB = new System.Windows.Forms.TextBox();
             this.TaintTraceResultSourcePlusSinkLegendTB = new System.Windows.Forms.TextBox();
+            this.mt_scripting = new System.Windows.Forms.TabPage();
+            this.ScriptingShellSplit = new System.Windows.Forms.SplitContainer();
+            this.ClearShellDisplayBtn = new System.Windows.Forms.Button();
+            this.MultiLineShellExecuteBtn = new System.Windows.Forms.Button();
+            this.InteractiveShellCtrlCBtn = new System.Windows.Forms.Button();
+            this.ScriptingShellTabs = new System.Windows.Forms.TabControl();
+            this.InteractiveShellTP = new System.Windows.Forms.TabPage();
+            this.ShellInPanel = new System.Windows.Forms.Panel();
+            this.InteractiveShellPromptBox = new System.Windows.Forms.TextBox();
+            this.InteractiveShellIn = new System.Windows.Forms.TextBox();
+            this.InteractiveShellOut = new System.Windows.Forms.TextBox();
+            this.MultiLineShellTP = new System.Windows.Forms.TabPage();
+            this.MultiLineShellInTE = new ICSharpCode.TextEditor.TextEditorControl();
+            this.ScriptedSendTP = new System.Windows.Forms.TabPage();
+            this.CustomSendErrorTB = new System.Windows.Forms.TextBox();
+            this.CustomSendTE = new ICSharpCode.TextEditor.TextEditorControl();
+            this.CustomSendBottomRtb = new System.Windows.Forms.RichTextBox();
+            this.CustomSendTopRtb = new System.Windows.Forms.RichTextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.CustomSendActivateCB = new System.Windows.Forms.CheckBox();
+            this.CustomSendRubyRB = new System.Windows.Forms.RadioButton();
+            this.CustomSendPythonRB = new System.Windows.Forms.RadioButton();
+            this.InteractiveShellRubyRB = new System.Windows.Forms.RadioButton();
+            this.label2 = new System.Windows.Forms.Label();
+            this.InteractiveShellPythonRB = new System.Windows.Forms.RadioButton();
+            this.ScriptingShellAPISplit = new System.Windows.Forms.SplitContainer();
+            this.ScriptingShellAPITreeTabs = new System.Windows.Forms.TabControl();
+            this.ScriptingShellAPITreePythonTab = new System.Windows.Forms.TabPage();
+            this.ScriptingShellPythonAPITree = new System.Windows.Forms.TreeView();
+            this.ScriptingShellAPITreeRubyTab = new System.Windows.Forms.TabPage();
+            this.ScriptingShellRubyAPITree = new System.Windows.Forms.TreeView();
+            this.ShellAPIDetailsRTB = new System.Windows.Forms.RichTextBox();
             this.mt_proxy = new System.Windows.Forms.TabPage();
             this.ProxyOptionsBtn = new System.Windows.Forms.Button();
             this.ConfigLoopBackOnlyCB = new System.Windows.Forms.CheckBox();
@@ -428,6 +440,17 @@ namespace IronWASP
             this.LogResponseFormatPluginsGrid = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn45 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LogResponseFormatXMLTB = new System.Windows.Forms.TextBox();
+            this.MainLogNavPanel = new System.Windows.Forms.Panel();
+            this.MainLogStatusLbl = new System.Windows.Forms.Label();
+            this.MainLogStatLbl = new System.Windows.Forms.Label();
+            this.MainLogFrontFourBtn = new System.Windows.Forms.Button();
+            this.MainLogBackOneBtn = new System.Windows.Forms.Button();
+            this.MainLogFrontThreeBtn = new System.Windows.Forms.Button();
+            this.MainLogBackFourBtn = new System.Windows.Forms.Button();
+            this.MainLogFrontTwoBtn = new System.Windows.Forms.Button();
+            this.MainLogBackThreeBtn = new System.Windows.Forms.Button();
+            this.MainLogFrontOneBtn = new System.Windows.Forms.Button();
+            this.MainLogBackTwoBtn = new System.Windows.Forms.Button();
             this.LogTabs = new System.Windows.Forms.TabControl();
             this.ProxyLogTab = new System.Windows.Forms.TabPage();
             this.ProxyLogGrid = new System.Windows.Forms.DataGridView();
@@ -743,6 +766,7 @@ namespace IronWASP
             this.BurpLogOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.ConfigViewHideLL = new System.Windows.Forms.LinkLabel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.PromptBlinkTimer = new System.Windows.Forms.Timer(this.components);
             this.split_main.Panel1.SuspendLayout();
             this.split_main.Panel2.SuspendLayout();
             this.split_main.SuspendLayout();
@@ -785,6 +809,7 @@ namespace IronWASP
             this.ScanTraceBaseSplit.Panel1.SuspendLayout();
             this.ScanTraceBaseSplit.Panel2.SuspendLayout();
             this.ScanTraceBaseSplit.SuspendLayout();
+            this.ScanTraceNavPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ScanTraceGrid)).BeginInit();
             this.mt_manual.SuspendLayout();
             this.MTTabs.SuspendLayout();
@@ -820,20 +845,6 @@ namespace IronWASP
             this.MTResponseReflectionTP.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TestGroupLogGrid)).BeginInit();
             this.LogMenu.SuspendLayout();
-            this.MTScriptingTP.SuspendLayout();
-            this.ScriptingShellSplit.Panel1.SuspendLayout();
-            this.ScriptingShellSplit.Panel2.SuspendLayout();
-            this.ScriptingShellSplit.SuspendLayout();
-            this.ScriptingShellTabs.SuspendLayout();
-            this.InteractiveShellTP.SuspendLayout();
-            this.MultiLineShellTP.SuspendLayout();
-            this.ScriptedSendTP.SuspendLayout();
-            this.ScriptingShellAPISplit.Panel1.SuspendLayout();
-            this.ScriptingShellAPISplit.Panel2.SuspendLayout();
-            this.ScriptingShellAPISplit.SuspendLayout();
-            this.ScriptingShellAPITreeTabs.SuspendLayout();
-            this.ScriptingShellAPITreePythonTab.SuspendLayout();
-            this.ScriptingShellAPITreeRubyTab.SuspendLayout();
             this.MTJavaScriptTaintTP.SuspendLayout();
             this.JSTaintConfigPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.JSTaintConfigGrid)).BeginInit();
@@ -845,6 +856,21 @@ namespace IronWASP
             this.JSTaintResultSplit.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.JSTaintResultGrid)).BeginInit();
             this.JSTainTraceEditMenu.SuspendLayout();
+            this.mt_scripting.SuspendLayout();
+            this.ScriptingShellSplit.Panel1.SuspendLayout();
+            this.ScriptingShellSplit.Panel2.SuspendLayout();
+            this.ScriptingShellSplit.SuspendLayout();
+            this.ScriptingShellTabs.SuspendLayout();
+            this.InteractiveShellTP.SuspendLayout();
+            this.ShellInPanel.SuspendLayout();
+            this.MultiLineShellTP.SuspendLayout();
+            this.ScriptedSendTP.SuspendLayout();
+            this.ScriptingShellAPISplit.Panel1.SuspendLayout();
+            this.ScriptingShellAPISplit.Panel2.SuspendLayout();
+            this.ScriptingShellAPISplit.SuspendLayout();
+            this.ScriptingShellAPITreeTabs.SuspendLayout();
+            this.ScriptingShellAPITreePythonTab.SuspendLayout();
+            this.ScriptingShellAPITreeRubyTab.SuspendLayout();
             this.mt_proxy.SuspendLayout();
             this.ProxyInterceptTabs.SuspendLayout();
             this.ProxyInterceptRequestTab.SuspendLayout();
@@ -911,6 +937,7 @@ namespace IronWASP
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LogResponseFormatPluginsGrid)).BeginInit();
+            this.MainLogNavPanel.SuspendLayout();
             this.LogTabs.SuspendLayout();
             this.ProxyLogTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ProxyLogGrid)).BeginInit();
@@ -1051,6 +1078,7 @@ namespace IronWASP
             this.main_tab.Controls.Add(this.mt_console);
             this.main_tab.Controls.Add(this.mt_auto);
             this.main_tab.Controls.Add(this.mt_manual);
+            this.main_tab.Controls.Add(this.mt_scripting);
             this.main_tab.Controls.Add(this.mt_proxy);
             this.main_tab.Controls.Add(this.mt_logs);
             this.main_tab.Controls.Add(this.mt_results);
@@ -1064,6 +1092,7 @@ namespace IronWASP
             this.main_tab.SelectedIndex = 0;
             this.main_tab.Size = new System.Drawing.Size(713, 538);
             this.main_tab.TabIndex = 0;
+            this.main_tab.SelectedIndexChanged += new System.EventHandler(this.main_tab_SelectedIndexChanged);
             // 
             // mt_console
             // 
@@ -2028,14 +2057,14 @@ namespace IronWASP
             this.ASQueueGrid.AllowUserToResizeRows = false;
             this.ASQueueGrid.BackgroundColor = System.Drawing.Color.White;
             this.ASQueueGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Blue;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ASQueueGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle13.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle13.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.Color.Blue;
+            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ASQueueGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle13;
             this.ASQueueGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ASQueueGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ASQueueGridScanID,
@@ -2136,6 +2165,7 @@ namespace IronWASP
             // 
             // ScanTraceBaseSplit.Panel1
             // 
+            this.ScanTraceBaseSplit.Panel1.Controls.Add(this.ScanTraceNavPanel);
             this.ScanTraceBaseSplit.Panel1.Controls.Add(this.ScanTraceGrid);
             // 
             // ScanTraceBaseSplit.Panel2
@@ -2145,23 +2175,144 @@ namespace IronWASP
             this.ScanTraceBaseSplit.SplitterDistance = 233;
             this.ScanTraceBaseSplit.TabIndex = 1;
             // 
+            // ScanTraceNavPanel
+            // 
+            this.ScanTraceNavPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.ScanTraceNavPanel.Controls.Add(this.ScanTraceStatusLbl);
+            this.ScanTraceNavPanel.Controls.Add(this.ScanTraceStatLbl);
+            this.ScanTraceNavPanel.Controls.Add(this.ScanTraceFrontFourBtn);
+            this.ScanTraceNavPanel.Controls.Add(this.ScanTraceBackOneBtn);
+            this.ScanTraceNavPanel.Controls.Add(this.ScanTraceFrontThreeBtn);
+            this.ScanTraceNavPanel.Controls.Add(this.ScanTraceBackFourBtn);
+            this.ScanTraceNavPanel.Controls.Add(this.ScanTraceFrontTwoBtn);
+            this.ScanTraceNavPanel.Controls.Add(this.ScanTraceBackThreeBtn);
+            this.ScanTraceNavPanel.Controls.Add(this.ScanTraceFrontOneBtn);
+            this.ScanTraceNavPanel.Controls.Add(this.ScanTraceBackTwoBtn);
+            this.ScanTraceNavPanel.Location = new System.Drawing.Point(0, 0);
+            this.ScanTraceNavPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.ScanTraceNavPanel.Name = "ScanTraceNavPanel";
+            this.ScanTraceNavPanel.Size = new System.Drawing.Size(697, 63);
+            this.ScanTraceNavPanel.TabIndex = 17;
+            // 
+            // ScanTraceStatusLbl
+            // 
+            this.ScanTraceStatusLbl.AutoSize = true;
+            this.ScanTraceStatusLbl.Location = new System.Drawing.Point(5, 40);
+            this.ScanTraceStatusLbl.Name = "ScanTraceStatusLbl";
+            this.ScanTraceStatusLbl.Size = new System.Drawing.Size(115, 13);
+            this.ScanTraceStatusLbl.TabIndex = 17;
+            this.ScanTraceStatusLbl.Text = "                                    ";
+            // 
+            // ScanTraceStatLbl
+            // 
+            this.ScanTraceStatLbl.AutoSize = true;
+            this.ScanTraceStatLbl.Location = new System.Drawing.Point(244, 10);
+            this.ScanTraceStatLbl.Name = "ScanTraceStatLbl";
+            this.ScanTraceStatLbl.Size = new System.Drawing.Size(148, 13);
+            this.ScanTraceStatLbl.TabIndex = 16;
+            this.ScanTraceStatLbl.Text = "Showing 0 - 0 of Scan Traces";
+            // 
+            // ScanTraceFrontFourBtn
+            // 
+            this.ScanTraceFrontFourBtn.Location = new System.Drawing.Point(635, 6);
+            this.ScanTraceFrontFourBtn.Name = "ScanTraceFrontFourBtn";
+            this.ScanTraceFrontFourBtn.Size = new System.Drawing.Size(55, 20);
+            this.ScanTraceFrontFourBtn.TabIndex = 15;
+            this.ScanTraceFrontFourBtn.Text = ">>>>";
+            this.ScanTraceFrontFourBtn.UseVisualStyleBackColor = true;
+            this.ScanTraceFrontFourBtn.Click += new System.EventHandler(this.ScanTraceFrontFourBtn_Click);
+            // 
+            // ScanTraceBackOneBtn
+            // 
+            this.ScanTraceBackOneBtn.Location = new System.Drawing.Point(186, 6);
+            this.ScanTraceBackOneBtn.Name = "ScanTraceBackOneBtn";
+            this.ScanTraceBackOneBtn.Size = new System.Drawing.Size(55, 20);
+            this.ScanTraceBackOneBtn.TabIndex = 11;
+            this.ScanTraceBackOneBtn.Text = "<";
+            this.ScanTraceBackOneBtn.UseVisualStyleBackColor = true;
+            this.ScanTraceBackOneBtn.Click += new System.EventHandler(this.ScanTraceBackOneBtn_Click);
+            // 
+            // ScanTraceFrontThreeBtn
+            // 
+            this.ScanTraceFrontThreeBtn.Location = new System.Drawing.Point(574, 6);
+            this.ScanTraceFrontThreeBtn.Name = "ScanTraceFrontThreeBtn";
+            this.ScanTraceFrontThreeBtn.Size = new System.Drawing.Size(55, 20);
+            this.ScanTraceFrontThreeBtn.TabIndex = 14;
+            this.ScanTraceFrontThreeBtn.Text = ">>>";
+            this.ScanTraceFrontThreeBtn.UseVisualStyleBackColor = true;
+            this.ScanTraceFrontThreeBtn.Click += new System.EventHandler(this.ScanTraceFrontThreeBtn_Click);
+            // 
+            // ScanTraceBackFourBtn
+            // 
+            this.ScanTraceBackFourBtn.Location = new System.Drawing.Point(3, 6);
+            this.ScanTraceBackFourBtn.Name = "ScanTraceBackFourBtn";
+            this.ScanTraceBackFourBtn.Size = new System.Drawing.Size(55, 20);
+            this.ScanTraceBackFourBtn.TabIndex = 1;
+            this.ScanTraceBackFourBtn.Text = "<<<<";
+            this.ScanTraceBackFourBtn.UseVisualStyleBackColor = true;
+            this.ScanTraceBackFourBtn.Click += new System.EventHandler(this.ScanTraceBackFourBtn_Click);
+            // 
+            // ScanTraceFrontTwoBtn
+            // 
+            this.ScanTraceFrontTwoBtn.Location = new System.Drawing.Point(513, 6);
+            this.ScanTraceFrontTwoBtn.Name = "ScanTraceFrontTwoBtn";
+            this.ScanTraceFrontTwoBtn.Size = new System.Drawing.Size(55, 20);
+            this.ScanTraceFrontTwoBtn.TabIndex = 13;
+            this.ScanTraceFrontTwoBtn.Text = ">>";
+            this.ScanTraceFrontTwoBtn.UseVisualStyleBackColor = true;
+            this.ScanTraceFrontTwoBtn.Click += new System.EventHandler(this.ScanTraceFrontTwoBtn_Click);
+            // 
+            // ScanTraceBackThreeBtn
+            // 
+            this.ScanTraceBackThreeBtn.Location = new System.Drawing.Point(64, 6);
+            this.ScanTraceBackThreeBtn.Name = "ScanTraceBackThreeBtn";
+            this.ScanTraceBackThreeBtn.Size = new System.Drawing.Size(55, 20);
+            this.ScanTraceBackThreeBtn.TabIndex = 9;
+            this.ScanTraceBackThreeBtn.Text = "<<<";
+            this.ScanTraceBackThreeBtn.UseVisualStyleBackColor = true;
+            this.ScanTraceBackThreeBtn.Click += new System.EventHandler(this.ScanTraceBackThreeBtn_Click);
+            // 
+            // ScanTraceFrontOneBtn
+            // 
+            this.ScanTraceFrontOneBtn.Location = new System.Drawing.Point(452, 6);
+            this.ScanTraceFrontOneBtn.Name = "ScanTraceFrontOneBtn";
+            this.ScanTraceFrontOneBtn.Size = new System.Drawing.Size(55, 20);
+            this.ScanTraceFrontOneBtn.TabIndex = 12;
+            this.ScanTraceFrontOneBtn.Text = ">";
+            this.ScanTraceFrontOneBtn.UseVisualStyleBackColor = true;
+            this.ScanTraceFrontOneBtn.Click += new System.EventHandler(this.ScanTraceFrontOneBtn_Click);
+            // 
+            // ScanTraceBackTwoBtn
+            // 
+            this.ScanTraceBackTwoBtn.Location = new System.Drawing.Point(125, 6);
+            this.ScanTraceBackTwoBtn.Name = "ScanTraceBackTwoBtn";
+            this.ScanTraceBackTwoBtn.Size = new System.Drawing.Size(55, 20);
+            this.ScanTraceBackTwoBtn.TabIndex = 10;
+            this.ScanTraceBackTwoBtn.Text = "<<";
+            this.ScanTraceBackTwoBtn.UseVisualStyleBackColor = true;
+            this.ScanTraceBackTwoBtn.Click += new System.EventHandler(this.ScanTraceBackTwoBtn_Click);
+            // 
             // ScanTraceGrid
             // 
             this.ScanTraceGrid.AllowUserToAddRows = false;
             this.ScanTraceGrid.AllowUserToDeleteRows = false;
             this.ScanTraceGrid.AllowUserToOrderColumns = true;
             this.ScanTraceGrid.AllowUserToResizeRows = false;
+            this.ScanTraceGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.ScanTraceGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ScanTraceGrid.BackgroundColor = System.Drawing.Color.White;
             this.ScanTraceGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ScanTraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ScanTraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.ScanTraceGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ScanTraceGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn32,
@@ -2170,10 +2321,9 @@ namespace IronWASP
             this.Column2,
             this.dataGridViewTextBoxColumn37,
             this.Column3});
-            this.ScanTraceGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ScanTraceGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.ScanTraceGrid.GridColor = System.Drawing.Color.White;
-            this.ScanTraceGrid.Location = new System.Drawing.Point(0, 0);
+            this.ScanTraceGrid.Location = new System.Drawing.Point(0, 63);
             this.ScanTraceGrid.Margin = new System.Windows.Forms.Padding(0);
             this.ScanTraceGrid.MultiSelect = false;
             this.ScanTraceGrid.Name = "ScanTraceGrid";
@@ -2181,7 +2331,7 @@ namespace IronWASP
             this.ScanTraceGrid.RowHeadersVisible = false;
             this.ScanTraceGrid.RowHeadersWidth = 10;
             this.ScanTraceGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ScanTraceGrid.Size = new System.Drawing.Size(697, 233);
+            this.ScanTraceGrid.Size = new System.Drawing.Size(697, 170);
             this.ScanTraceGrid.TabIndex = 8;
             this.ScanTraceGrid.SelectionChanged += new System.EventHandler(this.ScanTraceGrid_SelectionChanged);
             // 
@@ -2264,7 +2414,6 @@ namespace IronWASP
             // MTTabs
             // 
             this.MTTabs.Controls.Add(this.MTTestTP);
-            this.MTTabs.Controls.Add(this.MTScriptingTP);
             this.MTTabs.Controls.Add(this.MTJavaScriptTaintTP);
             this.MTTabs.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MTTabs.Location = new System.Drawing.Point(0, 0);
@@ -3161,442 +3310,6 @@ namespace IronWASP
             this.TestRedGroupBtn.UseVisualStyleBackColor = false;
             this.TestRedGroupBtn.Click += new System.EventHandler(this.MTRedGroupBtn_Click);
             // 
-            // MTScriptingTP
-            // 
-            this.MTScriptingTP.Controls.Add(this.ScriptingShellSplit);
-            this.MTScriptingTP.Location = new System.Drawing.Point(4, 22);
-            this.MTScriptingTP.Margin = new System.Windows.Forms.Padding(0);
-            this.MTScriptingTP.Name = "MTScriptingTP";
-            this.MTScriptingTP.Size = new System.Drawing.Size(697, 486);
-            this.MTScriptingTP.TabIndex = 1;
-            this.MTScriptingTP.Text = "Scripting";
-            this.MTScriptingTP.UseVisualStyleBackColor = true;
-            // 
-            // ScriptingShellSplit
-            // 
-            this.ScriptingShellSplit.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.ScriptingShellSplit.Location = new System.Drawing.Point(0, 0);
-            this.ScriptingShellSplit.Margin = new System.Windows.Forms.Padding(0);
-            this.ScriptingShellSplit.Name = "ScriptingShellSplit";
-            // 
-            // ScriptingShellSplit.Panel1
-            // 
-            this.ScriptingShellSplit.Panel1.Controls.Add(this.ClearShellDisplayBtn);
-            this.ScriptingShellSplit.Panel1.Controls.Add(this.MultiLineShellExecuteBtn);
-            this.ScriptingShellSplit.Panel1.Controls.Add(this.InteractiveShellCtrlCBtn);
-            this.ScriptingShellSplit.Panel1.Controls.Add(this.ScriptingShellTabs);
-            this.ScriptingShellSplit.Panel1.Controls.Add(this.InteractiveShellRubyRB);
-            this.ScriptingShellSplit.Panel1.Controls.Add(this.label2);
-            this.ScriptingShellSplit.Panel1.Controls.Add(this.InteractiveShellPythonRB);
-            // 
-            // ScriptingShellSplit.Panel2
-            // 
-            this.ScriptingShellSplit.Panel2.Controls.Add(this.ScriptingShellAPISplit);
-            this.ScriptingShellSplit.Size = new System.Drawing.Size(704, 487);
-            this.ScriptingShellSplit.SplitterDistance = 533;
-            this.ScriptingShellSplit.SplitterWidth = 2;
-            this.ScriptingShellSplit.TabIndex = 6;
-            // 
-            // ClearShellDisplayBtn
-            // 
-            this.ClearShellDisplayBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ClearShellDisplayBtn.BackColor = System.Drawing.Color.Transparent;
-            this.ClearShellDisplayBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ClearShellDisplayBtn.ForeColor = System.Drawing.Color.Black;
-            this.ClearShellDisplayBtn.Location = new System.Drawing.Point(358, 3);
-            this.ClearShellDisplayBtn.Margin = new System.Windows.Forms.Padding(0);
-            this.ClearShellDisplayBtn.Name = "ClearShellDisplayBtn";
-            this.ClearShellDisplayBtn.Size = new System.Drawing.Size(100, 20);
-            this.ClearShellDisplayBtn.TabIndex = 7;
-            this.ClearShellDisplayBtn.Text = "Clear Shell Output";
-            this.ClearShellDisplayBtn.UseVisualStyleBackColor = false;
-            this.ClearShellDisplayBtn.Click += new System.EventHandler(this.ClearShellDisplayBtn_Click);
-            // 
-            // MultiLineShellExecuteBtn
-            // 
-            this.MultiLineShellExecuteBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.MultiLineShellExecuteBtn.BackColor = System.Drawing.Color.Transparent;
-            this.MultiLineShellExecuteBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.MultiLineShellExecuteBtn.ForeColor = System.Drawing.Color.Black;
-            this.MultiLineShellExecuteBtn.Location = new System.Drawing.Point(221, 3);
-            this.MultiLineShellExecuteBtn.Margin = new System.Windows.Forms.Padding(0);
-            this.MultiLineShellExecuteBtn.Name = "MultiLineShellExecuteBtn";
-            this.MultiLineShellExecuteBtn.Size = new System.Drawing.Size(129, 20);
-            this.MultiLineShellExecuteBtn.TabIndex = 6;
-            this.MultiLineShellExecuteBtn.Text = "Execute MutliLine Script";
-            this.MultiLineShellExecuteBtn.UseVisualStyleBackColor = false;
-            this.MultiLineShellExecuteBtn.Visible = false;
-            this.MultiLineShellExecuteBtn.Click += new System.EventHandler(this.MultiLineShellExecuteBtn_Click);
-            // 
-            // InteractiveShellCtrlCBtn
-            // 
-            this.InteractiveShellCtrlCBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.InteractiveShellCtrlCBtn.BackColor = System.Drawing.Color.Transparent;
-            this.InteractiveShellCtrlCBtn.Enabled = false;
-            this.InteractiveShellCtrlCBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.InteractiveShellCtrlCBtn.ForeColor = System.Drawing.Color.Black;
-            this.InteractiveShellCtrlCBtn.Location = new System.Drawing.Point(467, 3);
-            this.InteractiveShellCtrlCBtn.Margin = new System.Windows.Forms.Padding(0);
-            this.InteractiveShellCtrlCBtn.Name = "InteractiveShellCtrlCBtn";
-            this.InteractiveShellCtrlCBtn.Size = new System.Drawing.Size(62, 20);
-            this.InteractiveShellCtrlCBtn.TabIndex = 3;
-            this.InteractiveShellCtrlCBtn.Text = "Ctrl + C";
-            this.InteractiveShellCtrlCBtn.UseVisualStyleBackColor = false;
-            this.InteractiveShellCtrlCBtn.Click += new System.EventHandler(this.InteractiveShellCtrlCBtn_Click);
-            // 
-            // ScriptingShellTabs
-            // 
-            this.ScriptingShellTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.ScriptingShellTabs.Controls.Add(this.InteractiveShellTP);
-            this.ScriptingShellTabs.Controls.Add(this.MultiLineShellTP);
-            this.ScriptingShellTabs.Controls.Add(this.ScriptedSendTP);
-            this.ScriptingShellTabs.Location = new System.Drawing.Point(0, 25);
-            this.ScriptingShellTabs.Margin = new System.Windows.Forms.Padding(0);
-            this.ScriptingShellTabs.Name = "ScriptingShellTabs";
-            this.ScriptingShellTabs.Padding = new System.Drawing.Point(0, 0);
-            this.ScriptingShellTabs.SelectedIndex = 0;
-            this.ScriptingShellTabs.Size = new System.Drawing.Size(533, 461);
-            this.ScriptingShellTabs.TabIndex = 3;
-            this.ScriptingShellTabs.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.ScriptingShellTabs_Selecting);
-            // 
-            // InteractiveShellTP
-            // 
-            this.InteractiveShellTP.BackColor = System.Drawing.Color.Black;
-            this.InteractiveShellTP.Controls.Add(this.InteractiveShellPromptBox);
-            this.InteractiveShellTP.Controls.Add(this.InteractiveShellOut);
-            this.InteractiveShellTP.Controls.Add(this.InteractiveShellIn);
-            this.InteractiveShellTP.Location = new System.Drawing.Point(4, 22);
-            this.InteractiveShellTP.Margin = new System.Windows.Forms.Padding(0);
-            this.InteractiveShellTP.Name = "InteractiveShellTP";
-            this.InteractiveShellTP.Size = new System.Drawing.Size(525, 435);
-            this.InteractiveShellTP.TabIndex = 0;
-            this.InteractiveShellTP.Text = "Interactive Shell";
-            // 
-            // InteractiveShellPromptBox
-            // 
-            this.InteractiveShellPromptBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.InteractiveShellPromptBox.BackColor = System.Drawing.Color.Black;
-            this.InteractiveShellPromptBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.InteractiveShellPromptBox.Font = new System.Drawing.Font("Lucida Console", 9.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.InteractiveShellPromptBox.ForeColor = System.Drawing.Color.Lime;
-            this.InteractiveShellPromptBox.Location = new System.Drawing.Point(0, 419);
-            this.InteractiveShellPromptBox.Margin = new System.Windows.Forms.Padding(0);
-            this.InteractiveShellPromptBox.Name = "InteractiveShellPromptBox";
-            this.InteractiveShellPromptBox.ReadOnly = true;
-            this.InteractiveShellPromptBox.Size = new System.Drawing.Size(27, 13);
-            this.InteractiveShellPromptBox.TabIndex = 2;
-            this.InteractiveShellPromptBox.Text = ">>>>";
-            this.InteractiveShellPromptBox.Enter += new System.EventHandler(this.InteractiveShellPromptBox_Enter);
-            // 
-            // InteractiveShellOut
-            // 
-            this.InteractiveShellOut.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.InteractiveShellOut.BackColor = System.Drawing.Color.Black;
-            this.InteractiveShellOut.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.InteractiveShellOut.Font = new System.Drawing.Font("Lucida Console", 9.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.InteractiveShellOut.ForeColor = System.Drawing.Color.Lime;
-            this.InteractiveShellOut.Location = new System.Drawing.Point(0, 0);
-            this.InteractiveShellOut.Margin = new System.Windows.Forms.Padding(0);
-            this.InteractiveShellOut.MaxLength = 2147483647;
-            this.InteractiveShellOut.Multiline = true;
-            this.InteractiveShellOut.Name = "InteractiveShellOut";
-            this.InteractiveShellOut.ReadOnly = true;
-            this.InteractiveShellOut.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.InteractiveShellOut.Size = new System.Drawing.Size(525, 412);
-            this.InteractiveShellOut.TabIndex = 1;
-            // 
-            // InteractiveShellIn
-            // 
-            this.InteractiveShellIn.AcceptsReturn = true;
-            this.InteractiveShellIn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.InteractiveShellIn.BackColor = System.Drawing.Color.Black;
-            this.InteractiveShellIn.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.InteractiveShellIn.Font = new System.Drawing.Font("Lucida Console", 9.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.InteractiveShellIn.ForeColor = System.Drawing.Color.Lime;
-            this.InteractiveShellIn.Location = new System.Drawing.Point(27, 419);
-            this.InteractiveShellIn.Margin = new System.Windows.Forms.Padding(0);
-            this.InteractiveShellIn.Multiline = true;
-            this.InteractiveShellIn.Name = "InteractiveShellIn";
-            this.InteractiveShellIn.Size = new System.Drawing.Size(481, 13);
-            this.InteractiveShellIn.TabIndex = 0;
-            this.InteractiveShellIn.WordWrap = false;
-            this.InteractiveShellIn.KeyUp += new System.Windows.Forms.KeyEventHandler(this.InteractiveShellIn_KeyUp);
-            // 
-            // MultiLineShellTP
-            // 
-            this.MultiLineShellTP.Controls.Add(this.MultiLineShellInTE);
-            this.MultiLineShellTP.Location = new System.Drawing.Point(4, 22);
-            this.MultiLineShellTP.Margin = new System.Windows.Forms.Padding(0);
-            this.MultiLineShellTP.Name = "MultiLineShellTP";
-            this.MultiLineShellTP.Size = new System.Drawing.Size(525, 435);
-            this.MultiLineShellTP.TabIndex = 1;
-            this.MultiLineShellTP.Text = "Multi-Line Shell";
-            this.MultiLineShellTP.UseVisualStyleBackColor = true;
-            // 
-            // MultiLineShellInTE
-            // 
-            this.MultiLineShellInTE.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MultiLineShellInTE.IsIconBarVisible = false;
-            this.MultiLineShellInTE.Location = new System.Drawing.Point(0, 0);
-            this.MultiLineShellInTE.Margin = new System.Windows.Forms.Padding(0);
-            this.MultiLineShellInTE.Name = "MultiLineShellInTE";
-            this.MultiLineShellInTE.ShowEOLMarkers = true;
-            this.MultiLineShellInTE.ShowSpaces = true;
-            this.MultiLineShellInTE.ShowTabs = true;
-            this.MultiLineShellInTE.ShowVRuler = true;
-            this.MultiLineShellInTE.Size = new System.Drawing.Size(525, 435);
-            this.MultiLineShellInTE.TabIndex = 4;
-            // 
-            // ScriptedSendTP
-            // 
-            this.ScriptedSendTP.Controls.Add(this.CustomSendErrorTB);
-            this.ScriptedSendTP.Controls.Add(this.CustomSendTE);
-            this.ScriptedSendTP.Controls.Add(this.CustomSendBottomRtb);
-            this.ScriptedSendTP.Controls.Add(this.CustomSendTopRtb);
-            this.ScriptedSendTP.Controls.Add(this.label1);
-            this.ScriptedSendTP.Controls.Add(this.CustomSendActivateCB);
-            this.ScriptedSendTP.Controls.Add(this.CustomSendRubyRB);
-            this.ScriptedSendTP.Controls.Add(this.CustomSendPythonRB);
-            this.ScriptedSendTP.Location = new System.Drawing.Point(4, 22);
-            this.ScriptedSendTP.Margin = new System.Windows.Forms.Padding(0);
-            this.ScriptedSendTP.Name = "ScriptedSendTP";
-            this.ScriptedSendTP.Size = new System.Drawing.Size(525, 435);
-            this.ScriptedSendTP.TabIndex = 2;
-            this.ScriptedSendTP.Text = "Scripted Send";
-            this.ScriptedSendTP.UseVisualStyleBackColor = true;
-            // 
-            // CustomSendErrorTB
-            // 
-            this.CustomSendErrorTB.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.CustomSendErrorTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.CustomSendErrorTB.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.CustomSendErrorTB.Location = new System.Drawing.Point(0, 371);
-            this.CustomSendErrorTB.Multiline = true;
-            this.CustomSendErrorTB.Name = "CustomSendErrorTB";
-            this.CustomSendErrorTB.ReadOnly = true;
-            this.CustomSendErrorTB.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.CustomSendErrorTB.Size = new System.Drawing.Size(525, 64);
-            this.CustomSendErrorTB.TabIndex = 15;
-            this.CustomSendErrorTB.Visible = false;
-            // 
-            // CustomSendTE
-            // 
-            this.CustomSendTE.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.CustomSendTE.IsIconBarVisible = false;
-            this.CustomSendTE.Location = new System.Drawing.Point(0, 74);
-            this.CustomSendTE.Margin = new System.Windows.Forms.Padding(0);
-            this.CustomSendTE.Name = "CustomSendTE";
-            this.CustomSendTE.ShowEOLMarkers = true;
-            this.CustomSendTE.ShowSpaces = true;
-            this.CustomSendTE.ShowTabs = true;
-            this.CustomSendTE.ShowVRuler = true;
-            this.CustomSendTE.Size = new System.Drawing.Size(525, 244);
-            this.CustomSendTE.TabIndex = 14;
-            // 
-            // CustomSendBottomRtb
-            // 
-            this.CustomSendBottomRtb.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.CustomSendBottomRtb.BackColor = System.Drawing.SystemColors.Window;
-            this.CustomSendBottomRtb.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.CustomSendBottomRtb.Location = new System.Drawing.Point(0, 318);
-            this.CustomSendBottomRtb.Margin = new System.Windows.Forms.Padding(0);
-            this.CustomSendBottomRtb.Name = "CustomSendBottomRtb";
-            this.CustomSendBottomRtb.ReadOnly = true;
-            this.CustomSendBottomRtb.Size = new System.Drawing.Size(525, 44);
-            this.CustomSendBottomRtb.TabIndex = 10;
-            this.CustomSendBottomRtb.Text = "     return res";
-            // 
-            // CustomSendTopRtb
-            // 
-            this.CustomSendTopRtb.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.CustomSendTopRtb.BackColor = System.Drawing.SystemColors.Window;
-            this.CustomSendTopRtb.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.CustomSendTopRtb.Location = new System.Drawing.Point(0, 54);
-            this.CustomSendTopRtb.Margin = new System.Windows.Forms.Padding(0);
-            this.CustomSendTopRtb.Name = "CustomSendTopRtb";
-            this.CustomSendTopRtb.ReadOnly = true;
-            this.CustomSendTopRtb.Size = new System.Drawing.Size(525, 20);
-            this.CustomSendTopRtb.TabIndex = 9;
-            this.CustomSendTopRtb.Text = "def ScriptedSend(req):";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(58, 13);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "Language:";
-            // 
-            // CustomSendActivateCB
-            // 
-            this.CustomSendActivateCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CustomSendActivateCB.AutoSize = true;
-            this.CustomSendActivateCB.Location = new System.Drawing.Point(421, 9);
-            this.CustomSendActivateCB.Name = "CustomSendActivateCB";
-            this.CustomSendActivateCB.Size = new System.Drawing.Size(95, 17);
-            this.CustomSendActivateCB.TabIndex = 13;
-            this.CustomSendActivateCB.Text = "Activate Script";
-            this.CustomSendActivateCB.UseVisualStyleBackColor = true;
-            this.CustomSendActivateCB.Click += new System.EventHandler(this.CustomSendActivateCB_Click);
-            // 
-            // CustomSendRubyRB
-            // 
-            this.CustomSendRubyRB.AutoSize = true;
-            this.CustomSendRubyRB.Location = new System.Drawing.Point(132, 7);
-            this.CustomSendRubyRB.Name = "CustomSendRubyRB";
-            this.CustomSendRubyRB.Size = new System.Drawing.Size(50, 17);
-            this.CustomSendRubyRB.TabIndex = 8;
-            this.CustomSendRubyRB.Text = "Ruby";
-            this.CustomSendRubyRB.UseVisualStyleBackColor = true;
-            this.CustomSendRubyRB.CheckedChanged += new System.EventHandler(this.CustomSendRubyRB_CheckedChanged);
-            // 
-            // CustomSendPythonRB
-            // 
-            this.CustomSendPythonRB.AutoSize = true;
-            this.CustomSendPythonRB.Checked = true;
-            this.CustomSendPythonRB.Location = new System.Drawing.Point(71, 7);
-            this.CustomSendPythonRB.Name = "CustomSendPythonRB";
-            this.CustomSendPythonRB.Size = new System.Drawing.Size(58, 17);
-            this.CustomSendPythonRB.TabIndex = 7;
-            this.CustomSendPythonRB.TabStop = true;
-            this.CustomSendPythonRB.Text = "Python";
-            this.CustomSendPythonRB.UseVisualStyleBackColor = true;
-            this.CustomSendPythonRB.CheckedChanged += new System.EventHandler(this.CustomSendPythonRB_CheckedChanged);
-            // 
-            // InteractiveShellRubyRB
-            // 
-            this.InteractiveShellRubyRB.AutoSize = true;
-            this.InteractiveShellRubyRB.Location = new System.Drawing.Point(131, 1);
-            this.InteractiveShellRubyRB.Name = "InteractiveShellRubyRB";
-            this.InteractiveShellRubyRB.Size = new System.Drawing.Size(50, 17);
-            this.InteractiveShellRubyRB.TabIndex = 5;
-            this.InteractiveShellRubyRB.Text = "Ruby";
-            this.InteractiveShellRubyRB.UseVisualStyleBackColor = true;
-            this.InteractiveShellRubyRB.CheckedChanged += new System.EventHandler(this.InteractiveShellRubyRB_CheckedChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 3);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(58, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Language:";
-            // 
-            // InteractiveShellPythonRB
-            // 
-            this.InteractiveShellPythonRB.AutoSize = true;
-            this.InteractiveShellPythonRB.Checked = true;
-            this.InteractiveShellPythonRB.Location = new System.Drawing.Point(67, 1);
-            this.InteractiveShellPythonRB.Name = "InteractiveShellPythonRB";
-            this.InteractiveShellPythonRB.Size = new System.Drawing.Size(58, 17);
-            this.InteractiveShellPythonRB.TabIndex = 4;
-            this.InteractiveShellPythonRB.TabStop = true;
-            this.InteractiveShellPythonRB.Text = "Python";
-            this.InteractiveShellPythonRB.UseVisualStyleBackColor = true;
-            this.InteractiveShellPythonRB.CheckedChanged += new System.EventHandler(this.InteractiveShellPythonRB_CheckedChanged);
-            // 
-            // ScriptingShellAPISplit
-            // 
-            this.ScriptingShellAPISplit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ScriptingShellAPISplit.Location = new System.Drawing.Point(0, 0);
-            this.ScriptingShellAPISplit.Margin = new System.Windows.Forms.Padding(0);
-            this.ScriptingShellAPISplit.Name = "ScriptingShellAPISplit";
-            this.ScriptingShellAPISplit.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // ScriptingShellAPISplit.Panel1
-            // 
-            this.ScriptingShellAPISplit.Panel1.Controls.Add(this.ScriptingShellAPITreeTabs);
-            // 
-            // ScriptingShellAPISplit.Panel2
-            // 
-            this.ScriptingShellAPISplit.Panel2.Controls.Add(this.ShellAPIDetailsRTB);
-            this.ScriptingShellAPISplit.Size = new System.Drawing.Size(169, 487);
-            this.ScriptingShellAPISplit.SplitterDistance = 233;
-            this.ScriptingShellAPISplit.SplitterWidth = 2;
-            this.ScriptingShellAPISplit.TabIndex = 0;
-            // 
-            // ScriptingShellAPITreeTabs
-            // 
-            this.ScriptingShellAPITreeTabs.Controls.Add(this.ScriptingShellAPITreePythonTab);
-            this.ScriptingShellAPITreeTabs.Controls.Add(this.ScriptingShellAPITreeRubyTab);
-            this.ScriptingShellAPITreeTabs.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ScriptingShellAPITreeTabs.Location = new System.Drawing.Point(0, 0);
-            this.ScriptingShellAPITreeTabs.Margin = new System.Windows.Forms.Padding(0);
-            this.ScriptingShellAPITreeTabs.Name = "ScriptingShellAPITreeTabs";
-            this.ScriptingShellAPITreeTabs.Padding = new System.Drawing.Point(0, 0);
-            this.ScriptingShellAPITreeTabs.SelectedIndex = 0;
-            this.ScriptingShellAPITreeTabs.Size = new System.Drawing.Size(169, 233);
-            this.ScriptingShellAPITreeTabs.TabIndex = 0;
-            // 
-            // ScriptingShellAPITreePythonTab
-            // 
-            this.ScriptingShellAPITreePythonTab.Controls.Add(this.ScriptingShellPythonAPITree);
-            this.ScriptingShellAPITreePythonTab.Location = new System.Drawing.Point(4, 22);
-            this.ScriptingShellAPITreePythonTab.Margin = new System.Windows.Forms.Padding(0);
-            this.ScriptingShellAPITreePythonTab.Name = "ScriptingShellAPITreePythonTab";
-            this.ScriptingShellAPITreePythonTab.Size = new System.Drawing.Size(161, 207);
-            this.ScriptingShellAPITreePythonTab.TabIndex = 0;
-            this.ScriptingShellAPITreePythonTab.Text = "Python";
-            this.ScriptingShellAPITreePythonTab.UseVisualStyleBackColor = true;
-            // 
-            // ScriptingShellPythonAPITree
-            // 
-            this.ScriptingShellPythonAPITree.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.ScriptingShellPythonAPITree.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ScriptingShellPythonAPITree.Location = new System.Drawing.Point(0, 0);
-            this.ScriptingShellPythonAPITree.Margin = new System.Windows.Forms.Padding(0);
-            this.ScriptingShellPythonAPITree.Name = "ScriptingShellPythonAPITree";
-            this.ScriptingShellPythonAPITree.Size = new System.Drawing.Size(161, 207);
-            this.ScriptingShellPythonAPITree.TabIndex = 0;
-            this.ScriptingShellPythonAPITree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ScriptingShellPythonAPITree_AfterSelect);
-            // 
-            // ScriptingShellAPITreeRubyTab
-            // 
-            this.ScriptingShellAPITreeRubyTab.Controls.Add(this.ScriptingShellRubyAPITree);
-            this.ScriptingShellAPITreeRubyTab.Location = new System.Drawing.Point(4, 22);
-            this.ScriptingShellAPITreeRubyTab.Margin = new System.Windows.Forms.Padding(0);
-            this.ScriptingShellAPITreeRubyTab.Name = "ScriptingShellAPITreeRubyTab";
-            this.ScriptingShellAPITreeRubyTab.Size = new System.Drawing.Size(161, 207);
-            this.ScriptingShellAPITreeRubyTab.TabIndex = 1;
-            this.ScriptingShellAPITreeRubyTab.Text = "Ruby";
-            this.ScriptingShellAPITreeRubyTab.UseVisualStyleBackColor = true;
-            // 
-            // ScriptingShellRubyAPITree
-            // 
-            this.ScriptingShellRubyAPITree.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.ScriptingShellRubyAPITree.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ScriptingShellRubyAPITree.Location = new System.Drawing.Point(0, 0);
-            this.ScriptingShellRubyAPITree.Margin = new System.Windows.Forms.Padding(0);
-            this.ScriptingShellRubyAPITree.Name = "ScriptingShellRubyAPITree";
-            this.ScriptingShellRubyAPITree.Size = new System.Drawing.Size(161, 207);
-            this.ScriptingShellRubyAPITree.TabIndex = 1;
-            this.ScriptingShellRubyAPITree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ScriptingShellRubyAPITree_AfterSelect);
-            // 
-            // ShellAPIDetailsRTB
-            // 
-            this.ShellAPIDetailsRTB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ShellAPIDetailsRTB.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ShellAPIDetailsRTB.Location = new System.Drawing.Point(0, 0);
-            this.ShellAPIDetailsRTB.Margin = new System.Windows.Forms.Padding(0);
-            this.ShellAPIDetailsRTB.Name = "ShellAPIDetailsRTB";
-            this.ShellAPIDetailsRTB.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.ShellAPIDetailsRTB.Size = new System.Drawing.Size(169, 252);
-            this.ShellAPIDetailsRTB.TabIndex = 0;
-            this.ShellAPIDetailsRTB.Text = "";
-            // 
             // MTJavaScriptTaintTP
             // 
             this.MTJavaScriptTaintTP.Controls.Add(this.JSTaintShowSourceToSinkCB);
@@ -3953,14 +3666,14 @@ namespace IronWASP
             this.JSTaintResultLineColumn,
             this.JSTaintResultCodeColumn});
             this.JSTaintResultGrid.ContextMenuStrip = this.JSTainTraceEditMenu;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.LimeGreen;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.JSTaintResultGrid.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle14.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle14.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.Color.LimeGreen;
+            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.JSTaintResultGrid.DefaultCellStyle = dataGridViewCellStyle14;
             this.JSTaintResultGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.JSTaintResultGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.JSTaintResultGrid.GridColor = System.Drawing.Color.White;
@@ -4103,6 +3816,449 @@ namespace IronWASP
             this.TaintTraceResultSourcePlusSinkLegendTB.Text = "Source & Sink";
             this.TaintTraceResultSourcePlusSinkLegendTB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.TaintTraceResultSourcePlusSinkLegendTB.Visible = false;
+            // 
+            // mt_scripting
+            // 
+            this.mt_scripting.Controls.Add(this.ScriptingShellSplit);
+            this.mt_scripting.Location = new System.Drawing.Point(4, 22);
+            this.mt_scripting.Margin = new System.Windows.Forms.Padding(0);
+            this.mt_scripting.Name = "mt_scripting";
+            this.mt_scripting.Size = new System.Drawing.Size(705, 512);
+            this.mt_scripting.TabIndex = 10;
+            this.mt_scripting.Text = "Scripting";
+            this.mt_scripting.UseVisualStyleBackColor = true;
+            // 
+            // ScriptingShellSplit
+            // 
+            this.ScriptingShellSplit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ScriptingShellSplit.Location = new System.Drawing.Point(0, 0);
+            this.ScriptingShellSplit.Margin = new System.Windows.Forms.Padding(0);
+            this.ScriptingShellSplit.Name = "ScriptingShellSplit";
+            // 
+            // ScriptingShellSplit.Panel1
+            // 
+            this.ScriptingShellSplit.Panel1.Controls.Add(this.ClearShellDisplayBtn);
+            this.ScriptingShellSplit.Panel1.Controls.Add(this.MultiLineShellExecuteBtn);
+            this.ScriptingShellSplit.Panel1.Controls.Add(this.InteractiveShellCtrlCBtn);
+            this.ScriptingShellSplit.Panel1.Controls.Add(this.ScriptingShellTabs);
+            this.ScriptingShellSplit.Panel1.Controls.Add(this.InteractiveShellRubyRB);
+            this.ScriptingShellSplit.Panel1.Controls.Add(this.label2);
+            this.ScriptingShellSplit.Panel1.Controls.Add(this.InteractiveShellPythonRB);
+            // 
+            // ScriptingShellSplit.Panel2
+            // 
+            this.ScriptingShellSplit.Panel2.Controls.Add(this.ScriptingShellAPISplit);
+            this.ScriptingShellSplit.Size = new System.Drawing.Size(705, 512);
+            this.ScriptingShellSplit.SplitterDistance = 533;
+            this.ScriptingShellSplit.SplitterWidth = 2;
+            this.ScriptingShellSplit.TabIndex = 7;
+            // 
+            // ClearShellDisplayBtn
+            // 
+            this.ClearShellDisplayBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ClearShellDisplayBtn.BackColor = System.Drawing.Color.Transparent;
+            this.ClearShellDisplayBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ClearShellDisplayBtn.ForeColor = System.Drawing.Color.Black;
+            this.ClearShellDisplayBtn.Location = new System.Drawing.Point(358, 3);
+            this.ClearShellDisplayBtn.Margin = new System.Windows.Forms.Padding(0);
+            this.ClearShellDisplayBtn.Name = "ClearShellDisplayBtn";
+            this.ClearShellDisplayBtn.Size = new System.Drawing.Size(100, 20);
+            this.ClearShellDisplayBtn.TabIndex = 7;
+            this.ClearShellDisplayBtn.Text = "Clear Shell Output";
+            this.ClearShellDisplayBtn.UseVisualStyleBackColor = false;
+            this.ClearShellDisplayBtn.Click += new System.EventHandler(this.ClearShellDisplayBtn_Click);
+            // 
+            // MultiLineShellExecuteBtn
+            // 
+            this.MultiLineShellExecuteBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.MultiLineShellExecuteBtn.BackColor = System.Drawing.Color.Transparent;
+            this.MultiLineShellExecuteBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MultiLineShellExecuteBtn.ForeColor = System.Drawing.Color.Black;
+            this.MultiLineShellExecuteBtn.Location = new System.Drawing.Point(221, 3);
+            this.MultiLineShellExecuteBtn.Margin = new System.Windows.Forms.Padding(0);
+            this.MultiLineShellExecuteBtn.Name = "MultiLineShellExecuteBtn";
+            this.MultiLineShellExecuteBtn.Size = new System.Drawing.Size(129, 20);
+            this.MultiLineShellExecuteBtn.TabIndex = 6;
+            this.MultiLineShellExecuteBtn.Text = "Execute MutliLine Script";
+            this.MultiLineShellExecuteBtn.UseVisualStyleBackColor = false;
+            this.MultiLineShellExecuteBtn.Visible = false;
+            this.MultiLineShellExecuteBtn.Click += new System.EventHandler(this.MultiLineShellExecuteBtn_Click);
+            // 
+            // InteractiveShellCtrlCBtn
+            // 
+            this.InteractiveShellCtrlCBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.InteractiveShellCtrlCBtn.BackColor = System.Drawing.Color.Transparent;
+            this.InteractiveShellCtrlCBtn.Enabled = false;
+            this.InteractiveShellCtrlCBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.InteractiveShellCtrlCBtn.ForeColor = System.Drawing.Color.Black;
+            this.InteractiveShellCtrlCBtn.Location = new System.Drawing.Point(467, 3);
+            this.InteractiveShellCtrlCBtn.Margin = new System.Windows.Forms.Padding(0);
+            this.InteractiveShellCtrlCBtn.Name = "InteractiveShellCtrlCBtn";
+            this.InteractiveShellCtrlCBtn.Size = new System.Drawing.Size(62, 20);
+            this.InteractiveShellCtrlCBtn.TabIndex = 3;
+            this.InteractiveShellCtrlCBtn.Text = "Ctrl + C";
+            this.InteractiveShellCtrlCBtn.UseVisualStyleBackColor = false;
+            this.InteractiveShellCtrlCBtn.Click += new System.EventHandler(this.InteractiveShellCtrlCBtn_Click);
+            // 
+            // ScriptingShellTabs
+            // 
+            this.ScriptingShellTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.ScriptingShellTabs.Controls.Add(this.InteractiveShellTP);
+            this.ScriptingShellTabs.Controls.Add(this.MultiLineShellTP);
+            this.ScriptingShellTabs.Controls.Add(this.ScriptedSendTP);
+            this.ScriptingShellTabs.Location = new System.Drawing.Point(0, 25);
+            this.ScriptingShellTabs.Margin = new System.Windows.Forms.Padding(0);
+            this.ScriptingShellTabs.Name = "ScriptingShellTabs";
+            this.ScriptingShellTabs.Padding = new System.Drawing.Point(0, 0);
+            this.ScriptingShellTabs.SelectedIndex = 0;
+            this.ScriptingShellTabs.Size = new System.Drawing.Size(533, 486);
+            this.ScriptingShellTabs.TabIndex = 3;
+            this.ScriptingShellTabs.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.ScriptingShellTabs_Selecting);
+            // 
+            // InteractiveShellTP
+            // 
+            this.InteractiveShellTP.BackColor = System.Drawing.Color.Transparent;
+            this.InteractiveShellTP.Controls.Add(this.ShellInPanel);
+            this.InteractiveShellTP.Controls.Add(this.InteractiveShellOut);
+            this.InteractiveShellTP.Location = new System.Drawing.Point(4, 22);
+            this.InteractiveShellTP.Margin = new System.Windows.Forms.Padding(0);
+            this.InteractiveShellTP.Name = "InteractiveShellTP";
+            this.InteractiveShellTP.Size = new System.Drawing.Size(525, 460);
+            this.InteractiveShellTP.TabIndex = 0;
+            this.InteractiveShellTP.Text = "Interactive Shell";
+            // 
+            // ShellInPanel
+            // 
+            this.ShellInPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.ShellInPanel.BackColor = System.Drawing.Color.OrangeRed;
+            this.ShellInPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.ShellInPanel.Controls.Add(this.InteractiveShellPromptBox);
+            this.ShellInPanel.Controls.Add(this.InteractiveShellIn);
+            this.ShellInPanel.Location = new System.Drawing.Point(0, 442);
+            this.ShellInPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.ShellInPanel.Name = "ShellInPanel";
+            this.ShellInPanel.Size = new System.Drawing.Size(525, 19);
+            this.ShellInPanel.TabIndex = 3;
+            // 
+            // InteractiveShellPromptBox
+            // 
+            this.InteractiveShellPromptBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.InteractiveShellPromptBox.BackColor = System.Drawing.Color.Black;
+            this.InteractiveShellPromptBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.InteractiveShellPromptBox.Font = new System.Drawing.Font("Lucida Console", 9.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.InteractiveShellPromptBox.ForeColor = System.Drawing.Color.Lime;
+            this.InteractiveShellPromptBox.Location = new System.Drawing.Point(2, 2);
+            this.InteractiveShellPromptBox.Margin = new System.Windows.Forms.Padding(0);
+            this.InteractiveShellPromptBox.Name = "InteractiveShellPromptBox";
+            this.InteractiveShellPromptBox.ReadOnly = true;
+            this.InteractiveShellPromptBox.Size = new System.Drawing.Size(27, 13);
+            this.InteractiveShellPromptBox.TabIndex = 2;
+            this.InteractiveShellPromptBox.Text = ">>>>";
+            // 
+            // InteractiveShellIn
+            // 
+            this.InteractiveShellIn.AcceptsReturn = true;
+            this.InteractiveShellIn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.InteractiveShellIn.BackColor = System.Drawing.Color.Black;
+            this.InteractiveShellIn.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.InteractiveShellIn.Font = new System.Drawing.Font("Lucida Console", 9.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.InteractiveShellIn.ForeColor = System.Drawing.Color.Lime;
+            this.InteractiveShellIn.Location = new System.Drawing.Point(29, 2);
+            this.InteractiveShellIn.Margin = new System.Windows.Forms.Padding(0);
+            this.InteractiveShellIn.Multiline = true;
+            this.InteractiveShellIn.Name = "InteractiveShellIn";
+            this.InteractiveShellIn.Size = new System.Drawing.Size(492, 13);
+            this.InteractiveShellIn.TabIndex = 0;
+            this.InteractiveShellIn.WordWrap = false;
+            this.InteractiveShellIn.KeyUp += new System.Windows.Forms.KeyEventHandler(this.InteractiveShellIn_KeyUp);
+            // 
+            // InteractiveShellOut
+            // 
+            this.InteractiveShellOut.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.InteractiveShellOut.BackColor = System.Drawing.Color.Black;
+            this.InteractiveShellOut.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.InteractiveShellOut.Font = new System.Drawing.Font("Lucida Console", 9.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.InteractiveShellOut.ForeColor = System.Drawing.Color.Lime;
+            this.InteractiveShellOut.Location = new System.Drawing.Point(0, 0);
+            this.InteractiveShellOut.Margin = new System.Windows.Forms.Padding(0);
+            this.InteractiveShellOut.MaxLength = 2147483647;
+            this.InteractiveShellOut.Multiline = true;
+            this.InteractiveShellOut.Name = "InteractiveShellOut";
+            this.InteractiveShellOut.ReadOnly = true;
+            this.InteractiveShellOut.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.InteractiveShellOut.Size = new System.Drawing.Size(525, 443);
+            this.InteractiveShellOut.TabIndex = 1;
+            // 
+            // MultiLineShellTP
+            // 
+            this.MultiLineShellTP.Controls.Add(this.MultiLineShellInTE);
+            this.MultiLineShellTP.Location = new System.Drawing.Point(4, 22);
+            this.MultiLineShellTP.Margin = new System.Windows.Forms.Padding(0);
+            this.MultiLineShellTP.Name = "MultiLineShellTP";
+            this.MultiLineShellTP.Size = new System.Drawing.Size(525, 460);
+            this.MultiLineShellTP.TabIndex = 1;
+            this.MultiLineShellTP.Text = "Multi-Line Shell";
+            this.MultiLineShellTP.UseVisualStyleBackColor = true;
+            // 
+            // MultiLineShellInTE
+            // 
+            this.MultiLineShellInTE.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MultiLineShellInTE.IsIconBarVisible = false;
+            this.MultiLineShellInTE.Location = new System.Drawing.Point(0, 0);
+            this.MultiLineShellInTE.Margin = new System.Windows.Forms.Padding(0);
+            this.MultiLineShellInTE.Name = "MultiLineShellInTE";
+            this.MultiLineShellInTE.ShowEOLMarkers = true;
+            this.MultiLineShellInTE.ShowSpaces = true;
+            this.MultiLineShellInTE.ShowTabs = true;
+            this.MultiLineShellInTE.ShowVRuler = true;
+            this.MultiLineShellInTE.Size = new System.Drawing.Size(525, 460);
+            this.MultiLineShellInTE.TabIndex = 4;
+            // 
+            // ScriptedSendTP
+            // 
+            this.ScriptedSendTP.Controls.Add(this.CustomSendErrorTB);
+            this.ScriptedSendTP.Controls.Add(this.CustomSendTE);
+            this.ScriptedSendTP.Controls.Add(this.CustomSendBottomRtb);
+            this.ScriptedSendTP.Controls.Add(this.CustomSendTopRtb);
+            this.ScriptedSendTP.Controls.Add(this.label1);
+            this.ScriptedSendTP.Controls.Add(this.CustomSendActivateCB);
+            this.ScriptedSendTP.Controls.Add(this.CustomSendRubyRB);
+            this.ScriptedSendTP.Controls.Add(this.CustomSendPythonRB);
+            this.ScriptedSendTP.Location = new System.Drawing.Point(4, 22);
+            this.ScriptedSendTP.Margin = new System.Windows.Forms.Padding(0);
+            this.ScriptedSendTP.Name = "ScriptedSendTP";
+            this.ScriptedSendTP.Size = new System.Drawing.Size(525, 460);
+            this.ScriptedSendTP.TabIndex = 2;
+            this.ScriptedSendTP.Text = "Scripted Send";
+            this.ScriptedSendTP.UseVisualStyleBackColor = true;
+            // 
+            // CustomSendErrorTB
+            // 
+            this.CustomSendErrorTB.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.CustomSendErrorTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.CustomSendErrorTB.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.CustomSendErrorTB.Location = new System.Drawing.Point(0, 396);
+            this.CustomSendErrorTB.Multiline = true;
+            this.CustomSendErrorTB.Name = "CustomSendErrorTB";
+            this.CustomSendErrorTB.ReadOnly = true;
+            this.CustomSendErrorTB.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.CustomSendErrorTB.Size = new System.Drawing.Size(525, 64);
+            this.CustomSendErrorTB.TabIndex = 15;
+            this.CustomSendErrorTB.Visible = false;
+            // 
+            // CustomSendTE
+            // 
+            this.CustomSendTE.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.CustomSendTE.IsIconBarVisible = false;
+            this.CustomSendTE.Location = new System.Drawing.Point(0, 74);
+            this.CustomSendTE.Margin = new System.Windows.Forms.Padding(0);
+            this.CustomSendTE.Name = "CustomSendTE";
+            this.CustomSendTE.ShowEOLMarkers = true;
+            this.CustomSendTE.ShowSpaces = true;
+            this.CustomSendTE.ShowTabs = true;
+            this.CustomSendTE.ShowVRuler = true;
+            this.CustomSendTE.Size = new System.Drawing.Size(525, 244);
+            this.CustomSendTE.TabIndex = 14;
+            // 
+            // CustomSendBottomRtb
+            // 
+            this.CustomSendBottomRtb.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.CustomSendBottomRtb.BackColor = System.Drawing.SystemColors.Window;
+            this.CustomSendBottomRtb.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.CustomSendBottomRtb.Location = new System.Drawing.Point(0, 318);
+            this.CustomSendBottomRtb.Margin = new System.Windows.Forms.Padding(0);
+            this.CustomSendBottomRtb.Name = "CustomSendBottomRtb";
+            this.CustomSendBottomRtb.ReadOnly = true;
+            this.CustomSendBottomRtb.Size = new System.Drawing.Size(525, 44);
+            this.CustomSendBottomRtb.TabIndex = 10;
+            this.CustomSendBottomRtb.Text = "     return res";
+            // 
+            // CustomSendTopRtb
+            // 
+            this.CustomSendTopRtb.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.CustomSendTopRtb.BackColor = System.Drawing.SystemColors.Window;
+            this.CustomSendTopRtb.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.CustomSendTopRtb.Location = new System.Drawing.Point(0, 54);
+            this.CustomSendTopRtb.Margin = new System.Windows.Forms.Padding(0);
+            this.CustomSendTopRtb.Name = "CustomSendTopRtb";
+            this.CustomSendTopRtb.ReadOnly = true;
+            this.CustomSendTopRtb.Size = new System.Drawing.Size(525, 20);
+            this.CustomSendTopRtb.TabIndex = 9;
+            this.CustomSendTopRtb.Text = "def ScriptedSend(req):";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(7, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(58, 13);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "Language:";
+            // 
+            // CustomSendActivateCB
+            // 
+            this.CustomSendActivateCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.CustomSendActivateCB.AutoSize = true;
+            this.CustomSendActivateCB.Location = new System.Drawing.Point(421, 9);
+            this.CustomSendActivateCB.Name = "CustomSendActivateCB";
+            this.CustomSendActivateCB.Size = new System.Drawing.Size(95, 17);
+            this.CustomSendActivateCB.TabIndex = 13;
+            this.CustomSendActivateCB.Text = "Activate Script";
+            this.CustomSendActivateCB.UseVisualStyleBackColor = true;
+            // 
+            // CustomSendRubyRB
+            // 
+            this.CustomSendRubyRB.AutoSize = true;
+            this.CustomSendRubyRB.Location = new System.Drawing.Point(132, 7);
+            this.CustomSendRubyRB.Name = "CustomSendRubyRB";
+            this.CustomSendRubyRB.Size = new System.Drawing.Size(50, 17);
+            this.CustomSendRubyRB.TabIndex = 8;
+            this.CustomSendRubyRB.Text = "Ruby";
+            this.CustomSendRubyRB.UseVisualStyleBackColor = true;
+            // 
+            // CustomSendPythonRB
+            // 
+            this.CustomSendPythonRB.AutoSize = true;
+            this.CustomSendPythonRB.Checked = true;
+            this.CustomSendPythonRB.Location = new System.Drawing.Point(71, 7);
+            this.CustomSendPythonRB.Name = "CustomSendPythonRB";
+            this.CustomSendPythonRB.Size = new System.Drawing.Size(58, 17);
+            this.CustomSendPythonRB.TabIndex = 7;
+            this.CustomSendPythonRB.TabStop = true;
+            this.CustomSendPythonRB.Text = "Python";
+            this.CustomSendPythonRB.UseVisualStyleBackColor = true;
+            // 
+            // InteractiveShellRubyRB
+            // 
+            this.InteractiveShellRubyRB.AutoSize = true;
+            this.InteractiveShellRubyRB.Location = new System.Drawing.Point(131, 1);
+            this.InteractiveShellRubyRB.Name = "InteractiveShellRubyRB";
+            this.InteractiveShellRubyRB.Size = new System.Drawing.Size(50, 17);
+            this.InteractiveShellRubyRB.TabIndex = 5;
+            this.InteractiveShellRubyRB.Text = "Ruby";
+            this.InteractiveShellRubyRB.UseVisualStyleBackColor = true;
+            this.InteractiveShellRubyRB.CheckedChanged += new System.EventHandler(this.InteractiveShellRubyRB_CheckedChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 3);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(58, 13);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Language:";
+            // 
+            // InteractiveShellPythonRB
+            // 
+            this.InteractiveShellPythonRB.AutoSize = true;
+            this.InteractiveShellPythonRB.Checked = true;
+            this.InteractiveShellPythonRB.Location = new System.Drawing.Point(67, 1);
+            this.InteractiveShellPythonRB.Name = "InteractiveShellPythonRB";
+            this.InteractiveShellPythonRB.Size = new System.Drawing.Size(58, 17);
+            this.InteractiveShellPythonRB.TabIndex = 4;
+            this.InteractiveShellPythonRB.TabStop = true;
+            this.InteractiveShellPythonRB.Text = "Python";
+            this.InteractiveShellPythonRB.UseVisualStyleBackColor = true;
+            this.InteractiveShellPythonRB.CheckedChanged += new System.EventHandler(this.InteractiveShellPythonRB_CheckedChanged);
+            // 
+            // ScriptingShellAPISplit
+            // 
+            this.ScriptingShellAPISplit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ScriptingShellAPISplit.Location = new System.Drawing.Point(0, 0);
+            this.ScriptingShellAPISplit.Margin = new System.Windows.Forms.Padding(0);
+            this.ScriptingShellAPISplit.Name = "ScriptingShellAPISplit";
+            this.ScriptingShellAPISplit.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // ScriptingShellAPISplit.Panel1
+            // 
+            this.ScriptingShellAPISplit.Panel1.Controls.Add(this.ScriptingShellAPITreeTabs);
+            // 
+            // ScriptingShellAPISplit.Panel2
+            // 
+            this.ScriptingShellAPISplit.Panel2.Controls.Add(this.ShellAPIDetailsRTB);
+            this.ScriptingShellAPISplit.Size = new System.Drawing.Size(170, 512);
+            this.ScriptingShellAPISplit.SplitterDistance = 244;
+            this.ScriptingShellAPISplit.SplitterWidth = 2;
+            this.ScriptingShellAPISplit.TabIndex = 0;
+            // 
+            // ScriptingShellAPITreeTabs
+            // 
+            this.ScriptingShellAPITreeTabs.Controls.Add(this.ScriptingShellAPITreePythonTab);
+            this.ScriptingShellAPITreeTabs.Controls.Add(this.ScriptingShellAPITreeRubyTab);
+            this.ScriptingShellAPITreeTabs.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ScriptingShellAPITreeTabs.Location = new System.Drawing.Point(0, 0);
+            this.ScriptingShellAPITreeTabs.Margin = new System.Windows.Forms.Padding(0);
+            this.ScriptingShellAPITreeTabs.Name = "ScriptingShellAPITreeTabs";
+            this.ScriptingShellAPITreeTabs.Padding = new System.Drawing.Point(0, 0);
+            this.ScriptingShellAPITreeTabs.SelectedIndex = 0;
+            this.ScriptingShellAPITreeTabs.Size = new System.Drawing.Size(170, 244);
+            this.ScriptingShellAPITreeTabs.TabIndex = 0;
+            // 
+            // ScriptingShellAPITreePythonTab
+            // 
+            this.ScriptingShellAPITreePythonTab.Controls.Add(this.ScriptingShellPythonAPITree);
+            this.ScriptingShellAPITreePythonTab.Location = new System.Drawing.Point(4, 22);
+            this.ScriptingShellAPITreePythonTab.Margin = new System.Windows.Forms.Padding(0);
+            this.ScriptingShellAPITreePythonTab.Name = "ScriptingShellAPITreePythonTab";
+            this.ScriptingShellAPITreePythonTab.Size = new System.Drawing.Size(162, 218);
+            this.ScriptingShellAPITreePythonTab.TabIndex = 0;
+            this.ScriptingShellAPITreePythonTab.Text = "Python";
+            this.ScriptingShellAPITreePythonTab.UseVisualStyleBackColor = true;
+            // 
+            // ScriptingShellPythonAPITree
+            // 
+            this.ScriptingShellPythonAPITree.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ScriptingShellPythonAPITree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ScriptingShellPythonAPITree.Location = new System.Drawing.Point(0, 0);
+            this.ScriptingShellPythonAPITree.Margin = new System.Windows.Forms.Padding(0);
+            this.ScriptingShellPythonAPITree.Name = "ScriptingShellPythonAPITree";
+            this.ScriptingShellPythonAPITree.Size = new System.Drawing.Size(162, 218);
+            this.ScriptingShellPythonAPITree.TabIndex = 0;
+            this.ScriptingShellPythonAPITree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ScriptingShellPythonAPITree_AfterSelect);
+            // 
+            // ScriptingShellAPITreeRubyTab
+            // 
+            this.ScriptingShellAPITreeRubyTab.Controls.Add(this.ScriptingShellRubyAPITree);
+            this.ScriptingShellAPITreeRubyTab.Location = new System.Drawing.Point(4, 22);
+            this.ScriptingShellAPITreeRubyTab.Margin = new System.Windows.Forms.Padding(0);
+            this.ScriptingShellAPITreeRubyTab.Name = "ScriptingShellAPITreeRubyTab";
+            this.ScriptingShellAPITreeRubyTab.Size = new System.Drawing.Size(162, 218);
+            this.ScriptingShellAPITreeRubyTab.TabIndex = 1;
+            this.ScriptingShellAPITreeRubyTab.Text = "Ruby";
+            this.ScriptingShellAPITreeRubyTab.UseVisualStyleBackColor = true;
+            // 
+            // ScriptingShellRubyAPITree
+            // 
+            this.ScriptingShellRubyAPITree.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ScriptingShellRubyAPITree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ScriptingShellRubyAPITree.Location = new System.Drawing.Point(0, 0);
+            this.ScriptingShellRubyAPITree.Margin = new System.Windows.Forms.Padding(0);
+            this.ScriptingShellRubyAPITree.Name = "ScriptingShellRubyAPITree";
+            this.ScriptingShellRubyAPITree.Size = new System.Drawing.Size(162, 218);
+            this.ScriptingShellRubyAPITree.TabIndex = 1;
+            this.ScriptingShellRubyAPITree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ScriptingShellRubyAPITree_AfterSelect);
+            // 
+            // ShellAPIDetailsRTB
+            // 
+            this.ShellAPIDetailsRTB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ShellAPIDetailsRTB.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ShellAPIDetailsRTB.Location = new System.Drawing.Point(0, 0);
+            this.ShellAPIDetailsRTB.Margin = new System.Windows.Forms.Padding(0);
+            this.ShellAPIDetailsRTB.Name = "ShellAPIDetailsRTB";
+            this.ShellAPIDetailsRTB.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.ShellAPIDetailsRTB.Size = new System.Drawing.Size(170, 266);
+            this.ShellAPIDetailsRTB.TabIndex = 0;
+            this.ShellAPIDetailsRTB.Text = "";
             // 
             // mt_proxy
             // 
@@ -4845,6 +5001,7 @@ namespace IronWASP
             // 
             // LogBaseSplit.Panel2
             // 
+            this.LogBaseSplit.Panel2.Controls.Add(this.MainLogNavPanel);
             this.LogBaseSplit.Panel2.Controls.Add(this.LogTabs);
             this.LogBaseSplit.Size = new System.Drawing.Size(705, 512);
             this.LogBaseSplit.SplitterDistance = 279;
@@ -4927,7 +5084,7 @@ namespace IronWASP
             this.ProxyShowOriginalResponseCB.Text = "Show Original Response";
             this.ProxyShowOriginalResponseCB.UseVisualStyleBackColor = true;
             this.ProxyShowOriginalResponseCB.Visible = false;
-            this.ProxyShowOriginalResponseCB.Click += new System.EventHandler(this.ProxyShowOriginalResponseCB_Click);
+            this.ProxyShowOriginalResponseCB.CheckedChanged += new System.EventHandler(this.ProxyShowOriginalResponseCB_CheckedChanged);
             // 
             // ProxyShowOriginalRequestCB
             // 
@@ -4940,7 +5097,7 @@ namespace IronWASP
             this.ProxyShowOriginalRequestCB.Text = "Show Original Request";
             this.ProxyShowOriginalRequestCB.UseVisualStyleBackColor = true;
             this.ProxyShowOriginalRequestCB.Visible = false;
-            this.ProxyShowOriginalRequestCB.Click += new System.EventHandler(this.ProxyShowOriginalRequestCB_Click);
+            this.ProxyShowOriginalRequestCB.CheckedChanged += new System.EventHandler(this.ProxyShowOriginalRequestCB_CheckedChanged);
             // 
             // PreviousLogBtn
             // 
@@ -5482,22 +5639,143 @@ namespace IronWASP
             this.LogResponseFormatXMLTB.Size = new System.Drawing.Size(458, 182);
             this.LogResponseFormatXMLTB.TabIndex = 1;
             // 
+            // MainLogNavPanel
+            // 
+            this.MainLogNavPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.MainLogNavPanel.Controls.Add(this.MainLogStatusLbl);
+            this.MainLogNavPanel.Controls.Add(this.MainLogStatLbl);
+            this.MainLogNavPanel.Controls.Add(this.MainLogFrontFourBtn);
+            this.MainLogNavPanel.Controls.Add(this.MainLogBackOneBtn);
+            this.MainLogNavPanel.Controls.Add(this.MainLogFrontThreeBtn);
+            this.MainLogNavPanel.Controls.Add(this.MainLogBackFourBtn);
+            this.MainLogNavPanel.Controls.Add(this.MainLogFrontTwoBtn);
+            this.MainLogNavPanel.Controls.Add(this.MainLogBackThreeBtn);
+            this.MainLogNavPanel.Controls.Add(this.MainLogFrontOneBtn);
+            this.MainLogNavPanel.Controls.Add(this.MainLogBackTwoBtn);
+            this.MainLogNavPanel.Location = new System.Drawing.Point(0, 0);
+            this.MainLogNavPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.MainLogNavPanel.Name = "MainLogNavPanel";
+            this.MainLogNavPanel.Size = new System.Drawing.Size(705, 63);
+            this.MainLogNavPanel.TabIndex = 16;
+            // 
+            // MainLogStatusLbl
+            // 
+            this.MainLogStatusLbl.AutoSize = true;
+            this.MainLogStatusLbl.Location = new System.Drawing.Point(5, 40);
+            this.MainLogStatusLbl.Name = "MainLogStatusLbl";
+            this.MainLogStatusLbl.Size = new System.Drawing.Size(115, 13);
+            this.MainLogStatusLbl.TabIndex = 17;
+            this.MainLogStatusLbl.Text = "                                    ";
+            // 
+            // MainLogStatLbl
+            // 
+            this.MainLogStatLbl.AutoSize = true;
+            this.MainLogStatLbl.Location = new System.Drawing.Point(244, 10);
+            this.MainLogStatLbl.Name = "MainLogStatLbl";
+            this.MainLogStatLbl.Size = new System.Drawing.Size(139, 13);
+            this.MainLogStatLbl.TabIndex = 16;
+            this.MainLogStatLbl.Text = "Showing 0 - 0 of Proxy Logs";
+            // 
+            // MainLogFrontFourBtn
+            // 
+            this.MainLogFrontFourBtn.Location = new System.Drawing.Point(635, 6);
+            this.MainLogFrontFourBtn.Name = "MainLogFrontFourBtn";
+            this.MainLogFrontFourBtn.Size = new System.Drawing.Size(55, 20);
+            this.MainLogFrontFourBtn.TabIndex = 15;
+            this.MainLogFrontFourBtn.Text = ">>>>";
+            this.MainLogFrontFourBtn.UseVisualStyleBackColor = true;
+            this.MainLogFrontFourBtn.Click += new System.EventHandler(this.MainLogFrontFourBtn_Click);
+            // 
+            // MainLogBackOneBtn
+            // 
+            this.MainLogBackOneBtn.Location = new System.Drawing.Point(186, 6);
+            this.MainLogBackOneBtn.Name = "MainLogBackOneBtn";
+            this.MainLogBackOneBtn.Size = new System.Drawing.Size(55, 20);
+            this.MainLogBackOneBtn.TabIndex = 11;
+            this.MainLogBackOneBtn.Text = "<";
+            this.MainLogBackOneBtn.UseVisualStyleBackColor = true;
+            this.MainLogBackOneBtn.Click += new System.EventHandler(this.MainLogBackOneBtn_Click);
+            // 
+            // MainLogFrontThreeBtn
+            // 
+            this.MainLogFrontThreeBtn.Location = new System.Drawing.Point(574, 6);
+            this.MainLogFrontThreeBtn.Name = "MainLogFrontThreeBtn";
+            this.MainLogFrontThreeBtn.Size = new System.Drawing.Size(55, 20);
+            this.MainLogFrontThreeBtn.TabIndex = 14;
+            this.MainLogFrontThreeBtn.Text = ">>>";
+            this.MainLogFrontThreeBtn.UseVisualStyleBackColor = true;
+            this.MainLogFrontThreeBtn.Click += new System.EventHandler(this.MainLogFrontThreeBtn_Click);
+            // 
+            // MainLogBackFourBtn
+            // 
+            this.MainLogBackFourBtn.Location = new System.Drawing.Point(3, 6);
+            this.MainLogBackFourBtn.Name = "MainLogBackFourBtn";
+            this.MainLogBackFourBtn.Size = new System.Drawing.Size(55, 20);
+            this.MainLogBackFourBtn.TabIndex = 1;
+            this.MainLogBackFourBtn.Text = "<<<<";
+            this.MainLogBackFourBtn.UseVisualStyleBackColor = true;
+            this.MainLogBackFourBtn.Click += new System.EventHandler(this.MainLogBackFourBtn_Click);
+            // 
+            // MainLogFrontTwoBtn
+            // 
+            this.MainLogFrontTwoBtn.Location = new System.Drawing.Point(513, 6);
+            this.MainLogFrontTwoBtn.Name = "MainLogFrontTwoBtn";
+            this.MainLogFrontTwoBtn.Size = new System.Drawing.Size(55, 20);
+            this.MainLogFrontTwoBtn.TabIndex = 13;
+            this.MainLogFrontTwoBtn.Text = ">>";
+            this.MainLogFrontTwoBtn.UseVisualStyleBackColor = true;
+            this.MainLogFrontTwoBtn.Click += new System.EventHandler(this.MainLogFrontTwoBtn_Click);
+            // 
+            // MainLogBackThreeBtn
+            // 
+            this.MainLogBackThreeBtn.Location = new System.Drawing.Point(64, 6);
+            this.MainLogBackThreeBtn.Name = "MainLogBackThreeBtn";
+            this.MainLogBackThreeBtn.Size = new System.Drawing.Size(55, 20);
+            this.MainLogBackThreeBtn.TabIndex = 9;
+            this.MainLogBackThreeBtn.Text = "<<<";
+            this.MainLogBackThreeBtn.UseVisualStyleBackColor = true;
+            this.MainLogBackThreeBtn.Click += new System.EventHandler(this.MainLogBackThreeBtn_Click);
+            // 
+            // MainLogFrontOneBtn
+            // 
+            this.MainLogFrontOneBtn.Location = new System.Drawing.Point(452, 6);
+            this.MainLogFrontOneBtn.Name = "MainLogFrontOneBtn";
+            this.MainLogFrontOneBtn.Size = new System.Drawing.Size(55, 20);
+            this.MainLogFrontOneBtn.TabIndex = 12;
+            this.MainLogFrontOneBtn.Text = ">";
+            this.MainLogFrontOneBtn.UseVisualStyleBackColor = true;
+            this.MainLogFrontOneBtn.Click += new System.EventHandler(this.MainLogFrontOneBtn_Click);
+            // 
+            // MainLogBackTwoBtn
+            // 
+            this.MainLogBackTwoBtn.Location = new System.Drawing.Point(125, 6);
+            this.MainLogBackTwoBtn.Name = "MainLogBackTwoBtn";
+            this.MainLogBackTwoBtn.Size = new System.Drawing.Size(55, 20);
+            this.MainLogBackTwoBtn.TabIndex = 10;
+            this.MainLogBackTwoBtn.Text = "<<";
+            this.MainLogBackTwoBtn.UseVisualStyleBackColor = true;
+            this.MainLogBackTwoBtn.Click += new System.EventHandler(this.MainLogBackTwoBtn_Click);
+            // 
             // LogTabs
             // 
+            this.LogTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.LogTabs.Controls.Add(this.ProxyLogTab);
             this.LogTabs.Controls.Add(this.ScanLogTab);
             this.LogTabs.Controls.Add(this.TestLogTab);
             this.LogTabs.Controls.Add(this.ShellLogTab);
             this.LogTabs.Controls.Add(this.ProbeLogTab);
             this.LogTabs.Controls.Add(this.SiteMapLogTab);
-            this.LogTabs.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LogTabs.Location = new System.Drawing.Point(0, 0);
+            this.LogTabs.Location = new System.Drawing.Point(0, 63);
             this.LogTabs.Margin = new System.Windows.Forms.Padding(0);
             this.LogTabs.Name = "LogTabs";
             this.LogTabs.Padding = new System.Drawing.Point(0, 0);
             this.LogTabs.SelectedIndex = 0;
-            this.LogTabs.Size = new System.Drawing.Size(705, 229);
+            this.LogTabs.Size = new System.Drawing.Size(705, 166);
             this.LogTabs.TabIndex = 0;
+            this.LogTabs.SelectedIndexChanged += new System.EventHandler(this.LogTabs_SelectedIndexChanged);
             // 
             // ProxyLogTab
             // 
@@ -5505,7 +5783,7 @@ namespace IronWASP
             this.ProxyLogTab.Location = new System.Drawing.Point(4, 22);
             this.ProxyLogTab.Margin = new System.Windows.Forms.Padding(0);
             this.ProxyLogTab.Name = "ProxyLogTab";
-            this.ProxyLogTab.Size = new System.Drawing.Size(697, 203);
+            this.ProxyLogTab.Size = new System.Drawing.Size(697, 140);
             this.ProxyLogTab.TabIndex = 3;
             this.ProxyLogTab.Text = "Proxy Logs";
             this.ProxyLogTab.UseVisualStyleBackColor = true;
@@ -5519,14 +5797,14 @@ namespace IronWASP
             this.ProxyLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ProxyLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.ProxyLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ProxyLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ProxyLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.ProxyLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ProxyLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ProxyLogGridColumnForID,
@@ -5554,7 +5832,7 @@ namespace IronWASP
             this.ProxyLogGrid.RowHeadersVisible = false;
             this.ProxyLogGrid.RowHeadersWidth = 10;
             this.ProxyLogGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ProxyLogGrid.Size = new System.Drawing.Size(697, 203);
+            this.ProxyLogGrid.Size = new System.Drawing.Size(697, 140);
             this.ProxyLogGrid.TabIndex = 2;
             this.ProxyLogGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.LogGrid_CellClick);
             // 
@@ -5672,7 +5950,7 @@ namespace IronWASP
             this.ScanLogTab.Location = new System.Drawing.Point(4, 22);
             this.ScanLogTab.Margin = new System.Windows.Forms.Padding(0);
             this.ScanLogTab.Name = "ScanLogTab";
-            this.ScanLogTab.Size = new System.Drawing.Size(697, 203);
+            this.ScanLogTab.Size = new System.Drawing.Size(697, 140);
             this.ScanLogTab.TabIndex = 0;
             this.ScanLogTab.Text = "Scan Logs";
             this.ScanLogTab.UseVisualStyleBackColor = true;
@@ -5686,14 +5964,14 @@ namespace IronWASP
             this.ScanLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ScanLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.ScanLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ScanLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ScanLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.ScanLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ScanLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ScanLogGridColumnForID,
@@ -5720,7 +5998,7 @@ namespace IronWASP
             this.ScanLogGrid.RowHeadersVisible = false;
             this.ScanLogGrid.RowHeadersWidth = 10;
             this.ScanLogGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ScanLogGrid.Size = new System.Drawing.Size(697, 203);
+            this.ScanLogGrid.Size = new System.Drawing.Size(697, 140);
             this.ScanLogGrid.TabIndex = 6;
             this.ScanLogGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ScanLogGrid_CellClick);
             // 
@@ -5820,7 +6098,7 @@ namespace IronWASP
             this.TestLogTab.Location = new System.Drawing.Point(4, 22);
             this.TestLogTab.Margin = new System.Windows.Forms.Padding(0);
             this.TestLogTab.Name = "TestLogTab";
-            this.TestLogTab.Size = new System.Drawing.Size(697, 203);
+            this.TestLogTab.Size = new System.Drawing.Size(697, 140);
             this.TestLogTab.TabIndex = 1;
             this.TestLogTab.Text = "Test Logs";
             this.TestLogTab.UseVisualStyleBackColor = true;
@@ -5834,14 +6112,14 @@ namespace IronWASP
             this.TestLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.TestLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.TestLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.TestLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.TestLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.TestLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.TestLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.MTLogGridColumnForID,
@@ -5867,7 +6145,7 @@ namespace IronWASP
             this.TestLogGrid.RowHeadersVisible = false;
             this.TestLogGrid.RowHeadersWidth = 10;
             this.TestLogGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.TestLogGrid.Size = new System.Drawing.Size(697, 203);
+            this.TestLogGrid.Size = new System.Drawing.Size(697, 140);
             this.TestLogGrid.TabIndex = 4;
             this.TestLogGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MTLogGrid_CellClick);
             // 
@@ -5967,7 +6245,7 @@ namespace IronWASP
             this.ShellLogTab.Location = new System.Drawing.Point(4, 22);
             this.ShellLogTab.Margin = new System.Windows.Forms.Padding(0);
             this.ShellLogTab.Name = "ShellLogTab";
-            this.ShellLogTab.Size = new System.Drawing.Size(697, 203);
+            this.ShellLogTab.Size = new System.Drawing.Size(697, 140);
             this.ShellLogTab.TabIndex = 2;
             this.ShellLogTab.Text = "Shell Logs";
             this.ShellLogTab.UseVisualStyleBackColor = true;
@@ -5981,14 +6259,14 @@ namespace IronWASP
             this.ShellLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ShellLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.ShellLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ShellLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ShellLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.ShellLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ShellLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ScriptingLogGridColumnForID,
@@ -6014,7 +6292,7 @@ namespace IronWASP
             this.ShellLogGrid.RowHeadersVisible = false;
             this.ShellLogGrid.RowHeadersWidth = 10;
             this.ShellLogGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ShellLogGrid.Size = new System.Drawing.Size(697, 203);
+            this.ShellLogGrid.Size = new System.Drawing.Size(697, 140);
             this.ShellLogGrid.TabIndex = 5;
             this.ShellLogGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ShellLogGrid_CellClick);
             // 
@@ -6105,7 +6383,7 @@ namespace IronWASP
             this.ProbeLogTab.Location = new System.Drawing.Point(4, 22);
             this.ProbeLogTab.Margin = new System.Windows.Forms.Padding(0);
             this.ProbeLogTab.Name = "ProbeLogTab";
-            this.ProbeLogTab.Size = new System.Drawing.Size(697, 203);
+            this.ProbeLogTab.Size = new System.Drawing.Size(697, 140);
             this.ProbeLogTab.TabIndex = 4;
             this.ProbeLogTab.Text = "Probe Logs";
             this.ProbeLogTab.UseVisualStyleBackColor = true;
@@ -6119,14 +6397,14 @@ namespace IronWASP
             this.ProbeLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ProbeLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.ProbeLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ProbeLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ProbeLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
             this.ProbeLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ProbeLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ProbeLogGridColumnForID,
@@ -6152,7 +6430,7 @@ namespace IronWASP
             this.ProbeLogGrid.RowHeadersVisible = false;
             this.ProbeLogGrid.RowHeadersWidth = 10;
             this.ProbeLogGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ProbeLogGrid.Size = new System.Drawing.Size(697, 203);
+            this.ProbeLogGrid.Size = new System.Drawing.Size(697, 140);
             this.ProbeLogGrid.TabIndex = 7;
             this.ProbeLogGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ProbeLogGrid_CellClick);
             // 
@@ -6243,7 +6521,7 @@ namespace IronWASP
             this.SiteMapLogTab.Location = new System.Drawing.Point(4, 22);
             this.SiteMapLogTab.Margin = new System.Windows.Forms.Padding(0);
             this.SiteMapLogTab.Name = "SiteMapLogTab";
-            this.SiteMapLogTab.Size = new System.Drawing.Size(697, 203);
+            this.SiteMapLogTab.Size = new System.Drawing.Size(697, 140);
             this.SiteMapLogTab.TabIndex = 5;
             this.SiteMapLogTab.Text = "Sitemap";
             this.SiteMapLogTab.UseVisualStyleBackColor = true;
@@ -6257,14 +6535,14 @@ namespace IronWASP
             this.SiteMapLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.SiteMapLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.SiteMapLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.SiteMapLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.SiteMapLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle8;
             this.SiteMapLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.SiteMapLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.SiteMapLogGridColumnForID,
@@ -6291,7 +6569,7 @@ namespace IronWASP
             this.SiteMapLogGrid.RowHeadersVisible = false;
             this.SiteMapLogGrid.RowHeadersWidth = 10;
             this.SiteMapLogGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.SiteMapLogGrid.Size = new System.Drawing.Size(697, 203);
+            this.SiteMapLogGrid.Size = new System.Drawing.Size(697, 140);
             this.SiteMapLogGrid.TabIndex = 7;
             this.SiteMapLogGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.SiteMapLogGrid_CellClick);
             // 
@@ -6477,14 +6755,14 @@ namespace IronWASP
             this.ResultsTriggersGrid.BackgroundColor = System.Drawing.SystemColors.Window;
             this.ResultsTriggersGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.ResultsTriggersGrid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ResultsTriggersGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ResultsTriggersGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle9;
             this.ResultsTriggersGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ResultsTriggersGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ResultsTriggerGridNumberColumn});
@@ -6507,8 +6785,8 @@ namespace IronWASP
             // ResultsTriggerGridNumberColumn
             // 
             this.ResultsTriggerGridNumberColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.ResultsTriggerGridNumberColumn.DefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.ResultsTriggerGridNumberColumn.DefaultCellStyle = dataGridViewCellStyle15;
             this.ResultsTriggerGridNumberColumn.HeaderText = "Triggers:";
             this.ResultsTriggerGridNumberColumn.Name = "ResultsTriggerGridNumberColumn";
             this.ResultsTriggerGridNumberColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -7017,14 +7295,14 @@ namespace IronWASP
             this.TraceGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.TraceGrid.BackgroundColor = System.Drawing.Color.White;
             this.TraceGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.TraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.TraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle10;
             this.TraceGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.TraceGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn26,
@@ -9147,6 +9425,11 @@ namespace IronWASP
             this.panel1.Size = new System.Drawing.Size(72, 23);
             this.panel1.TabIndex = 14;
             // 
+            // PromptBlinkTimer
+            // 
+            this.PromptBlinkTimer.Interval = 400;
+            this.PromptBlinkTimer.Tick += new System.EventHandler(this.PromptBlinkTimer_Tick);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -9210,6 +9493,8 @@ namespace IronWASP
             this.ScanTraceBaseSplit.Panel1.ResumeLayout(false);
             this.ScanTraceBaseSplit.Panel2.ResumeLayout(false);
             this.ScanTraceBaseSplit.ResumeLayout(false);
+            this.ScanTraceNavPanel.ResumeLayout(false);
+            this.ScanTraceNavPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ScanTraceGrid)).EndInit();
             this.mt_manual.ResumeLayout(false);
             this.MTTabs.ResumeLayout(false);
@@ -9251,23 +9536,6 @@ namespace IronWASP
             this.MTResponseReflectionTP.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.TestGroupLogGrid)).EndInit();
             this.LogMenu.ResumeLayout(false);
-            this.MTScriptingTP.ResumeLayout(false);
-            this.ScriptingShellSplit.Panel1.ResumeLayout(false);
-            this.ScriptingShellSplit.Panel1.PerformLayout();
-            this.ScriptingShellSplit.Panel2.ResumeLayout(false);
-            this.ScriptingShellSplit.ResumeLayout(false);
-            this.ScriptingShellTabs.ResumeLayout(false);
-            this.InteractiveShellTP.ResumeLayout(false);
-            this.InteractiveShellTP.PerformLayout();
-            this.MultiLineShellTP.ResumeLayout(false);
-            this.ScriptedSendTP.ResumeLayout(false);
-            this.ScriptedSendTP.PerformLayout();
-            this.ScriptingShellAPISplit.Panel1.ResumeLayout(false);
-            this.ScriptingShellAPISplit.Panel2.ResumeLayout(false);
-            this.ScriptingShellAPISplit.ResumeLayout(false);
-            this.ScriptingShellAPITreeTabs.ResumeLayout(false);
-            this.ScriptingShellAPITreePythonTab.ResumeLayout(false);
-            this.ScriptingShellAPITreeRubyTab.ResumeLayout(false);
             this.MTJavaScriptTaintTP.ResumeLayout(false);
             this.MTJavaScriptTaintTP.PerformLayout();
             this.JSTaintConfigPanel.ResumeLayout(false);
@@ -9281,6 +9549,25 @@ namespace IronWASP
             this.JSTaintResultSplit.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.JSTaintResultGrid)).EndInit();
             this.JSTainTraceEditMenu.ResumeLayout(false);
+            this.mt_scripting.ResumeLayout(false);
+            this.ScriptingShellSplit.Panel1.ResumeLayout(false);
+            this.ScriptingShellSplit.Panel1.PerformLayout();
+            this.ScriptingShellSplit.Panel2.ResumeLayout(false);
+            this.ScriptingShellSplit.ResumeLayout(false);
+            this.ScriptingShellTabs.ResumeLayout(false);
+            this.InteractiveShellTP.ResumeLayout(false);
+            this.InteractiveShellTP.PerformLayout();
+            this.ShellInPanel.ResumeLayout(false);
+            this.ShellInPanel.PerformLayout();
+            this.MultiLineShellTP.ResumeLayout(false);
+            this.ScriptedSendTP.ResumeLayout(false);
+            this.ScriptedSendTP.PerformLayout();
+            this.ScriptingShellAPISplit.Panel1.ResumeLayout(false);
+            this.ScriptingShellAPISplit.Panel2.ResumeLayout(false);
+            this.ScriptingShellAPISplit.ResumeLayout(false);
+            this.ScriptingShellAPITreeTabs.ResumeLayout(false);
+            this.ScriptingShellAPITreePythonTab.ResumeLayout(false);
+            this.ScriptingShellAPITreeRubyTab.ResumeLayout(false);
             this.mt_proxy.ResumeLayout(false);
             this.mt_proxy.PerformLayout();
             this.ProxyInterceptTabs.ResumeLayout(false);
@@ -9361,6 +9648,8 @@ namespace IronWASP
             this.splitContainer2.Panel2.PerformLayout();
             this.splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.LogResponseFormatPluginsGrid)).EndInit();
+            this.MainLogNavPanel.ResumeLayout(false);
+            this.MainLogNavPanel.PerformLayout();
             this.LogTabs.ResumeLayout(false);
             this.ProxyLogTab.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.ProxyLogGrid)).EndInit();
@@ -9497,12 +9786,6 @@ namespace IronWASP
         private System.Windows.Forms.TabPage MTRequestParametersTP;
         private System.Windows.Forms.TabControl MTResponseTabs;
         private System.Windows.Forms.TabPage MTResponseHeadersTP;
-        private System.Windows.Forms.TabPage MTScriptingTP;
-        private System.Windows.Forms.TabControl ScriptingShellTabs;
-        private System.Windows.Forms.TabPage InteractiveShellTP;
-        private System.Windows.Forms.TabPage MultiLineShellTP;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.SplitContainer ScriptingShellSplit;
         private System.Windows.Forms.ContextMenuStrip LogMenu;
         private System.Windows.Forms.ToolStripMenuItem SelectForManualTestingToolStripMenuItem;
         internal IronDataView.IronDataView MTResponseHeadersIDV;
@@ -9513,18 +9796,11 @@ namespace IronWASP
         internal System.Windows.Forms.Button MTSendBtn;
         internal System.Windows.Forms.Label TestIDLbl;
         private System.Windows.Forms.TabPage mt_plugins;
-        private System.Windows.Forms.SplitContainer ScriptingShellAPISplit;
-        private System.Windows.Forms.RichTextBox ShellAPIDetailsRTB;
         public System.Windows.Forms.TreeView IronTree;
         internal System.Windows.Forms.DataGridView ShellLogGrid;
         internal System.Windows.Forms.CheckBox MTIsSSLCB;
         internal IronDataView.IronDataView ProxyResponseHeadersIDV;
         internal System.Windows.Forms.TabControl ProxyInterceptTabs;
-        internal System.Windows.Forms.TreeView ScriptingShellPythonAPITree;
-        internal System.Windows.Forms.TextBox InteractiveShellOut;
-        internal System.Windows.Forms.TextBox InteractiveShellPromptBox;
-        internal System.Windows.Forms.TextBox InteractiveShellIn;
-        internal System.Windows.Forms.Button InteractiveShellCtrlCBtn;
         private System.Windows.Forms.SplitContainer PluginsMainSplit;
         internal System.Windows.Forms.TreeView PluginTree;
         private System.Windows.Forms.SplitContainer PluginEditorSplit;
@@ -9534,10 +9810,6 @@ namespace IronWASP
         private System.Windows.Forms.TabPage ASConfigureTab;
         internal System.Windows.Forms.DataGridView ScanLogGrid;
         private System.Windows.Forms.SplitContainer ASConfigureSplit;
-        private System.Windows.Forms.TabControl ScriptingShellAPITreeTabs;
-        private System.Windows.Forms.TabPage ScriptingShellAPITreePythonTab;
-        private System.Windows.Forms.TabPage ScriptingShellAPITreeRubyTab;
-        internal System.Windows.Forms.TreeView ScriptingShellRubyAPITree;
         private System.Windows.Forms.TabControl PluginEditorAPITreeTabs;
         private System.Windows.Forms.TabPage PluginEditorPythonAPITreeTab;
         private System.Windows.Forms.TabPage PluginEditorRubyAPITreeTab;
@@ -9790,7 +10062,6 @@ namespace IronWASP
         internal System.Windows.Forms.TextBox ProxyResponseFormatXMLTB;
         private System.Windows.Forms.ContextMenuStrip ConfigureScanRequestFormatPluginsMenu;
         private System.Windows.Forms.ToolStripMenuItem ConfigureScanRequestDeSerObjectToXmlMenuItem;
-        internal System.Windows.Forms.Button MultiLineShellExecuteBtn;
         private System.Windows.Forms.TabPage ConfigScriptingTab;
         private System.Windows.Forms.SplitContainer ConfigScriptBaseSplit;
         private System.Windows.Forms.SplitContainer ConfigScriptPathSplit;
@@ -9889,7 +10160,6 @@ namespace IronWASP
         private System.Windows.Forms.ContextMenuStrip IronTreeMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem ScanBranchToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem PluginEditorToolStripMenuItem;
-        internal ICSharpCode.TextEditor.TextEditorControl MultiLineShellInTE;
         internal ICSharpCode.TextEditor.TextEditorControl PluginEditorInTE;
         private System.Windows.Forms.ToolStripMenuItem CopyRequestToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem CopyResponseToolStripMenuItem;
@@ -9901,8 +10171,6 @@ namespace IronWASP
         private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ImportBurpLogToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog BurpLogOpenDialog;
-        internal System.Windows.Forms.RadioButton InteractiveShellPythonRB;
-        internal System.Windows.Forms.RadioButton InteractiveShellRubyRB;
         private System.Windows.Forms.ContextMenuStrip ScanQueueMenu;
         private System.Windows.Forms.ToolStripMenuItem StopAllScansToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem StartAllStoppedAndAbortedScansToolStripMenuItem;
@@ -9998,15 +10266,6 @@ namespace IronWASP
         private System.Windows.Forms.TabPage tabPage39;
         internal System.Windows.Forms.RichTextBox LogReflectionRTB;
         private System.Windows.Forms.TabPage MTTestTP;
-        private System.Windows.Forms.TabPage ScriptedSendTP;
-        internal ICSharpCode.TextEditor.TextEditorControl CustomSendTE;
-        internal System.Windows.Forms.RichTextBox CustomSendBottomRtb;
-        internal System.Windows.Forms.RichTextBox CustomSendTopRtb;
-        private System.Windows.Forms.Label label1;
-        internal System.Windows.Forms.CheckBox CustomSendActivateCB;
-        private System.Windows.Forms.RadioButton CustomSendRubyRB;
-        private System.Windows.Forms.RadioButton CustomSendPythonRB;
-        internal System.Windows.Forms.TextBox CustomSendErrorTB;
         private System.Windows.Forms.TabPage MTRequestTab;
         private System.Windows.Forms.TabPage MTResponseTab;
         private System.Windows.Forms.Button NextTestLog;
@@ -10161,7 +10420,61 @@ namespace IronWASP
         internal System.Windows.Forms.CheckBox ConfigPassiveAnalysisOnScanTrafficCB;
         internal System.Windows.Forms.CheckBox ConfigPassiveAnalysisOnTestTrafficCB;
         internal System.Windows.Forms.CheckBox ConfigPassiveAnalysisOnShellTrafficCB;
+        private System.Windows.Forms.TabPage mt_scripting;
+        private System.Windows.Forms.SplitContainer ScriptingShellSplit;
         internal System.Windows.Forms.Button ClearShellDisplayBtn;
+        internal System.Windows.Forms.Button MultiLineShellExecuteBtn;
+        internal System.Windows.Forms.Button InteractiveShellCtrlCBtn;
+        private System.Windows.Forms.TabControl ScriptingShellTabs;
+        private System.Windows.Forms.TabPage MultiLineShellTP;
+        internal ICSharpCode.TextEditor.TextEditorControl MultiLineShellInTE;
+        private System.Windows.Forms.TabPage ScriptedSendTP;
+        internal System.Windows.Forms.TextBox CustomSendErrorTB;
+        internal ICSharpCode.TextEditor.TextEditorControl CustomSendTE;
+        internal System.Windows.Forms.RichTextBox CustomSendBottomRtb;
+        internal System.Windows.Forms.RichTextBox CustomSendTopRtb;
+        private System.Windows.Forms.Label label1;
+        internal System.Windows.Forms.CheckBox CustomSendActivateCB;
+        private System.Windows.Forms.RadioButton CustomSendRubyRB;
+        private System.Windows.Forms.RadioButton CustomSendPythonRB;
+        internal System.Windows.Forms.RadioButton InteractiveShellRubyRB;
+        private System.Windows.Forms.Label label2;
+        internal System.Windows.Forms.RadioButton InteractiveShellPythonRB;
+        private System.Windows.Forms.SplitContainer ScriptingShellAPISplit;
+        private System.Windows.Forms.TabControl ScriptingShellAPITreeTabs;
+        private System.Windows.Forms.TabPage ScriptingShellAPITreePythonTab;
+        internal System.Windows.Forms.TreeView ScriptingShellPythonAPITree;
+        private System.Windows.Forms.TabPage ScriptingShellAPITreeRubyTab;
+        internal System.Windows.Forms.TreeView ScriptingShellRubyAPITree;
+        private System.Windows.Forms.RichTextBox ShellAPIDetailsRTB;
+        private System.Windows.Forms.TabPage InteractiveShellTP;
+        internal System.Windows.Forms.TextBox InteractiveShellPromptBox;
+        internal System.Windows.Forms.TextBox InteractiveShellOut;
+        internal System.Windows.Forms.TextBox InteractiveShellIn;
+        private System.Windows.Forms.Timer PromptBlinkTimer;
+        private System.Windows.Forms.Panel ShellInPanel;
+        private System.Windows.Forms.Button MainLogFrontFourBtn;
+        private System.Windows.Forms.Button MainLogFrontThreeBtn;
+        private System.Windows.Forms.Button MainLogFrontTwoBtn;
+        private System.Windows.Forms.Button MainLogFrontOneBtn;
+        private System.Windows.Forms.Button MainLogBackOneBtn;
+        private System.Windows.Forms.Button MainLogBackTwoBtn;
+        private System.Windows.Forms.Button MainLogBackThreeBtn;
+        private System.Windows.Forms.Button MainLogBackFourBtn;
+        private System.Windows.Forms.Panel MainLogNavPanel;
+        internal System.Windows.Forms.Label MainLogStatusLbl;
+        internal System.Windows.Forms.Label MainLogStatLbl;
+        private System.Windows.Forms.Panel ScanTraceNavPanel;
+        internal System.Windows.Forms.Label ScanTraceStatusLbl;
+        internal System.Windows.Forms.Label ScanTraceStatLbl;
+        private System.Windows.Forms.Button ScanTraceFrontFourBtn;
+        private System.Windows.Forms.Button ScanTraceBackOneBtn;
+        private System.Windows.Forms.Button ScanTraceFrontThreeBtn;
+        private System.Windows.Forms.Button ScanTraceBackFourBtn;
+        private System.Windows.Forms.Button ScanTraceFrontTwoBtn;
+        private System.Windows.Forms.Button ScanTraceBackThreeBtn;
+        private System.Windows.Forms.Button ScanTraceFrontOneBtn;
+        private System.Windows.Forms.Button ScanTraceBackTwoBtn;
     }
 }
 
