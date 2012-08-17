@@ -177,7 +177,7 @@ namespace IronWASP
                     IronUI.ShowLogStatus("Unable to read Request from log", true);
                     return;
                 }
-                int TestID = Interlocked.Increment(ref Config.ManualRequestsCount);
+                int TestID = Interlocked.Increment(ref Config.TestRequestsCount);
                 IrSe.Request.ID = TestID;
                 IronDB.LogMTRequest(IrSe.Request);
                 IronDB.ClearGroup(Group);
@@ -451,7 +451,11 @@ namespace IronWASP
         {
             int JumpLevel = (int)JumpLevelObj;
             List<LogRow> Records = GetNextProxyLogRecords(JumpLevel);
-            if (Records.Count == 0) return;
+            if (Records.Count == 0)
+            {
+                IronUI.ShowLogBottomStatus("Reached end of logs", true);
+                return;
+            }
             List<object[]> Rows = new List<object[]>();
             foreach (LogRow Record in Records)
             {
@@ -468,7 +472,11 @@ namespace IronWASP
         {
             int JumpLevel = (int)JumpLevelObj;
             List<LogRow> Records = GetNextProbeLogRecords(JumpLevel);
-            if (Records.Count == 0) return;
+            if (Records.Count == 0)
+            {
+                IronUI.ShowLogBottomStatus("Reached end of logs", true);
+                return;
+            }
             List<object[]> Rows = new List<object[]>();
             foreach (LogRow Record in Records)
             {
@@ -485,7 +493,11 @@ namespace IronWASP
         {
             int JumpLevel = (int)JumpLevelObj;
             List<LogRow> Records = GetNextScanLogRecords(JumpLevel);
-            if (Records.Count == 0) return;
+            if (Records.Count == 0)
+            {
+                IronUI.ShowLogBottomStatus("Reached end of logs", true);
+                return;
+            }
             List<object[]> Rows = new List<object[]>();
             foreach (LogRow Record in Records)
             {
@@ -502,7 +514,11 @@ namespace IronWASP
         {
             int JumpLevel = (int) JumpLevelObj;
             List<LogRow> Records = GetNextShellLogRecords(JumpLevel);
-            if (Records.Count == 0) return;
+            if (Records.Count == 0)
+            {
+                IronUI.ShowLogBottomStatus("Reached end of logs", true);
+                return;
+            }
             List<object[]> Rows = new List<object[]>();
             foreach (LogRow Record in Records)
             {
@@ -519,7 +535,11 @@ namespace IronWASP
         {
             int JumpLevel = (int)JumpLevelObj;
             List<LogRow> Records = GetNextTestLogRecords(JumpLevel);
-            if (Records.Count == 0) return;
+            if (Records.Count == 0)
+            {
+                IronUI.ShowLogBottomStatus("Reached end of logs", true);
+                return;
+            }
             List<object[]> Rows = new List<object[]>();
             foreach (LogRow Record in Records)
             {
@@ -621,10 +641,15 @@ namespace IronWASP
             List<LogRow> Records = IronDB.GetRecordsFromProxyLog(StartIndex, IronLog.MaxRowCount);
             if (Records.Count == 0)
             {
-                if(JumpLevel == 1)
-                    IronUI.ShowLogBottomStatus(string.Format("Reached end of logs", StartIndex), true);
-                else
-                    IronUI.ShowLogBottomStatus(string.Format("No logs with ID above {0}. Try a smaller value.", StartIndex), true);
+                int NewStartIndex = Config.LastProxySessionId - IronLog.MaxRowCount;
+                if (NewStartIndex > 0)
+                {
+                    Records = IronDB.GetRecordsFromProxyLog(NewStartIndex, IronLog.MaxRowCount);
+                    if (Records.Count > 0)
+                    {
+                        if (Records[Records.Count - 1].ID == IronLog.ProxyMax) Records.Clear();
+                    }
+                }
             }
             return Records;
         }
@@ -635,10 +660,15 @@ namespace IronWASP
             List<LogRow> Records = IronDB.GetRecordsFromProbeLog(StartIndex, IronLog.MaxRowCount);
             if (Records.Count == 0)
             {
-                if (JumpLevel == 1)
-                    IronUI.ShowLogBottomStatus(string.Format("Reached end of logs", StartIndex), true);
-                else
-                    IronUI.ShowLogBottomStatus(string.Format("No logs with ID above {0}. Try a smaller value.", StartIndex), true);
+                int NewStartIndex = Config.LastProbeSessionId - IronLog.MaxRowCount;
+                if (NewStartIndex > 0)
+                {
+                    Records = IronDB.GetRecordsFromProbeLog(NewStartIndex, IronLog.MaxRowCount);
+                    if (Records.Count > 0)
+                    {
+                        if (Records[Records.Count - 1].ID == IronLog.ProbeMax) Records.Clear();
+                    }
+                }
             }
             return Records;
         }
@@ -649,10 +679,15 @@ namespace IronWASP
             List<LogRow> Records = IronDB.GetRecordsFromScanLog(StartIndex, IronLog.MaxRowCount);
             if (Records.Count == 0)
             {
-                if (JumpLevel == 1)
-                    IronUI.ShowLogBottomStatus(string.Format("Reached end of logs", StartIndex), true);
-                else
-                    IronUI.ShowLogBottomStatus(string.Format("No logs with ID above {0}. Try a smaller value.", StartIndex), true);
+                int NewStartIndex = Config.LastScanSessionId - IronLog.MaxRowCount;
+                if (NewStartIndex > 0)
+                {
+                    Records = IronDB.GetRecordsFromScanLog(NewStartIndex, IronLog.MaxRowCount);
+                    if (Records.Count > 0)
+                    {
+                        if (Records[Records.Count - 1].ID == IronLog.ScanMax) Records.Clear();
+                    }
+                }
             }
             return Records;
         }
@@ -663,10 +698,15 @@ namespace IronWASP
             List<LogRow> Records = IronDB.GetRecordsFromShellLog(StartIndex, IronLog.MaxRowCount);
             if (Records.Count == 0)
             {
-                if (JumpLevel == 1)
-                    IronUI.ShowLogBottomStatus(string.Format("Reached end of logs", StartIndex), true);
-                else
-                    IronUI.ShowLogBottomStatus(string.Format("No logs with ID above {0}. Try a smaller value.", StartIndex), true);
+                int NewStartIndex = Config.LastShellSessionId - IronLog.MaxRowCount;
+                if (NewStartIndex > 0)
+                {
+                    Records = IronDB.GetRecordsFromShellLog(NewStartIndex, IronLog.MaxRowCount);
+                    if (Records.Count > 0)
+                    {
+                        if (Records[Records.Count - 1].ID == IronLog.ShellMax) Records.Clear();
+                    }
+                }
             }
             return Records;
         }
@@ -677,10 +717,15 @@ namespace IronWASP
             List<LogRow> Records = IronDB.GetRecordsFromTestLog(StartIndex, IronLog.MaxRowCount);
             if (Records.Count == 0)
             {
-                if (JumpLevel == 1)
-                    IronUI.ShowLogBottomStatus(string.Format("Reached end of logs", StartIndex), true);
-                else
-                    IronUI.ShowLogBottomStatus(string.Format("No logs with ID above {0}. Try a smaller value.", StartIndex), true);
+                int NewStartIndex = Config.LastTestSessionId - IronLog.MaxRowCount;
+                if (NewStartIndex > 0)
+                {
+                    Records = IronDB.GetRecordsFromTestLog(NewStartIndex, IronLog.MaxRowCount);
+                    if (Records.Count > 0)
+                    {
+                        if (Records[Records.Count - 1].ID == IronLog.TestMax) Records.Clear();
+                    }
+                }
             }
             return Records;
         }

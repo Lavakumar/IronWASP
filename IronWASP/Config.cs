@@ -30,8 +30,8 @@ namespace IronWASP
         internal static int ScanCount = 0;
         internal static int ActiveScansCount = 0;
         internal static int ProxyRequestsCount = 0;
-        internal static int ManualRequestsCount = 0;
-        internal static int PluginRequestsCount = 0;
+        internal static int TestRequestsCount = 0;
+        internal static int ScanRequestsCount = 0;
         internal static int ShellRequestsCount = 0;
         internal static int ProbeRequestsCount = 0;
         internal static int StealthRequestsCount = 0;
@@ -39,6 +39,7 @@ namespace IronWASP
         internal static int ExceptionsCount = 0;
         internal static int TraceCount = 0;
         internal static int ScanTraceCount = 0;
+
         internal static Dictionary<string, Request> APIResponseDict = new Dictionary<string, Request>();
         internal static bool OpeningIronProjectFile = false;
         internal static string RootDir = "";
@@ -54,6 +55,50 @@ namespace IronWASP
                 return RootDir;
             }
         }
+
+        public static int LastProxySessionId
+        {
+            get
+            {
+                return ProxyRequestsCount;
+            }
+        }
+        public static int LastProbeSessionId
+        {
+            get
+            {
+                return ProbeRequestsCount;
+            }
+        }
+        public static int LastShellSessionId
+        {
+            get
+            {
+                return ShellRequestsCount;
+            }
+        }
+        public static int LastScanSessionId
+        {
+            get
+            {
+                return ScanRequestsCount;
+            }
+        }
+        public static int LastTestSessionId
+        {
+            get
+            {
+                return TestRequestsCount;
+            }
+        }
+        internal static int LastScanTraceId
+        {
+            get
+            {
+                return ScanTraceCount;
+            }
+        }
+
 
         public static void SetFiddlerFlag(string Name, string Value)
         {

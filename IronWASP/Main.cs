@@ -3890,6 +3890,7 @@ namespace IronWASP
         private void LogTabs_SelectedIndexChanged(object sender, EventArgs e)
         {
             IronUI.ShowCurrentLogStat();
+            IronUI.ShowLogBottomStatus("", false);
         }
 
         private void MainLogFrontOneBtn_Click(object sender, EventArgs e)

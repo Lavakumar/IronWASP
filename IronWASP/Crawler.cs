@@ -580,7 +580,14 @@ namespace IronWASP
 
             List<string> LocationUrls = new List<string>();
             if (Res.Headers.Has("Location")) LocationUrls.Add(Res.Headers.Get("Location"));
-            if (Res.IsHtml) LocationUrls.AddRange(Res.Html.GetMetaContent("http-equiv", "location"));
+            if (Res.IsHtml)
+            {
+                List<string> LocationsFromHtml = Res.Html.GetMetaContent("http-equiv", "location");
+                foreach (string LocationFromHtml in LocationsFromHtml)
+                {
+                    LocationUrls.Add(Tools.HtmlDecode(LocationFromHtml));
+                }
+            }
             
             foreach(string LocationUrl in LocationUrls)
             {
@@ -591,7 +598,14 @@ namespace IronWASP
             List<string> RefreshHeaderVals = new List<string>();
             
             if (Res.Headers.Has("Refresh")) RefreshHeaderVals.Add(Res.Headers.Get("Refresh"));
-            if (Res.IsHtml) RefreshHeaderVals.AddRange(Res.Html.GetMetaContent("http-equiv", "refresh"));
+            if (Res.IsHtml)
+            {
+                List<string> RefreshsFromHtml = Res.Html.GetMetaContent("http-equiv", "refresh");
+                foreach (string RefreshFromHtml in RefreshsFromHtml)
+                {
+                    RefreshHeaderVals.Add(Tools.HtmlDecode(RefreshFromHtml));
+                }
+            }
             
             foreach(string RefreshHeaderVal in RefreshHeaderVals)
             {

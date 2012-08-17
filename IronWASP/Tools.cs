@@ -220,6 +220,7 @@ namespace IronWASP
         {
             return HttpUtility.UrlEncode(Input);
         }
+        
         public static string UrlDecode(string Input)
         {
             return HttpUtility.UrlDecode(Input);
@@ -688,6 +689,16 @@ namespace IronWASP
             }
             int Per = (int)((O / T) * 100.0);
             return 100 - Per;
+        }
+
+        public static void ExecuteMethod(ThreadStart PTS)
+        {
+            PTS();
+        }
+
+        public static void ExecuteMethodP(ParameterizedThreadStart PTS, object Obj)
+        {
+            PTS(Obj);
         }
     }
 }

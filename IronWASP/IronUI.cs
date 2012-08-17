@@ -695,19 +695,16 @@ namespace IronWASP
             }
         }
 
-        delegate void SetScanTraceGrid_d(List<IronTrace> Traces);
-        internal static void SetScanTraceGrid(List<IronTrace> Traces)
+        delegate void UpdateScanTraceGrid_d(List<IronTrace> Traces);
+        internal static void UpdateScanTraceGrid(List<IronTrace> Traces)
         {
             if (UI.ScanTraceGrid.InvokeRequired)
             {
-                SetScanTraceGrid_d SSTG_d = new SetScanTraceGrid_d(SetScanTraceGrid);
-                UI.Invoke(SSTG_d, new object[] { Traces });
+                UpdateScanTraceGrid_d USTG_d = new UpdateScanTraceGrid_d(UpdateScanTraceGrid);
+                UI.Invoke(USTG_d, new object[] { Traces });
             }
             else
             {
-                UI.ScanTraceGrid.Rows.Clear();
-                IronTrace.ScanTraceMin = 0;
-                IronTrace.ScanTraceMax = 0;
                 foreach (IronTrace Trace in Traces)
                 {
                     if (UI.ScanTraceGrid.Rows.Count >= IronLog.MaxRowCount) break;
@@ -724,6 +721,23 @@ namespace IronWASP
                 }
                 ShowCurrentScanTraceStat();
                 IronUI.ShowScanTraceStatus("", false);
+            }
+        }
+
+        delegate void SetScanTraceGrid_d(List<IronTrace> Traces);
+        internal static void SetScanTraceGrid(List<IronTrace> Traces)
+        {
+            if (UI.ScanTraceGrid.InvokeRequired)
+            {
+                SetScanTraceGrid_d SSTG_d = new SetScanTraceGrid_d(SetScanTraceGrid);
+                UI.Invoke(SSTG_d, new object[] { Traces });
+            }
+            else
+            {
+                UI.ScanTraceGrid.Rows.Clear();
+                IronTrace.ScanTraceMin = 0;
+                IronTrace.ScanTraceMax = 0;
+                UpdateScanTraceGrid(Traces);
             }
         }
 
@@ -3657,7 +3671,8 @@ namespace IronWASP
             SetProxyGridRows(ProxyRows);
 
             UpdateProxyLogBasedOnDisplayFilter();
-            Config.ProxyRequestsCount = StartID;
+            //Config.ProxyRequestsCount = StartID;
+            Config.ProxyRequestsCount = IronDB.GetLastProxyLogRowId();
             if (Success) ShowWaitFormGridMessage(1, Counter, "Done", 1, false);
 
             //test groups
@@ -3715,7 +3730,8 @@ namespace IronWASP
                 //}
             }
             SetTestGridRows(MTRows);
-            Config.ManualRequestsCount = StartID;
+            //Config.ManualRequestsCount = StartID;
+            Config.TestRequestsCount = IronDB.GetLastTestLogRowId();
             if (Success) ShowWaitFormGridMessage(2, Counter, "Done", 1, false);
 
             //StepWaitFormProgressBar();
@@ -3761,7 +3777,8 @@ namespace IronWASP
                 //    Success = false;
                 //}
             }
-            Config.ShellRequestsCount = StartID;
+            //Config.ShellRequestsCount = StartID;
+            Config.ShellRequestsCount = IronDB.GetLastShellLogRowId();
             SetShellGridRows(ShellRows);
             if(Success) ShowWaitFormGridMessage(3, Counter, "Done", 1, false);
 
@@ -3822,7 +3839,8 @@ namespace IronWASP
                 }
             }
             AddScanQueueGridRows(ScanQueueRows);
-            Config.ScanCount = StartID;
+            //Config.ScanCount = StartID;
+            Config.ScanCount = IronDB.GetLastScanJobRowId();
             //int ScanCount = 1;
             //while (ScanCount <= StartID)
             //{
@@ -3881,7 +3899,8 @@ namespace IronWASP
                 //}
             }
             SetScanTraceGrid(AllScanTraces);
-            Config.ScanTraceCount = StartID;
+            //Config.ScanTraceCount = StartID;
+            Config.ScanTraceCount = IronDB.GetLastScanTraceLogRowId();
             if(Success) ShowWaitFormGridMessage(5, Counter, "Done", 1, false);
 
             //WF.Text = "Updating Automated Scanning Logs..";
@@ -3927,7 +3946,8 @@ namespace IronWASP
                 //}
             }
             SetScanGridRows(ScanRows);
-            Config.PluginRequestsCount = StartID;
+            //Config.PluginRequestsCount = StartID;
+            Config.ScanRequestsCount = IronDB.GetLastScanLogRowId();
             if(Success) ShowWaitFormGridMessage(6, Counter, "Done", 1, false);
 
 
@@ -3987,7 +4007,8 @@ namespace IronWASP
                 //}
             }
             SetProbeGridRows(ProbeRows);
-            Config.ProbeRequestsCount = StartID;
+            //Config.ProbeRequestsCount = StartID;
+            Config.ProbeRequestsCount = IronDB.GetLastProbeLogRowId();
             if (Success) ShowWaitFormGridMessage(7, Counter, "Done", 1, false);
 
 
@@ -4042,7 +4063,8 @@ namespace IronWASP
             }
 
             UpdatePluginResultTree(AllPluginResultLogRecords);
-            Config.PluginResultCount = StartID;
+            //Config.PluginResultCount = StartID;
+            Config.PluginResultCount = IronDB.GetLastPluginResultLogRowId();
             if (Success) ShowWaitFormGridMessage(8, Counter, "Done", 1, false);
             
 
@@ -4090,7 +4112,8 @@ namespace IronWASP
                     Success = false;
                 }
             }
-            Config.ExceptionsCount = StartID;
+            //Config.ExceptionsCount = StartID;
+            Config.ExceptionsCount = IronDB.GetLastExceptionLogRowId();
             UpdateExceptions(AllExceptionLogRecords);
             if(Success) ShowWaitFormGridMessage(9, Counter, "Done", 1, false);
             Success = false;
@@ -4146,7 +4169,8 @@ namespace IronWASP
                 }
             }
             UpdateTraceGrid(AllTraces);
-            Config.TraceCount = StartID;
+            //Config.TraceCount = StartID;
+            Config.TraceCount = IronDB.GetLastTraceLogRowId();
             if(Success) ShowWaitFormGridMessage(11, Counter, "Done", 1, false);
             
             StartID = 0;

@@ -93,7 +93,11 @@ namespace IronWASP
         {
             int JumpLevel = (int)JumpLevelObj;
             List<IronTrace> Records = GetNextScanTraceRecords(JumpLevel);
-            if (Records.Count == 0) return;
+            if (Records.Count == 0)
+            {
+                IronUI.ShowScanTraceStatus("Reached end of Scan Traces", true);
+                return;
+            }
             IronUI.SetScanTraceGrid(Records);
         }
         internal static List<IronTrace> GetNextScanTraceRecords(int JumpLevel)
@@ -103,10 +107,15 @@ namespace IronWASP
             List<IronTrace> Records = IronDB.GetScanTraceRecords(StartIndex, IronLog.MaxRowCount);
             if (Records.Count == 0)
             {
-                if (JumpLevel == 1)
-                    IronUI.ShowScanTraceStatus(string.Format("Reached end of Scan Traces", StartIndex), true);
-                else
-                    IronUI.ShowScanTraceStatus(string.Format("No Scan Traces with ID above {0}. Try a smaller value.", StartIndex), true);
+                int NewStartIndex = Config.LastScanTraceId - IronLog.MaxRowCount;
+                if (NewStartIndex > 0)
+                {
+                    Records = IronDB.GetScanTraceRecords(NewStartIndex, IronLog.MaxRowCount);
+                    if (Records.Count > 0)
+                    {
+                        if (Records[Records.Count - 1].ID == IronTrace.ScanTraceMax) Records.Clear();
+                    }
+                }
             }
             return Records;
         }

@@ -89,7 +89,7 @@ namespace IronWASP
             Request Request = ManualTesting.CurrentRequest.GetClone();
             StringDictionary Flags = new StringDictionary();
             Flags.Add("IronFlag-BuiltBy", "ManualTestingSection");
-            Request.ID = Interlocked.Increment(ref Config.ManualRequestsCount);
+            Request.ID = Interlocked.Increment(ref Config.TestRequestsCount);
             StoreInGroupList(Request);
             SetCurrentID(Request.ID);
             IronDB.LogMTRequest(Request);
@@ -363,7 +363,7 @@ namespace IronWASP
             if (ManualTesting.CurrentRequest == null) return;
             IronUI.ResetMTResponseDisplayFields();
             Request Request = ManualTesting.CurrentRequest.GetClone();
-            Request.ID = Interlocked.Increment(ref Config.ManualRequestsCount);
+            Request.ID = Interlocked.Increment(ref Config.TestRequestsCount);
             StoreInGroupList(Request);
             SetCurrentID(Request.ID);
             IronDB.LogMTRequest(Request);

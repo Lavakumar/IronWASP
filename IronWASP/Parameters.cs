@@ -38,74 +38,154 @@ namespace IronWASP
         {
 
         }
-        
-        public string Get(string Name)
+
+        //Get Method
+        public string RawGet(string Name)
         {
-            if (ParameterStore.ContainsKey(Name))
-            {
-                List<string> Values = ParameterStore[Name];
-                return Values[0];
-            }
-            else
+            return this.RawGet(Name, BaseSafeRaw, BaseEncode, BaseDecode);
+        }
+        public string RawGet(string Name, SafeRawDelegate SafeRawMethod, EncodeDelegate EncodeMethod, DecodeDelegate DecodeMethod)
+        {
+            string SafeName = SafeRawMethod(Name);
+            string Key = MatchAndGetKey(SafeName, EncodeMethod, DecodeMethod);
+            if (Key == null)
             {
                 throw new Exception("Parameter not found");
             }
+            else
+            {
+                List<string> Values = ParameterStore[Key];
+                return Values[0];   
+            }
+        }
+        public string Get(string Name)
+        {
+            return BaseDecode(this.RawGet(BaseEncode(Name)));
+        }
+
+        //Set method
+        public void RawSet(string Name, string Value)
+        {
+            this.RawSet(Name, Value, BaseSafeRaw, BaseEncode, BaseDecode);
+        }
+        public void RawSet(string Name, string Value, SafeRawDelegate SafeRawMethod, EncodeDelegate EncodeMethod, DecodeDelegate DecodeMethod)
+        {
+            if (Name.Trim().Length == 0) return;
+            string SafeName = SafeRawMethod(Name);
+            string SafeValue = SafeRawMethod(Value);
+            string Key = MatchAndGetKey(SafeName, EncodeMethod, DecodeMethod);
+            if(Key == null)
+                ParameterStore[SafeName] = new List<string>() { SafeValue };
+            else
+                ParameterStore[Key] = new List<string>() { SafeValue };
         }
         public void Set(string Name, string Value)
         {
-            if (Name.Trim().Length == 0) return;
-            ParameterStore[Name] = new List<string>() { Value };
+            this.RawSet(BaseEncode(Name), BaseEncode(Value));            
         }
-        public void Set(string Name, int Position, string Value)
+
+        //Set at point
+        public void RawSet(string Name, int Position, string Value)
+        {
+            RawSet(Name, Position, Value, BaseSafeRaw, BaseEncode, BaseDecode);
+        }
+        public void RawSetAt(string Name, int Position, string Value)
+        {
+            RawSet(Name, Position, Value);
+        }
+        public void RawSet(string Name, int Position, string Value, SafeRawDelegate SafeRawMethod, EncodeDelegate EncodeMethod, DecodeDelegate DecodeMethod)
         {
             if (Name.Trim().Length == 0) return;
+            string SafeName = SafeRawMethod(Name);
+            string SafeValue = SafeRawMethod(Value);
             if (Position < 0) return;
-            if (ParameterStore.ContainsKey(Name))
+            string Key = MatchAndGetKey(SafeName, EncodeMethod, DecodeMethod);
+            if (Key == null)
             {
-                if (Position >= ParameterStore[Name].Count)
-                {
-                    this.Add(Name, Value);
-                }
-                else
-                {
-                    ParameterStore[Name][Position] = Value;
-                }
+                ParameterStore[SafeName] = new List<string>() { SafeValue };
             }
             else
             {
-                ParameterStore[Name] = new List<string>() { Value };   
+                if (Position >= ParameterStore[Key].Count)
+                {
+                    this.Add(Key, SafeValue);
+                }
+                else
+                {
+                    ParameterStore[Key][Position] = SafeValue;
+                }   
             }
+        }
+        public void Set(string Name, int Position, string Value)
+        {
+            this.RawSet(BaseEncode(Name), Position, BaseEncode(Value));
         }
         public void SetAt(string Name, int Position, string Value)
         {
             this.Set(Name, Position, Value);
         }
-        public void Set(string Name, List<string> Values)
+
+        //Set mutliple
+        public void RawSet(string Name, List<string> Values)
+        {
+            this.RawSet(Name, Values, BaseSafeRaw, BaseEncode, BaseDecode);
+        }
+        public void RawSet(string Name, List<string> Values, SafeRawDelegate SafeRawMethod, EncodeDelegate EncodeMethod, DecodeDelegate DecodeMethod)
         {
             if (Name.Trim().Length == 0) return;
-            if (ParameterStore.ContainsKey(Name))
+            string SafeName = SafeRawMethod(Name);
+            List<string> SafeValues = new List<string>();
+            foreach (string Value in Values)
             {
-                ParameterStore[Name] = Values;
+                SafeValues.Add(SafeRawMethod(Value));
+            }
+            string Key = MatchAndGetKey(SafeName, EncodeMethod, DecodeMethod);
+            if (Key == null)
+            {
+                ParameterStore.Add(SafeName, SafeValues);
             }
             else
             {
-                ParameterStore.Add(Name, Values);
+                ParameterStore[Key] = SafeValues;
+            }
+        }
+        public void Set(string Name, List<string> Values)
+        {
+            List<string> EncodedValues = new List<string>();
+            foreach (string Value in Values)
+            {
+                EncodedValues.Add(BaseEncode(Value));
+            }
+            this.RawSet(BaseEncode(Name), EncodedValues);
+        }
+
+        //Add method
+        public void RawAdd(string Name, string Value)
+        {
+            RawAdd(Name, Value, BaseSafeRaw, BaseEncode, BaseDecode);
+        }
+        public void RawAdd(string Name, string Value, SafeRawDelegate SafeRawMethod, EncodeDelegate EncodeMethod, DecodeDelegate DecodeMethod)
+        {
+            if (Name.Trim().Length == 0) return;
+            string SafeName = SafeRawMethod(Name);
+            string SafeValue = SafeRawMethod(Value);
+            string Key = MatchAndGetKey(SafeName, EncodeMethod, DecodeMethod);
+            if (Key == null)
+            {
+                List<string> Values = new List<string>();
+                Values.Add(SafeValue);
+                ParameterStore.Add(SafeName, Values);
+            }
+            else
+            {
+                ParameterStore[Key].Add(SafeValue);
             }
         }
         public void Add(string Name, string Value)
         {
-            if (Name.Trim().Length == 0) return;
-            if (ParameterStore.ContainsKey(Name))
-            {
-                ParameterStore[Name].Add(Value);
-            }
-            else
-            {
-                List<string> Values = new List<string>();
-                Values.Add(Value);
-                ParameterStore.Add(Name,Values);
-            }
+            this.RawAdd(BaseEncode(Name), BaseEncode(Value));
         }
+
         public List<string> GetNames()
         {
             List<string> Keys = new List<string>();
@@ -115,18 +195,38 @@ namespace IronWASP
             }
             return Keys;
         }
-        public List<string> GetAll(string Name)
+        
+        //GetAll method
+        public List<string> RawGetAll(string Name)
         {
-            if (ParameterStore.ContainsKey(Name))
+            return this.RawGetAll(Name, BaseSafeRaw, BaseEncode, BaseDecode);
+        }
+        public List<string> RawGetAll(string Name, SafeRawDelegate SafeRawMethod, EncodeDelegate EncodeMethod, DecodeDelegate DecodeMethod)
+        {
+            string SafeName = SafeRawMethod(Name);
+            string Key = MatchAndGetKey(Name, EncodeMethod, DecodeMethod);
+            if (Key == null)
             {
-                return ParameterStore[Name];
+                throw new Exception("Parameter not found"); 
             }
             else
             {
-                throw new Exception("Parameter not found");
+                return ParameterStore[Key];
             }
         }
-        public List<string> GetMultis()
+        public List<string> GetAll(string Name)
+        {
+            List<string> RawValues = this.RawGetAll(BaseEncode(Name));
+            List<string> DecodedValues = new List<string>();
+            foreach (string Value in RawValues)
+            {
+                DecodedValues.Add(BaseDecode(Value));
+            }
+            return DecodedValues;
+        }
+
+        //GetMultis method
+        public List<string> RawGetMultis()
         {
             List<string> Multis = new List<string>();
             foreach (string Key in ParameterStore.Keys)
@@ -138,27 +238,62 @@ namespace IronWASP
             }
             return Multis;
         }
-        public void Remove(string Name)
+        public List<string> GetMultis()
         {
-            if (ParameterStore.ContainsKey(Name))
+            List<string> RawMultis = this.RawGetMultis();
+            List<string> DecodedMultis = new List<string>();
+            foreach (string Multi in RawMultis)
             {
-                ParameterStore.Remove(Name);
+                DecodedMultis.Add(BaseDecode(Multi));
+            }
+            return DecodedMultis;
+        }
+
+        //Remove method
+        public void RawRemove(string Name)
+        {
+            RawRemove(Name, BaseSafeRaw, BaseEncode, BaseDecode);
+        }
+        public void RawRemove(string Name, SafeRawDelegate SafeRawMethod, EncodeDelegate EncodeMethod, DecodeDelegate DecodeMethod)
+        {
+            string SafeName = SafeRawMethod(Name);
+            string Key = MatchAndGetKey(SafeName, EncodeMethod, DecodeMethod);
+            if (Key != null)
+            {
+                ParameterStore.Remove(Key);
             }
         }
+        public void Remove(string Name)
+        {
+            this.RawRemove(BaseEncode(Name));
+        }
+
         public void RemoveAll()
         {
             this.ParameterStore = new Dictionary<string, List<string>>();
         }
-        public bool Has(string Name)
+
+        //Has method
+        public bool RawHas(string Name)
         {
-            if (ParameterStore.ContainsKey(Name))
-            {
-                return true;
-            }
-            else
+            return RawHas(Name, BaseSafeRaw, BaseEncode, BaseDecode);
+        }
+        public bool RawHas(string Name, SafeRawDelegate SafeRawMethod, EncodeDelegate EncodeMethod, DecodeDelegate DecodeMethod)
+        {
+            string SafeName = SafeRawMethod(Name);
+            string Key = MatchAndGetKey(SafeName, EncodeMethod, DecodeMethod);
+            if (Key == null)
             {
                 return false;
             }
+            else
+            {
+                return true;
+            }
+        }
+        public bool Has(string Name)
+        {
+            return this.RawHas(BaseEncode(Name));
         }
         
         protected string GetStringFromParameters(char Joiner)
@@ -262,6 +397,44 @@ namespace IronWASP
             {
                 this.ParameterStore = new Dictionary<string, List<string>>();
             }
+        }
+
+        public delegate string DecodeDelegate(string Input);
+        public delegate string EncodeDelegate(string Input);
+        public delegate string SafeRawDelegate(string Input);
+
+        public string BaseDecode(string Input)
+        {
+            return Input;
+        }
+        public string BaseEncode(string Input)
+        {
+            return Input;
+        }
+        public string BaseSafeRaw(string Input)
+        {
+            return Input;
+        }
+
+        string MatchAndGetKey(string Name, EncodeDelegate EncodeMethod, DecodeDelegate DecodeMethod)
+        {
+            foreach(string Key in ParameterStore.Keys)
+            {
+                if(Key.Equals(Name)) return Key;
+            }
+            foreach(string Key in ParameterStore.Keys)
+            {
+                if(DecodeMethod(Key).Equals(DecodeMethod(Name))) return Key;
+            }
+            foreach(string Key in ParameterStore.Keys)
+            {
+                if(Key.Equals(DecodeMethod(Name))) return Key;
+            }
+            foreach(string Key in ParameterStore.Keys)
+            {
+                if(DecodeMethod(Key).Equals(Name)) return Key;
+            }
+            return null;
         }
     }
 }

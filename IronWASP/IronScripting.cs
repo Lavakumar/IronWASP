@@ -232,7 +232,7 @@ namespace IronWASP
             try
             {
                 ScriptSource Source = IronScripting.Engine.CreateScriptSourceFromString(CommandBuffer, SourceCodeKind.InteractiveCode);
-
+                
                 ScriptCodeParseResult Result = Source.GetCodeProperties();
                 if (Result == ScriptCodeParseResult.Complete || Result == ScriptCodeParseResult.Invalid || CanExecute(Command))
                 {

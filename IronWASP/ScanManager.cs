@@ -63,7 +63,7 @@ namespace IronWASP
                 Stop(true);
                 CanStop = false;
                 Stopped = false;
-                ScanManagerThread = new Thread(DoScan);
+                ScanManagerThread = new Thread(DoScanBlock);
                 ScanManagerThread.Start();
             }
             catch(Exception Exp)
@@ -72,21 +72,52 @@ namespace IronWASP
             }
         }
 
+        static void DoScanBlock()
+        {
+            try
+            {
+                DoScan();
+            }
+            catch(Exception Exp)
+            {
+                IronException.Report("Error in ScanManager", Exp);
+                try
+                {
+                    Stop();
+                }
+                catch { }
+            }
+        }
+
         static void DoScan()
         {
             Spider = new Crawler();
-            Spider.PrimaryHost = PrimaryHost;
-            Spider.BaseUrl = BaseUrl;
-            Spider.StartingUrl = StartingUrl;
-            Spider.PerformDirAndFileGuessing = PerformDirAndFileGuessing;
-            Spider.IncludeSubDomains = IncludeSubDomains;
-            Spider.HTTP = HTTP;
-            Spider.HTTPS = HTTPS;
-            Spider.UrlsToAvoid = UrlsToAvoid;
-            Spider.HostsToInclude = HostsToInclude;
-  
+            try
+            {
+                Spider.PrimaryHost = PrimaryHost;
+                Spider.BaseUrl = BaseUrl;
+                Spider.StartingUrl = StartingUrl;
+                Spider.PerformDirAndFileGuessing = PerformDirAndFileGuessing;
+                Spider.IncludeSubDomains = IncludeSubDomains;
+                Spider.HTTP = HTTP;
+                Spider.HTTPS = HTTPS;
+                Spider.UrlsToAvoid = UrlsToAvoid;
+                Spider.HostsToInclude = HostsToInclude;
 
-            Spider.Start();
+
+                Spider.Start();
+            }
+            catch(Exception Exp)
+            {
+                IronException.Report("Error starting Crawler", Exp);
+                try
+                {
+                    Stop();
+                }
+                catch { }
+                return;
+            }
+
             ScanItemUniquenessChecker UniqueChecker = new ScanItemUniquenessChecker(Mode != ScanMode.Default);
             
             List<int> ScanIDs = new List<int>();
@@ -115,37 +146,44 @@ namespace IronWASP
                             if (Stopped) return;
                             if (!CanScan(Req)) continue;
                             if (!UniqueChecker.IsUniqueToScan(Req, ScannedRequests, false)) continue;
-                            Scanner S = new Scanner(Req);
-                            S.CheckAll();
-
-                            if (S.OriginalRequest.Query.Count == 0 && S.OriginalRequest.File.Length != 3 && S.OriginalRequest.File.Length != 4)
-                                S.InjectUrl();
-                            S.InjectQuery();
-                            S.InjectBody();
-                            S.InjectHeaders();
-                            S.InjectCookie();
-
-                            if (!FormatPlugin.IsNormal(Req))
+                            try
                             {
-                                List<FormatPlugin> RightList = FormatPlugin.Get(Req);
-                                if (RightList.Count > 0)
+                                Scanner S = new Scanner(Req);
+                                S.CheckAll();
+
+                                if (S.OriginalRequest.Query.Count == 0 && S.OriginalRequest.File.Length != 3 && S.OriginalRequest.File.Length != 4)
+                                    S.InjectUrl();
+                                S.InjectQuery();
+                                S.InjectBody();
+                                S.InjectHeaders();
+                                S.InjectCookie();
+
+                                if (!FormatPlugin.IsNormal(Req))
                                 {
-                                    S.BodyFormat = RightList[0];
+                                    List<FormatPlugin> RightList = FormatPlugin.Get(Req);
+                                    if (RightList.Count > 0)
+                                    {
+                                        S.BodyFormat = RightList[0];
+                                    }
+                                }
+                                if (S.InjectionPointsCount == 0) continue;
+                                TotalScanJobsCreated++;
+                                if (Stopped) return;
+                                int ScanID = S.LaunchScan();
+                                if (Stopped)
+                                {
+                                    Stop(true);
+                                    return;
+                                }
+                                if (ScanID > 0)
+                                {
+                                    ScannedRequests.Add(Req);
+                                    ScanIDs.Add(ScanID);
                                 }
                             }
-                            if (S.InjectionPointsCount == 0) continue;
-                            TotalScanJobsCreated++;
-                            if (Stopped) return;
-                            int ScanID = S.LaunchScan();
-                            if (Stopped)
+                            catch(Exception Exp)
                             {
-                                Stop(true);
-                                return;
-                            }
-                            if (ScanID > 0)
-                            {
-                                ScannedRequests.Add(Req);
-                                ScanIDs.Add(ScanID);
+                                IronException.Report(string.Format("Error creating Scan Job with Request - {0}", Req.Url), Exp);
                             }
                         }
                     }

@@ -36,9 +36,11 @@ namespace IronWASP
             this.GetParametersFromString(URL);
         }
 
-        public void RawSet(string Name, string Value)
+        //Set method
+        new public void RawSet(string Name, string Value)
         {
-            base.Set(SafeRaw(Name), SafeRaw(Value));
+            base.RawSet(Name, Value, SafeRaw, Encode, Decode);
+            //base.Set(SafeRaw(Name), SafeRaw(Value));
             this.ProcessUpdate();
         }
         new public void Set(string Name, string Value)
@@ -46,17 +48,18 @@ namespace IronWASP
             this.RawSet(Encode(Name), Encode(Value));
         }
 
-        public void RawSet(string Name, int Position, string Value)
+        //Set at method
+        new public void RawSet(string Name, int Position, string Value)
         {
-            base.Set(SafeRaw(Name), Position, SafeRaw(Value));
+            base.RawSet(Name, Position, Value, SafeRaw, Encode, Decode);
+            //base.Set(SafeRaw(Name), Position, SafeRaw(Value));
             this.ProcessUpdate();
         }
         new public void Set(string Name, int Position, string Value)
         {
             this.RawSet(Encode(Name), Position, Encode(Value));
         }
-
-        public void RawSetAt(string Name, int Position, string Value)
+        new public void RawSetAt(string Name, int Position, string Value)
         {
             this.RawSet(Name, Position, Value);
         }
@@ -65,14 +68,16 @@ namespace IronWASP
             this.Set(Name, Position, Value);
         }
 
-        public void RawSet(string Name, List<string> Values)
+        //Set mutiple
+        new public void RawSet(string Name, List<string> Values)
         {
-            List<string> Vals = new List<string>();
-            foreach (string Value in Values)
-            {
-                Vals.Add(SafeRaw(Value));
-            }
-            base.Set(SafeRaw(Name), Vals);
+            base.RawSet(Name, Values, SafeRaw, Encode, Decode);
+            //List<string> Vals = new List<string>();
+            //foreach (string Value in Values)
+            //{
+            //    Vals.Add(SafeRaw(Value));
+            //}
+            //base.Set(SafeRaw(Name), Vals);
             this.ProcessUpdate();
         }
         new public void Set(string Name, List<string> Values)
@@ -85,9 +90,11 @@ namespace IronWASP
             this.RawSet(Encode(Name), Vals);
         }
 
-        public void RawAdd(string Name, string Value)
+        //Add method
+        new public void RawAdd(string Name, string Value)
         {
-            base.Add(SafeRaw(Name), SafeRaw(Value));
+            base.RawAdd(Name, Value, SafeRaw, Encode, Decode);
+            //base.Add(SafeRaw(Name), SafeRaw(Value));
             this.ProcessUpdate();
         }
         new public void Add(string Name, string Value)
@@ -95,9 +102,11 @@ namespace IronWASP
             this.RawAdd(Encode(Name), Encode(Value));
         }
 
-        public void RawRemove(string Name)
+        //Remove method
+        new public void RawRemove(string Name)
         {
-            base.Remove(SafeRaw(Name));
+            base.RawRemove(Name, SafeRaw, Encode, Decode);
+            //base.Remove(SafeRaw(Name));
             this.ProcessUpdate();
         }
         new public void Remove(string Name)
@@ -111,27 +120,33 @@ namespace IronWASP
             this.ProcessUpdate();
         }
 
+        //Has method
         public bool RawHas(string Name)
         {
-            return base.Has(SafeRaw(Name));
+            //return base.Has(SafeRaw(Name));
+            return base.RawHas(Name, SafeRaw, Encode, Decode);
         }
         new public bool Has(string Name)
         {
             return this.RawHas(Encode(Name));
         }
 
+        //Get method
         public string RawGet(string Name)
         {
-            return base.Get(SafeRaw(Name));
+            //return base.Get(SafeRaw(Name));
+            return base.RawGet(Name, SafeRaw, Encode, Decode);
         }
         new public string Get(string Name)
         {
             return Decode(this.RawGet(Encode(Name)));
         }
 
+        //GetAll method
         public List<string> RawGetAll(string Name)
         {
-            return base.GetAll(SafeRaw(Name));
+            //return base.GetAll(SafeRaw(Name));
+            return base.RawGetAll(Name, SafeRaw, Encode, Decode);
         }
         new public List<string> GetAll(string Name)
         {
@@ -157,9 +172,11 @@ namespace IronWASP
             return Values;
         }
 
+        //GetMultis method
         public List<string> RawGetMultis()
         {
-            return base.GetMultis();
+            //return base.GetMultis();
+            return base.RawGetMultis();
         }
         new public List<string> GetMultis()
         {

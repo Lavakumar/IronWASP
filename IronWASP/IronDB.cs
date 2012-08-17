@@ -1730,9 +1730,96 @@ namespace IronWASP
             return IronLogRecords;
         }
 
-        public static List<LogRow> GetRecordsFromProxyLogForUrl(string Host, string Url, int StartIndex, int Count)
+        public static int GetLastProxyLogRowId()
+        {
+            string DataSource = "data source=" + ProxyLogFile;
+            string Cmd = "SELECT max(ID) FROM ProxyLog";
+            return GetLastRowIdFromDB(DataSource, Cmd);
+        }
+        public static int GetLastProbeLogRowId()
+        {
+            string DataSource = "data source=" + ProbeLogFile;
+            string Cmd = "SELECT max(ID) FROM ProbeLog";
+            return GetLastRowIdFromDB(DataSource, Cmd);
+        }
+        public static int GetLastScanLogRowId()
         {
             string DataSource = "data source=" + ScanLogFile;
+            string Cmd = "SELECT max(ID) FROM ScanLog";
+            return GetLastRowIdFromDB(DataSource, Cmd);
+        }
+        public static int GetLastTestLogRowId()
+        {
+            string DataSource = "data source=" + TestLogFile;
+            string Cmd = "SELECT max(ID) FROM TestLog";
+            return GetLastRowIdFromDB(DataSource, Cmd);
+        }
+        public static int GetLastShellLogRowId()
+        {
+            string DataSource = "data source=" + ShellLogFile;
+            string Cmd = "SELECT max(ID) FROM ShellLog";
+            return GetLastRowIdFromDB(DataSource, Cmd);
+        }
+        public static int GetLastTraceLogRowId()
+        {
+            string DataSource = "data source=" + TraceLogFile;
+            string Cmd = "SELECT max(ID) FROM Trace";
+            return GetLastRowIdFromDB(DataSource, Cmd);
+        }
+        public static int GetLastScanTraceLogRowId()
+        {
+            string DataSource = "data source=" + TraceLogFile;
+            string Cmd = "SELECT max(ID) FROM ScanTrace";
+            return GetLastRowIdFromDB(DataSource, Cmd);
+        }
+        public static int GetLastPluginResultLogRowId()
+        {
+            string DataSource = "data source=" + PluginResultsLogFile;
+            string Cmd = "SELECT max(ID) FROM PluginResult";
+            return GetLastRowIdFromDB(DataSource, Cmd);
+        }
+        public static int GetLastExceptionLogRowId()
+        {
+            string DataSource = "data source=" + ExceptionsLogFile;
+            string Cmd = "SELECT max(ID) FROM Exceptions";
+            return GetLastRowIdFromDB(DataSource, Cmd);
+        }
+        public static int GetLastScanJobRowId()
+        {
+            string DataSource = "data source=" + IronProjectFile;
+            string Cmd = "SELECT max(ScanID) FROM ScanQueue";
+            return GetLastRowIdFromDB(DataSource, Cmd);
+        }
+        static int GetLastRowIdFromDB(string DataSource, string CmdString)
+        {
+            int LastRowId = 0;
+            SQLiteConnection DB = new SQLiteConnection(DataSource);
+            DB.Open();
+            try
+            {
+                SQLiteCommand cmd = DB.CreateCommand();
+                cmd.CommandText = CmdString;
+                SQLiteDataReader result = cmd.ExecuteReader();
+                while (result.Read())
+                {
+                    try { LastRowId = Int32.Parse(result[0].ToString()); }
+                    catch { }
+                    break;
+                }
+                result.Close();
+            }
+            catch (Exception Exp)
+            {
+                DB.Close();
+                throw Exp;
+            }
+            DB.Close();
+            return LastRowId;
+        }
+
+        public static List<LogRow> GetRecordsFromProxyLogForUrl(string Host, string Url, int StartIndex, int Count)
+        {
+            string DataSource = "data source=" + ProxyLogFile;
             string Cmd = "SELECT ID , SSL, Method, URL, File, Parameters, Code, Length, MIME, SetCookie FROM ProxyLog WHERE HostName=@HostName and URL LIKE @URL ID>@ID ORDER BY ID LIMIT @LIMIT";
             return GetRecordsFromDBForUrl(DataSource, Cmd, Host, Url, "proxy", StartIndex, Count);
         }

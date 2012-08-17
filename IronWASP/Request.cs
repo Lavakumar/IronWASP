@@ -704,7 +704,7 @@ namespace IronWASP
             if(this.Source == RequestSource.Scan)
             {
                 BuiltBy = "Scan";
-                this.ID = Interlocked.Increment(ref Config.PluginRequestsCount);
+                this.ID = Interlocked.Increment(ref Config.ScanRequestsCount);
                 Flags.Add("IronFlag-ScanID", this.ScanID.ToString());
             }
             else if(this.Source == RequestSource.Probe)
@@ -1270,8 +1270,19 @@ namespace IronWASP
         }
         public static Request FromBinaryString(string BinaryRequestString)
         {
-            string[] RequestParts = Tools.Base64Decode(BinaryRequestString).Split(new char[] { ':' });
-            return new Request(Tools.Base64Decode(RequestParts[0]), Tools.Base64DecodeToByteArray(RequestParts[1]));
+            string[] RequestParts = BinaryRequestString.Split(new char[] { ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
+            if (RequestParts.Length == 1)
+            {
+                return Request.FromString(Tools.Base64Decode(RequestParts[0]));
+            }
+            else if (RequestParts.Length == 2)
+            {
+                return new Request(Tools.Base64Decode(RequestParts[0]), Tools.Base64DecodeToByteArray(RequestParts[1]));
+            }
+            else
+            {
+                throw new Exception("Invalid input string");
+            }
         }
 
         public static List<Request> FromProxyLog()
