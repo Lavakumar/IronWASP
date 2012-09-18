@@ -700,5 +700,45 @@ namespace IronWASP
         {
             PTS(Obj);
         }
+
+        public static object[] ToDotNetArray(object O)
+        {
+            object[] Values = new object[0];
+            string Type = O.GetType().FullName;
+            switch(Type)
+            {
+                case("IronRuby.Builtins.RubyArray"):
+                    Values = new object[(O as IronRuby.Builtins.RubyArray).Count];
+                    (O as IronRuby.Builtins.RubyArray).CopyTo(Values, 0);
+                    break;
+                case("IronPython.Runtime.List"):
+                    Values = new object[(O as IronPython.Runtime.List).Count];
+                    (O as IronPython.Runtime.List).CopyTo(Values, 0);
+                    break;
+            }
+            return Values;
+        }
+        public static List<object> ToDotNetList(object O)
+        {
+            return new List<object>(ToDotNetArray(O));
+        }
+
+        public static string CamelCaseToUnderScore(string CamelCase)
+        {
+            StringBuilder SB = new StringBuilder();
+            for(int i=0; i < CamelCase.Length; i++)
+            {
+                string LowerChar = CamelCase[i].ToString().ToLower();
+                if (i > 0)
+                {
+                    if (!Char.IsUpper(CamelCase[i - 1]) && Char.IsUpper(CamelCase[i]))
+                    {
+                        SB.Append("_");
+                    }
+                }
+                SB.Append(LowerChar);
+            }
+            return SB.ToString();
+        }
     }
 }

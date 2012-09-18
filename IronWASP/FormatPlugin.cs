@@ -29,6 +29,8 @@ namespace IronWASP
     {
 
         internal static List<FormatPlugin> Collection = new List<FormatPlugin>();
+        string RequestXml = "";
+        string RequestHash = "";
 
         public virtual bool Is(Request Request)
         {
@@ -88,6 +90,32 @@ namespace IronWASP
         public virtual byte[] ToObject(string XmlString)
         {
             return new byte[] { };
+        }
+
+        public int GetXmlInjectionPointsCount(Request Req)
+        {
+            this.RequestXml  = this.ToXmlFromRequest(Req);
+            this.RequestHash = Tools.MD5(Req.ToString());
+            string[,] XmlInjectionArray = XmlToArray(this.RequestXml);
+            return XmlInjectionArray.GetLength(0);
+        }
+
+        public Request InjectInRequest(Request Req, int InjectionPoint, string Payload)
+        {
+            string CurrentRequestHash = Tools.MD5(Req.ToString());
+            string XML = "";
+            if(this.RequestHash.Equals(CurrentRequestHash))
+            {
+                XML = this.RequestXml;
+            }
+            else
+            {
+                XML = this.ToXmlFromRequest(Req);
+                this.RequestXml = XML;
+                this.RequestHash = CurrentRequestHash;
+            }
+            string InjectedXml = InjectInXml(this.RequestXml, InjectionPoint, Payload);
+            return this.ToRequestFromXml(Req.GetClone(true), InjectedXml);
         }
 
         public static string[,] XmlToArray(string XML)
@@ -153,10 +181,12 @@ namespace IronWASP
 
         public static string InjectInXml(string XML, int InjectionPosition, string Payload)
         {
-            StringBuilder OutXml = new StringBuilder();
+            //StringBuilder OutXml = new StringBuilder();
             StringReader XMLStringReader = new StringReader(XML.Trim());
             XmlReader Reader = XmlReader.Create(XMLStringReader);
-            XmlWriter Writer = XmlWriter.Create(OutXml);
+            //XmlWriter Writer = XmlWriter.Create(OutXml);
+            StringWriter OutXml = new StringWriter();
+            XmlTextWriter Writer = new XmlTextWriter(OutXml);
             int ParameterCount = 0;
             bool Read = true;
             bool NextRead = false;
@@ -202,8 +232,9 @@ namespace IronWASP
             }
             Reader.Close();
             Writer.Close();
-            string OutXmlString = OutXml.ToString().Split(new string[] { "?>" }, 2, StringSplitOptions.None)[1];
-            return OutXmlString;
+            OutXml.Close();
+            //string OutXmlString = OutXml.ToString().Split(new string[] { "?>" }, 2, StringSplitOptions.None)[1];
+            return OutXml.ToString();
         }
 
         private static string JoinPaths(List<string> Paths)

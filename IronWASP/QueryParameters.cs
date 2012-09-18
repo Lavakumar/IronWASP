@@ -121,7 +121,7 @@ namespace IronWASP
         }
 
         //Has method
-        public bool RawHas(string Name)
+        new public bool RawHas(string Name)
         {
             //return base.Has(SafeRaw(Name));
             return base.RawHas(Name, SafeRaw, Encode, Decode);
@@ -132,7 +132,7 @@ namespace IronWASP
         }
 
         //Get method
-        public string RawGet(string Name)
+        new public string RawGet(string Name)
         {
             //return base.Get(SafeRaw(Name));
             return base.RawGet(Name, SafeRaw, Encode, Decode);
@@ -143,7 +143,7 @@ namespace IronWASP
         }
 
         //GetAll method
-        public List<string> RawGetAll(string Name)
+        new public List<string> RawGetAll(string Name)
         {
             //return base.GetAll(SafeRaw(Name));
             return base.RawGetAll(Name, SafeRaw, Encode, Decode);
@@ -173,7 +173,7 @@ namespace IronWASP
         }
 
         //GetMultis method
-        public List<string> RawGetMultis()
+        new public List<string> RawGetMultis()
         {
             //return base.GetMultis();
             return base.RawGetMultis();

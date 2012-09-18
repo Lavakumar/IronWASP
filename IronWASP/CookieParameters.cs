@@ -143,7 +143,7 @@ namespace IronWASP
         }
 
         //GetAll method
-        public List<string> RawGetAll(string Name)
+        new public List<string> RawGetAll(string Name)
         {
             //return base.GetAll(SafeRaw(Name));
             return base.RawGetAll(Name, SafeRaw, Encode, Decode);

@@ -551,9 +551,10 @@ namespace IronWASP
             this.ResultsRequestIDV = new IronDataView.IronDataView();
             this.ResultsResponseTab = new System.Windows.Forms.TabPage();
             this.ResultsResponseIDV = new IronDataView.IronDataView();
-            this.mt_plugins = new System.Windows.Forms.TabPage();
-            this.PluginsMainSplit = new System.Windows.Forms.SplitContainer();
-            this.PluginTree = new System.Windows.Forms.TreeView();
+            this.mt_dev = new System.Windows.Forms.TabPage();
+            this.DevMainTabs = new System.Windows.Forms.TabControl();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.tabPage6 = new System.Windows.Forms.TabPage();
             this.PluginTreeMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.SelectedPluginDeactivateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SelectedPluginReloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -572,27 +573,6 @@ namespace IronWASP
             this.sessionPluginsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SessionPluginsRAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SessionPluginsANToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PluginEditorSplit = new System.Windows.Forms.SplitContainer();
-            this.PluginsCentreSplit = new System.Windows.Forms.SplitContainer();
-            this.PluginDetailsRTB = new System.Windows.Forms.RichTextBox();
-            this.PluginEditorInTE = new ICSharpCode.TextEditor.TextEditorControl();
-            this.PluginEditorAPISplit = new System.Windows.Forms.SplitContainer();
-            this.PluginEditorAPITreeTabs = new System.Windows.Forms.TabControl();
-            this.PluginEditorPythonAPITreeTab = new System.Windows.Forms.TabPage();
-            this.PluginEditorPythonAPITree = new System.Windows.Forms.TreeView();
-            this.PluginEditorRubyAPITreeTab = new System.Windows.Forms.TabPage();
-            this.PluginEditorRubyAPITree = new System.Windows.Forms.TreeView();
-            this.PluginEditorAPIDetailsRTB = new System.Windows.Forms.RichTextBox();
-            this.mt_trace = new System.Windows.Forms.TabPage();
-            this.TraceBaseSplit = new System.Windows.Forms.SplitContainer();
-            this.TraceGrid = new System.Windows.Forms.DataGridView();
-            this.dataGridViewTextBoxColumn26 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn28 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn29 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn30 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn31 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TraceMsgRTB = new System.Windows.Forms.RichTextBox();
             this.ConfigPanel = new System.Windows.Forms.Panel();
             this.ConfigPanelTabs = new System.Windows.Forms.TabControl();
             this.ConfigIronProxyTab = new System.Windows.Forms.TabPage();
@@ -756,17 +736,41 @@ namespace IronWASP
             this.OpenProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportBurpLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.reportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EncodeDecodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DiffTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.PluginEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.RenderHTMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.devToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scriptPluginEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uIDesignerToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.AboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ProjectFileOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.BurpLogOpenDialog = new System.Windows.Forms.OpenFileDialog();
             this.ConfigViewHideLL = new System.Windows.Forms.LinkLabel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.PromptBlinkTimer = new System.Windows.Forms.Timer(this.components);
+            this.TraceBaseSplit = new System.Windows.Forms.SplitContainer();
+            this.TraceGrid = new System.Windows.Forms.DataGridView();
+            this.dataGridViewTextBoxColumn26 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn28 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn29 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn30 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn31 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TraceMsgRTB = new System.Windows.Forms.RichTextBox();
+            this.PluginsMainSplit = new System.Windows.Forms.SplitContainer();
+            this.PluginTree = new System.Windows.Forms.TreeView();
+            this.PluginEditorSplit = new System.Windows.Forms.SplitContainer();
+            this.PluginsCentreSplit = new System.Windows.Forms.SplitContainer();
+            this.PluginDetailsRTB = new System.Windows.Forms.RichTextBox();
+            this.PluginEditorInTE = new ICSharpCode.TextEditor.TextEditorControl();
+            this.PluginEditorAPISplit = new System.Windows.Forms.SplitContainer();
+            this.PluginEditorAPITreeTabs = new System.Windows.Forms.TabControl();
+            this.PluginEditorPythonAPITreeTab = new System.Windows.Forms.TabPage();
+            this.PluginEditorPythonAPITree = new System.Windows.Forms.TreeView();
+            this.PluginEditorRubyAPITreeTab = new System.Windows.Forms.TabPage();
+            this.PluginEditorRubyAPITree = new System.Windows.Forms.TreeView();
+            this.PluginEditorAPIDetailsRTB = new System.Windows.Forms.RichTextBox();
             this.split_main.Panel1.SuspendLayout();
             this.split_main.Panel2.SuspendLayout();
             this.split_main.SuspendLayout();
@@ -968,28 +972,11 @@ namespace IronWASP
             this.ResultsDisplayTabs.SuspendLayout();
             this.ResultsRequestTab.SuspendLayout();
             this.ResultsResponseTab.SuspendLayout();
-            this.mt_plugins.SuspendLayout();
-            this.PluginsMainSplit.Panel1.SuspendLayout();
-            this.PluginsMainSplit.Panel2.SuspendLayout();
-            this.PluginsMainSplit.SuspendLayout();
+            this.mt_dev.SuspendLayout();
+            this.DevMainTabs.SuspendLayout();
+            this.tabPage5.SuspendLayout();
+            this.tabPage6.SuspendLayout();
             this.PluginTreeMenu.SuspendLayout();
-            this.PluginEditorSplit.Panel1.SuspendLayout();
-            this.PluginEditorSplit.Panel2.SuspendLayout();
-            this.PluginEditorSplit.SuspendLayout();
-            this.PluginsCentreSplit.Panel1.SuspendLayout();
-            this.PluginsCentreSplit.Panel2.SuspendLayout();
-            this.PluginsCentreSplit.SuspendLayout();
-            this.PluginEditorAPISplit.Panel1.SuspendLayout();
-            this.PluginEditorAPISplit.Panel2.SuspendLayout();
-            this.PluginEditorAPISplit.SuspendLayout();
-            this.PluginEditorAPITreeTabs.SuspendLayout();
-            this.PluginEditorPythonAPITreeTab.SuspendLayout();
-            this.PluginEditorRubyAPITreeTab.SuspendLayout();
-            this.mt_trace.SuspendLayout();
-            this.TraceBaseSplit.Panel1.SuspendLayout();
-            this.TraceBaseSplit.Panel2.SuspendLayout();
-            this.TraceBaseSplit.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.TraceGrid)).BeginInit();
             this.ConfigPanel.SuspendLayout();
             this.ConfigPanelTabs.SuspendLayout();
             this.ConfigIronProxyTab.SuspendLayout();
@@ -1023,6 +1010,25 @@ namespace IronWASP
             this.ConfigPassiveAnalysisTab.SuspendLayout();
             this.TopMenu.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.TraceBaseSplit.Panel1.SuspendLayout();
+            this.TraceBaseSplit.Panel2.SuspendLayout();
+            this.TraceBaseSplit.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.TraceGrid)).BeginInit();
+            this.PluginsMainSplit.Panel1.SuspendLayout();
+            this.PluginsMainSplit.Panel2.SuspendLayout();
+            this.PluginsMainSplit.SuspendLayout();
+            this.PluginEditorSplit.Panel1.SuspendLayout();
+            this.PluginEditorSplit.Panel2.SuspendLayout();
+            this.PluginEditorSplit.SuspendLayout();
+            this.PluginsCentreSplit.Panel1.SuspendLayout();
+            this.PluginsCentreSplit.Panel2.SuspendLayout();
+            this.PluginsCentreSplit.SuspendLayout();
+            this.PluginEditorAPISplit.Panel1.SuspendLayout();
+            this.PluginEditorAPISplit.Panel2.SuspendLayout();
+            this.PluginEditorAPISplit.SuspendLayout();
+            this.PluginEditorAPITreeTabs.SuspendLayout();
+            this.PluginEditorPythonAPITreeTab.SuspendLayout();
+            this.PluginEditorRubyAPITreeTab.SuspendLayout();
             this.SuspendLayout();
             // 
             // split_main
@@ -1082,8 +1088,7 @@ namespace IronWASP
             this.main_tab.Controls.Add(this.mt_proxy);
             this.main_tab.Controls.Add(this.mt_logs);
             this.main_tab.Controls.Add(this.mt_results);
-            this.main_tab.Controls.Add(this.mt_plugins);
-            this.main_tab.Controls.Add(this.mt_trace);
+            this.main_tab.Controls.Add(this.mt_dev);
             this.main_tab.Dock = System.Windows.Forms.DockStyle.Fill;
             this.main_tab.Location = new System.Drawing.Point(0, 0);
             this.main_tab.Margin = new System.Windows.Forms.Padding(0);
@@ -1911,6 +1916,7 @@ namespace IronWASP
             this.ConfigureScanRequestFormatXMLTB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ConfigureScanRequestFormatXMLTB.Location = new System.Drawing.Point(0, 0);
             this.ConfigureScanRequestFormatXMLTB.Margin = new System.Windows.Forms.Padding(0);
+            this.ConfigureScanRequestFormatXMLTB.MaxLength = 2147483647;
             this.ConfigureScanRequestFormatXMLTB.Multiline = true;
             this.ConfigureScanRequestFormatXMLTB.Name = "ConfigureScanRequestFormatXMLTB";
             this.ConfigureScanRequestFormatXMLTB.ReadOnly = true;
@@ -2868,6 +2874,7 @@ namespace IronWASP
             this.MTRequestFormatXMLTB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MTRequestFormatXMLTB.Location = new System.Drawing.Point(0, 0);
             this.MTRequestFormatXMLTB.Margin = new System.Windows.Forms.Padding(0);
+            this.MTRequestFormatXMLTB.MaxLength = 2147483647;
             this.MTRequestFormatXMLTB.Multiline = true;
             this.MTRequestFormatXMLTB.Name = "MTRequestFormatXMLTB";
             this.MTRequestFormatXMLTB.ReadOnly = true;
@@ -4115,6 +4122,7 @@ namespace IronWASP
             this.CustomSendActivateCB.TabIndex = 13;
             this.CustomSendActivateCB.Text = "Activate Script";
             this.CustomSendActivateCB.UseVisualStyleBackColor = true;
+            this.CustomSendActivateCB.CheckedChanged += new System.EventHandler(this.CustomSendActivateCB_CheckedChanged);
             // 
             // CustomSendRubyRB
             // 
@@ -4782,6 +4790,7 @@ namespace IronWASP
             this.ProxyRequestFormatXMLTB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ProxyRequestFormatXMLTB.Location = new System.Drawing.Point(0, 0);
             this.ProxyRequestFormatXMLTB.Margin = new System.Windows.Forms.Padding(0);
+            this.ProxyRequestFormatXMLTB.MaxLength = 2147483647;
             this.ProxyRequestFormatXMLTB.Multiline = true;
             this.ProxyRequestFormatXMLTB.Name = "ProxyRequestFormatXMLTB";
             this.ProxyRequestFormatXMLTB.ReadOnly = true;
@@ -4949,6 +4958,7 @@ namespace IronWASP
             this.ProxyResponseFormatXMLTB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ProxyResponseFormatXMLTB.Location = new System.Drawing.Point(0, 0);
             this.ProxyResponseFormatXMLTB.Margin = new System.Windows.Forms.Padding(0);
+            this.ProxyResponseFormatXMLTB.MaxLength = 2147483647;
             this.ProxyResponseFormatXMLTB.Multiline = true;
             this.ProxyResponseFormatXMLTB.Name = "ProxyResponseFormatXMLTB";
             this.ProxyResponseFormatXMLTB.ReadOnly = true;
@@ -5466,6 +5476,7 @@ namespace IronWASP
             this.LogRequestFormatXMLTB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LogRequestFormatXMLTB.Location = new System.Drawing.Point(0, 0);
             this.LogRequestFormatXMLTB.Margin = new System.Windows.Forms.Padding(0);
+            this.LogRequestFormatXMLTB.MaxLength = 2147483647;
             this.LogRequestFormatXMLTB.Multiline = true;
             this.LogRequestFormatXMLTB.Name = "LogRequestFormatXMLTB";
             this.LogRequestFormatXMLTB.ReadOnly = true;
@@ -5632,6 +5643,7 @@ namespace IronWASP
             this.LogResponseFormatXMLTB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LogResponseFormatXMLTB.Location = new System.Drawing.Point(0, 0);
             this.LogResponseFormatXMLTB.Margin = new System.Windows.Forms.Padding(0);
+            this.LogResponseFormatXMLTB.MaxLength = 2147483647;
             this.LogResponseFormatXMLTB.Multiline = true;
             this.LogResponseFormatXMLTB.Name = "LogResponseFormatXMLTB";
             this.LogResponseFormatXMLTB.ReadOnly = true;
@@ -6914,48 +6926,51 @@ namespace IronWASP
             this.ResultsResponseIDV.Size = new System.Drawing.Size(697, 258);
             this.ResultsResponseIDV.TabIndex = 1;
             // 
-            // mt_plugins
+            // mt_dev
             // 
-            this.mt_plugins.Controls.Add(this.PluginsMainSplit);
-            this.mt_plugins.Location = new System.Drawing.Point(4, 22);
-            this.mt_plugins.Margin = new System.Windows.Forms.Padding(0);
-            this.mt_plugins.Name = "mt_plugins";
-            this.mt_plugins.Size = new System.Drawing.Size(705, 512);
-            this.mt_plugins.TabIndex = 5;
-            this.mt_plugins.Text = "Plugins";
-            this.mt_plugins.UseVisualStyleBackColor = true;
+            this.mt_dev.Controls.Add(this.DevMainTabs);
+            this.mt_dev.Location = new System.Drawing.Point(4, 22);
+            this.mt_dev.Margin = new System.Windows.Forms.Padding(0);
+            this.mt_dev.Name = "mt_dev";
+            this.mt_dev.Size = new System.Drawing.Size(705, 512);
+            this.mt_dev.TabIndex = 11;
+            this.mt_dev.Text = "Dev";
+            this.mt_dev.UseVisualStyleBackColor = true;
             // 
-            // PluginsMainSplit
+            // DevMainTabs
             // 
-            this.PluginsMainSplit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PluginsMainSplit.Location = new System.Drawing.Point(0, 0);
-            this.PluginsMainSplit.Margin = new System.Windows.Forms.Padding(0);
-            this.PluginsMainSplit.Name = "PluginsMainSplit";
+            this.DevMainTabs.Controls.Add(this.tabPage5);
+            this.DevMainTabs.Controls.Add(this.tabPage6);
+            this.DevMainTabs.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.DevMainTabs.Location = new System.Drawing.Point(0, 0);
+            this.DevMainTabs.Margin = new System.Windows.Forms.Padding(0);
+            this.DevMainTabs.Name = "DevMainTabs";
+            this.DevMainTabs.Padding = new System.Drawing.Point(0, 0);
+            this.DevMainTabs.SelectedIndex = 0;
+            this.DevMainTabs.Size = new System.Drawing.Size(705, 512);
+            this.DevMainTabs.TabIndex = 0;
             // 
-            // PluginsMainSplit.Panel1
+            // tabPage5
             // 
-            this.PluginsMainSplit.Panel1.Controls.Add(this.PluginTree);
+            this.tabPage5.Controls.Add(this.PluginsMainSplit);
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Margin = new System.Windows.Forms.Padding(0);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Size = new System.Drawing.Size(697, 486);
+            this.tabPage5.TabIndex = 0;
+            this.tabPage5.Text = "Plugins";
+            this.tabPage5.UseVisualStyleBackColor = true;
             // 
-            // PluginsMainSplit.Panel2
+            // tabPage6
             // 
-            this.PluginsMainSplit.Panel2.Controls.Add(this.PluginEditorSplit);
-            this.PluginsMainSplit.Size = new System.Drawing.Size(705, 512);
-            this.PluginsMainSplit.SplitterDistance = 139;
-            this.PluginsMainSplit.SplitterWidth = 2;
-            this.PluginsMainSplit.TabIndex = 1;
-            // 
-            // PluginTree
-            // 
-            this.PluginTree.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.PluginTree.ContextMenuStrip = this.PluginTreeMenu;
-            this.PluginTree.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PluginTree.Location = new System.Drawing.Point(0, 0);
-            this.PluginTree.Margin = new System.Windows.Forms.Padding(0);
-            this.PluginTree.Name = "PluginTree";
-            this.PluginTree.ShowRootLines = false;
-            this.PluginTree.Size = new System.Drawing.Size(139, 512);
-            this.PluginTree.TabIndex = 0;
-            this.PluginTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.PluginTree_AfterSelect);
+            this.tabPage6.Controls.Add(this.TraceBaseSplit);
+            this.tabPage6.Location = new System.Drawing.Point(4, 22);
+            this.tabPage6.Margin = new System.Windows.Forms.Padding(0);
+            this.tabPage6.Name = "tabPage6";
+            this.tabPage6.Size = new System.Drawing.Size(697, 486);
+            this.tabPage6.TabIndex = 1;
+            this.tabPage6.Text = "Trace";
+            this.tabPage6.UseVisualStyleBackColor = true;
             // 
             // PluginTreeMenu
             // 
@@ -7099,298 +7114,6 @@ namespace IronWASP
             this.SessionPluginsANToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.SessionPluginsANToolStripMenuItem.Text = "Add New";
             this.SessionPluginsANToolStripMenuItem.Click += new System.EventHandler(this.SessionPluginsANToolStripMenuItem_Click);
-            // 
-            // PluginEditorSplit
-            // 
-            this.PluginEditorSplit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PluginEditorSplit.Location = new System.Drawing.Point(0, 0);
-            this.PluginEditorSplit.Margin = new System.Windows.Forms.Padding(0);
-            this.PluginEditorSplit.Name = "PluginEditorSplit";
-            // 
-            // PluginEditorSplit.Panel1
-            // 
-            this.PluginEditorSplit.Panel1.Controls.Add(this.PluginsCentreSplit);
-            // 
-            // PluginEditorSplit.Panel2
-            // 
-            this.PluginEditorSplit.Panel2.Controls.Add(this.PluginEditorAPISplit);
-            this.PluginEditorSplit.Size = new System.Drawing.Size(564, 512);
-            this.PluginEditorSplit.SplitterDistance = 394;
-            this.PluginEditorSplit.SplitterWidth = 2;
-            this.PluginEditorSplit.TabIndex = 1;
-            // 
-            // PluginsCentreSplit
-            // 
-            this.PluginsCentreSplit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PluginsCentreSplit.Location = new System.Drawing.Point(0, 0);
-            this.PluginsCentreSplit.Margin = new System.Windows.Forms.Padding(0);
-            this.PluginsCentreSplit.Name = "PluginsCentreSplit";
-            this.PluginsCentreSplit.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // PluginsCentreSplit.Panel1
-            // 
-            this.PluginsCentreSplit.Panel1.Controls.Add(this.PluginDetailsRTB);
-            // 
-            // PluginsCentreSplit.Panel2
-            // 
-            this.PluginsCentreSplit.Panel2.Controls.Add(this.PluginEditorInTE);
-            this.PluginsCentreSplit.Size = new System.Drawing.Size(394, 512);
-            this.PluginsCentreSplit.SplitterDistance = 203;
-            this.PluginsCentreSplit.SplitterWidth = 2;
-            this.PluginsCentreSplit.TabIndex = 4;
-            // 
-            // PluginDetailsRTB
-            // 
-            this.PluginDetailsRTB.BackColor = System.Drawing.Color.AliceBlue;
-            this.PluginDetailsRTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.PluginDetailsRTB.DetectUrls = false;
-            this.PluginDetailsRTB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PluginDetailsRTB.Font = new System.Drawing.Font("Palatino Linotype", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PluginDetailsRTB.Location = new System.Drawing.Point(0, 0);
-            this.PluginDetailsRTB.Name = "PluginDetailsRTB";
-            this.PluginDetailsRTB.ReadOnly = true;
-            this.PluginDetailsRTB.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.PluginDetailsRTB.Size = new System.Drawing.Size(394, 203);
-            this.PluginDetailsRTB.TabIndex = 1;
-            this.PluginDetailsRTB.Text = "";
-            // 
-            // PluginEditorInTE
-            // 
-            this.PluginEditorInTE.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PluginEditorInTE.IsIconBarVisible = false;
-            this.PluginEditorInTE.Location = new System.Drawing.Point(0, 0);
-            this.PluginEditorInTE.Margin = new System.Windows.Forms.Padding(0);
-            this.PluginEditorInTE.Name = "PluginEditorInTE";
-            this.PluginEditorInTE.ShowEOLMarkers = true;
-            this.PluginEditorInTE.ShowSpaces = true;
-            this.PluginEditorInTE.ShowTabs = true;
-            this.PluginEditorInTE.ShowVRuler = true;
-            this.PluginEditorInTE.Size = new System.Drawing.Size(394, 307);
-            this.PluginEditorInTE.TabIndex = 5;
-            // 
-            // PluginEditorAPISplit
-            // 
-            this.PluginEditorAPISplit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PluginEditorAPISplit.Location = new System.Drawing.Point(0, 0);
-            this.PluginEditorAPISplit.Margin = new System.Windows.Forms.Padding(0);
-            this.PluginEditorAPISplit.Name = "PluginEditorAPISplit";
-            this.PluginEditorAPISplit.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // PluginEditorAPISplit.Panel1
-            // 
-            this.PluginEditorAPISplit.Panel1.Controls.Add(this.PluginEditorAPITreeTabs);
-            // 
-            // PluginEditorAPISplit.Panel2
-            // 
-            this.PluginEditorAPISplit.Panel2.Controls.Add(this.PluginEditorAPIDetailsRTB);
-            this.PluginEditorAPISplit.Size = new System.Drawing.Size(168, 512);
-            this.PluginEditorAPISplit.SplitterDistance = 280;
-            this.PluginEditorAPISplit.SplitterWidth = 2;
-            this.PluginEditorAPISplit.TabIndex = 1;
-            // 
-            // PluginEditorAPITreeTabs
-            // 
-            this.PluginEditorAPITreeTabs.Controls.Add(this.PluginEditorPythonAPITreeTab);
-            this.PluginEditorAPITreeTabs.Controls.Add(this.PluginEditorRubyAPITreeTab);
-            this.PluginEditorAPITreeTabs.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PluginEditorAPITreeTabs.Location = new System.Drawing.Point(0, 0);
-            this.PluginEditorAPITreeTabs.Margin = new System.Windows.Forms.Padding(0);
-            this.PluginEditorAPITreeTabs.Name = "PluginEditorAPITreeTabs";
-            this.PluginEditorAPITreeTabs.Padding = new System.Drawing.Point(0, 0);
-            this.PluginEditorAPITreeTabs.SelectedIndex = 0;
-            this.PluginEditorAPITreeTabs.Size = new System.Drawing.Size(168, 280);
-            this.PluginEditorAPITreeTabs.TabIndex = 0;
-            // 
-            // PluginEditorPythonAPITreeTab
-            // 
-            this.PluginEditorPythonAPITreeTab.Controls.Add(this.PluginEditorPythonAPITree);
-            this.PluginEditorPythonAPITreeTab.Location = new System.Drawing.Point(4, 22);
-            this.PluginEditorPythonAPITreeTab.Margin = new System.Windows.Forms.Padding(0);
-            this.PluginEditorPythonAPITreeTab.Name = "PluginEditorPythonAPITreeTab";
-            this.PluginEditorPythonAPITreeTab.Size = new System.Drawing.Size(160, 254);
-            this.PluginEditorPythonAPITreeTab.TabIndex = 0;
-            this.PluginEditorPythonAPITreeTab.Text = "Python";
-            this.PluginEditorPythonAPITreeTab.UseVisualStyleBackColor = true;
-            // 
-            // PluginEditorPythonAPITree
-            // 
-            this.PluginEditorPythonAPITree.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.PluginEditorPythonAPITree.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PluginEditorPythonAPITree.Location = new System.Drawing.Point(0, 0);
-            this.PluginEditorPythonAPITree.Margin = new System.Windows.Forms.Padding(0);
-            this.PluginEditorPythonAPITree.Name = "PluginEditorPythonAPITree";
-            this.PluginEditorPythonAPITree.Size = new System.Drawing.Size(160, 254);
-            this.PluginEditorPythonAPITree.TabIndex = 0;
-            this.PluginEditorPythonAPITree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.PluginEditorPythonAPITree_AfterSelect);
-            // 
-            // PluginEditorRubyAPITreeTab
-            // 
-            this.PluginEditorRubyAPITreeTab.Controls.Add(this.PluginEditorRubyAPITree);
-            this.PluginEditorRubyAPITreeTab.Location = new System.Drawing.Point(4, 22);
-            this.PluginEditorRubyAPITreeTab.Margin = new System.Windows.Forms.Padding(0);
-            this.PluginEditorRubyAPITreeTab.Name = "PluginEditorRubyAPITreeTab";
-            this.PluginEditorRubyAPITreeTab.Size = new System.Drawing.Size(160, 254);
-            this.PluginEditorRubyAPITreeTab.TabIndex = 1;
-            this.PluginEditorRubyAPITreeTab.Text = "Ruby";
-            this.PluginEditorRubyAPITreeTab.UseVisualStyleBackColor = true;
-            // 
-            // PluginEditorRubyAPITree
-            // 
-            this.PluginEditorRubyAPITree.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.PluginEditorRubyAPITree.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PluginEditorRubyAPITree.Location = new System.Drawing.Point(0, 0);
-            this.PluginEditorRubyAPITree.Margin = new System.Windows.Forms.Padding(0);
-            this.PluginEditorRubyAPITree.Name = "PluginEditorRubyAPITree";
-            this.PluginEditorRubyAPITree.Size = new System.Drawing.Size(160, 254);
-            this.PluginEditorRubyAPITree.TabIndex = 1;
-            this.PluginEditorRubyAPITree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.PluginEditorRubyAPITree_AfterSelect);
-            // 
-            // PluginEditorAPIDetailsRTB
-            // 
-            this.PluginEditorAPIDetailsRTB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PluginEditorAPIDetailsRTB.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PluginEditorAPIDetailsRTB.Location = new System.Drawing.Point(0, 0);
-            this.PluginEditorAPIDetailsRTB.Margin = new System.Windows.Forms.Padding(0);
-            this.PluginEditorAPIDetailsRTB.Name = "PluginEditorAPIDetailsRTB";
-            this.PluginEditorAPIDetailsRTB.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.PluginEditorAPIDetailsRTB.Size = new System.Drawing.Size(168, 230);
-            this.PluginEditorAPIDetailsRTB.TabIndex = 0;
-            this.PluginEditorAPIDetailsRTB.Text = "";
-            // 
-            // mt_trace
-            // 
-            this.mt_trace.Controls.Add(this.TraceBaseSplit);
-            this.mt_trace.Location = new System.Drawing.Point(4, 22);
-            this.mt_trace.Name = "mt_trace";
-            this.mt_trace.Size = new System.Drawing.Size(705, 512);
-            this.mt_trace.TabIndex = 7;
-            this.mt_trace.Text = "Trace";
-            this.mt_trace.UseVisualStyleBackColor = true;
-            // 
-            // TraceBaseSplit
-            // 
-            this.TraceBaseSplit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TraceBaseSplit.Location = new System.Drawing.Point(0, 0);
-            this.TraceBaseSplit.Margin = new System.Windows.Forms.Padding(0);
-            this.TraceBaseSplit.Name = "TraceBaseSplit";
-            this.TraceBaseSplit.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // TraceBaseSplit.Panel1
-            // 
-            this.TraceBaseSplit.Panel1.Controls.Add(this.TraceGrid);
-            // 
-            // TraceBaseSplit.Panel2
-            // 
-            this.TraceBaseSplit.Panel2.Controls.Add(this.TraceMsgRTB);
-            this.TraceBaseSplit.Size = new System.Drawing.Size(705, 512);
-            this.TraceBaseSplit.SplitterDistance = 364;
-            this.TraceBaseSplit.TabIndex = 0;
-            // 
-            // TraceGrid
-            // 
-            this.TraceGrid.AllowUserToAddRows = false;
-            this.TraceGrid.AllowUserToDeleteRows = false;
-            this.TraceGrid.AllowUserToOrderColumns = true;
-            this.TraceGrid.AllowUserToResizeRows = false;
-            this.TraceGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.TraceGrid.BackgroundColor = System.Drawing.Color.White;
-            this.TraceGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.TraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle10;
-            this.TraceGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.TraceGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dataGridViewTextBoxColumn26,
-            this.dataGridViewTextBoxColumn28,
-            this.Column1,
-            this.dataGridViewTextBoxColumn29,
-            this.dataGridViewTextBoxColumn30,
-            this.dataGridViewTextBoxColumn31});
-            this.TraceGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TraceGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.TraceGrid.GridColor = System.Drawing.Color.White;
-            this.TraceGrid.Location = new System.Drawing.Point(0, 0);
-            this.TraceGrid.Margin = new System.Windows.Forms.Padding(0);
-            this.TraceGrid.MultiSelect = false;
-            this.TraceGrid.Name = "TraceGrid";
-            this.TraceGrid.ReadOnly = true;
-            this.TraceGrid.RowHeadersVisible = false;
-            this.TraceGrid.RowHeadersWidth = 10;
-            this.TraceGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.TraceGrid.Size = new System.Drawing.Size(705, 364);
-            this.TraceGrid.TabIndex = 8;
-            this.TraceGrid.SelectionChanged += new System.EventHandler(this.TraceGrid_SelectionChanged);
-            // 
-            // dataGridViewTextBoxColumn26
-            // 
-            this.dataGridViewTextBoxColumn26.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.dataGridViewTextBoxColumn26.HeaderText = "ID";
-            this.dataGridViewTextBoxColumn26.MinimumWidth = 50;
-            this.dataGridViewTextBoxColumn26.Name = "dataGridViewTextBoxColumn26";
-            this.dataGridViewTextBoxColumn26.ReadOnly = true;
-            this.dataGridViewTextBoxColumn26.Width = 50;
-            // 
-            // dataGridViewTextBoxColumn28
-            // 
-            this.dataGridViewTextBoxColumn28.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.dataGridViewTextBoxColumn28.HeaderText = "TIME";
-            this.dataGridViewTextBoxColumn28.MinimumWidth = 50;
-            this.dataGridViewTextBoxColumn28.Name = "dataGridViewTextBoxColumn28";
-            this.dataGridViewTextBoxColumn28.ReadOnly = true;
-            this.dataGridViewTextBoxColumn28.Width = 58;
-            // 
-            // Column1
-            // 
-            this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.Column1.HeaderText = "DATE";
-            this.Column1.MinimumWidth = 20;
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
-            this.Column1.Width = 60;
-            // 
-            // dataGridViewTextBoxColumn29
-            // 
-            this.dataGridViewTextBoxColumn29.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.dataGridViewTextBoxColumn29.HeaderText = "THREAD ID";
-            this.dataGridViewTextBoxColumn29.MinimumWidth = 30;
-            this.dataGridViewTextBoxColumn29.Name = "dataGridViewTextBoxColumn29";
-            this.dataGridViewTextBoxColumn29.ReadOnly = true;
-            this.dataGridViewTextBoxColumn29.Width = 91;
-            // 
-            // dataGridViewTextBoxColumn30
-            // 
-            this.dataGridViewTextBoxColumn30.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.dataGridViewTextBoxColumn30.HeaderText = "SOURCE";
-            this.dataGridViewTextBoxColumn30.MinimumWidth = 50;
-            this.dataGridViewTextBoxColumn30.Name = "dataGridViewTextBoxColumn30";
-            this.dataGridViewTextBoxColumn30.ReadOnly = true;
-            this.dataGridViewTextBoxColumn30.Width = 77;
-            // 
-            // dataGridViewTextBoxColumn31
-            // 
-            this.dataGridViewTextBoxColumn31.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dataGridViewTextBoxColumn31.HeaderText = "MESSAGE";
-            this.dataGridViewTextBoxColumn31.MinimumWidth = 150;
-            this.dataGridViewTextBoxColumn31.Name = "dataGridViewTextBoxColumn31";
-            this.dataGridViewTextBoxColumn31.ReadOnly = true;
-            // 
-            // TraceMsgRTB
-            // 
-            this.TraceMsgRTB.BackColor = System.Drawing.Color.White;
-            this.TraceMsgRTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.TraceMsgRTB.DetectUrls = false;
-            this.TraceMsgRTB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TraceMsgRTB.Location = new System.Drawing.Point(0, 0);
-            this.TraceMsgRTB.Name = "TraceMsgRTB";
-            this.TraceMsgRTB.ReadOnly = true;
-            this.TraceMsgRTB.Size = new System.Drawing.Size(705, 144);
-            this.TraceMsgRTB.TabIndex = 0;
-            this.TraceMsgRTB.Text = "";
             // 
             // ConfigPanel
             // 
@@ -9311,7 +9034,8 @@ namespace IronWASP
             // 
             this.TopMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.projectToolStripMenuItem,
-            this.reportToolStripMenuItem,
+            this.toolsToolStripMenuItem,
+            this.devToolsToolStripMenuItem,
             this.AboutToolStripMenuItem});
             this.TopMenu.Location = new System.Drawing.Point(0, 0);
             this.TopMenu.Name = "TopMenu";
@@ -9350,44 +9074,59 @@ namespace IronWASP
             this.ImportBurpLogToolStripMenuItem.Text = "Burp Log";
             this.ImportBurpLogToolStripMenuItem.Click += new System.EventHandler(this.ImportBurpLogToolStripMenuItem_Click);
             // 
-            // reportToolStripMenuItem
+            // toolsToolStripMenuItem
             // 
-            this.reportToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.EncodeDecodeToolStripMenuItem,
             this.DiffTextToolStripMenuItem,
-            this.PluginEditorToolStripMenuItem,
             this.RenderHTMLToolStripMenuItem});
-            this.reportToolStripMenuItem.Name = "reportToolStripMenuItem";
-            this.reportToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
-            this.reportToolStripMenuItem.Text = "Tools";
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.toolsToolStripMenuItem.Text = "Tools";
             // 
             // EncodeDecodeToolStripMenuItem
             // 
             this.EncodeDecodeToolStripMenuItem.Name = "EncodeDecodeToolStripMenuItem";
-            this.EncodeDecodeToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.EncodeDecodeToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.EncodeDecodeToolStripMenuItem.Text = "Encode/Decode";
             this.EncodeDecodeToolStripMenuItem.Click += new System.EventHandler(this.EncodeDecodeToolStripMenuItem_Click);
             // 
             // DiffTextToolStripMenuItem
             // 
             this.DiffTextToolStripMenuItem.Name = "DiffTextToolStripMenuItem";
-            this.DiffTextToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.DiffTextToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.DiffTextToolStripMenuItem.Text = "Diff Text";
             this.DiffTextToolStripMenuItem.Click += new System.EventHandler(this.DiffTextToolStripMenuItem_Click);
-            // 
-            // PluginEditorToolStripMenuItem
-            // 
-            this.PluginEditorToolStripMenuItem.Name = "PluginEditorToolStripMenuItem";
-            this.PluginEditorToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-            this.PluginEditorToolStripMenuItem.Text = "Script/Plugin Editor";
-            this.PluginEditorToolStripMenuItem.Click += new System.EventHandler(this.PluginEditorToolStripMenuItem_Click);
             // 
             // RenderHTMLToolStripMenuItem
             // 
             this.RenderHTMLToolStripMenuItem.Name = "RenderHTMLToolStripMenuItem";
-            this.RenderHTMLToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.RenderHTMLToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.RenderHTMLToolStripMenuItem.Text = "Render HTML";
             this.RenderHTMLToolStripMenuItem.Click += new System.EventHandler(this.RenderHTMLToolStripMenuItem_Click);
+            // 
+            // devToolsToolStripMenuItem
+            // 
+            this.devToolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.scriptPluginEditorToolStripMenuItem,
+            this.uIDesignerToolStripMenuItem1});
+            this.devToolsToolStripMenuItem.Name = "devToolsToolStripMenuItem";
+            this.devToolsToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
+            this.devToolsToolStripMenuItem.Text = "Dev Tools";
+            // 
+            // scriptPluginEditorToolStripMenuItem
+            // 
+            this.scriptPluginEditorToolStripMenuItem.Name = "scriptPluginEditorToolStripMenuItem";
+            this.scriptPluginEditorToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.scriptPluginEditorToolStripMenuItem.Text = "Script/Plugin Editor";
+            this.scriptPluginEditorToolStripMenuItem.Click += new System.EventHandler(this.PluginEditorToolStripMenuItem_Click);
+            // 
+            // uIDesignerToolStripMenuItem1
+            // 
+            this.uIDesignerToolStripMenuItem1.Name = "uIDesignerToolStripMenuItem1";
+            this.uIDesignerToolStripMenuItem1.Size = new System.Drawing.Size(177, 22);
+            this.uIDesignerToolStripMenuItem1.Text = "UI Designer";
+            this.uIDesignerToolStripMenuItem1.Click += new System.EventHandler(this.UIDesignerToolStripMenuItem_Click);
             // 
             // AboutToolStripMenuItem
             // 
@@ -9429,6 +9168,320 @@ namespace IronWASP
             // 
             this.PromptBlinkTimer.Interval = 400;
             this.PromptBlinkTimer.Tick += new System.EventHandler(this.PromptBlinkTimer_Tick);
+            // 
+            // TraceBaseSplit
+            // 
+            this.TraceBaseSplit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TraceBaseSplit.Location = new System.Drawing.Point(0, 0);
+            this.TraceBaseSplit.Margin = new System.Windows.Forms.Padding(0);
+            this.TraceBaseSplit.Name = "TraceBaseSplit";
+            this.TraceBaseSplit.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // TraceBaseSplit.Panel1
+            // 
+            this.TraceBaseSplit.Panel1.Controls.Add(this.TraceGrid);
+            // 
+            // TraceBaseSplit.Panel2
+            // 
+            this.TraceBaseSplit.Panel2.Controls.Add(this.TraceMsgRTB);
+            this.TraceBaseSplit.Size = new System.Drawing.Size(697, 486);
+            this.TraceBaseSplit.SplitterDistance = 345;
+            this.TraceBaseSplit.TabIndex = 1;
+            // 
+            // TraceGrid
+            // 
+            this.TraceGrid.AllowUserToAddRows = false;
+            this.TraceGrid.AllowUserToDeleteRows = false;
+            this.TraceGrid.AllowUserToOrderColumns = true;
+            this.TraceGrid.AllowUserToResizeRows = false;
+            this.TraceGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.TraceGrid.BackgroundColor = System.Drawing.Color.White;
+            this.TraceGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.TraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle10;
+            this.TraceGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.TraceGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn26,
+            this.dataGridViewTextBoxColumn28,
+            this.Column1,
+            this.dataGridViewTextBoxColumn29,
+            this.dataGridViewTextBoxColumn30,
+            this.dataGridViewTextBoxColumn31});
+            this.TraceGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TraceGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.TraceGrid.GridColor = System.Drawing.Color.White;
+            this.TraceGrid.Location = new System.Drawing.Point(0, 0);
+            this.TraceGrid.Margin = new System.Windows.Forms.Padding(0);
+            this.TraceGrid.MultiSelect = false;
+            this.TraceGrid.Name = "TraceGrid";
+            this.TraceGrid.ReadOnly = true;
+            this.TraceGrid.RowHeadersVisible = false;
+            this.TraceGrid.RowHeadersWidth = 10;
+            this.TraceGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.TraceGrid.Size = new System.Drawing.Size(697, 345);
+            this.TraceGrid.TabIndex = 8;
+            this.TraceGrid.SelectionChanged += new System.EventHandler(this.TraceGrid_SelectionChanged);
+            // 
+            // dataGridViewTextBoxColumn26
+            // 
+            this.dataGridViewTextBoxColumn26.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.dataGridViewTextBoxColumn26.HeaderText = "ID";
+            this.dataGridViewTextBoxColumn26.MinimumWidth = 50;
+            this.dataGridViewTextBoxColumn26.Name = "dataGridViewTextBoxColumn26";
+            this.dataGridViewTextBoxColumn26.ReadOnly = true;
+            this.dataGridViewTextBoxColumn26.Width = 50;
+            // 
+            // dataGridViewTextBoxColumn28
+            // 
+            this.dataGridViewTextBoxColumn28.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.dataGridViewTextBoxColumn28.HeaderText = "TIME";
+            this.dataGridViewTextBoxColumn28.MinimumWidth = 50;
+            this.dataGridViewTextBoxColumn28.Name = "dataGridViewTextBoxColumn28";
+            this.dataGridViewTextBoxColumn28.ReadOnly = true;
+            this.dataGridViewTextBoxColumn28.Width = 58;
+            // 
+            // Column1
+            // 
+            this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.Column1.HeaderText = "DATE";
+            this.Column1.MinimumWidth = 20;
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            this.Column1.Width = 60;
+            // 
+            // dataGridViewTextBoxColumn29
+            // 
+            this.dataGridViewTextBoxColumn29.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.dataGridViewTextBoxColumn29.HeaderText = "THREAD ID";
+            this.dataGridViewTextBoxColumn29.MinimumWidth = 30;
+            this.dataGridViewTextBoxColumn29.Name = "dataGridViewTextBoxColumn29";
+            this.dataGridViewTextBoxColumn29.ReadOnly = true;
+            this.dataGridViewTextBoxColumn29.Width = 91;
+            // 
+            // dataGridViewTextBoxColumn30
+            // 
+            this.dataGridViewTextBoxColumn30.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.dataGridViewTextBoxColumn30.HeaderText = "SOURCE";
+            this.dataGridViewTextBoxColumn30.MinimumWidth = 50;
+            this.dataGridViewTextBoxColumn30.Name = "dataGridViewTextBoxColumn30";
+            this.dataGridViewTextBoxColumn30.ReadOnly = true;
+            this.dataGridViewTextBoxColumn30.Width = 77;
+            // 
+            // dataGridViewTextBoxColumn31
+            // 
+            this.dataGridViewTextBoxColumn31.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dataGridViewTextBoxColumn31.HeaderText = "MESSAGE";
+            this.dataGridViewTextBoxColumn31.MinimumWidth = 150;
+            this.dataGridViewTextBoxColumn31.Name = "dataGridViewTextBoxColumn31";
+            this.dataGridViewTextBoxColumn31.ReadOnly = true;
+            // 
+            // TraceMsgRTB
+            // 
+            this.TraceMsgRTB.BackColor = System.Drawing.Color.White;
+            this.TraceMsgRTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.TraceMsgRTB.DetectUrls = false;
+            this.TraceMsgRTB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TraceMsgRTB.Location = new System.Drawing.Point(0, 0);
+            this.TraceMsgRTB.Name = "TraceMsgRTB";
+            this.TraceMsgRTB.ReadOnly = true;
+            this.TraceMsgRTB.Size = new System.Drawing.Size(697, 137);
+            this.TraceMsgRTB.TabIndex = 0;
+            this.TraceMsgRTB.Text = "";
+            // 
+            // PluginsMainSplit
+            // 
+            this.PluginsMainSplit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PluginsMainSplit.Location = new System.Drawing.Point(0, 0);
+            this.PluginsMainSplit.Margin = new System.Windows.Forms.Padding(0);
+            this.PluginsMainSplit.Name = "PluginsMainSplit";
+            // 
+            // PluginsMainSplit.Panel1
+            // 
+            this.PluginsMainSplit.Panel1.Controls.Add(this.PluginTree);
+            // 
+            // PluginsMainSplit.Panel2
+            // 
+            this.PluginsMainSplit.Panel2.Controls.Add(this.PluginEditorSplit);
+            this.PluginsMainSplit.Size = new System.Drawing.Size(697, 486);
+            this.PluginsMainSplit.SplitterDistance = 137;
+            this.PluginsMainSplit.SplitterWidth = 2;
+            this.PluginsMainSplit.TabIndex = 2;
+            // 
+            // PluginTree
+            // 
+            this.PluginTree.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PluginTree.ContextMenuStrip = this.PluginTreeMenu;
+            this.PluginTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PluginTree.Location = new System.Drawing.Point(0, 0);
+            this.PluginTree.Margin = new System.Windows.Forms.Padding(0);
+            this.PluginTree.Name = "PluginTree";
+            this.PluginTree.ShowRootLines = false;
+            this.PluginTree.Size = new System.Drawing.Size(137, 486);
+            this.PluginTree.TabIndex = 0;
+            this.PluginTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.PluginTree_AfterSelect);
+            // 
+            // PluginEditorSplit
+            // 
+            this.PluginEditorSplit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PluginEditorSplit.Location = new System.Drawing.Point(0, 0);
+            this.PluginEditorSplit.Margin = new System.Windows.Forms.Padding(0);
+            this.PluginEditorSplit.Name = "PluginEditorSplit";
+            // 
+            // PluginEditorSplit.Panel1
+            // 
+            this.PluginEditorSplit.Panel1.Controls.Add(this.PluginsCentreSplit);
+            // 
+            // PluginEditorSplit.Panel2
+            // 
+            this.PluginEditorSplit.Panel2.Controls.Add(this.PluginEditorAPISplit);
+            this.PluginEditorSplit.Size = new System.Drawing.Size(558, 486);
+            this.PluginEditorSplit.SplitterDistance = 389;
+            this.PluginEditorSplit.SplitterWidth = 2;
+            this.PluginEditorSplit.TabIndex = 1;
+            // 
+            // PluginsCentreSplit
+            // 
+            this.PluginsCentreSplit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PluginsCentreSplit.Location = new System.Drawing.Point(0, 0);
+            this.PluginsCentreSplit.Margin = new System.Windows.Forms.Padding(0);
+            this.PluginsCentreSplit.Name = "PluginsCentreSplit";
+            this.PluginsCentreSplit.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // PluginsCentreSplit.Panel1
+            // 
+            this.PluginsCentreSplit.Panel1.Controls.Add(this.PluginDetailsRTB);
+            // 
+            // PluginsCentreSplit.Panel2
+            // 
+            this.PluginsCentreSplit.Panel2.Controls.Add(this.PluginEditorInTE);
+            this.PluginsCentreSplit.Size = new System.Drawing.Size(389, 486);
+            this.PluginsCentreSplit.SplitterDistance = 192;
+            this.PluginsCentreSplit.SplitterWidth = 2;
+            this.PluginsCentreSplit.TabIndex = 4;
+            // 
+            // PluginDetailsRTB
+            // 
+            this.PluginDetailsRTB.BackColor = System.Drawing.Color.AliceBlue;
+            this.PluginDetailsRTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.PluginDetailsRTB.DetectUrls = false;
+            this.PluginDetailsRTB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PluginDetailsRTB.Font = new System.Drawing.Font("Palatino Linotype", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PluginDetailsRTB.Location = new System.Drawing.Point(0, 0);
+            this.PluginDetailsRTB.Name = "PluginDetailsRTB";
+            this.PluginDetailsRTB.ReadOnly = true;
+            this.PluginDetailsRTB.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.PluginDetailsRTB.Size = new System.Drawing.Size(389, 192);
+            this.PluginDetailsRTB.TabIndex = 1;
+            this.PluginDetailsRTB.Text = "";
+            // 
+            // PluginEditorInTE
+            // 
+            this.PluginEditorInTE.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PluginEditorInTE.IsIconBarVisible = false;
+            this.PluginEditorInTE.Location = new System.Drawing.Point(0, 0);
+            this.PluginEditorInTE.Margin = new System.Windows.Forms.Padding(0);
+            this.PluginEditorInTE.Name = "PluginEditorInTE";
+            this.PluginEditorInTE.ShowEOLMarkers = true;
+            this.PluginEditorInTE.ShowSpaces = true;
+            this.PluginEditorInTE.ShowTabs = true;
+            this.PluginEditorInTE.ShowVRuler = true;
+            this.PluginEditorInTE.Size = new System.Drawing.Size(389, 292);
+            this.PluginEditorInTE.TabIndex = 5;
+            // 
+            // PluginEditorAPISplit
+            // 
+            this.PluginEditorAPISplit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PluginEditorAPISplit.Location = new System.Drawing.Point(0, 0);
+            this.PluginEditorAPISplit.Margin = new System.Windows.Forms.Padding(0);
+            this.PluginEditorAPISplit.Name = "PluginEditorAPISplit";
+            this.PluginEditorAPISplit.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // PluginEditorAPISplit.Panel1
+            // 
+            this.PluginEditorAPISplit.Panel1.Controls.Add(this.PluginEditorAPITreeTabs);
+            // 
+            // PluginEditorAPISplit.Panel2
+            // 
+            this.PluginEditorAPISplit.Panel2.Controls.Add(this.PluginEditorAPIDetailsRTB);
+            this.PluginEditorAPISplit.Size = new System.Drawing.Size(167, 486);
+            this.PluginEditorAPISplit.SplitterDistance = 265;
+            this.PluginEditorAPISplit.SplitterWidth = 2;
+            this.PluginEditorAPISplit.TabIndex = 1;
+            // 
+            // PluginEditorAPITreeTabs
+            // 
+            this.PluginEditorAPITreeTabs.Controls.Add(this.PluginEditorPythonAPITreeTab);
+            this.PluginEditorAPITreeTabs.Controls.Add(this.PluginEditorRubyAPITreeTab);
+            this.PluginEditorAPITreeTabs.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PluginEditorAPITreeTabs.Location = new System.Drawing.Point(0, 0);
+            this.PluginEditorAPITreeTabs.Margin = new System.Windows.Forms.Padding(0);
+            this.PluginEditorAPITreeTabs.Name = "PluginEditorAPITreeTabs";
+            this.PluginEditorAPITreeTabs.Padding = new System.Drawing.Point(0, 0);
+            this.PluginEditorAPITreeTabs.SelectedIndex = 0;
+            this.PluginEditorAPITreeTabs.Size = new System.Drawing.Size(167, 265);
+            this.PluginEditorAPITreeTabs.TabIndex = 0;
+            // 
+            // PluginEditorPythonAPITreeTab
+            // 
+            this.PluginEditorPythonAPITreeTab.Controls.Add(this.PluginEditorPythonAPITree);
+            this.PluginEditorPythonAPITreeTab.Location = new System.Drawing.Point(4, 22);
+            this.PluginEditorPythonAPITreeTab.Margin = new System.Windows.Forms.Padding(0);
+            this.PluginEditorPythonAPITreeTab.Name = "PluginEditorPythonAPITreeTab";
+            this.PluginEditorPythonAPITreeTab.Size = new System.Drawing.Size(159, 239);
+            this.PluginEditorPythonAPITreeTab.TabIndex = 0;
+            this.PluginEditorPythonAPITreeTab.Text = "Python";
+            this.PluginEditorPythonAPITreeTab.UseVisualStyleBackColor = true;
+            // 
+            // PluginEditorPythonAPITree
+            // 
+            this.PluginEditorPythonAPITree.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.PluginEditorPythonAPITree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PluginEditorPythonAPITree.Location = new System.Drawing.Point(0, 0);
+            this.PluginEditorPythonAPITree.Margin = new System.Windows.Forms.Padding(0);
+            this.PluginEditorPythonAPITree.Name = "PluginEditorPythonAPITree";
+            this.PluginEditorPythonAPITree.Size = new System.Drawing.Size(159, 239);
+            this.PluginEditorPythonAPITree.TabIndex = 0;
+            this.PluginEditorPythonAPITree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.PluginEditorPythonAPITree_AfterSelect);
+            // 
+            // PluginEditorRubyAPITreeTab
+            // 
+            this.PluginEditorRubyAPITreeTab.Controls.Add(this.PluginEditorRubyAPITree);
+            this.PluginEditorRubyAPITreeTab.Location = new System.Drawing.Point(4, 22);
+            this.PluginEditorRubyAPITreeTab.Margin = new System.Windows.Forms.Padding(0);
+            this.PluginEditorRubyAPITreeTab.Name = "PluginEditorRubyAPITreeTab";
+            this.PluginEditorRubyAPITreeTab.Size = new System.Drawing.Size(159, 239);
+            this.PluginEditorRubyAPITreeTab.TabIndex = 1;
+            this.PluginEditorRubyAPITreeTab.Text = "Ruby";
+            this.PluginEditorRubyAPITreeTab.UseVisualStyleBackColor = true;
+            // 
+            // PluginEditorRubyAPITree
+            // 
+            this.PluginEditorRubyAPITree.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.PluginEditorRubyAPITree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PluginEditorRubyAPITree.Location = new System.Drawing.Point(0, 0);
+            this.PluginEditorRubyAPITree.Margin = new System.Windows.Forms.Padding(0);
+            this.PluginEditorRubyAPITree.Name = "PluginEditorRubyAPITree";
+            this.PluginEditorRubyAPITree.Size = new System.Drawing.Size(159, 239);
+            this.PluginEditorRubyAPITree.TabIndex = 1;
+            this.PluginEditorRubyAPITree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.PluginEditorRubyAPITree_AfterSelect);
+            // 
+            // PluginEditorAPIDetailsRTB
+            // 
+            this.PluginEditorAPIDetailsRTB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PluginEditorAPIDetailsRTB.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PluginEditorAPIDetailsRTB.Location = new System.Drawing.Point(0, 0);
+            this.PluginEditorAPIDetailsRTB.Margin = new System.Windows.Forms.Padding(0);
+            this.PluginEditorAPIDetailsRTB.Name = "PluginEditorAPIDetailsRTB";
+            this.PluginEditorAPIDetailsRTB.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.PluginEditorAPIDetailsRTB.Size = new System.Drawing.Size(167, 219);
+            this.PluginEditorAPIDetailsRTB.TabIndex = 0;
+            this.PluginEditorAPIDetailsRTB.Text = "";
             // 
             // Main
             // 
@@ -9684,28 +9737,11 @@ namespace IronWASP
             this.ResultsRequestTab.PerformLayout();
             this.ResultsResponseTab.ResumeLayout(false);
             this.ResultsResponseTab.PerformLayout();
-            this.mt_plugins.ResumeLayout(false);
-            this.PluginsMainSplit.Panel1.ResumeLayout(false);
-            this.PluginsMainSplit.Panel2.ResumeLayout(false);
-            this.PluginsMainSplit.ResumeLayout(false);
+            this.mt_dev.ResumeLayout(false);
+            this.DevMainTabs.ResumeLayout(false);
+            this.tabPage5.ResumeLayout(false);
+            this.tabPage6.ResumeLayout(false);
             this.PluginTreeMenu.ResumeLayout(false);
-            this.PluginEditorSplit.Panel1.ResumeLayout(false);
-            this.PluginEditorSplit.Panel2.ResumeLayout(false);
-            this.PluginEditorSplit.ResumeLayout(false);
-            this.PluginsCentreSplit.Panel1.ResumeLayout(false);
-            this.PluginsCentreSplit.Panel2.ResumeLayout(false);
-            this.PluginsCentreSplit.ResumeLayout(false);
-            this.PluginEditorAPISplit.Panel1.ResumeLayout(false);
-            this.PluginEditorAPISplit.Panel2.ResumeLayout(false);
-            this.PluginEditorAPISplit.ResumeLayout(false);
-            this.PluginEditorAPITreeTabs.ResumeLayout(false);
-            this.PluginEditorPythonAPITreeTab.ResumeLayout(false);
-            this.PluginEditorRubyAPITreeTab.ResumeLayout(false);
-            this.mt_trace.ResumeLayout(false);
-            this.TraceBaseSplit.Panel1.ResumeLayout(false);
-            this.TraceBaseSplit.Panel2.ResumeLayout(false);
-            this.TraceBaseSplit.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.TraceGrid)).EndInit();
             this.ConfigPanel.ResumeLayout(false);
             this.ConfigPanelTabs.ResumeLayout(false);
             this.ConfigIronProxyTab.ResumeLayout(false);
@@ -9761,6 +9797,25 @@ namespace IronWASP
             this.TopMenu.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.TraceBaseSplit.Panel1.ResumeLayout(false);
+            this.TraceBaseSplit.Panel2.ResumeLayout(false);
+            this.TraceBaseSplit.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.TraceGrid)).EndInit();
+            this.PluginsMainSplit.Panel1.ResumeLayout(false);
+            this.PluginsMainSplit.Panel2.ResumeLayout(false);
+            this.PluginsMainSplit.ResumeLayout(false);
+            this.PluginEditorSplit.Panel1.ResumeLayout(false);
+            this.PluginEditorSplit.Panel2.ResumeLayout(false);
+            this.PluginEditorSplit.ResumeLayout(false);
+            this.PluginsCentreSplit.Panel1.ResumeLayout(false);
+            this.PluginsCentreSplit.Panel2.ResumeLayout(false);
+            this.PluginsCentreSplit.ResumeLayout(false);
+            this.PluginEditorAPISplit.Panel1.ResumeLayout(false);
+            this.PluginEditorAPISplit.Panel2.ResumeLayout(false);
+            this.PluginEditorAPISplit.ResumeLayout(false);
+            this.PluginEditorAPITreeTabs.ResumeLayout(false);
+            this.PluginEditorPythonAPITreeTab.ResumeLayout(false);
+            this.PluginEditorRubyAPITreeTab.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -9772,7 +9827,7 @@ namespace IronWASP
         private System.Windows.Forms.MenuStrip TopMenu;
         private System.Windows.Forms.ToolStripMenuItem projectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem OpenProjectToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem reportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.TabPage mt_proxy;
         private System.Windows.Forms.TabPage mt_manual;
         private System.Windows.Forms.TabPage mt_auto;
@@ -9795,25 +9850,14 @@ namespace IronWASP
         internal System.Windows.Forms.DataGridView TestLogGrid;
         internal System.Windows.Forms.Button MTSendBtn;
         internal System.Windows.Forms.Label TestIDLbl;
-        private System.Windows.Forms.TabPage mt_plugins;
         public System.Windows.Forms.TreeView IronTree;
         internal System.Windows.Forms.DataGridView ShellLogGrid;
         internal System.Windows.Forms.CheckBox MTIsSSLCB;
         internal IronDataView.IronDataView ProxyResponseHeadersIDV;
         internal System.Windows.Forms.TabControl ProxyInterceptTabs;
-        private System.Windows.Forms.SplitContainer PluginsMainSplit;
-        internal System.Windows.Forms.TreeView PluginTree;
-        private System.Windows.Forms.SplitContainer PluginEditorSplit;
-        private System.Windows.Forms.SplitContainer PluginEditorAPISplit;
-        internal System.Windows.Forms.TreeView PluginEditorPythonAPITree;
-        private System.Windows.Forms.RichTextBox PluginEditorAPIDetailsRTB;
         private System.Windows.Forms.TabPage ASConfigureTab;
         internal System.Windows.Forms.DataGridView ScanLogGrid;
         private System.Windows.Forms.SplitContainer ASConfigureSplit;
-        private System.Windows.Forms.TabControl PluginEditorAPITreeTabs;
-        private System.Windows.Forms.TabPage PluginEditorPythonAPITreeTab;
-        private System.Windows.Forms.TabPage PluginEditorRubyAPITreeTab;
-        internal System.Windows.Forms.TreeView PluginEditorRubyAPITree;
         internal System.Windows.Forms.Button MTScriptedSendBtn;
         internal System.Windows.Forms.Button MTStoredRequestBtn;
         internal IronDataView.IronDataView MTRequestHeadersIDV;
@@ -9825,7 +9869,6 @@ namespace IronWASP
         private System.Windows.Forms.TabPage ASRequestFullTab;
         private System.Windows.Forms.SplitContainer ASRequestBodyTabSplit;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.SplitContainer PluginsCentreSplit;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ToolStripMenuItem SelectForAutomatedScanningToolStripMenuItem;
         private System.Windows.Forms.DataGridViewTextBoxColumn ASQueueGridScanID;
@@ -10015,7 +10058,6 @@ namespace IronWASP
         private System.Windows.Forms.TabPage tabPage21;
         internal System.Windows.Forms.TabControl ASRequestScanFullTabs;
         internal System.Windows.Forms.CheckBox ConfigRuleContentJSONCB;
-        internal System.Windows.Forms.RichTextBox PluginDetailsRTB;
         private System.Windows.Forms.ContextMenuStrip PluginTreeMenu;
         private System.Windows.Forms.ToolStripMenuItem allPluginsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem AllPluginsRAToolStripMenuItem;
@@ -10159,8 +10201,6 @@ namespace IronWASP
         internal System.Windows.Forms.SplitContainer ResultsTabMainSplit;
         private System.Windows.Forms.ContextMenuStrip IronTreeMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem ScanBranchToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem PluginEditorToolStripMenuItem;
-        internal ICSharpCode.TextEditor.TextEditorControl PluginEditorInTE;
         private System.Windows.Forms.ToolStripMenuItem CopyRequestToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem CopyResponseToolStripMenuItem;
         private System.Windows.Forms.Label label24;
@@ -10175,16 +10215,6 @@ namespace IronWASP
         private System.Windows.Forms.ToolStripMenuItem StopAllScansToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem StartAllStoppedAndAbortedScansToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem StopThisScanJobToolStripMenuItem;
-        private System.Windows.Forms.TabPage mt_trace;
-        private System.Windows.Forms.SplitContainer TraceBaseSplit;
-        internal System.Windows.Forms.DataGridView TraceGrid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn26;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn28;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn29;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn30;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn31;
-        internal System.Windows.Forms.RichTextBox TraceMsgRTB;
         private System.Windows.Forms.TabPage ASTraceTab;
         private System.Windows.Forms.SplitContainer ScanTraceBaseSplit;
         internal System.Windows.Forms.DataGridView ScanTraceGrid;
@@ -10475,6 +10505,35 @@ namespace IronWASP
         private System.Windows.Forms.Button ScanTraceBackThreeBtn;
         private System.Windows.Forms.Button ScanTraceFrontOneBtn;
         private System.Windows.Forms.Button ScanTraceBackTwoBtn;
+        private System.Windows.Forms.ToolStripMenuItem devToolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scriptPluginEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem uIDesignerToolStripMenuItem1;
+        private System.Windows.Forms.TabPage mt_dev;
+        private System.Windows.Forms.TabControl DevMainTabs;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.TabPage tabPage6;
+        private System.Windows.Forms.SplitContainer TraceBaseSplit;
+        internal System.Windows.Forms.DataGridView TraceGrid;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn26;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn28;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn29;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn30;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn31;
+        internal System.Windows.Forms.RichTextBox TraceMsgRTB;
+        private System.Windows.Forms.SplitContainer PluginsMainSplit;
+        internal System.Windows.Forms.TreeView PluginTree;
+        private System.Windows.Forms.SplitContainer PluginEditorSplit;
+        private System.Windows.Forms.SplitContainer PluginsCentreSplit;
+        internal System.Windows.Forms.RichTextBox PluginDetailsRTB;
+        internal ICSharpCode.TextEditor.TextEditorControl PluginEditorInTE;
+        private System.Windows.Forms.SplitContainer PluginEditorAPISplit;
+        private System.Windows.Forms.TabControl PluginEditorAPITreeTabs;
+        private System.Windows.Forms.TabPage PluginEditorPythonAPITreeTab;
+        internal System.Windows.Forms.TreeView PluginEditorPythonAPITree;
+        private System.Windows.Forms.TabPage PluginEditorRubyAPITreeTab;
+        internal System.Windows.Forms.TreeView PluginEditorRubyAPITree;
+        private System.Windows.Forms.RichTextBox PluginEditorAPIDetailsRTB;
     }
 }
 

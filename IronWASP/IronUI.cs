@@ -56,6 +56,7 @@ namespace IronWASP
         internal static ConfiguredScan CSF;
         internal static LoadForm LF;
         internal static PluginEditor PE;
+        internal static ModUiDesigner UD;
         internal static DiffWindow DW;
         internal static EncodeDecodeWindow EDW;
         internal static ImportForm IF;
@@ -795,7 +796,7 @@ namespace IronWASP
                         FillMTFields(Res);
                         FillTestReflection(Reflection);
                         UI.TestIDLbl.Text = "ID: " + Res.ID.ToString();
-                        EndMTSend();
+                        EndMTSend(true);
                     }
                 }
                 catch(Exception Exp)
@@ -820,7 +821,7 @@ namespace IronWASP
                     FillMTFields(Req);
                     UI.MTIsSSLCB.Checked = Req.SSL;
                     UI.TestIDLbl.Text = "ID: 0";
-                    EndMTSend();
+                    EndMTSend(false);
                 }
                 catch(Exception Exp)
                 {
@@ -4279,11 +4280,15 @@ namespace IronWASP
             UI.MTReqResTabs.SelectTab("MTResponseTab");
         }
 
-        internal static void EndMTSend()
+        internal static void EndMTSend(bool ShowResponseTab)
         {
             UI.MTScriptedSendBtn.Enabled = ManualTesting.ScriptedSendEnabled;
             UI.MTSendBtn.Enabled = true;
-            UI.MTReqResTabs.SelectTab("MTResponseTab");
+            if(ShowResponseTab)
+                UI.MTReqResTabs.SelectTab("MTResponseTab");
+            else
+                UI.MTReqResTabs.SelectTab("MTRequestTab");
+
         }
 
         delegate void AskUser_d();
@@ -4739,6 +4744,22 @@ namespace IronWASP
                 return false;
             }
             else if (IronUI.PE.IsDisposed)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        internal static bool IsUIDesignerOpen()
+        {
+            if (IronUI.UD == null)
+            {
+                return false;
+            }
+            else if (IronUI.UD.IsDisposed)
             {
                 return false;
             }

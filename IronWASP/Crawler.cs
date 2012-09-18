@@ -203,7 +203,7 @@ namespace IronWASP
                 AddToCrawlQueue(LinkClick, Depth + 1, true);
             }
 
-            List<Request> FormSubmissions = GetFormSubmissionRequests(Req, Res);
+            List<Request> FormSubmissions = GetFormSubmissions(Req, Res);
             foreach (Request FormSubmission in FormSubmissions)
             {
                 AddToCrawlQueue(FormSubmission, Depth + 1, true);
@@ -470,6 +470,11 @@ namespace IronWASP
 
         List<Request> GetRedirects(Request Req, Response Res)
         {
+            return GetRedirects(Req, Res, Cookies);
+        }
+
+        public static List<Request> GetRedirects(Request Req, Response Res, CookieStore Cookies)
+        {
             List<Request> Redirects = new List<Request>();
             List<string> RedirectUrls = GetRedirectUrls(Req, Res);
             foreach (string RedirectUrl in RedirectUrls)
@@ -487,6 +492,11 @@ namespace IronWASP
 
         List<Request> GetLinkClicks(Request Req, Response Res)
         {
+            return GetLinkClicks(Req, Res, Cookies);
+        }
+
+        public static List<Request> GetLinkClicks(Request Req, Response Res, CookieStore Cookies)
+        {
             List<Request> LinkClicks = new List<Request>();
             List<string> Links = GetLinks(Req, Res);
             foreach (string Link in Links)
@@ -502,7 +512,12 @@ namespace IronWASP
             return LinkClicks;
         }
 
-        List<Request> GetFormSubmissionRequests(Request Req, Response Res)
+        List<Request> GetFormSubmissions(Request Req, Response Res)
+        {
+            return GetFormSubmissions(Req, Res, Cookies);
+        }
+
+        public static List<Request> GetFormSubmissions(Request Req, Response Res, CookieStore Cookies)
         {
             List<Request> FormSubmissions = new List<Request>();
             List<HtmlNode> FormNodes = Res.Html.GetForms();
@@ -569,12 +584,13 @@ namespace IronWASP
                             SubReq.Body.Add(Name, Value);
                     }
                 }
+                SubReq.SetCookie(Cookies);
                 FormSubmissions.Add(SubReq);
             }
             return FormSubmissions;
         }
 
-        List<string> GetRedirectUrls(Request Req, Response Res)
+        public static List<string> GetRedirectUrls(Request Req, Response Res)
         {
             List<string> RedirectUrls = new List<string>();
 
@@ -620,7 +636,7 @@ namespace IronWASP
             return RedirectUrls;
         }
 
-        List<string> GetLinks(Request Req, Response Res)
+        static List<string> GetLinks(Request Req, Response Res)
         {
             List<string> Links = new List<string>();
             foreach (string Link in Res.Html.Links)
@@ -631,7 +647,7 @@ namespace IronWASP
             return Links;
         }
 
-        string NormalizeUrl(Request Req, string RawLink)
+        static string NormalizeUrl(Request Req, string RawLink)
         {
             if (RawLink.IndexOf('#') > -1)
             {

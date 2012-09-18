@@ -641,7 +641,7 @@ namespace IronWASP
             List<LogRow> Records = IronDB.GetRecordsFromProxyLog(StartIndex, IronLog.MaxRowCount);
             if (Records.Count == 0)
             {
-                int NewStartIndex = Config.LastProxySessionId - IronLog.MaxRowCount;
+                int NewStartIndex = Config.LastProxyLogId - IronLog.MaxRowCount;
                 if (NewStartIndex > 0)
                 {
                     Records = IronDB.GetRecordsFromProxyLog(NewStartIndex, IronLog.MaxRowCount);
@@ -660,7 +660,7 @@ namespace IronWASP
             List<LogRow> Records = IronDB.GetRecordsFromProbeLog(StartIndex, IronLog.MaxRowCount);
             if (Records.Count == 0)
             {
-                int NewStartIndex = Config.LastProbeSessionId - IronLog.MaxRowCount;
+                int NewStartIndex = Config.LastProbeLogId - IronLog.MaxRowCount;
                 if (NewStartIndex > 0)
                 {
                     Records = IronDB.GetRecordsFromProbeLog(NewStartIndex, IronLog.MaxRowCount);
@@ -679,7 +679,7 @@ namespace IronWASP
             List<LogRow> Records = IronDB.GetRecordsFromScanLog(StartIndex, IronLog.MaxRowCount);
             if (Records.Count == 0)
             {
-                int NewStartIndex = Config.LastScanSessionId - IronLog.MaxRowCount;
+                int NewStartIndex = Config.LastScanLogId - IronLog.MaxRowCount;
                 if (NewStartIndex > 0)
                 {
                     Records = IronDB.GetRecordsFromScanLog(NewStartIndex, IronLog.MaxRowCount);
@@ -698,7 +698,7 @@ namespace IronWASP
             List<LogRow> Records = IronDB.GetRecordsFromShellLog(StartIndex, IronLog.MaxRowCount);
             if (Records.Count == 0)
             {
-                int NewStartIndex = Config.LastShellSessionId - IronLog.MaxRowCount;
+                int NewStartIndex = Config.LastShellLogId - IronLog.MaxRowCount;
                 if (NewStartIndex > 0)
                 {
                     Records = IronDB.GetRecordsFromShellLog(NewStartIndex, IronLog.MaxRowCount);
@@ -717,7 +717,7 @@ namespace IronWASP
             List<LogRow> Records = IronDB.GetRecordsFromTestLog(StartIndex, IronLog.MaxRowCount);
             if (Records.Count == 0)
             {
-                int NewStartIndex = Config.LastTestSessionId - IronLog.MaxRowCount;
+                int NewStartIndex = Config.LastTestLogId - IronLog.MaxRowCount;
                 if (NewStartIndex > 0)
                 {
                     Records = IronDB.GetRecordsFromTestLog(NewStartIndex, IronLog.MaxRowCount);

@@ -27,7 +27,7 @@ namespace IronWASP
 {
     class CheckUpdate
     {
-        static string CurrentVersion = "0.9.1.4";
+        static string CurrentVersion = "0.9.1.5";
 
         static string PluginManifestUrl = "https://ironwasp.org/update/plugin.manifest";
         static string IronWASPManifestUrl = "https://ironwasp.org/update/ironwasp.manifest";
@@ -109,6 +109,7 @@ namespace IronWASP
                 Directory.CreateDirectory(Config.Path + "\\updates\\plugins\\passive");
                 Directory.CreateDirectory(Config.Path + "\\updates\\plugins\\format");
                 Directory.CreateDirectory(Config.Path + "\\updates\\plugins\\session");
+                Directory.CreateDirectory(Config.Path + "\\updates\\modules");
                 Directory.CreateDirectory(Config.Path + "\\updates\\ironwasp");
             }
             catch
@@ -231,8 +232,12 @@ namespace IronWASP
             {
                 throw new Exception("Downloading updated plugins failed");
             }
-            PluginFetchRes.SaveBody(Config.Path + "\\updates\\plugins\\" + PluginType + "\\" + FileName);
-            NewUpdateAvailable = true;
+            try
+            {
+                PluginFetchRes.SaveBody(Config.Path + "\\updates\\plugins\\" + PluginType + "\\" + FileName);
+                NewUpdateAvailable = true;
+            }
+            catch (Exception Exp) { IronException.Report(string.Format("Error Downloading Plugin: {0} - {1} - {2}", PluginType, FileName, PseudoName), Exp); }
         }
 
         static void DownloadIronWASPFile(string FileName, string PseudoName)

@@ -56,35 +56,35 @@ namespace IronWASP
             }
         }
 
-        public static int LastProxySessionId
+        public static int LastProxyLogId
         {
             get
             {
                 return ProxyRequestsCount;
             }
         }
-        public static int LastProbeSessionId
+        public static int LastProbeLogId
         {
             get
             {
                 return ProbeRequestsCount;
             }
         }
-        public static int LastShellSessionId
+        public static int LastShellLogId
         {
             get
             {
                 return ShellRequestsCount;
             }
         }
-        public static int LastScanSessionId
+        public static int LastScanLogId
         {
             get
             {
                 return ScanRequestsCount;
             }
         }
-        public static int LastTestSessionId
+        public static int LastTestLogId
         {
             get
             {

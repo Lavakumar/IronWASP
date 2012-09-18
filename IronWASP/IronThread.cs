@@ -11,9 +11,16 @@ namespace IronWASP
         bool Parameterized = false;
         ThreadStart Method;
         ParameterizedThreadStart MethodWithParameters;
+        Thread Thread;
+        ManualResetEvent MRE = new ManualResetEvent(false);
 
-        static Dictionary<int, Thread> StartedThreads = new Dictionary<int, Thread>();
+        static Dictionary<int, IronThread> StartedThreads = new Dictionary<int, IronThread>();
 
+        private IronThread(Thread T)
+        {
+            this.Thread = T;
+        }
+        
         private IronThread(ThreadStart Method)
         {
             this.Method = Method;
@@ -77,11 +84,11 @@ namespace IronWASP
                 {
                     try
                     {
-                        StartedThreads[T.ManagedThreadId].Abort();
+                        StartedThreads[T.ManagedThreadId].Thread.Abort();
                     }
                     catch { }
                 }
-                StartedThreads[T.ManagedThreadId] = T;
+                StartedThreads[T.ManagedThreadId] = new IronThread(T);
             }
         }
 
@@ -91,7 +98,7 @@ namespace IronWASP
             {
                 if (StartedThreads.ContainsKey(ThreadId))
                 {
-                    return StartedThreads[ThreadId].ThreadState.ToString();
+                    return StartedThreads[ThreadId].Thread.ThreadState.ToString();
                 }
                 else
                 {
@@ -108,7 +115,7 @@ namespace IronWASP
                 {
                     try
                     {
-                        StartedThreads[ThreadId].Abort();
+                        StartedThreads[ThreadId].Thread.Abort();
                     }
                     catch { }
                 }
@@ -123,7 +130,7 @@ namespace IronWASP
                 {
                     try
                     {
-                        StartedThreads[ID].Abort();
+                        StartedThreads[ID].Thread.Abort();
                     }
                     catch { }
                 }
@@ -134,6 +141,39 @@ namespace IronWASP
         public static void Sleep(int MilliSeconds)
         {
             Thread.Sleep(MilliSeconds);
+        }
+
+        public static void Wait()
+        {
+            int ThreadId = Thread.CurrentThread.ManagedThreadId;
+            ManualResetEvent MRE = null;
+            lock (StartedThreads)
+            {
+                if (StartedThreads.ContainsKey(ThreadId))
+                {
+                    MRE = StartedThreads[ThreadId].MRE;
+                }
+            }
+            if (MRE != null)
+            {
+                MRE.Reset();
+                MRE.WaitOne();
+            }
+            else
+            {
+                throw new Exception("Wait can only be called from an running IronThread");
+            }
+        }
+
+        public static void Resume(int ThreadId)
+        {
+            lock (StartedThreads)
+            {
+                if (StartedThreads.ContainsKey(ThreadId))
+                {
+                    StartedThreads[ThreadId].MRE.Set();
+                }
+            }
         }
     }
 }

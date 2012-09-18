@@ -155,8 +155,8 @@ namespace IronWASP
                                     S.InjectUrl();
                                 S.InjectQuery();
                                 S.InjectBody();
-                                S.InjectHeaders();
-                                S.InjectCookie();
+                                //S.InjectHeaders();
+                                //S.InjectCookie();
 
                                 if (!FormatPlugin.IsNormal(Req))
                                 {

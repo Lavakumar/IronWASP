@@ -541,7 +541,7 @@ namespace IronWASP
             {
                 IronException.Report("Unable to Send 'Manual Testing' Request", Exp.Message, Exp.StackTrace);
                 IronUI.ShowMTException("Error sending Request");
-                IronUI.EndMTSend();
+                IronUI.EndMTSend(true);
             }
         }
 
@@ -775,7 +775,7 @@ namespace IronWASP
             {
                 IronException.Report("Unable to Send 'Manual Testing' Request", Exp.Message, Exp.StackTrace);
                 IronUI.ShowMTException("Error sending Request");
-                IronUI.EndMTSend();
+                IronUI.EndMTSend(true);
             }
         }
 
@@ -2329,28 +2329,6 @@ namespace IronWASP
         private void ProxyDropBtn_Click(object sender, EventArgs e)
         {
             IronProxy.DropInterceptedMessage();
-        }
-
-        private void CustomSendActivateCB_Click(object sender, EventArgs e)
-        {
-            if (this.CustomSendActivateCB.Checked)
-            {
-                string Result = "";
-                if (this.CustomSendPythonRB.Checked)
-                {
-                    Result = ManualTesting.SetPyScriptedSend(this.CustomSendTE.Text);
-                }
-                else
-                {
-                    Result = ManualTesting.SetRbScriptedSend(this.CustomSendTE.Text);
-                }
-                if (Result.Length > 0)
-                {
-                    IronUI.ShowScriptedSendScriptException(Result);
-                }
-            }
-            ManualTesting.ScriptedSendEnabled = this.CustomSendActivateCB.Checked;
-            this.MTScriptedSendBtn.Enabled = ManualTesting.ScriptedSendEnabled;
         }
 
         private void MTRequestFormatPluginsMenu_Opening(object sender, CancelEventArgs e)
@@ -4038,6 +4016,41 @@ namespace IronWASP
             {
                 IronUI.FillLogFields(IronLog.CurrentSession.Response);
             }
+        }
+
+        private void UIDesignerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (IronUI.IsUIDesignerOpen())
+            {
+                IronUI.UD.Activate();
+            }
+            else
+            {
+                IronUI.UD = new ModUiDesigner();
+                IronUI.UD.Show();
+            }
+        }
+
+        private void CustomSendActivateCB_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.CustomSendActivateCB.Checked)
+            {
+                string Result = "";
+                if (this.CustomSendPythonRB.Checked)
+                {
+                    Result = ManualTesting.SetPyScriptedSend(this.CustomSendTE.Text);
+                }
+                else
+                {
+                    Result = ManualTesting.SetRbScriptedSend(this.CustomSendTE.Text);
+                }
+                if (Result.Length > 0)
+                {
+                    IronUI.ShowScriptedSendScriptException(Result);
+                }
+            }
+            ManualTesting.ScriptedSendEnabled = this.CustomSendActivateCB.Checked;
+            this.MTScriptedSendBtn.Enabled = ManualTesting.ScriptedSendEnabled;
         }
     }
 }
