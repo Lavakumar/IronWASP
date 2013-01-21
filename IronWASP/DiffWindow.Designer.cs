@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -352,7 +352,7 @@ namespace IronWASP
             this.InputTab.Name = "InputTab";
             this.InputTab.Size = new System.Drawing.Size(676, 506);
             this.InputTab.TabIndex = 0;
-            this.InputTab.Text = "Input";
+            this.InputTab.Text = "    Input    ";
             this.InputTab.UseVisualStyleBackColor = true;
             // 
             // ResultsTab
@@ -363,7 +363,7 @@ namespace IronWASP
             this.ResultsTab.Name = "ResultsTab";
             this.ResultsTab.Size = new System.Drawing.Size(676, 506);
             this.ResultsTab.TabIndex = 1;
-            this.ResultsTab.Text = "Results";
+            this.ResultsTab.Text = "    Results    ";
             this.ResultsTab.UseVisualStyleBackColor = true;
             // 
             // ResultsTabs

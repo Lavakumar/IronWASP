@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -22,21 +22,30 @@ using System.Net;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Xml;
+using Ionic.Zip;
 
 namespace IronWASP
 {
     class CheckUpdate
     {
-        static string CurrentVersion = "0.9.1.5";
+        static string CurrentVersion = "0.9.5.0";
 
-        static string PluginManifestUrl = "https://ironwasp.org/update/plugin.manifest";
-        static string IronWASPManifestUrl = "https://ironwasp.org/update/ironwasp.manifest";
+        //static string PluginManifestUrl = "https://ironwasp.org/update/plugin.manifest";
+        //static string IronWASPManifestUrl = "https://ironwasp.org/update/ironwasp.manifest";
 
+        static string PluginManifestUrl = "https://ironwasp.org/update/plugin_manifest.xml";
+        static string ModuleManifestUrl = "https://ironwasp.org/update/module_manifest.xml";
+        static string IronWASPManifestUrl = "https://ironwasp.org/update/ironwasp_manifest.xml";
+
+        static string ModuleDownloadBaseUrl = "https://ironwasp.org/update/modules/";
         static string PluginDownloadBaseUrl = "https://ironwasp.org/update/plugins/";
         static string IronWASPDownloadBaseUrl = "https://ironwasp.org/update/ironwasp/";
 
+        static string ModuleManifestFile = "";
         static string PluginManifestFile = "";
         static string IronWASPManifestFile = "";
+
 
         static List<string[]> PluginManifestInfo = new List<string[]>();
         static List<string[]> IronWASPManifestInfo = new List<string[]>();
@@ -55,16 +64,6 @@ namespace IronWASP
         {
             try
             {
-                Request PluginManifestReq = new Request(PluginManifestUrl);
-                PluginManifestReq.Source = RequestSource.Stealth;
-                PluginManifestReq.Headers.Set("User-Agent","IronWASP v" + CurrentVersion);
-                Response PluginManifestRes = PluginManifestReq.Send();
-                if (!PluginManifestRes.IsSslValid)
-                {
-                    throw new Exception("Invalid SSL Certificate provided by the server");
-                }
-                PluginManifestFile = PluginManifestRes.BodyString;
-
                 Request IronWASPManifestReq = new Request(IronWASPManifestUrl);
                 IronWASPManifestReq.Source = RequestSource.Stealth;
                 IronWASPManifestReq.Headers.Set("User-Agent", "IronWASP v" + CurrentVersion);
@@ -75,14 +74,35 @@ namespace IronWASP
                 }
                 IronWASPManifestFile = IronWASPManifestRes.BodyString;
                 
+                Request PluginManifestReq = new Request(PluginManifestUrl);
+                PluginManifestReq.Source = RequestSource.Stealth;
+                PluginManifestReq.Headers.Set("User-Agent","IronWASP v" + CurrentVersion);
+                Response PluginManifestRes = PluginManifestReq.Send();
+                if (!PluginManifestRes.IsSslValid)
+                {
+                    throw new Exception("Invalid SSL Certificate provided by the server");
+                }
+                PluginManifestFile = PluginManifestRes.BodyString;
+
+                Request ModuleManifestReq = new Request(ModuleManifestUrl);
+                ModuleManifestReq.Source = RequestSource.Stealth;
+                ModuleManifestReq.Headers.Set("User-Agent", "IronWASP v" + CurrentVersion);
+                Response ModuleManifestRes = ModuleManifestReq.Send();
+                if (!ModuleManifestRes.IsSslValid)
+                {
+                    throw new Exception("Invalid SSL Certificate provided by the server");
+                }
+                ModuleManifestFile = ModuleManifestRes.BodyString;
+                
                 SetUpUpdateDirs();
-                GetNewPlugins();
                 GetNewIronWASP();
+                GetNewPlugins();
+                GetNewModules();
                 if (NewUpdateAvailable)
                 {
                     try
                     {
-                        Tools.Run(Config.RootDir + "/" + "Updater.exe");
+                        Tools.Run(string.Format("{0}\\Updater.exe", Config.RootDir));
                     }
                     catch (Exception Exp) { IronException.Report("Unable to Open IronWASP Updater", Exp); }
                 }
@@ -118,105 +138,495 @@ namespace IronWASP
             }
         }
 
-        static void GetNewPlugins()
+        static void GetNewModules()
         {
-            string[] PluginManifestLines = PluginManifestFile.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-            
-            foreach (string Line in PluginManifestLines)
+            List<string[]> ModulesInfo = new List<string[]>();
+            foreach (string Name in Module.ListAll())
             {
-                string[] LineParts = Line.Split(new char[] { '|' }, 6);
-                if (LineParts.Length != 6)
+                 string MVersion = Module.GetVersion(Name);
+                 ModulesInfo.Add(new string[]{Name, MVersion});
+            }
+            StringBuilder SB = new StringBuilder();
+            XmlWriter XW = XmlWriter.Create(SB);
+
+            XW.WriteStartDocument();
+            XW.WriteStartElement("manifest");
+
+            XmlDocument XmlDoc = new XmlDocument();
+            try
+            {
+                MemoryStream MS = new MemoryStream(Encoding.UTF8.GetBytes(ModuleManifestFile));
+                XmlDoc.Load(MS);
+                MS.Close();
+            }
+            catch { throw new Exception("Invalid IronWASP update manifest file recieved."); }
+
+            XmlNodeList FileNodes = null;
+
+            if (XmlDoc.ChildNodes.Count == 1)
+            {
+                FileNodes = XmlDoc.FirstChild.ChildNodes;
+            }
+            else if (XmlDoc.ChildNodes.Count == 2)
+            {
+                FileNodes = XmlDoc.ChildNodes[1].ChildNodes;
+            }
+
+            foreach (XmlNode FileNode in FileNodes)
+            {
+                string Version = "";
+                string Action = "";
+                string ModuleName = "";
+                string DownloadFileName = "";
+                string Comment = "";
+
+                foreach (XmlNode PropertyNode in FileNode.ChildNodes)
                 {
-                    throw new Exception("Invalid 'Plugin Manifest File' recieved from server");
+                    switch (PropertyNode.Name)
+                    {
+                        case ("version"):
+                            Version = PropertyNode.InnerText;
+                            break;
+                        case ("action"):
+                            Action = PropertyNode.InnerText;
+                            break;
+                        case ("modulename"):
+                            ModuleName = PropertyNode.InnerText;
+                            break;
+                        case ("downloadname"):
+                            DownloadFileName = PropertyNode.InnerText;
+                            break;
+                        case ("comment"):
+                            Comment = PropertyNode.InnerText;
+                            break;
+                    }
                 }
-                PluginManifestInfo.Add(LineParts);
-            }
-            List<string[]> CurrentPluginInfo = new List<string[]>();
-            foreach (string Name in ActivePlugin.List())
-            {
-                ActivePlugin AP = ActivePlugin.Get(Name);
-                string[] CurrentInfo = new string[] { "active", AP.Version, AP.FileName.Substring(AP.FileName.LastIndexOf('\\') + 1) };
-                CurrentPluginInfo.Add(CurrentInfo);
-            }
-            foreach (string Name in PassivePlugin.List())
-            {
-                PassivePlugin PP = PassivePlugin.Get(Name);
-                string[] CurrentInfo = new string[] { "passive", PP.Version, PP.FileName.Substring(PP.FileName.LastIndexOf('\\') + 1) };
-                CurrentPluginInfo.Add(CurrentInfo);
-            }
-            foreach (string Name in FormatPlugin.List())
-            {
-                FormatPlugin FP = FormatPlugin.Get(Name);
-                string[] CurrentInfo = new string[] { "format", FP.Version, FP.FileName.Substring(FP.FileName.LastIndexOf('\\') + 1) };
-                CurrentPluginInfo.Add(CurrentInfo);
-            }
-            foreach (string Name in SessionPlugin.List())
-            {
-                SessionPlugin SP = SessionPlugin.Get(Name);
-                string[] CurrentInfo = new string[] { "session", SP.Version, SP.FileName.Substring(SP.FileName.LastIndexOf('\\') + 1) };
-                CurrentPluginInfo.Add(CurrentInfo);
-            }
-            foreach (string[] PluginManifestInfoLine in PluginManifestInfo)
-            {
-                if (PluginManifestInfoLine[0].StartsWith("+") || PluginManifestInfoLine[0].StartsWith("*"))
+
+                if (Action.Equals("add") || Action.Equals("update"))
                 {
                     bool MatchFound = false;
-                    foreach (string[] CurrentPluginLineInfo in CurrentPluginInfo)
+                    string[] MatchedModuleInfo = new string[2];
+                    foreach (string[] ModuleInfo in ModulesInfo)
                     {
-                        if (PluginManifestInfoLine[1].Equals(CurrentPluginLineInfo[0]) && PluginManifestInfoLine[3].Equals(CurrentPluginLineInfo[2]))
+                        if (ModuleInfo[0].Equals(ModuleName.Replace(".zip", "")))
                         {
                             MatchFound = true;
-                            if (!PluginManifestInfoLine[2].Equals(CurrentPluginLineInfo[1]))
-                            {
-                                DownloadPlugin(PluginManifestInfoLine[1], PluginManifestInfoLine[3], PluginManifestInfoLine[4]);
-                            }
+                            MatchedModuleInfo = ModuleInfo;
                             break;
                         }
-                        else if (PluginManifestInfoLine[0].Contains("_"))
-                        {
-                            string[] SupportDetailParts = PluginManifestInfoLine[0].Split(new char[] { '_' }, 2);
-                            if (PluginManifestInfoLine[1].Equals(CurrentPluginLineInfo[0]) && SupportDetailParts[1].Equals(CurrentPluginLineInfo[2]))
-                            {
-                                MatchFound = true;
-                                if (!PluginManifestInfoLine[2].Equals(CurrentPluginLineInfo[1]))
-                                {
-                                    DownloadPlugin(PluginManifestInfoLine[1], PluginManifestInfoLine[3], PluginManifestInfoLine[4]);
-                                }
-                                break;
-                            }
-                        }
                     }
-                    if (!MatchFound)
+
+                    if ((MatchFound && !MatchedModuleInfo[1].Equals(Version)) || !MatchFound)
                     {
-                        DownloadPlugin(PluginManifestInfoLine[1], PluginManifestInfoLine[3], PluginManifestInfoLine[4]);
+                        DownloadModule(ModuleName, DownloadFileName);
+                        XW.WriteStartElement("file");
+                        XW.WriteStartElement("action"); XW.WriteValue(Action); XW.WriteEndElement();
+                        XW.WriteStartElement("modulename"); XW.WriteValue(ModuleName); XW.WriteEndElement();
+                        XW.WriteStartElement("comment"); XW.WriteValue(Comment); XW.WriteEndElement();
+                        XW.WriteEndElement();
                     }
                 }
             }
+
+            XW.WriteEndElement();
+            XW.WriteEndDocument();
+            XW.Close();
+
+            StreamWriter SW = File.CreateText(Config.Path + "\\updates\\module_manifest.xml");
+            SW.Write(SB.ToString());
+            SW.Close();
+
+            //string[] IronWASPManifestLines = IronWASPManifestFile.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+            //foreach (string Line in IronWASPManifestLines)
+            //{
+            //    string[] LineParts = Line.Split(new char[] { '|' }, 5);
+            //    if (LineParts.Length != 5)
+            //    {
+            //        throw new Exception("Invalid 'IronWASP Manifest File' recieved from server");
+            //    }
+            //    IronWASPManifestInfo.Add(LineParts);
+            //}
+            //foreach (string[] IronWASPManifestInfoLine in IronWASPManifestInfo)
+            //{
+            //    if (IronWASPManifestInfoLine[0].Equals("+") || IronWASPManifestInfoLine[0].Equals("*"))
+            //    {
+            //        if (IsGreaterVersion(IronWASPManifestInfoLine[1]))
+            //        {
+            //            DownloadIronWASPFile(IronWASPManifestInfoLine[2], IronWASPManifestInfoLine[3]);
+            //        }
+            //    }
+            //}
+        }
+
+        static void GetNewPlugins()
+        {
+            StringBuilder SB = new StringBuilder();
+            XmlWriter XW = XmlWriter.Create(SB);
+
+            XW.WriteStartDocument();
+            XW.WriteStartElement("manifest");
+
+            XmlDocument XmlDoc = new XmlDocument();
+            try
+            {
+                MemoryStream MS = new MemoryStream(Encoding.UTF8.GetBytes(PluginManifestFile));
+                XmlDoc.Load(MS);
+                MS.Close();
+            }
+            catch { throw new Exception("Invalid IronWASP update manifest file recieved."); }
+            
+            XmlNodeList PluginNodes = null;
+
+            if (XmlDoc.ChildNodes.Count == 1)
+            {
+                PluginNodes = XmlDoc.FirstChild.ChildNodes;
+            }
+            else if (XmlDoc.ChildNodes.Count == 2)
+            {
+                PluginNodes = XmlDoc.ChildNodes[1].ChildNodes;
+            }
+
+            foreach (XmlNode PluginNode in PluginNodes)
+            {
+                GetNewPlugins(PluginNode);
+            }
+            //string[] PluginManifestLines = PluginManifestFile.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            
+            //foreach (string Line in PluginManifestLines)
+            //{
+            //    string[] LineParts = Line.Split(new char[] { '|' }, 6);
+            //    if (LineParts.Length != 6)
+            //    {
+            //        throw new Exception("Invalid 'Plugin Manifest File' recieved from server");
+            //    }
+            //    PluginManifestInfo.Add(LineParts);
+            //}
+            //List<string[]> CurrentPluginInfo = new List<string[]>();
+            //foreach (string Name in ActivePlugin.List())
+            //{
+            //    ActivePlugin AP = ActivePlugin.Get(Name);
+            //    string[] CurrentInfo = new string[] { "active", AP.Version, AP.FileName.Substring(AP.FileName.LastIndexOf('\\') + 1) };
+            //    CurrentPluginInfo.Add(CurrentInfo);
+            //}
+            //foreach (string Name in PassivePlugin.List())
+            //{
+            //    PassivePlugin PP = PassivePlugin.Get(Name);
+            //    string[] CurrentInfo = new string[] { "passive", PP.Version, PP.FileName.Substring(PP.FileName.LastIndexOf('\\') + 1) };
+            //    CurrentPluginInfo.Add(CurrentInfo);
+            //}
+            //foreach (string Name in FormatPlugin.List())
+            //{
+            //    FormatPlugin FP = FormatPlugin.Get(Name);
+            //    string[] CurrentInfo = new string[] { "format", FP.Version, FP.FileName.Substring(FP.FileName.LastIndexOf('\\') + 1) };
+            //    CurrentPluginInfo.Add(CurrentInfo);
+            //}
+            //foreach (string Name in SessionPlugin.List())
+            //{
+            //    SessionPlugin SP = SessionPlugin.Get(Name);
+            //    string[] CurrentInfo = new string[] { "session", SP.Version, SP.FileName.Substring(SP.FileName.LastIndexOf('\\') + 1) };
+            //    CurrentPluginInfo.Add(CurrentInfo);
+            //}
+            //foreach (string[] PluginManifestInfoLine in PluginManifestInfo)
+            //{
+            //    if (PluginManifestInfoLine[0].StartsWith("+") || PluginManifestInfoLine[0].StartsWith("*"))
+            //    {
+            //        bool MatchFound = false;
+            //        foreach (string[] CurrentPluginLineInfo in CurrentPluginInfo)
+            //        {
+            //            if (PluginManifestInfoLine[1].Equals(CurrentPluginLineInfo[0]) && PluginManifestInfoLine[3].Equals(CurrentPluginLineInfo[2]))
+            //            {
+            //                MatchFound = true;
+            //                if (!PluginManifestInfoLine[2].Equals(CurrentPluginLineInfo[1]))
+            //                {
+            //                    DownloadPlugin(PluginManifestInfoLine[1], PluginManifestInfoLine[3], PluginManifestInfoLine[4]);
+            //                }
+            //                break;
+            //            }
+            //            else if (PluginManifestInfoLine[0].Contains("_"))
+            //            {
+            //                string[] SupportDetailParts = PluginManifestInfoLine[0].Split(new char[] { '_' }, 2);
+            //                if (PluginManifestInfoLine[1].Equals(CurrentPluginLineInfo[0]) && SupportDetailParts[1].Equals(CurrentPluginLineInfo[2]))
+            //                {
+            //                    MatchFound = true;
+            //                    if (!PluginManifestInfoLine[2].Equals(CurrentPluginLineInfo[1]))
+            //                    {
+            //                        DownloadPlugin(PluginManifestInfoLine[1], PluginManifestInfoLine[3], PluginManifestInfoLine[4]);
+            //                    }
+            //                    break;
+            //                }
+            //            }
+            //        }
+            //        if (!MatchFound)
+            //        {
+            //            DownloadPlugin(PluginManifestInfoLine[1], PluginManifestInfoLine[3], PluginManifestInfoLine[4]);
+            //        }
+            //    }
+            //}
+        }
+
+        static void GetNewPlugins(XmlNode ManifestNode)
+        {
+            string PluginType = ManifestNode.Name;
+            
+            List<string[]> AllPluginInfo = new List<string[]>();
+
+            switch (PluginType)
+            {
+                case("active"):
+                    foreach (string Name in ActivePlugin.List())
+                    {
+                        ActivePlugin P = ActivePlugin.Get(Name);
+                        AllPluginInfo.Add(new string[]{P.FileName, P.Version});
+                    }
+                    break;
+                case ("passive"):
+                    foreach (string Name in PassivePlugin.List())
+                    {
+                        PassivePlugin P = PassivePlugin.Get(Name);
+                        AllPluginInfo.Add(new string[] { P.FileName, P.Version });
+                    }
+                    break;
+                case ("format"):
+                    foreach (string Name in FormatPlugin.List())
+                    {
+                        FormatPlugin P = FormatPlugin.Get(Name);
+                        AllPluginInfo.Add(new string[] { P.FileName, P.Version });
+                    }
+                    break;
+                case ("session"):
+                    foreach (string Name in SessionPlugin.List())
+                    {
+                        SessionPlugin P = SessionPlugin.Get(Name);
+                        AllPluginInfo.Add(new string[] { P.FileName, P.Version });
+                    }
+                    break;
+            }
+            
+            StringBuilder SB = new StringBuilder();
+            XmlWriter XW = XmlWriter.Create(SB);
+
+            XW.WriteStartDocument();
+            XW.WriteStartElement("manifest");
+
+            foreach (XmlNode FileNode in ManifestNode.ChildNodes)
+            {
+                string Version = "";
+                string Action = "";
+                string FileName = "";
+                string DownloadFileName = "";
+                string Comment = "";
+                List<string[]> SupportFiles = new List<string[]>();
+
+                foreach (XmlNode PropertyNode in FileNode.ChildNodes)
+                {
+                    switch (PropertyNode.Name)
+                    {
+                        case ("version"):
+                            Version = PropertyNode.InnerText;
+                            break;
+                        case ("action"):
+                            Action = PropertyNode.InnerText;
+                            break;
+                        case ("filename"):
+                            FileName = PropertyNode.InnerText;
+                            break;
+                        case ("downloadname"):
+                            DownloadFileName = PropertyNode.InnerText;
+                            break;
+                        case ("comment"):
+                            Comment = PropertyNode.InnerText;
+                            break;
+                        case ("support_file"):
+                            string SupportFileName = "";
+                            string SupportFileDownloadName = "";
+                            foreach (XmlNode SupportFileNode in PropertyNode.ChildNodes)
+                            {
+                                switch (SupportFileNode.Name)
+                                {
+                                    case ("filename"):
+                                        SupportFileName = PropertyNode.InnerText;
+                                        break;
+                                    case ("downloadname"):
+                                        SupportFileDownloadName = PropertyNode.InnerText;
+                                        break;
+                                }
+                            }
+                            SupportFiles.Add(new string[]{SupportFileName, SupportFileDownloadName});
+                            break;
+                    }
+                }
+
+                if (Action.Equals("add") || Action.Equals("update"))
+                {
+                    bool MatchFound = false;
+                    string[] MatchedPluginInfo = new string[2];
+                    foreach (string[] PluginInfo in AllPluginInfo)
+                    {
+                        if (PluginInfo[0].Equals(FileName))
+                        {
+                            MatchFound = true;
+                            MatchedPluginInfo = PluginInfo;
+                            break;
+                        }
+                    }
+
+                    if ((MatchFound && !MatchedPluginInfo[1].Equals(Version)) || !MatchFound)
+                    {
+                        DownloadPlugin(PluginType, FileName, DownloadFileName);
+                        XW.WriteStartElement("file");
+                        XW.WriteStartElement("action"); XW.WriteValue(Action); XW.WriteEndElement();
+                        XW.WriteStartElement("filename"); XW.WriteValue(FileName); XW.WriteEndElement();
+                        XW.WriteStartElement("comment"); XW.WriteValue(Comment); XW.WriteEndElement();
+                        XW.WriteEndElement();
+                        foreach (string[] SupportFile in SupportFiles)
+                        {
+                            DownloadPlugin(PluginType, SupportFile[0], SupportFile[1]);
+                            XW.WriteStartElement("file");
+                            XW.WriteStartElement("action"); XW.WriteValue(Action); XW.WriteEndElement();
+                            XW.WriteStartElement("filename"); XW.WriteValue(SupportFile[0]); XW.WriteEndElement();
+                            XW.WriteStartElement("comment"); XW.WriteValue(Comment); XW.WriteEndElement();
+                            XW.WriteEndElement();
+                        }
+                    }
+                }
+            }
+
+            XW.WriteEndElement();
+            XW.WriteEndDocument();
+            XW.Close();
+
+            StreamWriter SW = File.CreateText(Config.Path + "\\updates\\" + PluginType + "_plugin_manifest.xml");
+            SW.Write(SB.ToString());
+            SW.Close();
         }
 
         static void GetNewIronWASP()
         {
-            string[] IronWASPManifestLines = IronWASPManifestFile.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            StringBuilder SB = new StringBuilder();
+            XmlWriter XW = XmlWriter.Create(SB);
 
-            foreach (string Line in IronWASPManifestLines)
+            XW.WriteStartDocument();
+            XW.WriteStartElement("manifest");
+
+            XmlDocument XmlDoc = new XmlDocument();
+            try
             {
-                string[] LineParts = Line.Split(new char[] { '|' }, 5);
-                if (LineParts.Length != 5)
-                {
-                    throw new Exception("Invalid 'IronWASP Manifest File' recieved from server");
-                }
-                IronWASPManifestInfo.Add(LineParts);
+                MemoryStream MS = new MemoryStream(Encoding.UTF8.GetBytes(IronWASPManifestFile));
+                XmlDoc.Load(MS);
+                MS.Close();
             }
-            foreach (string[] IronWASPManifestInfoLine in IronWASPManifestInfo)
+            catch { throw new Exception("Invalid IronWASP update manifest file recieved."); }
+            
+            XmlNodeList FileNodes = null;
+
+            if (XmlDoc.ChildNodes.Count == 1)
             {
-                if (IronWASPManifestInfoLine[0].Equals("+") || IronWASPManifestInfoLine[0].Equals("*"))
+                FileNodes = XmlDoc.FirstChild.ChildNodes;
+            }
+            else if (XmlDoc.ChildNodes.Count == 2)
+            {
+                FileNodes = XmlDoc.ChildNodes[1].ChildNodes;
+            }
+
+            foreach (XmlNode FileNode in FileNodes)
+            {
+                string Version = "";
+                string Action = "";
+                string FileName = "";
+                string DownloadFileName = "";
+                string Comment = "";
+
+                foreach (XmlNode PropertyNode in FileNode.ChildNodes)
                 {
-                    if (IsGreaterVersion(IronWASPManifestInfoLine[1]))
+                    switch (PropertyNode.Name)
                     {
-                        DownloadIronWASPFile(IronWASPManifestInfoLine[2], IronWASPManifestInfoLine[3]);
+                        case ("version"):
+                            Version = PropertyNode.InnerText;
+                            break;
+                        case ("action"):
+                            Action = PropertyNode.InnerText;
+                            break;
+                        case ("filename"):
+                            FileName = PropertyNode.InnerText;
+                            break;
+                        case ("downloadname"):
+                            DownloadFileName = PropertyNode.InnerText;
+                            break;
+                        case ("comment"):
+                            Comment = PropertyNode.InnerText;
+                            break;
+                    }
+                }
+
+                if (Action.Equals("add") || Action.Equals("update"))
+                {
+                    if (IsGreaterVersion(Version))
+                    {
+                        DownloadIronWASPFile(FileName, DownloadFileName);
+                        XW.WriteStartElement("file");
+                        XW.WriteStartElement("action"); XW.WriteValue(Action); XW.WriteEndElement();
+                        XW.WriteStartElement("filename"); XW.WriteValue(FileName); XW.WriteEndElement();
+                        XW.WriteStartElement("comment"); XW.WriteValue(Comment); XW.WriteEndElement();
+                        XW.WriteEndElement();
                     }
                 }
             }
+
+            XW.WriteEndElement();
+            XW.WriteEndDocument();
+            XW.Close();
+
+            StreamWriter SW = File.CreateText(Config.Path + "\\updates\\ironwasp_manifest.xml");
+            SW.Write(SB.ToString());
+            SW.Close();
+
+            //string[] IronWASPManifestLines = IronWASPManifestFile.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+            //foreach (string Line in IronWASPManifestLines)
+            //{
+            //    string[] LineParts = Line.Split(new char[] { '|' }, 5);
+            //    if (LineParts.Length != 5)
+            //    {
+            //        throw new Exception("Invalid 'IronWASP Manifest File' recieved from server");
+            //    }
+            //    IronWASPManifestInfo.Add(LineParts);
+            //}
+            //foreach (string[] IronWASPManifestInfoLine in IronWASPManifestInfo)
+            //{
+            //    if (IronWASPManifestInfoLine[0].Equals("+") || IronWASPManifestInfoLine[0].Equals("*"))
+            //    {
+            //        if (IsGreaterVersion(IronWASPManifestInfoLine[1]))
+            //        {
+            //            DownloadIronWASPFile(IronWASPManifestInfoLine[2], IronWASPManifestInfoLine[3]);
+            //        }
+            //    }
+            //}
+        }
+
+        static void DownloadModule(string ModuleName, string PseudoName)
+        {
+            Request ModuleFetchReq = new Request(ModuleDownloadBaseUrl + "/" + PseudoName);
+            ModuleFetchReq.Source = RequestSource.Stealth;
+            Response ModuleFetchRes = ModuleFetchReq.Send();
+            if (!ModuleFetchRes.IsSslValid)
+            {
+                throw new Exception("Invalid SSL Certificate provided by the server");
+            }
+            if (ModuleFetchRes.Code != 200)
+            {
+                throw new Exception("Downloading updated modules failed");
+            }
+            try
+            {
+                ModuleFetchRes.SaveBody(Config.Path + "\\updates\\modules\\" + ModuleName + ".zip");
+                using (ZipFile ZF = ZipFile.Read(Config.Path + "\\updates\\modules\\" + ModuleName + ".zip"))
+                {
+                    ZF.ExtractAll(Config.Path + "\\updates\\modules\\");
+                }
+                NewUpdateAvailable = true;
+            }
+            catch (Exception Exp) { IronException.Report(string.Format("Error Downloading Module: {0} - {1} ", ModuleName, PseudoName), Exp); }
         }
 
         static void DownloadPlugin(string PluginType, string FileName, string PseudoName)

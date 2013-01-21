@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -56,6 +56,8 @@ namespace IronWASP
         internal static bool ScriptedSendEnabled = false;
         static Stack<Request> StoredRequestStack = new Stack<Request>();
 
+        internal static int UntitledCount = 0;
+
         //To check message editing
         internal static bool RequestChanged = false;
         internal static bool RequestHeaderChanged = false;
@@ -68,19 +70,23 @@ namespace IronWASP
         internal static Thread RequestFormatThread;
         internal static Thread ResponseFormatThread;
 
-        internal static Dictionary<int, Session> RedGroupSessions = new Dictionary<int,Session>();
-        internal static Dictionary<int, Session> BlueGroupSessions = new Dictionary<int,Session>();
-        internal static Dictionary<int, Session> GreenGroupSessions = new Dictionary<int,Session>();
-        internal static Dictionary<int, Session> GrayGroupSessions = new Dictionary<int,Session>();
-        internal static Dictionary<int, Session> BrownGroupSessions = new Dictionary<int,Session>();
+        //internal static Dictionary<int, Session> RedGroupSessions = new Dictionary<int,Session>();
+        //internal static Dictionary<int, Session> BlueGroupSessions = new Dictionary<int,Session>();
+        //internal static Dictionary<int, Session> GreenGroupSessions = new Dictionary<int,Session>();
+        //internal static Dictionary<int, Session> GrayGroupSessions = new Dictionary<int,Session>();
+        //internal static Dictionary<int, Session> BrownGroupSessions = new Dictionary<int,Session>();
 
-        internal static int RedGroupID = 0;
-        internal static int BlueGroupID = 0;
-        internal static int GreenGroupID = 0;
-        internal static int GrayGroupID = 0;
-        internal static int BrownGroupID = 0;
+        //internal static List<string> GroupNames = new List<string>();
+        internal static Dictionary<string, Dictionary<int, Session>> GroupSessions = new Dictionary<string, Dictionary<int, Session>>();
+        internal static Dictionary<string, int> CurrentGroupLogId = new Dictionary<string, int>();
 
-        internal static string CurrentGroup = "Red";
+        //internal static int RedGroupID = 0;
+        //internal static int BlueGroupID = 0;
+        //internal static int GreenGroupID = 0;
+        //internal static int GrayGroupID = 0;
+        //internal static int BrownGroupID = 0;
+
+        internal static string CurrentGroup = "";
 
         internal static void SendRequest()
         {
@@ -101,110 +107,135 @@ namespace IronWASP
         internal static void StoreInGroupList(Request Req)
         {
             Session IrSe = new Session(Req);
-            switch (CurrentGroup)
+            IrSe.Flags.Add("Group", CurrentGroup);
+            lock (GroupSessions)
             {
-                case("Red"):
-                    IrSe.Flags.Add("Group", "Red");
-                    lock (RedGroupSessions)
-                    {
-                        if (RedGroupSessions.ContainsKey(Req.ID))
-                            RedGroupSessions[Req.ID] = IrSe;
-                        else
-                            RedGroupSessions.Add(Req.ID, IrSe);
-                    }
-                    IronDB.AddToTestGroup(Req.ID, "Red");
-                    break;
-                case ("Blue"):
-                    IrSe.Flags.Add("Group", "Blue");
-                    lock (BlueGroupSessions)
-                    {
-                        if (BlueGroupSessions.ContainsKey(Req.ID))
-                            BlueGroupSessions[Req.ID] = IrSe;
-                        else
-                            BlueGroupSessions.Add(Req.ID, IrSe);
-                    }
-                    IronDB.AddToTestGroup(Req.ID, "Blue");
-                    break;
-                case ("Green"):
-                    IrSe.Flags.Add("Group", "Green");
-                    lock (GreenGroupSessions)
-                    {
-                        if (GreenGroupSessions.ContainsKey(Req.ID))
-                            GreenGroupSessions[Req.ID] = IrSe;
-                        else
-                            GreenGroupSessions.Add(Req.ID, IrSe);
-                    }
-                    IronDB.AddToTestGroup(Req.ID, "Green");
-                    break;
-                case ("Gray"):
-                    IrSe.Flags.Add("Group", "Gray");
-                    lock (GrayGroupSessions)
-                    {
-                        if (GrayGroupSessions.ContainsKey(Req.ID))
-                            GrayGroupSessions[Req.ID] = IrSe;
-                        else
-                            GrayGroupSessions.Add(Req.ID, IrSe);
-                    }
-                    IronDB.AddToTestGroup(Req.ID, "Gray");
-                    break;
-                case ("Brown"):
-                    IrSe.Flags.Add("Group", "Brown");
-                    lock (BrownGroupSessions)
-                    {
-                        if (BrownGroupSessions.ContainsKey(Req.ID))
-                            BrownGroupSessions[Req.ID] = IrSe;
-                        else
-                            BrownGroupSessions.Add(Req.ID, IrSe);
-                    }
-                    IronDB.AddToTestGroup(Req.ID, "Brown");
-                    break;
+                if (!GroupSessions.ContainsKey(CurrentGroup))
+                    GroupSessions[CurrentGroup] = new Dictionary<int, Session>();
+
+                if (GroupSessions[CurrentGroup].ContainsKey(Req.ID))
+                    GroupSessions[CurrentGroup][Req.ID] = IrSe;
+                else
+                    GroupSessions[CurrentGroup].Add(Req.ID, IrSe);
             }
+            //switch (CurrentGroup)
+            //{
+            //    case("Red"):
+            //        IrSe.Flags.Add("Group", "Red");
+            //        lock (RedGroupSessions)
+            //        {
+            //            if (RedGroupSessions.ContainsKey(Req.ID))
+            //                RedGroupSessions[Req.ID] = IrSe;
+            //            else
+            //                RedGroupSessions.Add(Req.ID, IrSe);
+            //        }
+            //        IronDB.AddToTestGroup(Req.ID, "Red");
+            //        break;
+            //    case ("Blue"):
+            //        IrSe.Flags.Add("Group", "Blue");
+            //        lock (BlueGroupSessions)
+            //        {
+            //            if (BlueGroupSessions.ContainsKey(Req.ID))
+            //                BlueGroupSessions[Req.ID] = IrSe;
+            //            else
+            //                BlueGroupSessions.Add(Req.ID, IrSe);
+            //        }
+            //        IronDB.AddToTestGroup(Req.ID, "Blue");
+            //        break;
+            //    case ("Green"):
+            //        IrSe.Flags.Add("Group", "Green");
+            //        lock (GreenGroupSessions)
+            //        {
+            //            if (GreenGroupSessions.ContainsKey(Req.ID))
+            //                GreenGroupSessions[Req.ID] = IrSe;
+            //            else
+            //                GreenGroupSessions.Add(Req.ID, IrSe);
+            //        }
+            //        IronDB.AddToTestGroup(Req.ID, "Green");
+            //        break;
+            //    case ("Gray"):
+            //        IrSe.Flags.Add("Group", "Gray");
+            //        lock (GrayGroupSessions)
+            //        {
+            //            if (GrayGroupSessions.ContainsKey(Req.ID))
+            //                GrayGroupSessions[Req.ID] = IrSe;
+            //            else
+            //                GrayGroupSessions.Add(Req.ID, IrSe);
+            //        }
+            //        IronDB.AddToTestGroup(Req.ID, "Gray");
+            //        break;
+            //    case ("Brown"):
+            //        IrSe.Flags.Add("Group", "Brown");
+            //        lock (BrownGroupSessions)
+            //        {
+            //            if (BrownGroupSessions.ContainsKey(Req.ID))
+            //                BrownGroupSessions[Req.ID] = IrSe;
+            //            else
+            //                BrownGroupSessions.Add(Req.ID, IrSe);
+            //        }
+            //        IronDB.AddToTestGroup(Req.ID, "Brown");
+            //        break;
+            //}
+            IronDB.AddToTestGroup(Req.ID, CurrentGroup);
             IronUI.UpdateTestGroupLogGridWithRequest(IrSe);
         }
 
         internal static void StoreInGroupList(Response Res)
         {
             Session IrSe = null;
-            if (RedGroupSessions.ContainsKey(Res.ID))
-            {
-                lock (RedGroupSessions)
-                { 
-                    RedGroupSessions[Res.ID].Response = Res;
-                    IrSe = RedGroupSessions[Res.ID];
-                }
-            }
-            else if (BlueGroupSessions.ContainsKey(Res.ID))
-            {
-                lock (BlueGroupSessions)
+            
+            foreach (string Group in GroupSessions.Keys)
+            {                
+                if (GroupSessions[Group].ContainsKey(Res.ID))
                 {
-                    BlueGroupSessions[Res.ID].Response = Res;
-                    IrSe = BlueGroupSessions[Res.ID];
+                    lock (GroupSessions)
+                    {
+                        GroupSessions[Group][Res.ID].Response = Res;
+                        IrSe = GroupSessions[Group][Res.ID];
+                    }
+                    break;
                 }
             }
-            else if (GreenGroupSessions.ContainsKey(Res.ID))
-            {
-                lock (GreenGroupSessions) 
-                {
-                    GreenGroupSessions[Res.ID].Response = Res;
-                    IrSe = GreenGroupSessions[Res.ID];
-                }
-            }
-            else if (GrayGroupSessions.ContainsKey(Res.ID))
-            {
-                lock (GrayGroupSessions)
-                {
-                    GrayGroupSessions[Res.ID].Response = Res;
-                    IrSe = GrayGroupSessions[Res.ID];
-                }
-            }
-            else if (BrownGroupSessions.ContainsKey(Res.ID))
-            {
-                lock (BrownGroupSessions)
-                {
-                    BrownGroupSessions[Res.ID].Response = Res;
-                    IrSe = BrownGroupSessions[Res.ID];
-                }
-            }
+            //if (RedGroupSessions.ContainsKey(Res.ID))
+            //{
+            //    lock (RedGroupSessions)
+            //    { 
+            //        RedGroupSessions[Res.ID].Response = Res;
+            //        IrSe = RedGroupSessions[Res.ID];
+            //    }
+            //}
+            //else if (BlueGroupSessions.ContainsKey(Res.ID))
+            //{
+            //    lock (BlueGroupSessions)
+            //    {
+            //        BlueGroupSessions[Res.ID].Response = Res;
+            //        IrSe = BlueGroupSessions[Res.ID];
+            //    }
+            //}
+            //else if (GreenGroupSessions.ContainsKey(Res.ID))
+            //{
+            //    lock (GreenGroupSessions) 
+            //    {
+            //        GreenGroupSessions[Res.ID].Response = Res;
+            //        IrSe = GreenGroupSessions[Res.ID];
+            //    }
+            //}
+            //else if (GrayGroupSessions.ContainsKey(Res.ID))
+            //{
+            //    lock (GrayGroupSessions)
+            //    {
+            //        GrayGroupSessions[Res.ID].Response = Res;
+            //        IrSe = GrayGroupSessions[Res.ID];
+            //    }
+            //}
+            //else if (BrownGroupSessions.ContainsKey(Res.ID))
+            //{
+            //    lock (BrownGroupSessions)
+            //    {
+            //        BrownGroupSessions[Res.ID].Response = Res;
+            //        IrSe = BrownGroupSessions[Res.ID];
+            //    }
+            //}
             if (IrSe != null)
             {
                 if (IrSe.Flags.ContainsKey("Reflecton"))
@@ -218,24 +249,25 @@ namespace IronWASP
         internal static void SetCurrentID(int ID)
         {
             CurrentRequestID = ID;
-            switch(CurrentGroup)
-            {
-                case("Red"):
-                    RedGroupID = ID;
-                    break;
-                case ("Blue"):
-                    BlueGroupID = ID;
-                    break;
-                case ("Green"):
-                    GreenGroupID = ID;
-                    break;
-                case ("Gray"):
-                    GrayGroupID = ID;
-                    break;
-                case ("Brown"):
-                    BrownGroupID = ID;
-                    break;
-            }
+            CurrentGroupLogId[CurrentGroup] = ID;
+            //switch(CurrentGroup)
+            //{
+            //    case("Red"):
+            //        RedGroupID = ID;
+            //        break;
+            //    case ("Blue"):
+            //        BlueGroupID = ID;
+            //        break;
+            //    case ("Green"):
+            //        GreenGroupID = ID;
+            //        break;
+            //    case ("Gray"):
+            //        GrayGroupID = ID;
+            //        break;
+            //    case ("Brown"):
+            //        BrownGroupID = ID;
+            //        break;
+            //}
         }
 
         internal static void ClearGroup()
@@ -246,57 +278,114 @@ namespace IronWASP
         internal static void ClearGroup(string Group, int NewID)
         {
             SetCurrentID(NewID);
-            switch (CurrentGroup)
+            lock(GroupSessions)
             {
-                case("Red"):
-                    lock (RedGroupSessions) { RedGroupSessions.Clear(); }
-                    break;
-                case ("Blue"):
-                    lock (BlueGroupSessions) { BlueGroupSessions.Clear(); }
-                    break;
-                case ("Green"):
-                    lock (GreenGroupSessions) { GreenGroupSessions.Clear(); }
-                    break;
-                case ("Gray"):
-                    lock (GrayGroupSessions) { GrayGroupSessions.Clear(); }
-                    break;
-                case ("Brown"):
-                    lock (BrownGroupSessions) { BrownGroupSessions.Clear(); }
-                    break;
+                if (GroupSessions.ContainsKey(Group))
+                {
+                    GroupSessions.Remove(Group);
+                }
             }
+            //switch (CurrentGroup)
+            //{
+            //    case("Red"):
+            //        lock (RedGroupSessions) { RedGroupSessions.Clear(); }
+            //        break;
+            //    case ("Blue"):
+            //        lock (BlueGroupSessions) { BlueGroupSessions.Clear(); }
+            //        break;
+            //    case ("Green"):
+            //        lock (GreenGroupSessions) { GreenGroupSessions.Clear(); }
+            //        break;
+            //    case ("Gray"):
+            //        lock (GrayGroupSessions) { GrayGroupSessions.Clear(); }
+            //        break;
+            //    case ("Brown"):
+            //        lock (BrownGroupSessions) { BrownGroupSessions.Clear(); }
+            //        break;
+            //}
             IronDB.ClearGroup(CurrentGroup);
+        }
+
+        internal static void ShowGroup(string Group)
+        {
+            //TestIDLbl.BackColor = Color.Red;
+            //TestIDLbl.Text = "ID: 0";
+            //ManualTesting.CurrentGroup = "Red";
+            ManualTesting.CurrentGroup = Group;
+            IronUI.ResetMTDisplayFields();
+            IronUI.UpdateTestGroupLogGrid(ManualTesting.GroupSessions[Group]);
+            ManualTesting.ShowSession(ManualTesting.CurrentGroupLogId[Group]);
+            //if (ManualTesting.RedGroupID == 0) MTReqResTabs.SelectTab("MTRequestTab");
+        }
+
+        internal static string CreateNewGroupWithRequest(Request Req, bool SwitchToMTSection)
+        {
+            string Name = "";
+            bool Named = false;
+            while (!Named)
+            {
+                Name = string.Format("untitled-{0}", Interlocked.Increment(ref ManualTesting.UntitledCount));
+                if (!ManualTesting.GroupSessions.ContainsKey(Name))
+                {
+                    Named = true;
+                }
+            }
+            CreateNewGroupWithRequest(Req, Name, SwitchToMTSection);
+            return Name;
+        }
+
+        internal static void CreateNewGroupWithRequest(Request Req, string Group, bool SwitchToMTSection)
+        {
+            int TestID = Interlocked.Increment(ref Config.TestRequestsCount);
+            Req.ID = TestID;
+            IronDB.LogMTRequest(Req);
+            //IronDB.ClearGroup(Group);
+            ManualTesting.CurrentRequestID = TestID;
+            ManualTesting.CurrentGroup = Group;
+            ManualTesting.ClearGroup(Group, TestID);
+            ManualTesting.StoreInGroupList(Req);
+            IronUI.SetNewTestRequest(Req, Group, SwitchToMTSection);
         }
 
         internal static void ShowSession(int ID)
         {
             Session IrSe = null;
-            if (RedGroupSessions.ContainsKey(ID))
+            foreach (string Group in GroupSessions.Keys)
             {
-                lock (RedGroupSessions) { IrSe = RedGroupSessions[ID]; IrSe.Flags["Group"] = "Red"; }
+                if(GroupSessions[Group].ContainsKey(ID))
+                {
+                    IrSe = GroupSessions[Group][ID];
+                    IrSe.Flags["Group"] = Group;
+                }
             }
-            else if (BlueGroupSessions.ContainsKey(ID))
-            {
-                lock (BlueGroupSessions) { IrSe = BlueGroupSessions[ID]; IrSe.Flags["Group"] = "Blue"; }
-            }
-            else if (GreenGroupSessions.ContainsKey(ID))
-            {
-                lock (GreenGroupSessions) { IrSe = GreenGroupSessions[ID]; IrSe.Flags["Group"] = "Green"; }
-            }
-            else if (GrayGroupSessions.ContainsKey(ID))
-            {
-                lock (GrayGroupSessions) { IrSe = GrayGroupSessions[ID]; IrSe.Flags["Group"] = "Gray"; }
-            }
-            else if (BrownGroupSessions.ContainsKey(ID))
-            {
-                lock (BrownGroupSessions) { IrSe = BrownGroupSessions[ID]; IrSe.Flags["Group"] = "Brown"; }
-            }
+            //if (RedGroupSessions.ContainsKey(ID))
+            //{
+            //    lock (RedGroupSessions) { IrSe = RedGroupSessions[ID]; IrSe.Flags["Group"] = "Red"; }
+            //}
+            //else if (BlueGroupSessions.ContainsKey(ID))
+            //{
+            //    lock (BlueGroupSessions) { IrSe = BlueGroupSessions[ID]; IrSe.Flags["Group"] = "Blue"; }
+            //}
+            //else if (GreenGroupSessions.ContainsKey(ID))
+            //{
+            //    lock (GreenGroupSessions) { IrSe = GreenGroupSessions[ID]; IrSe.Flags["Group"] = "Green"; }
+            //}
+            //else if (GrayGroupSessions.ContainsKey(ID))
+            //{
+            //    lock (GrayGroupSessions) { IrSe = GrayGroupSessions[ID]; IrSe.Flags["Group"] = "Gray"; }
+            //}
+            //else if (BrownGroupSessions.ContainsKey(ID))
+            //{
+            //    lock (BrownGroupSessions) { IrSe = BrownGroupSessions[ID]; IrSe.Flags["Group"] = "Brown"; }
+            //}
             if (IrSe != null)
             {
+                IronUI.ResetMTDisplayFields();
                 IronUI.FillMTFields(IrSe);
-                if (IrSe.Flags.ContainsKey("Reflecton"))
-                    IronUI.FillTestReflection(IrSe.Flags["Reflecton"].ToString());
-                else
-                    IronUI.FillTestReflection("");
+                //if (IrSe.Flags.ContainsKey("Reflecton"))
+                //    IronUI.FillTestReflection(IrSe.Flags["Reflecton"].ToString());
+                //else
+                //    IronUI.FillTestReflection("");
             }
         }
 
@@ -332,29 +421,35 @@ namespace IronWASP
 
         static int[] GetGroupIDs()
         {
-            switch (CurrentGroup)
+            if (GroupSessions.ContainsKey(CurrentGroup))
             {
-                case("Red"):
-                    int[] RedIDs = new int[RedGroupSessions.Keys.Count];
-                    RedGroupSessions.Keys.CopyTo(RedIDs, 0);
-                    return RedIDs;
-                case ("Blue"):
-                    int[] BlueIDs = new int[BlueGroupSessions.Keys.Count];
-                    BlueGroupSessions.Keys.CopyTo(BlueIDs, 0);
-                    return BlueIDs;
-                case ("Green"):
-                    int[] GreenIDs = new int[GreenGroupSessions.Keys.Count];
-                    GreenGroupSessions.Keys.CopyTo(GreenIDs, 0);
-                    return GreenIDs;
-                case ("Gray"):
-                    int[] GrayIDs = new int[GrayGroupSessions.Keys.Count];
-                    GrayGroupSessions.Keys.CopyTo(GrayIDs, 0);
-                    return GrayIDs;
-                case ("Brown"):
-                    int[] BrownIDs = new int[BrownGroupSessions.Keys.Count];
-                    BrownGroupSessions.Keys.CopyTo(BrownIDs, 0);
-                    return BrownIDs;
+                int[] IDs = new int[GroupSessions[CurrentGroup].Keys.Count];
+                GroupSessions[CurrentGroup].Keys.CopyTo(IDs, 0);
+                return IDs;
             }
+            //switch (CurrentGroup)
+            //{
+            //    case("Red"):
+            //        int[] RedIDs = new int[RedGroupSessions.Keys.Count];
+            //        RedGroupSessions.Keys.CopyTo(RedIDs, 0);
+            //        return RedIDs;
+            //    case ("Blue"):
+            //        int[] BlueIDs = new int[BlueGroupSessions.Keys.Count];
+            //        BlueGroupSessions.Keys.CopyTo(BlueIDs, 0);
+            //        return BlueIDs;
+            //    case ("Green"):
+            //        int[] GreenIDs = new int[GreenGroupSessions.Keys.Count];
+            //        GreenGroupSessions.Keys.CopyTo(GreenIDs, 0);
+            //        return GreenIDs;
+            //    case ("Gray"):
+            //        int[] GrayIDs = new int[GrayGroupSessions.Keys.Count];
+            //        GrayGroupSessions.Keys.CopyTo(GrayIDs, 0);
+            //        return GrayIDs;
+            //    case ("Brown"):
+            //        int[] BrownIDs = new int[BrownGroupSessions.Keys.Count];
+            //        BrownGroupSessions.Keys.CopyTo(BrownIDs, 0);
+            //        return BrownIDs;
+            //}
             return null;
         }
 
@@ -379,6 +474,7 @@ namespace IronWASP
             ScriptEngine Engine = Python.CreateEngine();
             StringBuilder FullCode = new StringBuilder();
             FullCode.AppendLine("from IronWASP import *");
+            FullCode.AppendLine("import re");
             FullCode.AppendLine("class ss(ScriptedSender):");
             FullCode.AppendLine("\tdef ScriptedSend(self, req):");
             string[] CodeLines = FunctionCode.Split(new string[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
@@ -535,68 +631,68 @@ namespace IronWASP
             RequestHeaderParametersChanged = false;
         }
 
-        internal static void StartDeSerializingRequestBody(Request Request, FormatPlugin Plugin)
-        {
-            BodyFormatParamters BFP = new BodyFormatParamters(Request, Plugin);
-            RequestFormatThread = new Thread(ManualTesting.DeSerializeRequestBody);
-            RequestFormatThread.Start(BFP);
-        }
+        //internal static void StartDeSerializingRequestBody(Request Request, FormatPlugin Plugin)
+        //{
+        //    BodyFormatParamters BFP = new BodyFormatParamters(Request, Plugin);
+        //    RequestFormatThread = new Thread(ManualTesting.DeSerializeRequestBody);
+        //    RequestFormatThread.Start(BFP);
+        //}
 
-        internal static void DeSerializeRequestBody(object BFPObject)
-        {
-            string PluginName = "";
-            try
-            {
-                BodyFormatParamters BFP = (BodyFormatParamters)BFPObject;
-                Request Request = BFP.Request;
-                FormatPlugin Plugin = BFP.Plugin;
-                PluginName = Plugin.Name;
+        //internal static void DeSerializeRequestBody(object BFPObject)
+        //{
+        //    string PluginName = "";
+        //    try
+        //    {
+        //        BodyFormatParamters BFP = (BodyFormatParamters)BFPObject;
+        //        Request Request = BFP.Request;
+        //        FormatPlugin Plugin = BFP.Plugin;
+        //        PluginName = Plugin.Name;
 
-                string XML = Plugin.ToXmlFromRequest(Request);
-                IronUI.FillMTRequestFormatXML(XML);
-            }
-            catch (ThreadAbortException)
-            {
-                //
-            }
-            catch (Exception Exp)
-            {
-                IronException.Report("Error Deserializing 'Manual Testing' Request using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
-                IronUI.ShowMTException("Error Deserializing");
-            }
-        }
+        //        string XML = Plugin.ToXmlFromRequest(Request);
+        //        IronUI.FillMTRequestFormatXML(XML);
+        //    }
+        //    catch (ThreadAbortException)
+        //    {
+        //        //
+        //    }
+        //    catch (Exception Exp)
+        //    {
+        //        IronException.Report("Error Deserializing 'Manual Testing' Request using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
+        //        IronUI.ShowMTException("Error Deserializing");
+        //    }
+        //}
 
-        internal static void StartSerializingRequestBody(Request Request, FormatPlugin Plugin, string XML)
-        {
-            BodyFormatParamters BFP = new BodyFormatParamters(Request, Plugin, XML);
-            RequestFormatThread = new Thread(ManualTesting.SerializeRequestBody);
-            RequestFormatThread.Start(BFP);
-        }
+        //internal static void StartSerializingRequestBody(Request Request, FormatPlugin Plugin, string XML)
+        //{
+        //    BodyFormatParamters BFP = new BodyFormatParamters(Request, Plugin, XML);
+        //    RequestFormatThread = new Thread(ManualTesting.SerializeRequestBody);
+        //    RequestFormatThread.Start(BFP);
+        //}
 
-        internal static void SerializeRequestBody(object BFPObject)
-        {
-            string PluginName = "";
-            try
-            {
-                BodyFormatParamters BFP = (BodyFormatParamters)BFPObject;
-                Request Request = BFP.Request;
-                FormatPlugin Plugin = BFP.Plugin;
-                PluginName = Plugin.Name;
-                string XML = BFP.XML;
+        //internal static void SerializeRequestBody(object BFPObject)
+        //{
+        //    string PluginName = "";
+        //    try
+        //    {
+        //        BodyFormatParamters BFP = (BodyFormatParamters)BFPObject;
+        //        Request Request = BFP.Request;
+        //        FormatPlugin Plugin = BFP.Plugin;
+        //        PluginName = Plugin.Name;
+        //        string XML = BFP.XML;
                 
-                Request NewRequest = Plugin.ToRequestFromXml(Request, XML);
-                IronUI.FillMTRequestWithNewRequestFromFormatXML(NewRequest, PluginName);
-            }
-            catch (ThreadAbortException)
-            {
-                //
-            }
-            catch (Exception Exp)
-            {
-                IronException.Report("Error Serializing 'Manual Testing' Request using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
-                IronUI.ShowMTException("Error Serializing");
-            }
-        }
+        //        Request NewRequest = Plugin.ToRequestFromXml(Request, XML);
+        //        IronUI.FillMTRequestWithNewRequestFromFormatXML(NewRequest, PluginName);
+        //    }
+        //    catch (ThreadAbortException)
+        //    {
+        //        //
+        //    }
+        //    catch (Exception Exp)
+        //    {
+        //        IronException.Report("Error Serializing 'Manual Testing' Request using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
+        //        IronUI.ShowMTException("Error Serializing");
+        //    }
+        //}
         internal static void TerminateAllFormatThreads()
         {
             TerminateRequestFormatThreads();
@@ -618,6 +714,43 @@ namespace IronWASP
                 try { ResponseFormatThread.Abort(); }
                 catch { }
                 finally { ResponseFormatThread = null; }
+            }
+        }
+
+        internal static Request GetRedirectRequestOnly()
+        {
+            Session CurrentSession = GroupSessions[CurrentGroup][CurrentGroupLogId[CurrentGroup]];
+            if (CurrentSession.Response != null)
+            {
+                Request RedirectRequest = CurrentSession.Request.GetRedirect(CurrentSession.Response);
+                return RedirectRequest;
+            }
+            return null;
+        }
+        
+        internal static Request GetRedirect()
+        {
+            Request RedirectRequest = GetRedirectRequestOnly();
+            if (RedirectRequest != null)
+            {
+                IronUI.ResetMTDisplayFields();
+                Session RedirectSession = new Session(RedirectRequest);
+                IronUI.FillMTFields(RedirectRequest);
+            }
+            else
+            {
+                IronUI.ShowMTException("Response does not contain a redirection");
+            }
+            return RedirectRequest;
+        }
+
+        internal static void FollowRedirect()
+        {
+            Request RedirectRequest = GetRedirect();
+            if (RedirectRequest != null)
+            {
+                ManualTesting.SendRequest();
+                IronUI.StartMTSend(ManualTesting.CurrentRequestID);
             }
         }
     }

@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -138,6 +138,8 @@ namespace IronWASP
             try
             {
                 IronDB.UpdateConfigFromDB();
+                Config.ReadUserAgentsList();
+                CreateImageList();
             }
             catch (Exception Exp)
             {
@@ -178,7 +180,29 @@ namespace IronWASP
                 PluginStore.StartUp = false;
                 IronException.Report("Error initialising Plugins", Exp.Message, Exp.StackTrace);
             }
-            
+
+            IronUI.ShowLoadMessage("Reading available Modules....");
+            try
+            {
+                try
+                {
+                    string ModulesDir = string.Format("{0}\\modules", Config.RootDir);
+                    if (!Directory.Exists(ModulesDir))
+                        Directory.CreateDirectory(ModulesDir);
+                }
+                catch { }
+                Module.ReadModulesXml();
+                PopulateModuleMenus();
+            }
+            catch (Exception Exp)
+            {
+                IronException.Report("Error reading available Modules", Exp.Message, Exp.StackTrace);
+            }
+            try
+            {
+                IronUI.BuildPluginTree();
+            }
+            catch (Exception Exp) { IronException.Report("Error Building PluginTree", Exp); }
             IronUI.ShowLoadMessage("Starting Internal Analyzers....");
             try
             {
@@ -195,6 +219,12 @@ namespace IronWASP
             {
                 IronScripting.InitialiseScriptingEnvironment();
                 IronUI.InitialiseAllScriptEditors();
+                try
+                {
+                    ShowSampleScriptedInterceptionScript();
+                    ShowSampleScriptedSendScript();
+                }
+                catch { }
             }
             catch (Exception Exp)
             {
@@ -216,8 +246,10 @@ namespace IronWASP
 
             IronUI.ShowLoadMessage("Done!");
             IronUI.ShowLoadMessage("0");
+            SetUiComponentsToInitialState();
             this.Activate();
             PluginEditorInTE.Document.ReadOnly = true;
+            CheckDotNetVersion();
         }
 
         static void Splash()
@@ -226,8 +258,164 @@ namespace IronWASP
             IronUI.LF.ShowDialog();
         }
 
+        void CheckDotNetVersion()
+        {
+            bool OldVersion = false;
+            try
+            {
+                string[] VersionParts = Environment.Version.ToString().Split(new char[] { '.' });
+                if (Int32.Parse(VersionParts[2]) < 50000)
+                {
+                    OldVersion = true;
+                }
+                if (Int32.Parse(VersionParts[3]) < 3000)
+                {
+                    OldVersion = true;
+                }
+            }
+            catch
+            {}
+            if (OldVersion)
+            {
+                MessageBox.Show("You are running an older version of .NET 2.0 that does not support all features of IronWASP. Please install .NET 2.0 SP2, it can be downloaded from - https://www.microsoft.com/en-us/download/details.aspx?id=1639", "Dependency Alert!!!");
+            }
+        }
+
+        void SetUiComponentsToInitialState()
+        {
+            ScanTopPanel.Visible = true;
+            ScanDisplayPanel.Visible = false;
+            ScanJobsBaseSplit.SplitterDistance = 62;
+
+            TestResponseSplit.SplitterDistance = 600;
+            ScanJobsTopSplit.SplitterDistance = 470;
+            ScanJobsBottomSplit.SplitterDistance = ScanJobsBottomSplit.Height - 52;
+
+            ASInjectHeaderLbl.Location = new Point(13, ASInjectHeaderLbl.Location.Y);
+            ASRequestScanAllCB.Location = new Point(13, ASRequestScanAllCB.Location.Y);
+            ASRequestScanURLCB.Location = new Point(13, ASRequestScanURLCB.Location.Y);
+            ASRequestScanQueryCB.Location = new Point(13, ASRequestScanQueryCB.Location.Y);
+            ASRequestScanBodyCB.Location = new Point(13, ASRequestScanBodyCB.Location.Y);
+            ASRequestScanCookieCB.Location = new Point(13, ASRequestScanCookieCB.Location.Y);
+            ASRequestScanHeadersCB.Location = new Point(13, ASRequestScanHeadersCB.Location.Y);
+            ASRequestScanParameterNamesCB.Location = new Point(13, ASRequestScanParameterNamesCB.Location.Y);
+        }
+
+        void PopulateModuleMenus()
+        {
+            Dictionary<string, List<Module>> MenuItems = new Dictionary<string, List<Module>>();
+            foreach(Module M in Module.ModuleListFromXml)
+            {
+                if (!MenuItems.ContainsKey(M.Category))
+                    MenuItems[M.Category] = new List<Module>();
+                MenuItems[M.Category].Add(M);
+            }
+            foreach (string Category in MenuItems.Keys)
+            {
+                ToolStripMenuItem Item = (ToolStripMenuItem)modulesToolStripMenuItem.DropDownItems.Add(Category);
+                bool WorksOnFinding = false;
+                bool WorksOnUrl = false;
+                bool WorksOnSession = false;
+                foreach (Module M in MenuItems[Category])
+                {
+                    Item.DropDownItems.Add(M.DisplayName).Click += RunModuleMenuItem_Click;
+                    if (M.WorksOnFinding) WorksOnFinding = true;
+                    if (M.WorksOnUrl) WorksOnUrl = true;
+                    if (M.WorksOnSession) WorksOnSession = true;
+                }
+                if (WorksOnFinding)
+                {
+                    Item = (ToolStripMenuItem)RunModulesOnFindingToolStripMenuItem.DropDownItems.Add(Category);
+                    foreach (Module M in MenuItems[Category])
+                    {
+                        if (M.WorksOnFinding) Item.DropDownItems.Add(M.DisplayName).Click += RunModuleOnFindingMenuItem_Click;
+                    }
+                }
+                if (WorksOnUrl)
+                {
+                    Item = (ToolStripMenuItem)RunModulesOnUrlToolStripMenuItem.DropDownItems.Add(Category);
+                    foreach (Module M in MenuItems[Category])
+                    {
+                        if (M.WorksOnUrl) Item.DropDownItems.Add(M.DisplayName).Click += RunModuleOnUrlMenuItem_Click;
+                    }
+                }
+                if (WorksOnSession)
+                {
+                    Item = (ToolStripMenuItem)RunModulesOnRequestResponseToolStripMenuItem.DropDownItems.Add(Category);
+                    foreach (Module M in MenuItems[Category])
+                    {
+                        if (M.WorksOnSession) Item.DropDownItems.Add(M.DisplayName).Click += RunModuleOnSessionMenuItem_Click;
+                    }
+                }
+            }
+        }
+
+        internal void PopulateRecentOnSessionModuleMenus(string[] RecentModules)
+        {
+            while (LogMenu.Items.Count > 6)
+            {
+                LogMenu.Items.RemoveAt(LogMenu.Items.Count -1);
+            }
+            foreach (string DisplayName in RecentModules)
+            {
+                LogMenu.Items.Add(DisplayName).Click += RunModuleOnSessionMenuItem_Click;
+            }
+        }
+
+        private void RunModuleMenuItem_Click(object sender, EventArgs e)
+        {
+            //MessageBox.Show(sender.ToString() + e.ToString());
+            Module.StartModule((sender as ToolStripMenuItem).Text);
+        }
+        private void RunModuleOnUrlMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void RunModuleOnFindingMenuItem_Click(object sender, EventArgs e)
+        {
+            //MessageBox.Show(sender.ToString() + e.ToString());
+            int FindingId = IronUI.GetFindingIdFromIronTree();
+            try
+            {
+                Module.StartModuleOnFinding((sender as ToolStripMenuItem).Text, FindingId);
+            }
+            catch (Exception Exp) { IronException.Report("Unable to run Module on Finding", Exp); }
+            //IronUI.OpenEncodeDecodeWindow();
+        }
+        private void RunModuleOnSessionMenuItem_Click(object sender, EventArgs e)
+        {
+            //MessageBox.Show(sender.ToString() + e.ToString());
+            try
+            {
+                string SelectedDisplayName = (sender as ToolStripMenuItem).Text;
+                bool AlreadyExists = false;
+                foreach (string DisplayName in Module.RecentOnSessionModules)
+                {
+                    if (DisplayName.Equals(SelectedDisplayName))
+                    {
+                        AlreadyExists = true;
+                        break;
+                    }
+                }
+                if (!AlreadyExists)
+                {
+                    if (Module.RecentOnSessionModules.Count >= 3)
+                    {
+                        Module.RecentOnSessionModules.Dequeue();
+                    }
+                    Module.RecentOnSessionModules.Enqueue(SelectedDisplayName);
+                }
+                PopulateRecentOnSessionModuleMenus(Module.RecentOnSessionModules.ToArray());
+                Module.StartModuleOnSession(SelectedDisplayName, GetSource(), Int32.Parse(GetID()));
+            }
+            catch (Exception Exp) { IronException.Report("Unable to run Module on Session", Exp); }
+            //IronUI.OpenEncodeDecodeWindow();
+        }
+
+
         private void ProxySendBtn_Click(object sender, EventArgs e)
         {
+            this.TopMost = false;
             if (IronProxy.CurrentSession == null) return;
             if (IronProxy.CurrentSession.FiddlerSession == null) return;
             if (IronProxy.CurrentSession.FiddlerSession.state == Fiddler.SessionStates.HandTamperRequest)
@@ -235,7 +423,11 @@ namespace IronWASP
                 try
                 {
                     IronUI.ResetProxyException();
-                    IronUI.HandleAnyChangesInRequest();
+                    Request UpdatedRequest = ProxyRequestView.GetRequest();
+                    if (UpdatedRequest == null) throw new Exception("Cannot forward invalid request");
+                    if(IronProxy.RequestChanged)
+                        IronProxy.UpdateCurrentSessionWithNewRequest(UpdatedRequest);
+                    //IronUI.HandleAnyChangesInRequest();
                 }
                 catch(Exception Exp)
                 {
@@ -248,7 +440,11 @@ namespace IronWASP
                 try
                 {
                     IronUI.ResetProxyException();
-                    IronUI.HandleAnyChangesInResponse();
+                    Response UpdatedResponse = ProxyResponseView.GetResponse();
+                    if (UpdatedResponse == null) throw new Exception("Cannot forward invalid response");
+                    if (IronProxy.ResponseChanged)
+                        IronProxy.UpdateCurrentSessionWithNewResponse(UpdatedResponse);
+                    //IronUI.HandleAnyChangesInResponse();
                 }
                 catch(Exception Exp)
                 {
@@ -261,6 +457,9 @@ namespace IronWASP
                 return;
             }
             IronProxy.ForwardInterceptedMessage();
+            ProxyBaseSplit.Panel1.BackColor = Color.White;
+            ProxySendBtn.Enabled = false;
+            ProxyDropBtn.Enabled = false;
             string SessionID = "";
             try
             {
@@ -344,6 +543,14 @@ namespace IronWASP
             }
         }
 
+        private void InteractiveShellIn_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (Char)Keys.Enter)
+            {
+                e.Handled = true;
+            }
+        }
+
         private void InteractiveShellIn_KeyUp(object sender, KeyEventArgs e)
         {
             if (this.InteractiveShellIn.ReadOnly) return;
@@ -361,7 +568,8 @@ namespace IronWASP
                 }
                 else
                 {
-                    this.InteractiveShellIn.Text = this.InteractiveShellIn.Text.Replace("\r\n", "");
+                    //this.InteractiveShellIn.Text = this.InteractiveShellIn.Text.Replace("\r\n", "");
+                    this.InteractiveShellIn.Text = this.InteractiveShellIn.Text;
                 }
             }
             else if (e.KeyCode == Keys.Down)
@@ -373,13 +581,15 @@ namespace IronWASP
                 }
                 else
                 {
-                    this.InteractiveShellIn.Text = this.InteractiveShellIn.Text.Replace("\r\n", "");
+                    //this.InteractiveShellIn.Text = this.InteractiveShellIn.Text.Replace("\r\n", "");
+                    this.InteractiveShellIn.Text = this.InteractiveShellIn.Text;
                 }
             }
             else if (e.KeyCode == Keys.Enter)
             {
                 IronUI.FreezeInteractiveShellUI();
-                string Command = this.InteractiveShellIn.Text.Replace("\r\n", "");
+                //string Command = this.InteractiveShellIn.Text.Replace("\r\n", "");
+                string Command = this.InteractiveShellIn.Text;
                 this.InteractiveShellIn.Text = "";
                 if (Command.Length > 0)
                 {
@@ -488,7 +698,14 @@ namespace IronWASP
                     if (TestGroupLogGrid.SelectedCells.Count < 1 || TestGroupLogGrid.SelectedCells[0].Value == null) RowsSelected = false;
                     if (RowsSelected)
                     {
-                        if (TestGroupLogGrid.SelectedCells[5].Value == null) ResponseAvailable = false;
+                        if (TestGroupLogGrid.SelectedCells[6].Value == null) ResponseAvailable = false;
+                    }
+                    break;
+                case ("OtherLogGrid"):
+                    if (OtherLogGrid.SelectedCells.Count < 1 || OtherLogGrid.SelectedCells[0].Value == null) RowsSelected = false;
+                    if (RowsSelected)
+                    {
+                        if (OtherLogGrid.SelectedCells[6].Value == null) ResponseAvailable = false;
                     }
                     break;
                 case("LogOptionsBtn"):
@@ -509,6 +726,7 @@ namespace IronWASP
             this.SelectForAutomatedScanningToolStripMenuItem.Enabled = RowsSelected;
             this.CopyRequestToolStripMenuItem.Enabled = RowsSelected;
             this.CopyResponseToolStripMenuItem.Enabled = RowsSelected;
+            this.RunModulesOnRequestResponseToolStripMenuItem.Enabled = RowsSelected;
             this.SelectResponseForJavaScriptTestingToolStripMenuItem.Enabled = RowsSelected && ResponseAvailable && JSTaintTraceControlBtn.Text.Equals("Start Taint Trace");
         }
 
@@ -517,7 +735,9 @@ namespace IronWASP
             try
             {
                 IronUI.ResetMTExceptionFields();
-                IronUI.HandleAnyChangesInMTRequest();
+                ManualTesting.CurrentRequest = TestRequestView.GetRequest();
+                if (ManualTesting.CurrentRequest == null) throw new Exception("Cannot sent invalid request");
+                //IronUI.HandleAnyChangesInMTRequest();
             }
             catch(Exception Exp)
             {
@@ -533,7 +753,6 @@ namespace IronWASP
             {
                 IronUI.ResetMTExceptionFields();
                 ManualTesting.ResetChangedStatus();
-                ManualTesting.CurrentRequest.SSL = MTIsSSLCB.Checked;
                 ManualTesting.SendRequest();
                 IronUI.StartMTSend(ManualTesting.CurrentRequestID);
             }
@@ -628,10 +847,10 @@ namespace IronWASP
             }catch{}
         }
 
-        private void MTIsSSLCB_CheckedChanged(object sender, EventArgs e)
-        {
-            ManualTesting.CurrentRequestIsSSL = this.MTIsSSLCB.Checked;
-        }
+        //private void MTIsSSLCB_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    ManualTesting.CurrentRequestIsSSL = this.MTIsSSLCB.Checked;
+        //}
         
         private void ScriptingShellPythonAPITree_AfterSelect(object sender, TreeViewEventArgs e)
         {
@@ -645,45 +864,59 @@ namespace IronWASP
 
         private void IronTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if (e.Node == null) return;
-            if ((e.Node.Level > 5) || (e.Node.Level == 5 && (e.Node.Parent.Parent.Parent.Parent.Index == 4)) || (e.Node.Level == 4 && (e.Node.Parent.Parent.Parent.Index == 4)) || (e.Node.Level == 3 && (e.Node.Parent.Parent.Index == 4)) || (e.Node.Level == 2 && (e.Node.Parent.Index == 4)))
+            //if (e.Node == null) return;
+            //if ((e.Node.Level > 5) || (e.Node.Level == 5 && (e.Node.Parent.Parent.Parent.Parent.Index == 4)) || (e.Node.Level == 4 && (e.Node.Parent.Parent.Parent.Index == 4)) || (e.Node.Level == 3 && (e.Node.Parent.Parent.Index == 4)) || (e.Node.Level == 2 && (e.Node.Parent.Index == 4)))
+            //{
+            //    List<string> UrlPaths = new List<string>();
+            //    string Query = "";
+            //    TreeNode SiteMapNode = e.Node;
+            //    if (SiteMapNode.Text.StartsWith("?"))
+            //    {
+            //        Query = SiteMapNode.Text;
+            //        SiteMapNode = SiteMapNode.Parent;
+            //    }
+            //    while(SiteMapNode.Level > 2)
+            //    {
+            //        UrlPaths.Add(SiteMapNode.Text);
+            //        SiteMapNode = SiteMapNode.Parent;
+            //    }
+            //    UrlPaths.Reverse();
+            //    StringBuilder UrlPathBuilder = new StringBuilder();
+            //    foreach (string Path in UrlPaths)
+            //    {
+            //        UrlPathBuilder.Append("/"); UrlPathBuilder.Append(Path);
+            //    }
+            //    string Host = SiteMapNode.Text;
+            //    string Url = UrlPathBuilder.ToString() + Query;
+            //    if (Url == "//") Url = "/";
+            //    IronUI.UpdateResultsTab(Host, Url);
+            //    return;
+            //}
+            Request SelectedUrl = IronUI.GetSelectedUrlFromSiteMap();
+            if (SelectedUrl != null)
             {
-                List<string> UrlPaths = new List<string>();
-                string Query = "";
-                TreeNode SiteMapNode = e.Node;
-                if (SiteMapNode.Text.StartsWith("?"))
-                {
-                    Query = SiteMapNode.Text;
-                    SiteMapNode = SiteMapNode.Parent;
-                }
-                while(SiteMapNode.Level > 2)
-                {
-                    UrlPaths.Add(SiteMapNode.Text);
-                    SiteMapNode = SiteMapNode.Parent;
-                }
-                UrlPaths.Reverse();
-                StringBuilder UrlPathBuilder = new StringBuilder();
-                foreach (string Path in UrlPaths)
-                {
-                    UrlPathBuilder.Append("/"); UrlPathBuilder.Append(Path);
-                }
-                string Host = SiteMapNode.Text;
-                string Url = UrlPathBuilder.ToString() + Query;
-                if (Url == "//") Url = "/";
-                IronUI.UpdateResultsTab(Host, Url);
+                IronUI.UpdateResultsTab(SelectedUrl);
                 return;
             }
-            if (e.Node.Level == 4 && (e.Node.Parent.Parent.Parent.Index == 1 || e.Node.Parent.Parent.Parent.Index == 2))
+
+            if (IronUI.IsFindingsNodeSelected())
             {
-                PluginResult.CurrentPluginResult = IronDB.GetPluginResultFromDB(Int32.Parse(e.Node.Name));
-                IronUI.UpdateResultsTab(PluginResult.CurrentPluginResult);
+                //PluginResult.CurrentPluginResult = IronDB.GetPluginResultFromDB(Int32.Parse(e.Node.Name));
+                Finding.CurrentPluginResult = IronDB.GetPluginResultFromDB(IronUI.GetFindingIdFromIronTree());
+                IronUI.UpdateResultsTab(Finding.CurrentPluginResult);
             }
-            else if (e.Node.Level == 5 && e.Node.Parent.Parent.Parent.Parent.Index == 0)
-            {
-                PluginResult.CurrentPluginResult = IronDB.GetPluginResultFromDB(Int32.Parse(e.Node.Name));
-                IronUI.UpdateResultsTab(PluginResult.CurrentPluginResult);
-            }
-            else if (e.Node.Level == 2 && e.Node.Parent.Index == 3)
+            //if (e.Node.Level == 4 && (e.Node.Parent.Parent.Parent.Index == 1 || e.Node.Parent.Parent.Parent.Index == 2))
+            //{
+            //    PluginResult.CurrentPluginResult = IronDB.GetPluginResultFromDB(Int32.Parse(e.Node.Name));
+            //    IronUI.UpdateResultsTab(PluginResult.CurrentPluginResult);
+            //}
+            //else if (e.Node.Level == 5 && e.Node.Parent.Parent.Parent.Parent.Index == 0)
+            //{
+            //    PluginResult.CurrentPluginResult = IronDB.GetPluginResultFromDB(Int32.Parse(e.Node.Name));
+            //    IronUI.UpdateResultsTab(PluginResult.CurrentPluginResult);
+            //}
+            //else if (e.Node.Level == 2 && e.Node.Parent.Index == 3)
+            else if (IronUI.IsExceptionsNodeSelected())
             {
                 IronException IrEx = IronDB.GetException(Int32.Parse(e.Node.Name));
                 IronUI.UpdateResultsTab(IrEx);
@@ -728,22 +961,30 @@ namespace IronWASP
 
         private void CustomSendPythonRB_CheckedChanged(object sender, EventArgs e)
         {
-            this.CustomSendTopRtb.Rtf = @"{\rtf1{\colortbl ;\red0\green0\blue255;\red25\green25\blue112;} \cf1 def \cf0 \cf2 \b1 ScriptedSend \b0 \cf0 (req):";
-            this.CustomSendBottomRtb.Rtf = @"{\rtf1{\colortbl ;\red0\green0\blue128;} \cf1     return \cf0 res";
-            this.CustomSendActivateCB.Checked = false;
-            this.MTScriptedSendBtn.Enabled = false;
-            Directory.SetCurrentDirectory(Config.RootDir);
-            CustomSendTE.SetHighlighting("Python");
+            if (CustomSendPythonRB.Checked)
+            {
+                this.ShowScriptedSendTemplateLL.Text = "Show sample Python script";
+                this.CustomSendTopRtb.Rtf = @"{\rtf1{\colortbl ;\red0\green0\blue255;\red25\green25\blue112;} \cf1 def \cf0 \cf2 \b1 ScriptedSend \b0 \cf0 (req):";
+                this.CustomSendBottomRtb.Rtf = @"{\rtf1{\colortbl ;\red0\green0\blue128;} \cf1     return \cf0 res";
+                this.CustomSendActivateCB.Checked = false;
+                this.MTScriptedSendBtn.Enabled = false;
+                Directory.SetCurrentDirectory(Config.RootDir);
+                CustomSendTE.SetHighlighting("Python");
+            }
         }
 
         private void CustomSendRubyRB_CheckedChanged(object sender, EventArgs e)
         {
-            this.CustomSendTopRtb.Rtf = @"{\rtf1{\colortbl ;\red0\green0\blue255;\red25\green25\blue112;} \cf1 def \cf0 \cf2 \b1 scripted_send \b0 \cf0 (req)";
-            this.CustomSendBottomRtb.Rtf = @"{\rtf1{\colortbl ;\red0\green0\blue128;\red0\green0\blue255;} \cf1     return \cf0 res \par \cf2 end \cf0";
-            this.CustomSendActivateCB.Checked = false;
-            this.MTScriptedSendBtn.Enabled = false;
-            Directory.SetCurrentDirectory(Config.RootDir);
-            CustomSendTE.SetHighlighting("Ruby");
+            if (CustomSendRubyRB.Checked)
+            {
+                this.ShowScriptedSendTemplateLL.Text = "Show sample Ruby script";
+                this.CustomSendTopRtb.Rtf = @"{\rtf1{\colortbl ;\red0\green0\blue255;\red25\green25\blue112;} \cf1 def \cf0 \cf2 \b1 scripted_send \b0 \cf0 (req)";
+                this.CustomSendBottomRtb.Rtf = @"{\rtf1{\colortbl ;\red0\green0\blue128;\red0\green0\blue255;} \cf1     return \cf0 res \par \cf2 end \cf0";
+                this.CustomSendActivateCB.Checked = false;
+                this.MTScriptedSendBtn.Enabled = false;
+                Directory.SetCurrentDirectory(Config.RootDir);
+                CustomSendTE.SetHighlighting("Ruby");
+            }
         }
 
         private void MTScriptedSendBtn_Click(object sender, EventArgs e)
@@ -751,7 +992,9 @@ namespace IronWASP
             try
             {
                 IronUI.ResetMTExceptionFields();
-                IronUI.HandleAnyChangesInMTRequest();
+                ManualTesting.CurrentRequest = TestRequestView.GetRequest();
+                if (ManualTesting.CurrentRequest == null) throw new Exception("Cannot sent invalid request");
+                //IronUI.HandleAnyChangesInMTRequest();
             }
             catch (Exception Exp)
             {
@@ -767,7 +1010,7 @@ namespace IronWASP
             {
                 IronUI.ResetMTExceptionFields();
                 ManualTesting.ResetChangedStatus();
-                ManualTesting.CurrentRequest.SSL = MTIsSSLCB.Checked;
+                //ManualTesting.CurrentRequest.SSL = MTIsSSLCB.Checked;
                 ManualTesting.ScriptedSend();
                 IronUI.StartMTSend(ManualTesting.CurrentRequestID);
             }
@@ -822,7 +1065,7 @@ namespace IronWASP
             IronLog.MarkForScanning(GetSource(), GetID());
         }
 
-        private RequestSource GetSource()
+        private string GetSource()
         {
             switch (IronLog.SourceControl)
             {
@@ -856,6 +1099,8 @@ namespace IronWASP
                         return RequestSource.Trigger;
                 case ("TestGroupLogGrid"):
                         return RequestSource.TestGroup;
+                case("OtherLogGrid"):
+                        return IronLog.SelectedOtherSource;
                 case("LogOptionsBtn"):
                         return RequestSource.SelectedLogEntry;
                 case("ProxyOptionsBtn"):
@@ -883,7 +1128,9 @@ namespace IronWASP
                 case ("ResultsTriggersGrid"):
                     return ResultsTriggersGrid.SelectedCells[0].Value.ToString();
                 case ("TestGroupLogGrid"):
-                    return TestGroupLogGrid.SelectedCells[0].Value.ToString();
+                    return TestGroupLogGrid.SelectedCells[1].Value.ToString();
+                case ("OtherLogGrid"):
+                    return OtherLogGrid.SelectedCells[0].Value.ToString();
                 case("LogOptionsBtn"):
                 case ("ProxyOptionsBtn"):
                     return "0";
@@ -897,14 +1144,13 @@ namespace IronWASP
             {
                 return;
             }
-            this.ASStartScanBtn.Enabled = false;
-            Scanner.ResetChangedStatus();
-            IronUI.ResetConfigureScanFields();
-            string ScanStatus = ASQueueGrid.SelectedCells[1].Value.ToString();
             try
             {
-                Scanner.CurrentScanID = Int32.Parse(ASQueueGrid.SelectedCells[0].Value.ToString());
-                Scanner.CurrentScanner = IronDB.GetScannerFromDB(Scanner.CurrentScanID);
+                this.ASStartScanBtn.Enabled = false;
+                Scanner.ResetChangedStatus();
+                IronUI.ResetConfigureScanFields();
+                Thread T = new Thread(Scanner.LoadScannerFromDDAndFillAutomatedScanningTab);
+                T.Start(Int32.Parse(ASQueueGrid.SelectedCells[0].Value.ToString()));
             }
             catch(Exception Exp)
             {
@@ -912,217 +1158,229 @@ namespace IronWASP
                 IronUI.ShowConfigureScanException("Unable to load Request");
                 return;
             }
-            Scanner.CurrentScanner.OriginalRequest.Source = RequestSource.Scan;
-            try
-            {
-                IronUI.FillConfigureScanFullFields(Scanner.CurrentScanner.OriginalRequest);
-                this.ASRequestTabs.SelectTab(0);
-                IronUI.UpdateScanTabsWithRequestData();
-                ScanIDLbl.Text = "Scan ID: " + Scanner.CurrentScanID.ToString();
-                ScanStatusLbl.Text = "Scan Status: " + ScanStatus;
-                Scanner.ResetChangedStatus();
-            }
-            catch(Exception Exp)
-            {
-                IronException.Report("Unable to display Request in 'Automated Scanning' section", Exp.Message, Exp.StackTrace);
-                IronUI.ShowConfigureScanException("Unable to display request");
-                return;
-            }
 
-            if (ASScanPluginsGrid.Rows.Count > 0)
-            {
-                ASScanPluginsGrid.Rows[0].Cells[0].Value = false;
-                foreach (DataGridViewRow Row in this.ASScanPluginsGrid.Rows)
-                {
-                    if (Row.Index > 0)
-                    {
-                        Row.Cells[0].Value = Scanner.CurrentScanner.ShowChecks().Contains(Row.Cells[1].Value.ToString());
-                    }
-                }
-                if (ASScanPluginsGrid.Rows.Count > 1)
-                {
-                    bool AllSelected = true;
-                    for (int i = 1; i < ASScanPluginsGrid.Rows.Count; i++)
-                    {
-                        if (!(bool)ASScanPluginsGrid.Rows[i].Cells[0].Value)
-                        {
-                            AllSelected = false;
-                            break;
-                        }
-                    }
-                    if (AllSelected) ASScanPluginsGrid.Rows[0].Cells[0].Value = true;
-                }
-            }
+            //try
+            //{
+            //    Scanner.CurrentScanID = Int32.Parse(ASQueueGrid.SelectedCells[0].Value.ToString());
+            //    Scanner.CurrentScanner = IronDB.GetScannerFromDB(Scanner.CurrentScanID);
+            //}
+            //catch(Exception Exp)
+            //{
+            //    IronException.Report("Unable to load Request from Scan Queue DB", Exp.Message, Exp.StackTrace);
+            //    IronUI.ShowConfigureScanException("Unable to load Request");
+            //    return;
+            //}
+            //Scanner.CurrentScanner.OriginalRequest.Source = RequestSource.Scan;
+            //try
+            //{
+            //    IronUI.FillConfigureScanFullFields(Scanner.CurrentScanner.OriginalRequest);
+            //    this.ASRequestTabs.SelectTab(0);
+            //    IronUI.UpdateScanTabsWithRequestData();
+            //    ScanIDLbl.Text = "Scan ID: " + Scanner.CurrentScanID.ToString();
+            //    ScanStatusLbl.Text = "Scan Status: " + ScanStatus;
+            //    Scanner.ResetChangedStatus();
+            //}
+            //catch(Exception Exp)
+            //{
+            //    IronException.Report("Unable to display Request in 'Automated Scanning' section", Exp.Message, Exp.StackTrace);
+            //    IronUI.ShowConfigureScanException("Unable to display request");
+            //    return;
+            //}
 
-            this.ASSessionPluginsCombo.Items.Add("");
-            int SelectedSessionPluginID = -1;
-            bool SelectedSessionPluginFound = false;
-            foreach (string Name in SessionPlugin.List())
-            {
-                int ItemID = this.ASSessionPluginsCombo.Items.Add(Name);
-                if (!SelectedSessionPluginFound)
-                {
-                    if (Scanner.CurrentScanner.SessionHandler.Name.Equals(Name))
-                    {
-                        SelectedSessionPluginID = ItemID;
-                        SelectedSessionPluginFound = true;
-                    }
-                }
-            }
+            //if (ASScanPluginsGrid.Rows.Count > 0)
+            //{
+            //    ASScanPluginsGrid.Rows[0].Cells[0].Value = false;
+            //    foreach (DataGridViewRow Row in this.ASScanPluginsGrid.Rows)
+            //    {
+            //        if (Row.Index > 0)
+            //        {
+            //            Row.Cells[0].Value = Scanner.CurrentScanner.ShowChecks().Contains(Row.Cells[1].Value.ToString());
+            //        }
+            //    }
+            //    if (ASScanPluginsGrid.Rows.Count > 1)
+            //    {
+            //        bool AllSelected = true;
+            //        for (int i = 1; i < ASScanPluginsGrid.Rows.Count; i++)
+            //        {
+            //            if (!(bool)ASScanPluginsGrid.Rows[i].Cells[0].Value)
+            //            {
+            //                AllSelected = false;
+            //                break;
+            //            }
+            //        }
+            //        if (AllSelected) ASScanPluginsGrid.Rows[0].Cells[0].Value = true;
+            //    }
+            //}
+
+            //this.ASSessionPluginsCombo.Items.Add("");
+            //int SelectedSessionPluginID = -1;
+            //bool SelectedSessionPluginFound = false;
+            //foreach (string Name in SessionPlugin.List())
+            //{
+            //    int ItemID = this.ASSessionPluginsCombo.Items.Add(Name);
+            //    if (!SelectedSessionPluginFound)
+            //    {
+            //        if (Scanner.CurrentScanner.SessionHandler.Name.Equals(Name))
+            //        {
+            //            SelectedSessionPluginID = ItemID;
+            //            SelectedSessionPluginFound = true;
+            //        }
+            //    }
+            //}
             
-            if(SelectedSessionPluginID >= 0 ) this.ASSessionPluginsCombo.SelectedIndex = SelectedSessionPluginID;
-            try
-            {
-                FillInjectionsPointsinUI(Scanner.CurrentScanner);
-            }
-            catch (Exception Exp)
-            {
-                IronException.Report("Error restoring 'Automated Scan' configuration information from DB", Exp.Message, Exp.StackTrace);
-                IronUI.ShowConfigureScanException("Error retriving scan information");
-            }
+            //if(SelectedSessionPluginID >= 0 ) this.ASSessionPluginsCombo.SelectedIndex = SelectedSessionPluginID;
+            //try
+            //{
+            //    FillInjectionsPointsinUI(Scanner.CurrentScanner);
+            //}
+            //catch (Exception Exp)
+            //{
+            //    IronException.Report("Error restoring 'Automated Scan' configuration information from DB", Exp.Message, Exp.StackTrace);
+            //    IronUI.ShowConfigureScanException("Error retriving scan information");
+            //}
 
-            if (ASQueueGrid.SelectedCells[1].Value.ToString().Equals("Completed") || ASQueueGrid.SelectedCells[1].Value.ToString().Equals("Running"))
-            {
-                this.ASStartScanBtn.Text = "Scan Again";
-            }
-            else if (ASQueueGrid.SelectedCells[1].Value.ToString().Equals("Not Started") || ASQueueGrid.SelectedCells[1].Value.ToString().Equals("Incomplete") || ASQueueGrid.SelectedCells[1].Value.ToString().Equals("Aborted") || ASQueueGrid.SelectedCells[1].Value.ToString().Equals("Stopped"))
-            {
-                this.ASStartScanBtn.Text = "Start Scan";
-            }
-            this.ASStartScanBtn.Enabled = true;
+            //if (ASQueueGrid.SelectedCells[1].Value.ToString().Equals("Completed") || ASQueueGrid.SelectedCells[1].Value.ToString().Equals("Running"))
+            //{
+            //    this.ASStartScanBtn.Text = "Scan Again";
+            //}
+            //else if (ASQueueGrid.SelectedCells[1].Value.ToString().Equals("Not Started") || ASQueueGrid.SelectedCells[1].Value.ToString().Equals("Incomplete") || ASQueueGrid.SelectedCells[1].Value.ToString().Equals("Aborted") || ASQueueGrid.SelectedCells[1].Value.ToString().Equals("Stopped"))
+            //{
+            //    this.ASStartScanBtn.Text = "Start Scan";
+            //}
+            //this.ASStartScanBtn.Enabled = true;
         }
 
-        void FillInjectionsPointsinUI(Scanner Scanner)
-        {
-            bool AllUlr = ASRequestScanURLGrid.Rows.Count > 0;
-            foreach (DataGridViewRow Row in this.ASRequestScanURLGrid.Rows)
-            {
-                bool Result = Scanner.URLInjections.Contains(Row.Index);
-                if (AllUlr)
-                {
-                    AllUlr = Result;
-                }
-                Row.Cells[0].Value = Result;
-            }
+        //void FillInjectionsPointsinUI(Scanner Scanner)
+        //{
+        //    bool AllUlr = ASRequestScanURLGrid.Rows.Count > 0;
+        //    foreach (DataGridViewRow Row in this.ASRequestScanURLGrid.Rows)
+        //    {
+        //        bool Result = Scanner.URLInjections.Contains(Row.Index);
+        //        if (AllUlr)
+        //        {
+        //            AllUlr = Result;
+        //        }
+        //        Row.Cells[0].Value = Result;
+        //    }
 
-            int SubParameterIndex = 0;
-            string LastParameterName = "";
+        //    int SubParameterIndex = 0;
+        //    string LastParameterName = "";
 
-            bool AllQuery = ASRequestScanQueryGrid.Rows.Count > 0;
-            foreach (DataGridViewRow Row in this.ASRequestScanQueryGrid.Rows)
-            {
-                string Name = Row.Cells[1].Value.ToString();
-                if (Name.Equals(LastParameterName))
-                {
-                    SubParameterIndex++;
-                }
-                else
-                {
-                    SubParameterIndex = 0;
-                }
-                bool Result = Scanner.QueryInjections.Has(Name) && Scanner.QueryInjections.GetAll(Name).Contains(SubParameterIndex);
-                if (AllQuery)
-                {
-                    AllQuery = Result;
-                }
-                Row.Cells[0].Value = Result;
-                LastParameterName = Name;
-            }
+        //    bool AllQuery = ASRequestScanQueryGrid.Rows.Count > 0;
+        //    foreach (DataGridViewRow Row in this.ASRequestScanQueryGrid.Rows)
+        //    {
+        //        string Name = Row.Cells[1].Value.ToString();
+        //        if (Name.Equals(LastParameterName))
+        //        {
+        //            SubParameterIndex++;
+        //        }
+        //        else
+        //        {
+        //            SubParameterIndex = 0;
+        //        }
+        //        bool Result = Scanner.QueryInjections.Has(Name) && Scanner.QueryInjections.GetAll(Name).Contains(SubParameterIndex);
+        //        if (AllQuery)
+        //        {
+        //            AllQuery = Result;
+        //        }
+        //        Row.Cells[0].Value = Result;
+        //        LastParameterName = Name;
+        //    }
 
-            SubParameterIndex = 0;
-            LastParameterName = "";
+        //    SubParameterIndex = 0;
+        //    LastParameterName = "";
 
-            bool AllBody = ConfigureScanRequestBodyGrid.Rows.Count > 0;
-            if (Scanner.BodyFormat.Name.Length == 0)
-            {
-                foreach (DataGridViewRow Row in this.ConfigureScanRequestBodyGrid.Rows)
-                {
-                    string Name = Row.Cells[1].Value.ToString();
-                    if (Name.Equals(LastParameterName))
-                    {
-                        SubParameterIndex++;
-                    }
-                    else
-                    {
-                        SubParameterIndex = 0;
-                    }
-                    bool Result = Scanner.BodyInjections.Has(Name) && Scanner.BodyInjections.GetAll(Name).Contains(SubParameterIndex);
-                    if (AllBody)
-                    {
-                        AllBody = Result;
-                    }
-                    Row.Cells[0].Value = Result;
-                    LastParameterName = Name;
-                }
-            }
-            else
-            {
-                foreach (DataGridViewRow Row in this.ConfigureScanRequestBodyGrid.Rows)
-                {
-                    bool Result = Scanner.BodyXmlInjections.Contains(Row.Index);
-                    if (AllBody)
-                    {
-                        AllBody = Result;
-                    }
-                    Row.Cells[0].Value = Result;
-                }
-            }
+        //    bool AllBody = ConfigureScanRequestBodyGrid.Rows.Count > 0;
+        //    if (Scanner.BodyFormat.Name.Length == 0)
+        //    {
+        //        foreach (DataGridViewRow Row in this.ConfigureScanRequestBodyGrid.Rows)
+        //        {
+        //            string Name = Row.Cells[1].Value.ToString();
+        //            if (Name.Equals(LastParameterName))
+        //            {
+        //                SubParameterIndex++;
+        //            }
+        //            else
+        //            {
+        //                SubParameterIndex = 0;
+        //            }
+        //            bool Result = Scanner.BodyInjections.Has(Name) && Scanner.BodyInjections.GetAll(Name).Contains(SubParameterIndex);
+        //            if (AllBody)
+        //            {
+        //                AllBody = Result;
+        //            }
+        //            Row.Cells[0].Value = Result;
+        //            LastParameterName = Name;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        foreach (DataGridViewRow Row in this.ConfigureScanRequestBodyGrid.Rows)
+        //        {
+        //            bool Result = Scanner.BodyXmlInjections.Contains(Row.Index);
+        //            if (AllBody)
+        //            {
+        //                AllBody = Result;
+        //            }
+        //            Row.Cells[0].Value = Result;
+        //        }
+        //    }
 
-            SubParameterIndex = 0;
-            LastParameterName = "";
+        //    SubParameterIndex = 0;
+        //    LastParameterName = "";
 
-            bool AllCookie = ASRequestScanCookieGrid.Rows.Count > 0;
-            foreach (DataGridViewRow Row in this.ASRequestScanCookieGrid.Rows)
-            {
-                string Name = Row.Cells[1].Value.ToString();
-                if (Name.Equals(LastParameterName))
-                {
-                    SubParameterIndex++;
-                }
-                else
-                {
-                    SubParameterIndex = 0;
-                }
-                bool Result = Scanner.CookieInjections.Has(Name) && Scanner.CookieInjections.GetAll(Name).Contains(SubParameterIndex);
-                if (AllCookie)
-                {
-                    AllCookie = Result;
-                }
-                Row.Cells[0].Value = Result;
-                LastParameterName = Name;
-            }
+        //    bool AllCookie = ASRequestScanCookieGrid.Rows.Count > 0;
+        //    foreach (DataGridViewRow Row in this.ASRequestScanCookieGrid.Rows)
+        //    {
+        //        string Name = Row.Cells[1].Value.ToString();
+        //        if (Name.Equals(LastParameterName))
+        //        {
+        //            SubParameterIndex++;
+        //        }
+        //        else
+        //        {
+        //            SubParameterIndex = 0;
+        //        }
+        //        bool Result = Scanner.CookieInjections.Has(Name) && Scanner.CookieInjections.GetAll(Name).Contains(SubParameterIndex);
+        //        if (AllCookie)
+        //        {
+        //            AllCookie = Result;
+        //        }
+        //        Row.Cells[0].Value = Result;
+        //        LastParameterName = Name;
+        //    }
 
-            SubParameterIndex = 0;
-            LastParameterName = "";
+        //    SubParameterIndex = 0;
+        //    LastParameterName = "";
 
-            bool AllHeaders = ASRequestScanHeadersGrid.Rows.Count > 0;
-            foreach (DataGridViewRow Row in this.ASRequestScanHeadersGrid.Rows)
-            {
-                string Name = Row.Cells[1].Value.ToString();
-                if (Name.Equals(LastParameterName))
-                {
-                    SubParameterIndex++;
-                }
-                else
-                {
-                    SubParameterIndex = 0;
-                }
-                bool Result = Scanner.HeadersInjections.Has(Name) && Scanner.HeadersInjections.GetAll(Name).Contains(SubParameterIndex);
-                if (AllHeaders)
-                {
-                    AllHeaders = Result;
-                }
-                Row.Cells[0].Value = Result;
-                LastParameterName = Name;
-            }
+        //    bool AllHeaders = ASRequestScanHeadersGrid.Rows.Count > 0;
+        //    foreach (DataGridViewRow Row in this.ASRequestScanHeadersGrid.Rows)
+        //    {
+        //        string Name = Row.Cells[1].Value.ToString();
+        //        if (Name.Equals(LastParameterName))
+        //        {
+        //            SubParameterIndex++;
+        //        }
+        //        else
+        //        {
+        //            SubParameterIndex = 0;
+        //        }
+        //        bool Result = Scanner.HeadersInjections.Has(Name) && Scanner.HeadersInjections.GetAll(Name).Contains(SubParameterIndex);
+        //        if (AllHeaders)
+        //        {
+        //            AllHeaders = Result;
+        //        }
+        //        Row.Cells[0].Value = Result;
+        //        LastParameterName = Name;
+        //    }
 
-            ASRequestScanAllCB.Checked = AllUlr && AllQuery && AllBody && AllCookie && AllHeaders;
-            ASRequestScanURLCB.Checked = AllUlr;
-            ASRequestScanQueryCB.Checked = AllQuery ;
-            ASRequestScanBodyCB.Checked = AllBody;
-            ASRequestScanCookieCB.Checked = AllCookie;
-            ASRequestScanHeadersCB.Checked = AllHeaders;
-        }
+        //    ASRequestScanAllCB.Checked = AllUlr && AllQuery && AllBody && AllCookie && AllHeaders;
+        //    ASRequestScanURLCB.Checked = AllUlr;
+        //    ASRequestScanQueryCB.Checked = AllQuery ;
+        //    ASRequestScanBodyCB.Checked = AllBody;
+        //    ASRequestScanCookieCB.Checked = AllCookie;
+        //    ASRequestScanHeadersCB.Checked = AllHeaders;
+        //}
 
         private void ScanLogGrid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -1132,21 +1390,6 @@ namespace IronWASP
             }
             IronLog.ShowLog(RequestSource.Scan, ScanLogGrid.SelectedCells[0].Value.ToString(), ScanLogGrid.SelectedRows[0].Index, false);
             return;
-        }
-
-        private void ASRequestTabs_Deselecting(object sender, TabControlCancelEventArgs e)
-        {
-            if (e.TabPageIndex == 0)
-            {
-                try
-                {
-                    IronUI.HandleAnyChangesInConfigureScanRequest();
-                }
-                catch (Exception Exp)
-                {
-                    IronUI.ShowConfigureScanException(Exp.Message);
-                }
-            }
         }
 
         private void ASStartScanBtn_Click(object sender, EventArgs e)
@@ -1170,208 +1413,250 @@ namespace IronWASP
                             }
                         }
                     }
+                    else if (this.ASStartScanBtn.Text.Equals("Stop Scan"))
+                    {
+                        try
+                        {
+                            string Status = ASQueueGrid.SelectedCells[1].Value.ToString();
+                            if (Status.Equals("Running"))
+                            {
+                                int ScanID = Int32.Parse(ASQueueGrid.SelectedCells[0].Value.ToString());
+                                Scanner.ScanThreads[ScanID].Abort();
+                            }
+                            this.ASStartScanBtn.Text = "Start Scan";
+                        }
+                        catch(Exception Exp)
+                        {
+                            IronUI.ShowConfigureScanException("Unable to stop this scan");
+                            IronException.Report("Unable to Stop a Active Scan Job", Exp.Message, Exp.StackTrace);
+                        }
+                        return;
+                    }
                 }
                 catch { }
-                try
-                {
-                    IronUI.HandleAnyChangesInConfigureScanRequest();
-                }
-                catch (Exception Exp)
-                {
-                    IronUI.ShowConfigureScanException(Exp.Message);
-                    return;
-                }
+                //try
+                //{
+                //    IronUI.HandleAnyChangesInConfigureScanRequest();
+                //}
+                //catch (Exception Exp)
+                //{
+                //    IronUI.ShowConfigureScanException(Exp.Message);
+                //    return;
+                //}
                 if (Scanner.CurrentScanner == null)
                 {
-                    IronUI.ShowConfigureScanException("Invalid Request");
+                    IronUI.ShowConfigureScanException("No Scan Job selected");
                     return;
                 }
                 if (Scanner.CurrentScanner.OriginalRequest == null)
                 {
-                    IronUI.ShowConfigureScanException("Invalid Request");
+                    IronUI.ShowConfigureScanException("No Scan Job selected");
                     return;
                 }
                 
-                string SelectedFormatPlugin = "None";
-                if (Scanner.CurrentScanner.BodyFormat.Name.Length > 0) SelectedFormatPlugin = Scanner.CurrentScanner.BodyFormat.Name;
+                //string SelectedFormatPlugin = "None";
+                //if (Scanner.CurrentScanner.BodyFormat.Name.Length > 0) SelectedFormatPlugin = Scanner.CurrentScanner.BodyFormat.Name;
 
-                if (this.ASRequestScanAllCB.Checked)
-                {
-                    Scanner.CurrentScanner.InjectAll();
-                }
-                else
-                {
-                    if (this.ASRequestScanURLCB.Checked)
-                    {
-                        Scanner.CurrentScanner.InjectURL();
-                    }
-                    else
-                    {
-                        for (int i = 0; i < this.ASRequestScanURLGrid.Rows.Count; i++)
-                        {
-                            if ((bool)this.ASRequestScanURLGrid.Rows[i].Cells[0].Value)
-                            {
-                                Scanner.CurrentScanner.InjectUrl(i);
-                            }
-                        }
-                    }
-                    if (this.ASRequestScanQueryCB.Checked)
-                    {
-                        Scanner.CurrentScanner.InjectQuery();
-                    }
-                    else
-                    {
-                        int SubParameterPosition = 0;
-                        string ParameterName = "";
-                        foreach (DataGridViewRow Row in this.ASRequestScanQueryGrid.Rows)
-                        {
-                            string CurrentParameterName = Row.Cells[1].Value.ToString();
-                            if (ParameterName.Equals(CurrentParameterName))
-                            {
-                                SubParameterPosition++;
-                            }
-                            else
-                            {
-                                ParameterName = CurrentParameterName;
-                                SubParameterPosition = 0;
-                            }
-                            if ((bool)Row.Cells[0].Value)
-                            {
-                                Scanner.CurrentScanner.InjectQuery(ParameterName, SubParameterPosition);
-                            }
-                        }
-                    }
-                    if (this.ASRequestScanBodyCB.Checked)
-                    {
-                        Scanner.CurrentScanner.InjectBody();
-                    }
-                    else
-                    {
-                        int SubParameterPosition = 0;
-                        string ParameterName = "";
-                        foreach (DataGridViewRow Row in this.ConfigureScanRequestBodyGrid.Rows)
-                        {
-                            if (Scanner.CurrentScanner.BodyFormat.Name.Length == 0)
-                            {
-                                string CurrentParameterName = Row.Cells[1].Value.ToString();
-                                if (ParameterName.Equals(CurrentParameterName))
-                                {
-                                    SubParameterPosition++;
-                                }
-                                else
-                                {
-                                    ParameterName = CurrentParameterName;
-                                    SubParameterPosition = 0;
-                                }
-                                if ((bool)Row.Cells[0].Value)
-                                {
-                                    Scanner.CurrentScanner.InjectBody(ParameterName, SubParameterPosition);
-                                }
-                            }
-                            else
-                            {
-                                if ((bool)Row.Cells[0].Value)
-                                {
-                                    Scanner.CurrentScanner.InjectBody(Row.Index);
-                                }
-                            }
-                        }
-                    }
-                    if (this.ASRequestScanCookieCB.Checked)
-                    {
-                        Scanner.CurrentScanner.InjectCookie();
-                    }
-                    else
-                    {
-                        int SubParameterPosition = 0;
-                        string ParameterName = "";
-                        foreach (DataGridViewRow Row in this.ASRequestScanCookieGrid.Rows)
-                        {
-                            string CurrentParameterName = Row.Cells[1].Value.ToString();
-                            if (ParameterName.Equals(CurrentParameterName))
-                            {
-                                SubParameterPosition++;
-                            }
-                            else
-                            {
-                                ParameterName = CurrentParameterName;
-                                SubParameterPosition = 0;
-                            }
-                            if ((bool)Row.Cells[0].Value)
-                            {
-                                Scanner.CurrentScanner.InjectCookie(ParameterName, SubParameterPosition);
-                            }
-                        }
-                    }
-                    if (this.ASRequestScanHeadersCB.Checked)
-                    {
-                        Scanner.CurrentScanner.InjectHeaders();
-                    }
-                    else
-                    {
-                        int SubParameterPosition = 0;
-                        string ParameterName = "";
-                        foreach (DataGridViewRow Row in this.ASRequestScanHeadersGrid.Rows)
-                        {
-                            string CurrentParameterName = Row.Cells[1].Value.ToString();
-                            if (ParameterName.Equals(CurrentParameterName))
-                            {
-                                SubParameterPosition++;
-                            }
-                            else
-                            {
-                                ParameterName = CurrentParameterName;
-                                SubParameterPosition = 0;
-                            }
-                            if ((bool)Row.Cells[0].Value)
-                            {
-                                Scanner.CurrentScanner.InjectHeaders(ParameterName, SubParameterPosition);
-                            }
-                        }
-                    }
-                }
-                if ((Scanner.CurrentScanner.URLInjections.Count + Scanner.CurrentScanner.QueryInjections.Count + Scanner.CurrentScanner.BodyInjections.Count + Scanner.CurrentScanner.BodyXmlInjections.Count + Scanner.CurrentScanner.CookieInjections.Count + Scanner.CurrentScanner.HeadersInjections.Count) == 0)
-                {
-                    IronUI.ShowConfigureScanException("No Injection Points Selected or Available!");
-                    return;
-                }
 
-                StringBuilder ScanPluginsBuilder = new StringBuilder();
-                foreach (DataGridViewRow Row in ASScanPluginsGrid.Rows)
-                {
-                    if (Row.Index > 0)
-                    {
-                        if ((bool)Row.Cells[0].Value)
-                        {
-                            string PluginName = Row.Cells[1].Value.ToString();
-                            Scanner.CurrentScanner.AddCheck(PluginName);
-                            ScanPluginsBuilder.Append(PluginName);
-                            ScanPluginsBuilder.Append(",");
-                        }
-                    }
-                }
-                string SelectedScanPlugins = ScanPluginsBuilder.ToString().TrimEnd(new char[] { ',' });
-                if (Scanner.CurrentScanner.ShowChecks().Count == 0)
-                {
-                    IronUI.ShowConfigureScanException("No Plugin Selected!");
-                    return;
-                }
-                string SelectedSessionPlugin = "None";
-                if (ASSessionPluginsCombo.SelectedItem != null)
-                {
-                    string SessionPluginName = this.ASSessionPluginsCombo.SelectedItem.ToString();
-                    if (SessionPluginName.Length > 0)
-                    {
-                        Scanner.CurrentScanner.SessionHandler = SessionPlugin.Get(SessionPluginName);
-                        SelectedSessionPlugin = SessionPluginName;
-                    }
-                }
+                //Scanner.CurrentScanner.URLInjections = new List<int>();
+                //if (this.ASRequestScanURLCB.Checked)
+                //{
+                //    Scanner.CurrentScanner.InjectURL();
+                //}
+                //else
+                //{
+                //    for (int i = 0; i < this.ASRequestScanURLGrid.Rows.Count; i++)
+                //    {
+                //        if ((bool)this.ASRequestScanURLGrid.Rows[i].Cells[0].Value)
+                //        {
+                //            Scanner.CurrentScanner.InjectUrl(i);
+                //        }
+                //    }
+                //}
+                //Scanner.CurrentScanner.QueryInjections = new InjectionParameters();
+                //if (this.ASRequestScanQueryCB.Checked)
+                //{
+                //    Scanner.CurrentScanner.InjectQuery();
+                //}
+                //else
+                //{
+                //    int SubParameterPosition = 0;
+                //    string ParameterName = "";
+                //    foreach (DataGridViewRow Row in this.ASRequestScanQueryGrid.Rows)
+                //    {
+                //        string CurrentParameterName = Row.Cells[1].Value.ToString();
+                //        if (ParameterName.Equals(CurrentParameterName))
+                //        {
+                //            SubParameterPosition++;
+                //        }
+                //        else
+                //        {
+                //            ParameterName = CurrentParameterName;
+                //            SubParameterPosition = 0;
+                //        }
+                //        if ((bool)Row.Cells[0].Value)
+                //        {
+                //            Scanner.CurrentScanner.InjectQuery(ParameterName, SubParameterPosition);
+                //        }
+                //    }
+                //}
 
-                if (Scanner.CurrentScanner.ShowChecks().Count == 0)
-                {
-                    IronUI.ShowConfigureScanException("No Plugin Selected!");
-                    return;
-                }
+                //if (ASBodyTypeNormalRB.Checked)
+                //{
+                //    if (this.ASRequestScanBodyCB.Checked)
+                //    {
+                //        Scanner.CurrentScanner.InjectBody();
+                //    }
+                //    else
+                //    {
+                //        int SubParameterPosition = 0;
+                //        string ParameterName = "";
+
+                //        foreach (DataGridViewRow Row in this.ASRequestScanBodyTypeNormalGrid.Rows)
+                //        {
+                //            string CurrentParameterName = Row.Cells[1].Value.ToString();
+                //            if (ParameterName.Equals(CurrentParameterName))
+                //            {
+                //                SubParameterPosition++;
+                //            }
+                //            else
+                //            {
+                //                ParameterName = CurrentParameterName;
+                //                SubParameterPosition = 0;
+                //            }
+                //            if ((bool)Row.Cells[0].Value)
+                //            {
+                //                Scanner.CurrentScanner.InjectBody(ParameterName, SubParameterPosition);
+                //            }
+                //        }
+                //    }
+                //}
+                //else if (ASBodyTypeFormatPluginRB.Checked)
+                //{
+                //    foreach (DataGridViewRow Row in this.ConfigureScanRequestBodyTypeFormatPluginGrid.Rows)
+                //    {                            
+                //        if ((bool)Row.Cells[0].Value)
+                //        {
+                //            Scanner.CurrentScanner.InjectBody(Row.Index);
+                //        }
+                //    }
+                //}
+                //else if (ASBodyTypeCustomRB.Checked)
+                //{
+                //    if (ASRequestScanBodyCB.Checked)
+                //    {
+                //        Scanner.CurrentScanner.InjectBody(Scanner.CurrentScanner.CustomInjectionPointStartMarker, Scanner.CurrentScanner.CustomInjectionPointEndMarker);
+                //    }
+                //    else
+                //    {
+                //        Scanner.CurrentScanner.CustomInjectionPointStartMarker = "";
+                //        Scanner.CurrentScanner.CustomInjectionPointEndMarker = "";
+                //    }
+                //}
+                //else
+                //{
+                //    Scanner.CurrentScanner.BodyInjections = new InjectionParameters();
+                //    Scanner.CurrentScanner.CustomInjectionPointStartMarker = "";
+                //    Scanner.CurrentScanner.CustomInjectionPointEndMarker = "";
+                //    Scanner.CurrentScanner.BodyFormat = new FormatPlugin();
+                //}
+                //Scanner.CurrentScanner.CookieInjections = new InjectionParameters();
+                //if (this.ASRequestScanCookieCB.Checked)
+                //{
+                //    Scanner.CurrentScanner.InjectCookie();
+                //}
+                //else
+                //{
+                //    int SubParameterPosition = 0;
+                //    string ParameterName = "";
+                //    foreach (DataGridViewRow Row in this.ASRequestScanCookieGrid.Rows)
+                //    {
+                //        string CurrentParameterName = Row.Cells[1].Value.ToString();
+                //        if (ParameterName.Equals(CurrentParameterName))
+                //        {
+                //            SubParameterPosition++;
+                //        }
+                //        else
+                //        {
+                //            ParameterName = CurrentParameterName;
+                //            SubParameterPosition = 0;
+                //        }
+                //        if ((bool)Row.Cells[0].Value)
+                //        {
+                //            Scanner.CurrentScanner.InjectCookie(ParameterName, SubParameterPosition);
+                //        }
+                //    }
+                //}
+                //Scanner.CurrentScanner.HeadersInjections = new InjectionParameters();
+                //if (this.ASRequestScanHeadersCB.Checked)
+                //{
+                //    Scanner.CurrentScanner.InjectHeaders();
+                //}
+                //else
+                //{
+                //    int SubParameterPosition = 0;
+                //    string ParameterName = "";
+                //    foreach (DataGridViewRow Row in this.ASRequestScanHeadersGrid.Rows)
+                //    {
+                //        string CurrentParameterName = Row.Cells[1].Value.ToString();
+                //        if (ParameterName.Equals(CurrentParameterName))
+                //        {
+                //            SubParameterPosition++;
+                //        }
+                //        else
+                //        {
+                //            ParameterName = CurrentParameterName;
+                //            SubParameterPosition = 0;
+                //        }
+                //        if ((bool)Row.Cells[0].Value)
+                //        {
+                //            Scanner.CurrentScanner.InjectHeaders(ParameterName, SubParameterPosition);
+                //        }
+                //    }
+                //}
+
+                //if ((Scanner.CurrentScanner.URLInjections.Count + Scanner.CurrentScanner.QueryInjections.Count + Scanner.CurrentScanner.BodyInjections.Count + Scanner.CurrentScanner.BodyXmlInjections.Count + Scanner.CurrentScanner.GetCustomInjectionPointsCount() + Scanner.CurrentScanner.CookieInjections.Count + Scanner.CurrentScanner.HeadersInjections.Count) == 0)
+                //{
+                //    IronUI.ShowConfigureScanException("No Injection Points Selected or Available!");
+                //    return;
+                //}
+
+                //StringBuilder ScanPluginsBuilder = new StringBuilder();
+                //foreach (DataGridViewRow Row in ASScanPluginsGrid.Rows)
+                //{
+                //    if (Row.Index > 0)
+                //    {
+                //        if ((bool)Row.Cells[0].Value)
+                //        {
+                //            string PluginName = Row.Cells[1].Value.ToString();
+                //            Scanner.CurrentScanner.AddCheck(PluginName);
+                //            ScanPluginsBuilder.Append(PluginName);
+                //            ScanPluginsBuilder.Append(",");
+                //        }
+                //    }
+                //}
+                //string SelectedScanPlugins = ScanPluginsBuilder.ToString().TrimEnd(new char[] { ',' });
+                //if (Scanner.CurrentScanner.ShowChecks().Count == 0)
+                //{
+                //    IronUI.ShowConfigureScanException("No Plugin Selected!");
+                //    return;
+                //}
+                ////string SelectedSessionPlugin = "None";
+                ////if (ASSessionPluginsCombo.SelectedItem != null)
+                ////{
+                ////    string SessionPluginName = this.ASSessionPluginsCombo.SelectedItem.ToString();
+                ////    if (SessionPluginName.Length > 0)
+                ////    {
+                ////        Scanner.CurrentScanner.SessionHandler = SessionPlugin.Get(SessionPluginName);
+                ////        SelectedSessionPlugin = SessionPluginName;
+                ////    }
+                ////}
+
+                //if (Scanner.CurrentScanner.ShowChecks().Count == 0)
+                //{
+                //    IronUI.ShowConfigureScanException("No Plugin Selected!");
+                //    return;
+                //}
 
                 if (ASStartScanBtn.Text.Equals("Start Scan"))
                     Scanner.CurrentScanner.StartScan();
@@ -1383,6 +1668,9 @@ namespace IronWASP
                 this.ASStartScanBtn.Text = "Scan";
                 Scanner.ResetChangedStatus();
                 IronUI.ResetConfigureScanFields();
+                ScanDisplayPanel.Visible = false;
+                ScanTopPanel.Visible = true;
+                ScanJobsBaseSplit.SplitterDistance = 62;
             }
             catch(Exception Exp)
             {
@@ -1390,54 +1678,54 @@ namespace IronWASP
             }
         }
 
-        private void ASScanPluginsGrid_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (ASScanPluginsGrid.SelectedCells.Count < 1 || ASScanPluginsGrid.SelectedCells[0].Value == null)
-            {
-                return;
-            }
-            if (this.ASScanPluginsGrid.SelectedRows[0].Index == 0)
-            {
-                bool AllValue = !(bool)this.ASScanPluginsGrid.SelectedCells[0].Value;
-                this.ASScanPluginsGrid.SelectedCells[0].Value = AllValue;
-                foreach (DataGridViewRow Row in this.ASScanPluginsGrid.Rows)
-                {
-                    if (Row.Index > 0)
-                    {
-                        Row.Cells[0].Value = AllValue;
-                    }
-                }
-                return;
-            }
-            if ((bool)this.ASScanPluginsGrid.SelectedCells[0].Value)
-            {
-                this.ASScanPluginsGrid.SelectedCells[0].Value = false;
-                this.ASScanPluginsGrid.Rows[0].SetValues(new object[]{false, "All"});
-            }
-            else
-            {
-                this.ASScanPluginsGrid.SelectedCells[0].Value = true;
-            }
-        }
+        //private void ASScanPluginsGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        //{
+        //    if (ASScanPluginsGrid.SelectedCells.Count < 1 || ASScanPluginsGrid.SelectedCells[0].Value == null)
+        //    {
+        //        return;
+        //    }
+        //    if (this.ASScanPluginsGrid.SelectedRows[0].Index == 0)
+        //    {
+        //        bool AllValue = !(bool)this.ASScanPluginsGrid.SelectedCells[0].Value;
+        //        this.ASScanPluginsGrid.SelectedCells[0].Value = AllValue;
+        //        foreach (DataGridViewRow Row in this.ASScanPluginsGrid.Rows)
+        //        {
+        //            if (Row.Index > 0)
+        //            {
+        //                Row.Cells[0].Value = AllValue;
+        //            }
+        //        }
+        //        return;
+        //    }
+        //    if ((bool)this.ASScanPluginsGrid.SelectedCells[0].Value)
+        //    {
+        //        this.ASScanPluginsGrid.SelectedCells[0].Value = false;
+        //        this.ASScanPluginsGrid.Rows[0].SetValues(new object[]{false, "All"});
+        //    }
+        //    else
+        //    {
+        //        this.ASScanPluginsGrid.SelectedCells[0].Value = true;
+        //    }
+        //}
 
-        private void ASRequestScanAllCB_Click(object sender, EventArgs e)
-        {
-            CheckAllASRequestInjections();
-        }
+        //private void ASRequestScanAllCB_Click(object sender, EventArgs e)
+        //{
+        //    CheckAllASRequestInjections();
+        //}
 
-        private void CheckAllASRequestInjections()
-        {
-            this.ASRequestScanURLCB.Checked = this.ASRequestScanAllCB.Checked;
-            this.CheckAllASRequestScanURLGridRows();
-            this.ASRequestScanQueryCB.Checked = this.ASRequestScanAllCB.Checked;
-            this.CheckAllASRequestScanQueryGridRows();
-            this.ASRequestScanBodyCB.Checked = this.ASRequestScanAllCB.Checked;
-            this.CheckAllASRequestScanBodyGridRows();
-            this.ASRequestScanCookieCB.Checked = this.ASRequestScanAllCB.Checked;
-            this.CheckAllASRequestScanCookieGridRows();
-            this.ASRequestScanHeadersCB.Checked = this.ASRequestScanAllCB.Checked;
-            this.CheckAllASRequestScanHeadersGridRows();
-        }
+        //private void CheckAllASRequestInjections()
+        //{
+        //    this.ASRequestScanURLCB.Checked = this.ASRequestScanAllCB.Checked;
+        //    this.CheckAllASRequestScanURLGridRows();
+        //    this.ASRequestScanQueryCB.Checked = this.ASRequestScanAllCB.Checked;
+        //    this.CheckAllASRequestScanQueryGridRows();
+        //    this.ASRequestScanBodyCB.Checked = this.ASRequestScanAllCB.Checked;
+        //    this.CheckAllASRequestScanBodyGridRows();
+        //    this.ASRequestScanCookieCB.Checked = this.ASRequestScanAllCB.Checked;
+        //    this.CheckAllASRequestScanCookieGridRows();
+        //    this.ASRequestScanHeadersCB.Checked = this.ASRequestScanAllCB.Checked;
+        //    this.CheckAllASRequestScanHeadersGridRows();
+        //}
 
         private void ASRequestScanURLCB_Click(object sender, EventArgs e)
         {
@@ -1475,24 +1763,39 @@ namespace IronWASP
                 Row.Cells[0].Value = this.ASRequestScanQueryCB.Checked;
             }
         }
-        private void ASRequestScanBodyCB_Click(object sender, EventArgs e)
-        {
-            this.CheckAllASRequestScanBodyGridRows();
-            if (!this.ASRequestScanBodyCB.Checked)
-            {
-                if (this.ASRequestScanAllCB.Checked)
-                {
-                    this.ASRequestScanAllCB.Checked = false;
-                }
-            }
-        }
-        private void CheckAllASRequestScanBodyGridRows()
-        {
-            foreach (DataGridViewRow Row in this.ConfigureScanRequestBodyGrid.Rows)
-            {
-                Row.Cells[0].Value = this.ASRequestScanBodyCB.Checked;
-            }
-        }
+        //private void ASRequestScanBodyCB_Click(object sender, EventArgs e)
+        //{
+        //    this.CheckAllASRequestScanBodyGridRows();
+        //    if (!this.ASRequestScanBodyCB.Checked)
+        //    {
+        //        if (this.ASRequestScanAllCB.Checked)
+        //        {
+        //            this.ASRequestScanAllCB.Checked = false;
+        //        }
+        //    }
+        //}
+        //private void CheckAllASRequestScanBodyGridRows()
+        //{
+        //    if (ASBodyTypeNormalRB.Checked)
+        //    {
+        //        foreach (DataGridViewRow Row in this.ASRequestScanBodyTypeNormalGrid.Rows)
+        //        {
+        //            Row.Cells[0].Value = this.ASRequestScanBodyCB.Checked;
+        //        }
+        //    }
+        //    if (ASBodyTypeFormatPluginRB.Checked)
+        //    {
+        //        foreach (DataGridViewRow Row in this.ConfigureScanRequestBodyTypeFormatPluginGrid.Rows)
+        //        {
+        //            Row.Cells[0].Value = this.ASRequestScanBodyCB.Checked;
+        //        }
+        //    }
+        //    if (ASBodyTypeCustomRB.Checked)
+        //    {
+        //        ASRequestScanBodyCB.Checked = false;
+        //        IronUI.ShowConfigureScanException("For custom injection markers press 'Apply' next to the injection marker textbox.");
+        //    }
+        //}
         private void ASRequestScanCookieCB_Click(object sender, EventArgs e)
         {
             this.CheckAllASRequestScanCookieGridRows();
@@ -1530,110 +1833,110 @@ namespace IronWASP
             }
         }
 
-        private void ASRequestScanURLGrid_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (ASRequestScanURLGrid.SelectedCells.Count < 1 || ASRequestScanURLGrid.SelectedCells[0].Value == null)
-            {
-                return;
-            }
-            if ((bool)this.ASRequestScanURLGrid.SelectedCells[0].Value)
-            {
-                this.ASRequestScanURLGrid.SelectedCells[0].Value = false;
-                this.ASRequestScanAllCB.Checked = false;
-                this.ASRequestScanURLCB.Checked = false;
-            }
-            else
-            {
-                this.ASRequestScanURLGrid.SelectedCells[0].Value = true;
-            }
-        }
+        //private void ASRequestScanURLGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        //{
+        //    if (ASRequestScanURLGrid.SelectedCells.Count < 1 || ASRequestScanURLGrid.SelectedCells[0].Value == null)
+        //    {
+        //        return;
+        //    }
+        //    if ((bool)this.ASRequestScanURLGrid.SelectedCells[0].Value)
+        //    {
+        //        this.ASRequestScanURLGrid.SelectedCells[0].Value = false;
+        //        this.ASRequestScanAllCB.Checked = false;
+        //        this.ASRequestScanURLCB.Checked = false;
+        //    }
+        //    else
+        //    {
+        //        this.ASRequestScanURLGrid.SelectedCells[0].Value = true;
+        //    }
+        //}
 
-        private void ASRequestScanQueryGrid_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (ASRequestScanQueryGrid.SelectedCells.Count < 1 || ASRequestScanQueryGrid.SelectedCells[0].Value == null)
-            {
-                return;
-            }
-            if ((bool)this.ASRequestScanQueryGrid.SelectedCells[0].Value)
-            {
-                this.ASRequestScanQueryGrid.SelectedCells[0].Value = false;
-                this.ASRequestScanAllCB.Checked = false;
-                this.ASRequestScanQueryCB.Checked = false;
-            }
-            else
-            {
-                this.ASRequestScanQueryGrid.SelectedCells[0].Value = true;
-            }
-        }
+        //private void ASRequestScanQueryGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        //{
+        //    if (ASRequestScanQueryGrid.SelectedCells.Count < 1 || ASRequestScanQueryGrid.SelectedCells[0].Value == null)
+        //    {
+        //        return;
+        //    }
+        //    if ((bool)this.ASRequestScanQueryGrid.SelectedCells[0].Value)
+        //    {
+        //        this.ASRequestScanQueryGrid.SelectedCells[0].Value = false;
+        //        this.ASRequestScanAllCB.Checked = false;
+        //        this.ASRequestScanQueryCB.Checked = false;
+        //    }
+        //    else
+        //    {
+        //        this.ASRequestScanQueryGrid.SelectedCells[0].Value = true;
+        //    }
+        //}
 
-        private void ASRequestScanBodyGrid_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (ConfigureScanRequestBodyGrid.SelectedCells.Count < 1 || ConfigureScanRequestBodyGrid.SelectedCells[0].Value == null)
-            {
-                return;
-            }
-            if ((bool)this.ConfigureScanRequestBodyGrid.SelectedCells[0].Value)
-            {
-                this.ConfigureScanRequestBodyGrid.SelectedCells[0].Value = false;
-                this.ASRequestScanAllCB.Checked = false;
-                this.ASRequestScanBodyCB.Checked = false;
-            }
-            else
-            {
-                this.ConfigureScanRequestBodyGrid.SelectedCells[0].Value = true;
-            }
-        }
+        //private void ASRequestScanBodyGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        //{
+        //    if (ConfigureScanRequestBodyTypeFormatPluginGrid.SelectedCells.Count < 1 || ConfigureScanRequestBodyTypeFormatPluginGrid.SelectedCells[0].Value == null)
+        //    {
+        //        return;
+        //    }
+        //    if ((bool)this.ConfigureScanRequestBodyTypeFormatPluginGrid.SelectedCells[0].Value)
+        //    {
+        //        this.ConfigureScanRequestBodyTypeFormatPluginGrid.SelectedCells[0].Value = false;
+        //        this.ASRequestScanAllCB.Checked = false;
+        //        this.ASRequestScanBodyCB.Checked = false;
+        //    }
+        //    else
+        //    {
+        //        this.ConfigureScanRequestBodyTypeFormatPluginGrid.SelectedCells[0].Value = true;
+        //    }
+        //}
 
-        private void ASRequestScanCookieGrid_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (ASRequestScanCookieGrid.SelectedCells.Count < 1 || ASRequestScanCookieGrid.SelectedCells[0].Value == null)
-            {
-                return;
-            }
-            if ((bool)this.ASRequestScanCookieGrid.SelectedCells[0].Value)
-            {
-                this.ASRequestScanCookieGrid.SelectedCells[0].Value = false;
-                this.ASRequestScanAllCB.Checked = false;
-                this.ASRequestScanCookieCB.Checked = false;
-            }
-            else
-            {
-                this.ASRequestScanCookieGrid.SelectedCells[0].Value = true;
-            }
-        }
+        //private void ASRequestScanCookieGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        //{
+        //    if (ASRequestScanCookieGrid.SelectedCells.Count < 1 || ASRequestScanCookieGrid.SelectedCells[0].Value == null)
+        //    {
+        //        return;
+        //    }
+        //    if ((bool)this.ASRequestScanCookieGrid.SelectedCells[0].Value)
+        //    {
+        //        this.ASRequestScanCookieGrid.SelectedCells[0].Value = false;
+        //        this.ASRequestScanAllCB.Checked = false;
+        //        this.ASRequestScanCookieCB.Checked = false;
+        //    }
+        //    else
+        //    {
+        //        this.ASRequestScanCookieGrid.SelectedCells[0].Value = true;
+        //    }
+        //}
 
-        private void ASRequestScanHeadersGrid_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (ASRequestScanHeadersGrid.SelectedCells.Count < 1 || ASRequestScanHeadersGrid.SelectedCells[0].Value == null)
-            {
-                return;
-            }
-            if ((bool)this.ASRequestScanHeadersGrid.SelectedCells[0].Value)
-            {
-                this.ASRequestScanHeadersGrid.SelectedCells[0].Value = false;
-                this.ASRequestScanAllCB.Checked = false;
-                this.ASRequestScanHeadersCB.Checked = false;
-            }
-            else
-            {
-                this.ASRequestScanHeadersGrid.SelectedCells[0].Value = true;
-            }
-        }
+        //private void ASRequestScanHeadersGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        //{
+        //    if (ASRequestScanHeadersGrid.SelectedCells.Count < 1 || ASRequestScanHeadersGrid.SelectedCells[0].Value == null)
+        //    {
+        //        return;
+        //    }
+        //    if ((bool)this.ASRequestScanHeadersGrid.SelectedCells[0].Value)
+        //    {
+        //        this.ASRequestScanHeadersGrid.SelectedCells[0].Value = false;
+        //        this.ASRequestScanAllCB.Checked = false;
+        //        this.ASRequestScanHeadersCB.Checked = false;
+        //    }
+        //    else
+        //    {
+        //        this.ASRequestScanHeadersGrid.SelectedCells[0].Value = true;
+        //    }
+        //}
 
-        private void ASSessionPluginsCombo_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-            this.ASScanPluginsGrid.Focus();
-        }
+        //private void ASSessionPluginsCombo_SelectionChangeCommitted(object sender, EventArgs e)
+        //{
+        //    this.ASScanPluginsGrid.Focus();
+        //}
 
         private void UpdateBodyGridForFormat(FormatPlugin Plugin, bool CheckStatus)
         {
-            ConfigureScanRequestBodyGrid.Rows.Clear();
+            ConfigureScanRequestBodyTypeFormatPluginGrid.Rows.Clear();
             string XmlString = Plugin.ToXml(Scanner.CurrentScanner.OriginalRequest.BodyArray);
             ConfigureScanRequestFormatXMLTB.Text = XmlString;
             string[,] InjectionPoints = FormatPlugin.XmlToArray(XmlString);
             for (int i = 0; i < InjectionPoints.GetLength(0); i++)
             {
-                ConfigureScanRequestBodyGrid.Rows.Add(new object[] { CheckStatus, InjectionPoints[i, 0], InjectionPoints[i, 1] });
+                ConfigureScanRequestBodyTypeFormatPluginGrid.Rows.Add(new object[] { CheckStatus, InjectionPoints[i, 0], InjectionPoints[i, 1] });
             }
         }
 
@@ -1643,7 +1946,7 @@ namespace IronWASP
             {
                 return;
             }
-            if (PluginResult.CurrentPluginResult != null)
+            if (Finding.CurrentPluginResult != null)
             {
                 int TriggerNumber = Int32.Parse(ResultsTriggersGrid.SelectedCells[0].Value.ToString()) - 1;
                 IronUI.DisplayPluginResultsTrigger(TriggerNumber);
@@ -1797,6 +2100,7 @@ namespace IronWASP
             if (LogFilesDirectory.Length > 0)
             {
                 IronDB.UpdateLogFilePaths(LogFilesDirectory);
+                LoadSelectedTraceBtn.Enabled = false;
                 IronUI.StartUpdatingFullUIFromDB();
             }
         }
@@ -1849,47 +2153,47 @@ namespace IronWASP
             IronProxy.RequestChanged = true;
         }
 
-        private void ProxyRequestParametersTabs_Deselecting(object sender, TabControlCancelEventArgs e)
-        {
-            if (IronProxy.ManualTamperingFree) return;
-            try
-            {
-                IronUI.ResetProxyException();
-                IronUI.HandleAnyChangesInRequest();
-            }
-            catch(Exception Exp)
-            {
-                IronUI.ShowProxyException(Exp.Message);
-            }
-        }
+        //private void ProxyRequestParametersTabs_Deselecting(object sender, TabControlCancelEventArgs e)
+        //{
+        //    if (IronProxy.ManualTamperingFree) return;
+        //    try
+        //    {
+        //        IronUI.ResetProxyException();
+        //        IronUI.HandleAnyChangesInRequest();
+        //    }
+        //    catch(Exception Exp)
+        //    {
+        //        IronUI.ShowProxyException(Exp.Message);
+        //    }
+        //}
 
-        private void ProxyInterceptRequestTabs_Deselecting(object sender, TabControlCancelEventArgs e)
-        {
-            if (IronProxy.ManualTamperingFree) return;
-            try
-            {
-                IronUI.ResetProxyException();
-                IronUI.HandleAnyChangesInRequest();
-            }
-            catch(Exception Exp)
-            {
-                IronUI.ShowProxyException(Exp.Message);
-            }
-        }
+        //private void ProxyInterceptRequestTabs_Deselecting(object sender, TabControlCancelEventArgs e)
+        //{
+        //    if (IronProxy.ManualTamperingFree) return;
+        //    try
+        //    {
+        //        IronUI.ResetProxyException();
+        //        IronUI.HandleAnyChangesInRequest();
+        //    }
+        //    catch(Exception Exp)
+        //    {
+        //        IronUI.ShowProxyException(Exp.Message);
+        //    }
+        //}
 
-        private void ProxyInterceptResponseTabs_Deselecting(object sender, TabControlCancelEventArgs e)
-        {
-            if (IronProxy.ManualTamperingFree) return;
-            try
-            {
-                IronUI.ResetProxyException();
-                IronUI.HandleAnyChangesInResponse();
-            }
-            catch(Exception Exp)
-            {
-                IronUI.ShowProxyException(Exp.Message);
-            }
-        }
+        //private void ProxyInterceptResponseTabs_Deselecting(object sender, TabControlCancelEventArgs e)
+        //{
+        //    if (IronProxy.ManualTamperingFree) return;
+        //    try
+        //    {
+        //        IronUI.ResetProxyException();
+        //        IronUI.HandleAnyChangesInResponse();
+        //    }
+        //    catch(Exception Exp)
+        //    {
+        //        IronUI.ShowProxyException(Exp.Message);
+        //    }
+        //}
 
         private void AboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1986,31 +2290,31 @@ namespace IronWASP
             ManualTesting.RequestChanged = true;
         }
 
-        private void MTRequestTabs_Deselecting(object sender, TabControlCancelEventArgs e)
-        {
-            try
-            {
-                IronUI.ResetMTExceptionFields();
-                IronUI.HandleAnyChangesInMTRequest();
-            }
-            catch(Exception Exp)
-            {
-                IronUI.ShowMTException(Exp.Message);
-            }
-        }
+        //private void MTRequestTabs_Deselecting(object sender, TabControlCancelEventArgs e)
+        //{
+        //    try
+        //    {
+        //        IronUI.ResetMTExceptionFields();
+        //        IronUI.HandleAnyChangesInMTRequest();
+        //    }
+        //    catch(Exception Exp)
+        //    {
+        //        IronUI.ShowMTException(Exp.Message);
+        //    }
+        //}
 
-        private void MTRequestParametersTabs_Deselecting(object sender, TabControlCancelEventArgs e)
-        {
-            try
-            {
-                IronUI.ResetMTExceptionFields();
-                IronUI.HandleAnyChangesInMTRequest();
-            }
-            catch(Exception Exp)
-            {
-                IronUI.ShowMTException(Exp.Message);
-            }
-        }
+        //private void MTRequestParametersTabs_Deselecting(object sender, TabControlCancelEventArgs e)
+        //{
+        //    try
+        //    {
+        //        IronUI.ResetMTExceptionFields();
+        //        IronUI.HandleAnyChangesInMTRequest();
+        //    }
+        //    catch(Exception Exp)
+        //    {
+        //        IronUI.ShowMTException(Exp.Message);
+        //    }
+        //}
 
         private void ASRequestRawHeadersIDV_IDVTextChanged()
         {
@@ -2028,151 +2332,95 @@ namespace IronWASP
 
             try
             {
-                if (e.Node.Level == 2)
+                if (e.Node.Level == 3)
                 {
-                    string PluginName = e.Node.Name;
-                    string[] PluginDetails = new string[] { "", "", "", "", "" };
-                    PluginDetails[0] = e.Node.Name;
-                    switch (e.Node.Parent.Index)
+                    //Plugins
+                    if (e.Node.Parent.Parent.Index == 0)
                     {
-                        case 0:
-                            PassivePlugin PP = PassivePlugin.Get(PluginDetails[0]);
-                            PluginDetails[1] = PP.Description;
-                            PluginDetails[2] = Config.RootDir + "\\plugins\\passive\\" + PP.FileName;
-                            if (PP.FileName.Length > 0)
-                            {
-                                if (PP.FileName.EndsWith(".py"))
-                                {
-                                    PluginDetails[4] = "Python";
-                                }
-                                else if (PP.FileName.EndsWith(".rb"))
-                                {
-                                    PluginDetails[4] = "Ruby";
-                                }
-                                else
-                                {
-                                    PluginDetails[4] = "-";
-                                }
-                                try
-                                {
-                                    StreamReader SR = File.OpenText(PluginDetails[2]);
-                                    PluginDetails[3] = SR.ReadToEnd();
-                                    SR.Close();
-                                }
-                                catch (Exception exp)
-                                {
-                                    PluginDetails[3] = "Error reading file: " + exp.Message;
-                                }
-                            }
+                        string PluginName = e.Node.Name;
+                        string[] PluginDetails = new string[] { "", "", "", "", "" };
+                        PluginDetails[0] = e.Node.Name;
+                        Plugin P = new Plugin();
+                        switch (e.Node.Parent.Index)
+                        {
+                            case 0:
+                                P = ActivePlugin.Get(PluginDetails[0]);
+                                PluginDetails[2] = string.Format("{0}\\plugins\\active\\{1}", Config.RootDir, P.FileName);
+                                break;
+                            case 1:
+                                P = PassivePlugin.Get(PluginDetails[0]);
+                                PluginDetails[2] = string.Format("{0}\\plugins\\passive\\{1}", Config.RootDir, P.FileName);
+                                break;
+                            case 2:
+                                P = FormatPlugin.Get(PluginDetails[0]);
+                                PluginDetails[2] = string.Format("{0}\\plugins\\format\\{1}", Config.RootDir, P.FileName);
+                                break;
+                            case 3:
+                                P = SessionPlugin.Get(PluginDetails[0]);
+                                PluginDetails[2] = string.Format("{0}\\plugins\\session\\{1}", Config.RootDir, P.FileName);
+                                break;
+                        }
+                        PluginDetails[1] = P.Description;
+                        if (P.FileName.Length > 0)
+                        {
+                            if (P.FileName.EndsWith(".py"))
+                                PluginDetails[4] = "Python";
+                            else if (P.FileName.EndsWith(".rb"))
+                                PluginDetails[4] = "Ruby";
                             else
+                                PluginDetails[4] = "-";
+                            try
                             {
-                                PluginDetails[3] = "FileName information is missing in the Plugin";
+                                StreamReader SR = File.OpenText(PluginDetails[2]);
+                                PluginDetails[3] = SR.ReadToEnd();
+                                SR.Close();
                             }
-                            break;
-                        case 1:
-                            ActivePlugin AP = ActivePlugin.Get(PluginDetails[0]);
-                            PluginDetails[1] = AP.Description;
-                            PluginDetails[2] = Config.RootDir + "\\plugins\\active\\" + AP.FileName;
-                            if (AP.FileName.Length > 0)
+                            catch (Exception exp)
                             {
-                                if (AP.FileName.EndsWith(".py"))
-                                {
-                                    PluginDetails[4] = "Python";
-                                }
-                                else if (AP.FileName.EndsWith(".rb"))
-                                {
-                                    PluginDetails[4] = "Ruby";
-                                }
-                                else
-                                {
-                                    PluginDetails[4] = "-";
-                                }
-                                try
-                                {
-                                    StreamReader SR = File.OpenText(PluginDetails[2]);
-                                    PluginDetails[3] = SR.ReadToEnd();
-                                    SR.Close();
-                                }
-                                catch (Exception exp)
-                                {
-                                    PluginDetails[3] = "Error reading file: " + exp.Message;
-                                }
+                                PluginDetails[3] = "Error reading file: " + exp.Message;
                             }
-                            else
-                            {
-                                PluginDetails[3] = "FileName information is missing in the Plugin";
-                            }
-                            break;
-                        case 2:
-                            FormatPlugin FP = FormatPlugin.Get(PluginDetails[0]);
-                            PluginDetails[1] = FP.Description;
-                            PluginDetails[2] = Config.RootDir + "\\plugins\\format\\" + FP.FileName;
-                            if (FP.FileName.Length > 0)
-                            {
-                                if (FP.FileName.EndsWith(".py"))
-                                {
-                                    PluginDetails[4] = "Python";
-                                }
-                                else if (FP.FileName.EndsWith(".rb"))
-                                {
-                                    PluginDetails[4] = "Ruby";
-                                }
-                                else
-                                {
-                                    PluginDetails[4] = "-";
-                                }
-                                try
-                                {
-                                    StreamReader SR = File.OpenText(PluginDetails[2]);
-                                    PluginDetails[3] = SR.ReadToEnd();
-                                    SR.Close();
-                                }
-                                catch (Exception exp)
-                                {
-                                    PluginDetails[3] = "Error reading file: " + exp.Message;
-                                }
-                            }
-                            else
-                            {
-                                PluginDetails[3] = "FileName information is missing in the Plugin";
-                            }
-                            break;
-                        case 3:
-                            SessionPlugin SP = SessionPlugin.Get(PluginDetails[0]);
-                            PluginDetails[1] = SP.Description;
-                            PluginDetails[2] = Config.RootDir + "\\plugins\\session\\" + SP.FileName;
-                            if (SP.FileName.Length > 0)
-                            {
-                                if (SP.FileName.EndsWith(".py"))
-                                {
-                                    PluginDetails[4] = "Python";
-                                }
-                                else if (SP.FileName.EndsWith(".rb"))
-                                {
-                                    PluginDetails[4] = "Ruby";
-                                }
-                                else
-                                {
-                                    PluginDetails[4] = "-";
-                                }
-                                try
-                                {
-                                    StreamReader SR = File.OpenText(PluginDetails[2]);
-                                    PluginDetails[3] = SR.ReadToEnd();
-                                    SR.Close();
-                                }
-                                catch (Exception exp)
-                                {
-                                    PluginDetails[3] = "Error reading file: " + exp.Message;
-                                }
-                            }
-                            else
-                            {
-                                PluginDetails[3] = "FileName information is missing in the Plugin";
-                            }
-                            break;
+                        }
+                        else
+                        {
+                            PluginDetails[3] = "FileName information is missing in the Plugin";
+                        }
+                        IronUI.DisplayPluginDetails(PluginDetails);
                     }
-                    IronUI.DisplayPluginDetails(PluginDetails);
+                    //Modules
+                    else if(e.Node.Parent.Parent.Index == 1)
+                    {
+                        string ModuleName = e.Node.Name;
+                        string[] ModuleDetails = new string[] { "", "", "", "", "", "" };
+                        ModuleDetails[0] = e.Node.Name;
+                        Module M = Module.GetModuleReadFromXml(ModuleDetails[0]);
+                        ModuleDetails[5] = M.DisplayName;
+                        ModuleDetails[1] = M.Description;
+                        ModuleDetails[2] = string.Format("{0}\\modules\\{1}\\{2}", Config.RootDir, M.Name, M.FileName);
+                        if (M.FileName.Length > 0)
+                        {
+                            if (M.FileName.EndsWith(".py"))
+                                ModuleDetails[4] = "Python";
+                            else if (M.FileName.EndsWith(".rb"))
+                                ModuleDetails[4] = "Ruby";
+                            else
+                                ModuleDetails[4] = "-";
+                            try
+                            {
+                                StreamReader SR = File.OpenText(ModuleDetails[2]);
+                                ModuleDetails[3] = SR.ReadToEnd();
+                                SR.Close();
+                            }
+                            catch (Exception exp)
+                            {
+                                ModuleDetails[3] = "Error reading file: " + exp.Message;
+                            }
+                        }
+                        else
+                        {
+                            ModuleDetails[3] = "FileName information is missing in the Module";
+                        }
+                        IronUI.DisplayModuleDetails(ModuleDetails);
+                    }
                 }
             }
             catch(Exception Exp)
@@ -2183,9 +2431,9 @@ namespace IronWASP
 
         private void SelectedPluginReloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (PluginTree.SelectedNode == null) return;
-            TreeNode SelectedNode = PluginTree.SelectedNode;
-            if (SelectedNode.Level == 2)
+            if (PluginAndModuleTree.SelectedNode == null) return;
+            TreeNode SelectedNode = PluginAndModuleTree.SelectedNode;
+            if (SelectedNode.Level == 3 && SelectedNode.Parent.Parent.Index == 0)
             {
                 PluginType Type = PluginType.None;
                 string FileName = "";
@@ -2193,12 +2441,12 @@ namespace IronWASP
                 switch (SelectedNode.Parent.Index)
                 {
                     case 0:
-                        Type = PluginType.Passive;
-                        FileName = PassivePlugin.Get(SelectedNode.Name).FileName;
-                        break;
-                    case 1:
                         Type = PluginType.Active;
                         FileName = ActivePlugin.Get(SelectedNode.Name).FileName;
+                        break;
+                    case 1:
+                        Type = PluginType.Passive;
+                        FileName = PassivePlugin.Get(SelectedNode.Name).FileName;
                         break;
                     case 2:
                         Type = PluginType.Format;
@@ -2212,41 +2460,50 @@ namespace IronWASP
                 if (Type != PluginType.None && SelectedNode.Name.Length > 0)
                 {
                     PluginStore.ReloadPlugin(Type, SelectedNode.Name, FileName);
-                    IronUI.BuildPluginTree();
                 }
             }
         }
 
         private void PluginTreeMenu_Opening(object sender, CancelEventArgs e)
         {
-            if (PluginTree.SelectedNode == null) return;
-            TreeNode SelectedNode = PluginTree.SelectedNode;
-            if (SelectedNode.Level == 2)
-            {
-                SelectedPluginReloadToolStripMenuItem.Enabled = true;
-                if (SelectedNode.Parent.Index == 0)
-                {
-                    SelectedPluginDeactivateToolStripMenuItem.Visible = true;
-                    if (SelectedNode.ForeColor == Color.Gray)
-                    {
-                        SelectedPluginDeactivateToolStripMenuItem.Text = "Activate Selected Plugin";
-                    }
-                    else
-                    {
-                        SelectedPluginDeactivateToolStripMenuItem.Text = "Deactivate Selected Plugin";
-                    }
-                }
-                else
-                {
-                    SelectedPluginDeactivateToolStripMenuItem.Visible = false;
-                }
-            }
-            else
-            {
-                SelectedPluginReloadToolStripMenuItem.Enabled = false;
-                SelectedPluginDeactivateToolStripMenuItem.Visible = false;
-            }
+            SelectedPluginReloadToolStripMenuItem.Enabled = false;
+            SelectedModuleReloadToolStripMenuItem.Enabled = false;
+            SelectedPluginDeactivateToolStripMenuItem.Visible = false;
 
+            if (PluginAndModuleTree.SelectedNode == null) return;
+            
+            TreeNode SelectedNode = PluginAndModuleTree.SelectedNode;
+            if (SelectedNode.Level == 3)
+            {
+                //Plugins
+                if (SelectedNode.Parent.Parent.Index == 0)
+                {
+                    SelectedPluginReloadToolStripMenuItem.Enabled = true;
+                    //Passive Plugins
+                    if (SelectedNode.Parent.Index == 1)
+                    {
+                        SelectedPluginDeactivateToolStripMenuItem.Visible = true;
+                        if (SelectedNode.ForeColor == Color.Gray)
+                        {
+                            SelectedPluginDeactivateToolStripMenuItem.Text = "Activate Selected Plugin";
+                        }
+                        else
+                        {
+                            SelectedPluginDeactivateToolStripMenuItem.Text = "Deactivate Selected Plugin";
+                        }
+                    }
+                }
+                //Modules
+                else if (SelectedNode.Parent.Parent.Index == 1)
+                {
+                    //Loaded Modules
+                    if (SelectedNode.Parent.Index == 0)
+                    {
+                        SelectedModuleReloadToolStripMenuItem.Enabled = true;
+                    }
+
+                }
+            }
         }
 
         private void AllPluginsRAToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2311,258 +2568,262 @@ namespace IronWASP
 
         private void SelectedPluginDeactivateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (PluginTree.SelectedNode == null) return;
+            if (PluginAndModuleTree.SelectedNode == null) return;
             if (SelectedPluginDeactivateToolStripMenuItem.Text.Equals("Deactivate Selected Plugin"))
             {
-                PassivePlugin.Deactivate(PluginTree.SelectedNode.Name);
-                PluginTree.SelectedNode.ForeColor = Color.Gray;
-                PluginTree.SelectedNode.Text = PluginTree.SelectedNode.Name + " (Deactivated)";
+                PassivePlugin.Deactivate(PluginAndModuleTree.SelectedNode.Name);
+                PluginAndModuleTree.SelectedNode.ForeColor = Color.Gray;
+                PluginAndModuleTree.SelectedNode.Text = PluginAndModuleTree.SelectedNode.Name + " (Deactivated)";
             }
             else
             {
-                PassivePlugin.Activate(PluginTree.SelectedNode.Name);
-                PluginTree.SelectedNode.ForeColor = Color.Green;
-                PluginTree.SelectedNode.Text = PluginTree.SelectedNode.Name;
+                PassivePlugin.Activate(PluginAndModuleTree.SelectedNode.Name);
+                PluginAndModuleTree.SelectedNode.ForeColor = Color.Green;
+                PluginAndModuleTree.SelectedNode.Text = PluginAndModuleTree.SelectedNode.Name;
             }
         }
 
         private void ProxyDropBtn_Click(object sender, EventArgs e)
         {
+            this.TopMost = false;
             IronProxy.DropInterceptedMessage();
+            ProxyBaseSplit.Panel1.BackColor = Color.White;
+            ProxySendBtn.Enabled = false;
+            ProxyDropBtn.Enabled = false;
         }
 
-        private void MTRequestFormatPluginsMenu_Opening(object sender, CancelEventArgs e)
-        {
-            this.MTRequestDeSerObjectToXmlMenuItem.Enabled = false;
-            this.MTRequestSerXmlToObjectMenuItem.Enabled = false;
-            if (this.MTRequestFormatPluginsGrid.SelectedRows.Count == 0)
-            {
-                return;
-            }
-            if (this.MTRequestFormatPluginsGrid.SelectedCells[0].Value.ToString().Equals("None")) return;
-            this.MTRequestDeSerObjectToXmlMenuItem.Enabled = true;
-            if (this.MTRequestFormatXMLTB.Text.Length > 0)
-            {
-                this.MTRequestSerXmlToObjectMenuItem.Enabled = true;
-            }
-        }
+        //private void MTRequestFormatPluginsMenu_Opening(object sender, CancelEventArgs e)
+        //{
+        //    this.MTRequestDeSerObjectToXmlMenuItem.Enabled = false;
+        //    this.MTRequestSerXmlToObjectMenuItem.Enabled = false;
+        //    if (this.MTRequestFormatPluginsGrid.SelectedRows.Count == 0)
+        //    {
+        //        return;
+        //    }
+        //    if (this.MTRequestFormatPluginsGrid.SelectedCells[0].Value.ToString().Equals("None")) return;
+        //    this.MTRequestDeSerObjectToXmlMenuItem.Enabled = true;
+        //    if (this.MTRequestFormatXMLTB.Text.Length > 0)
+        //    {
+        //        this.MTRequestSerXmlToObjectMenuItem.Enabled = true;
+        //    }
+        //}
 
-        private void MTRequestDeSerObjectToXmlMenuItem_Click(object sender, EventArgs e)
-        {
-            MTRequestFormatXMLTB.Text = "";
-            string PluginName = MTRequestFormatPluginsGrid.SelectedCells[0].Value.ToString();
-            if (!FormatPlugin.List().Contains(PluginName))
-            {
-                IronUI.ShowMTException("Format Plugin not found");
-                return;
-            }
-            FormatPlugin Plugin = FormatPlugin.Get(PluginName);
-            if (ManualTesting.CurrentRequest == null)
-            {
-                IronUI.ShowMTException("Invalid Request");
-                return;
-            }
-            ManualTesting.StartDeSerializingRequestBody(ManualTesting.CurrentRequest, Plugin);
-        }
+        //private void MTRequestDeSerObjectToXmlMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    MTRequestFormatXMLTB.Text = "";
+        //    string PluginName = MTRequestFormatPluginsGrid.SelectedCells[0].Value.ToString();
+        //    if (!FormatPlugin.List().Contains(PluginName))
+        //    {
+        //        IronUI.ShowMTException("Format Plugin not found");
+        //        return;
+        //    }
+        //    FormatPlugin Plugin = FormatPlugin.Get(PluginName);
+        //    if (ManualTesting.CurrentRequest == null)
+        //    {
+        //        IronUI.ShowMTException("Invalid Request");
+        //        return;
+        //    }
+        //    ManualTesting.StartDeSerializingRequestBody(ManualTesting.CurrentRequest, Plugin);
+        //}
 
-        private void MTRequestSerXmlToObjectMenuItem_Click(object sender, EventArgs e)
-        {
-            if (MTRequestFormatPluginsGrid.SelectedCells == null) return;
-            if (MTRequestFormatPluginsGrid.SelectedCells.Count == 0) return;
-            string PluginName = MTRequestFormatPluginsGrid.SelectedCells[0].Value.ToString();
-            if (!FormatPlugin.List().Contains(PluginName))
-            {
-                IronUI.ShowMTException("Format Plugin not found");
-                return;
-            }
-            FormatPlugin Plugin = FormatPlugin.Get(PluginName);
-            if (ManualTesting.CurrentRequest == null)
-            {
-                IronUI.ShowMTException("Invalid Request");
-                return;
-            }
-            string XML = MTRequestFormatXMLTB.Text;
-            ManualTesting.StartSerializingRequestBody(ManualTesting.CurrentRequest, Plugin, XML);
-        }
+        //private void MTRequestSerXmlToObjectMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    if (MTRequestFormatPluginsGrid.SelectedCells == null) return;
+        //    if (MTRequestFormatPluginsGrid.SelectedCells.Count == 0) return;
+        //    string PluginName = MTRequestFormatPluginsGrid.SelectedCells[0].Value.ToString();
+        //    if (!FormatPlugin.List().Contains(PluginName))
+        //    {
+        //        IronUI.ShowMTException("Format Plugin not found");
+        //        return;
+        //    }
+        //    FormatPlugin Plugin = FormatPlugin.Get(PluginName);
+        //    if (ManualTesting.CurrentRequest == null)
+        //    {
+        //        IronUI.ShowMTException("Invalid Request");
+        //        return;
+        //    }
+        //    string XML = MTRequestFormatXMLTB.Text;
+        //    ManualTesting.StartSerializingRequestBody(ManualTesting.CurrentRequest, Plugin, XML);
+        //}
 
-        private void ProxyRequestFormatPluginsMenu_Opening(object sender, CancelEventArgs e)
-        {
-            this.ProxyRequestDeSerObjectToXmlMenuItem.Enabled = false;
-            this.ProxyRequestSerXmlToObjectMenuItem.Enabled = false;
-            if (this.ProxyRequestFormatPluginsGrid.SelectedRows.Count == 0)
-            {
-                return;
-            }
+        //private void ProxyRequestFormatPluginsMenu_Opening(object sender, CancelEventArgs e)
+        //{
+        //    this.ProxyRequestDeSerObjectToXmlMenuItem.Enabled = false;
+        //    this.ProxyRequestSerXmlToObjectMenuItem.Enabled = false;
+        //    if (this.ProxyRequestFormatPluginsGrid.SelectedRows.Count == 0)
+        //    {
+        //        return;
+        //    }
 
-            if (this.ProxyRequestFormatPluginsGrid.SelectedCells[0].Value.ToString().Equals("None")) return;
-            this.ProxyRequestDeSerObjectToXmlMenuItem.Enabled = true;
-            if (this.ProxyRequestFormatXMLTB.Text.Length > 0)
-            {
-                this.ProxyRequestSerXmlToObjectMenuItem.Enabled = true;
-            }
-        }
+        //    if (this.ProxyRequestFormatPluginsGrid.SelectedCells[0].Value.ToString().Equals("None")) return;
+        //    this.ProxyRequestDeSerObjectToXmlMenuItem.Enabled = true;
+        //    if (this.ProxyRequestFormatXMLTB.Text.Length > 0)
+        //    {
+        //        this.ProxyRequestSerXmlToObjectMenuItem.Enabled = true;
+        //    }
+        //}
 
-        private void ProxyResponseFormatPluginsMenu_Opening(object sender, CancelEventArgs e)
-        {
-            this.ProxyResponseDeSerObjectToXmlMenuItem.Enabled = false;
-            this.ProxyResponseSerXmlToObjectMenuItem.Enabled = false;
-            if (this.ProxyResponseFormatPluginsGrid.SelectedRows.Count == 0) return;
-            if (this.ProxyResponseFormatPluginsGrid.SelectedCells[0].Value.ToString().Equals("None")) return;
-            this.ProxyResponseDeSerObjectToXmlMenuItem.Enabled = true;                
-            if (this.ProxyResponseFormatXMLTB.Text.Length > 0)
-            {
-                this.ProxyResponseSerXmlToObjectMenuItem.Enabled = true;
-            }
-        }
+        //private void ProxyResponseFormatPluginsMenu_Opening(object sender, CancelEventArgs e)
+        //{
+        //    this.ProxyResponseDeSerObjectToXmlMenuItem.Enabled = false;
+        //    this.ProxyResponseSerXmlToObjectMenuItem.Enabled = false;
+        //    if (this.ProxyResponseFormatPluginsGrid.SelectedRows.Count == 0) return;
+        //    if (this.ProxyResponseFormatPluginsGrid.SelectedCells[0].Value.ToString().Equals("None")) return;
+        //    this.ProxyResponseDeSerObjectToXmlMenuItem.Enabled = true;                
+        //    if (this.ProxyResponseFormatXMLTB.Text.Length > 0)
+        //    {
+        //        this.ProxyResponseSerXmlToObjectMenuItem.Enabled = true;
+        //    }
+        //}
 
-        private void ProxyRequestDeSerObjectToXmlMenuItem_Click(object sender, EventArgs e)
-        {
-            ProxyRequestFormatXMLTB.Text = "";
-            if (ProxyRequestFormatPluginsGrid.SelectedCells == null) return;
-            if (ProxyRequestFormatPluginsGrid.SelectedCells.Count == 0) return;
-            string PluginName = ProxyRequestFormatPluginsGrid.SelectedCells[0].Value.ToString();
-            if (!FormatPlugin.List().Contains(PluginName))
-            {
-                IronUI.ShowProxyException("Format Plugin not found");
-                return;
-            }
-            FormatPlugin Plugin = FormatPlugin.Get(PluginName);
-            if (IronProxy.CurrentSession == null)
-            {
-                IronUI.ShowProxyException("Invalid Request");
-                return;
-            }
-            if (IronProxy.CurrentSession.Request == null)
-            {
-                IronUI.ShowProxyException("Invalid Request");
-                return;
-            }
-            IronProxy.StartDeSerializingRequestBody(IronProxy.CurrentSession.Request, Plugin);
-        }
+        //private void ProxyRequestDeSerObjectToXmlMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    ProxyRequestFormatXMLTB.Text = "";
+        //    if (ProxyRequestFormatPluginsGrid.SelectedCells == null) return;
+        //    if (ProxyRequestFormatPluginsGrid.SelectedCells.Count == 0) return;
+        //    string PluginName = ProxyRequestFormatPluginsGrid.SelectedCells[0].Value.ToString();
+        //    if (!FormatPlugin.List().Contains(PluginName))
+        //    {
+        //        IronUI.ShowProxyException("Format Plugin not found");
+        //        return;
+        //    }
+        //    FormatPlugin Plugin = FormatPlugin.Get(PluginName);
+        //    if (IronProxy.CurrentSession == null)
+        //    {
+        //        IronUI.ShowProxyException("Invalid Request");
+        //        return;
+        //    }
+        //    if (IronProxy.CurrentSession.Request == null)
+        //    {
+        //        IronUI.ShowProxyException("Invalid Request");
+        //        return;
+        //    }
+        //    IronProxy.StartDeSerializingRequestBody(IronProxy.CurrentSession.Request, Plugin);
+        //}
 
-        private void ProxyRequestSerXmlToObjectMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ProxyRequestFormatPluginsGrid.SelectedCells == null) return;
-            if (ProxyRequestFormatPluginsGrid.SelectedCells.Count == 0) return;
-            string PluginName = ProxyRequestFormatPluginsGrid.SelectedCells[0].Value.ToString();
-            if (!FormatPlugin.List().Contains(PluginName))
-            {
-                IronUI.ShowProxyException("Format Plugin not found");
-                return;
-            }
-            FormatPlugin Plugin = FormatPlugin.Get(PluginName);
-            if (IronProxy.CurrentSession == null)
-            {
-                IronUI.ShowProxyException("Invalid Request");
-                return;
-            }
-            if (IronProxy.CurrentSession.Request == null)
-            {
-                IronUI.ShowProxyException("Invalid Request");
-                return;
-            }
-            string XML = ProxyRequestFormatXMLTB.Text;
-            IronProxy.StartSerializingRequestBody(IronProxy.CurrentSession.Request, Plugin, XML);
-        }
+        //private void ProxyRequestSerXmlToObjectMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    if (ProxyRequestFormatPluginsGrid.SelectedCells == null) return;
+        //    if (ProxyRequestFormatPluginsGrid.SelectedCells.Count == 0) return;
+        //    string PluginName = ProxyRequestFormatPluginsGrid.SelectedCells[0].Value.ToString();
+        //    if (!FormatPlugin.List().Contains(PluginName))
+        //    {
+        //        IronUI.ShowProxyException("Format Plugin not found");
+        //        return;
+        //    }
+        //    FormatPlugin Plugin = FormatPlugin.Get(PluginName);
+        //    if (IronProxy.CurrentSession == null)
+        //    {
+        //        IronUI.ShowProxyException("Invalid Request");
+        //        return;
+        //    }
+        //    if (IronProxy.CurrentSession.Request == null)
+        //    {
+        //        IronUI.ShowProxyException("Invalid Request");
+        //        return;
+        //    }
+        //    string XML = ProxyRequestFormatXMLTB.Text;
+        //    IronProxy.StartSerializingRequestBody(IronProxy.CurrentSession.Request, Plugin, XML);
+        //}
 
-        private void ProxyResponseDeSerObjectToXmlMenuItem_Click(object sender, EventArgs e)
-        {
-            ProxyResponseFormatXMLTB.Text = "";
-            if (ProxyResponseFormatPluginsGrid.SelectedCells == null) return;
-            if (ProxyResponseFormatPluginsGrid.SelectedCells.Count == 0) return;
-            string PluginName = ProxyResponseFormatPluginsGrid.SelectedCells[0].Value.ToString();
-            if (!FormatPlugin.List().Contains(PluginName))
-            {
-                IronUI.ShowProxyException("Format Plugin not found");
-                return;
-            }
-            FormatPlugin Plugin = FormatPlugin.Get(PluginName);
-            if (IronProxy.CurrentSession == null)
-            {
-                IronUI.ShowProxyException("Invalid Response");
-                return;
-            }
-            if (IronProxy.CurrentSession.Response == null)
-            {
-                IronUI.ShowProxyException("Invalid Response");
-                return;
-            }
-            IronProxy.StartDeSerializingResponseBody(IronProxy.CurrentSession.Response, Plugin);
-        }
+        //private void ProxyResponseDeSerObjectToXmlMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    ProxyResponseFormatXMLTB.Text = "";
+        //    if (ProxyResponseFormatPluginsGrid.SelectedCells == null) return;
+        //    if (ProxyResponseFormatPluginsGrid.SelectedCells.Count == 0) return;
+        //    string PluginName = ProxyResponseFormatPluginsGrid.SelectedCells[0].Value.ToString();
+        //    if (!FormatPlugin.List().Contains(PluginName))
+        //    {
+        //        IronUI.ShowProxyException("Format Plugin not found");
+        //        return;
+        //    }
+        //    FormatPlugin Plugin = FormatPlugin.Get(PluginName);
+        //    if (IronProxy.CurrentSession == null)
+        //    {
+        //        IronUI.ShowProxyException("Invalid Response");
+        //        return;
+        //    }
+        //    if (IronProxy.CurrentSession.Response == null)
+        //    {
+        //        IronUI.ShowProxyException("Invalid Response");
+        //        return;
+        //    }
+        //    IronProxy.StartDeSerializingResponseBody(IronProxy.CurrentSession.Response, Plugin);
+        //}
 
-        private void ProxyResponseSerXmlToObjectMenuItem_Click(object sender, EventArgs e)
-        {
-            if (ProxyResponseFormatPluginsGrid.SelectedCells == null) return;
-            if (ProxyResponseFormatPluginsGrid.SelectedCells.Count == 0) return;
-            string PluginName = ProxyResponseFormatPluginsGrid.SelectedCells[0].Value.ToString();
-            if (!FormatPlugin.List().Contains(PluginName))
-            {
-                IronUI.ShowProxyException("Format Plugin not found");
-                return;
-            }
-            FormatPlugin Plugin = FormatPlugin.Get(PluginName);
-            if (IronProxy.CurrentSession == null)
-            {
-                IronUI.ShowProxyException("Invalid Response");
-                return;
-            }
-            if (IronProxy.CurrentSession.Response == null)
-            {
-                IronUI.ShowProxyException("Invalid Response");
-                return;
-            }
-            string XML = ProxyResponseFormatXMLTB.Text;
-            IronProxy.StartSerializingResponseBody(IronProxy.CurrentSession.Response, Plugin, XML);
-        }
+        //private void ProxyResponseSerXmlToObjectMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    if (ProxyResponseFormatPluginsGrid.SelectedCells == null) return;
+        //    if (ProxyResponseFormatPluginsGrid.SelectedCells.Count == 0) return;
+        //    string PluginName = ProxyResponseFormatPluginsGrid.SelectedCells[0].Value.ToString();
+        //    if (!FormatPlugin.List().Contains(PluginName))
+        //    {
+        //        IronUI.ShowProxyException("Format Plugin not found");
+        //        return;
+        //    }
+        //    FormatPlugin Plugin = FormatPlugin.Get(PluginName);
+        //    if (IronProxy.CurrentSession == null)
+        //    {
+        //        IronUI.ShowProxyException("Invalid Response");
+        //        return;
+        //    }
+        //    if (IronProxy.CurrentSession.Response == null)
+        //    {
+        //        IronUI.ShowProxyException("Invalid Response");
+        //        return;
+        //    }
+        //    string XML = ProxyResponseFormatXMLTB.Text;
+        //    IronProxy.StartSerializingResponseBody(IronProxy.CurrentSession.Response, Plugin, XML);
+        //}
 
-        private void ConfigureScanRequestFormatPluginsMenu_Opening(object sender, CancelEventArgs e)
-        {
-            this.ConfigureScanRequestDeSerObjectToXmlMenuItem.Enabled = false;
-            if (this.ConfigureScanRequestFormatPluginsGrid.SelectedRows.Count == 0)
-            {
-                return;
-            }
-            if (Scanner.CurrentScanner == null) return;
-            if (Scanner.CurrentScanner.OriginalRequest == null) return;
-            if (this.ConfigureScanRequestFormatPluginsGrid.SelectedCells[0].Value.ToString().Equals("None")) return;
-            if (Scanner.CurrentScanner.OriginalRequest.HasBody)
-            {
-                this.ConfigureScanRequestDeSerObjectToXmlMenuItem.Enabled = true;
-            }
-        }
+        //private void ConfigureScanRequestFormatPluginsMenu_Opening(object sender, CancelEventArgs e)
+        //{
+        //    this.ConfigureScanRequestDeSerObjectToXmlMenuItem.Enabled = false;
+        //    if (this.ConfigureScanRequestFormatPluginsGrid.SelectedRows.Count == 0)
+        //    {
+        //        return;
+        //    }
+        //    if (Scanner.CurrentScanner == null) return;
+        //    if (Scanner.CurrentScanner.OriginalRequest == null) return;
+        //    if (this.ConfigureScanRequestFormatPluginsGrid.SelectedCells[0].Value.ToString().Equals("None")) return;
+        //    if (Scanner.CurrentScanner.OriginalRequest.HasBody)
+        //    {
+        //        this.ConfigureScanRequestDeSerObjectToXmlMenuItem.Enabled = true;
+        //    }
+        //}
 
-        private void ConfigureScanRequestDeSerObjectToXmlMenuItem_Click(object sender, EventArgs e)
-        {
-            ConfigureScanRequestFormatXMLTB.Text = "";
-            if (ConfigureScanRequestFormatPluginsGrid.SelectedCells == null) return;
-            if (ConfigureScanRequestFormatPluginsGrid.SelectedCells.Count == 0) return;
-            string PluginName = ConfigureScanRequestFormatPluginsGrid.SelectedCells[0].Value.ToString();
-            if (PluginName.Equals("None"))
-            {
-                IronUI.UpdateScanBodyTabWithDataInDefaultFormat();
-                ConfigureScanRequestFormatXMLTB.Text = "";
-                Scanner.CurrentScanner.BodyFormat = new FormatPlugin();
-                return;
-            }
-            if (!FormatPlugin.List().Contains(PluginName))
-            {
-                IronUI.ShowConfigureScanException("Format Plugin not found");
-                return;
-            }
-            FormatPlugin Plugin = FormatPlugin.Get(PluginName);
-            if (Scanner.CurrentScanner == null)
-            {
-                IronUI.ShowConfigureScanException("Invalid Request");
-                return;
-            }
-            if (Scanner.CurrentScanner.OriginalRequest == null)
-            {
-                IronUI.ShowConfigureScanException("Invalid Request");
-                return;
-            }
-            Scanner.CurrentScanner.BodyFormat = Plugin;
-            Scanner.StartDeSerializingRequestBody(Scanner.CurrentScanner.OriginalRequest, Plugin, new List<bool>(), false);
-        }
+        //private void ConfigureScanRequestDeSerObjectToXmlMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    ConfigureScanRequestFormatXMLTB.Text = "";
+        //    if (ConfigureScanRequestFormatPluginsGrid.SelectedCells == null) return;
+        //    if (ConfigureScanRequestFormatPluginsGrid.SelectedCells.Count == 0) return;
+        //    string PluginName = ConfigureScanRequestFormatPluginsGrid.SelectedCells[0].Value.ToString();
+        //    if (PluginName.Equals("None"))
+        //    {
+        //        IronUI.UpdateScanBodyTabWithDataInDefaultFormat();
+        //        ConfigureScanRequestFormatXMLTB.Text = "";
+        //        Scanner.CurrentScanner.BodyFormat = new FormatPlugin();
+        //        return;
+        //    }
+        //    if (!FormatPlugin.List().Contains(PluginName))
+        //    {
+        //        IronUI.ShowConfigureScanException("Format Plugin not found");
+        //        return;
+        //    }
+        //    FormatPlugin Plugin = FormatPlugin.Get(PluginName);
+        //    if (Scanner.CurrentScanner == null)
+        //    {
+        //        IronUI.ShowConfigureScanException("Invalid Request");
+        //        return;
+        //    }
+        //    if (Scanner.CurrentScanner.OriginalRequest == null)
+        //    {
+        //        IronUI.ShowConfigureScanException("Invalid Request");
+        //        return;
+        //    }
+        //    Scanner.CurrentScanner.BodyFormat = Plugin;
+        //    Scanner.StartDeSerializingRequestBody(Scanner.CurrentScanner.OriginalRequest, Plugin, new List<bool>(), false);
+        //}
 
         private void ScriptingShellTabs_Selecting(object sender, TabControlCancelEventArgs e)
         {
@@ -2703,15 +2964,6 @@ namespace IronWASP
             IronDB.StoreUpstreamProxyConfig();
         }
 
-        private void MTClearFieldsBtn_Click(object sender, EventArgs e)
-        {
-            IronUI.ResetMTDisplayFields();
-            TestIDLbl.Text = "ID: 0";
-            TestGroupLogGrid.Rows.Clear();
-            ManualTesting.ClearGroup();
-            MTReqResTabs.SelectTab("MTRequestTab");
-        }
-
         private void SiteMapLogGrid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (SiteMapLogGrid.SelectedCells.Count < 1 || SiteMapLogGrid.SelectedCells[0].Value == null || SiteMapLogGrid.SelectedRows.Count == 0)
@@ -2746,13 +2998,19 @@ namespace IronWASP
 
         private void IronTreeMenuStrip_Opening(object sender, CancelEventArgs e)
         {
+            //Disable all menu items
+            RunModulesOnUrlToolStripMenuItem.Enabled = false;
+            RunModulesOnFindingToolStripMenuItem.Enabled = false;
+            ScanBranchToolStripMenuItem.Enabled = false;
+            
             if (IronTree.SelectedNode == null) return;
             TreeNode Node = IronTree.SelectedNode;
-            if ((Node.Level > 5) || (Node.Level == 5 && (Node.Parent.Parent.Parent.Parent.Index == 4)) || (Node.Level == 4 && (Node.Parent.Parent.Parent.Index == 4)) || (Node.Level == 3 && (Node.Parent.Parent.Index == 4)) || (Node.Level == 2 && (Node.Parent.Index == 4)))
+            //if ((Node.Level > 5) || (Node.Level == 5 && (Node.Parent.Parent.Parent.Parent.Index == 4)) || (Node.Level == 4 && (Node.Parent.Parent.Parent.Index == 4)) || (Node.Level == 3 && (Node.Parent.Parent.Index == 4)) || (Node.Level == 2 && (Node.Parent.Index == 4)))
+            if(IronUI.IsSiteMapNodeSelected())
             {
+                RunModulesOnUrlToolStripMenuItem.Enabled = true;
                 if (IronUI.IsScanBranchFormOpen())
                 {
-                    ScanBranchToolStripMenuItem.Enabled = false;
                     IronUI.SBF.Activate();
                 }
                 else
@@ -2760,50 +3018,53 @@ namespace IronWASP
                     ScanBranchToolStripMenuItem.Enabled = true;
                 }
             }
-            else
+            else if(IronUI.IsFindingsNodeSelected())
             {
-                ScanBranchToolStripMenuItem.Enabled = false;
+                RunModulesOnFindingToolStripMenuItem.Enabled = true;
             }
 
         }
 
         private void ScanBranchToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (IronTree.SelectedNode == null) return;
-            TreeNode Node = IronTree.SelectedNode;
-            if ((Node.Level > 4) || (Node.Level == 4 && (Node.Parent.Parent.Parent.Index == 4)) || (Node.Level == 3 && (Node.Parent.Parent.Index == 4)) || (Node.Level == 2 && (Node.Parent.Index == 4)))
-            {
-                List<string> UrlPaths = new List<string>();
-                string Query = "";
-                TreeNode SiteMapNode = Node;
-                if (SiteMapNode.Text.StartsWith("?"))
-                {
-                    Query = SiteMapNode.Text;
-                    SiteMapNode = SiteMapNode.Parent;
-                }
-                while (SiteMapNode.Level > 2)
-                {
-                    UrlPaths.Add(SiteMapNode.Text);
-                    SiteMapNode = SiteMapNode.Parent;
-                }
-                UrlPaths.Reverse();
-                StringBuilder UrlPathBuilder = new StringBuilder();
-                foreach (string Path in UrlPaths)
-                {
-                    UrlPathBuilder.Append("/"); UrlPathBuilder.Append(Path);
-                }
-                string Host = SiteMapNode.Text;
-                string Url = UrlPathBuilder.ToString();// +Query;
-                if (Url.Length == 0)
-                {
-                    Url = "/*";
-                }
-                else
-                {
-                    Url = Url + "*";
-                }
-                IronUI.ShowScanBranchForm(Host, Url);
-            }
+            //if (IronTree.SelectedNode == null) return;
+            //TreeNode Node = IronTree.SelectedNode;
+            //if ((Node.Level > 4) || (Node.Level == 4 && (Node.Parent.Parent.Parent.Index == 4)) || (Node.Level == 3 && (Node.Parent.Parent.Index == 4)) || (Node.Level == 2 && (Node.Parent.Index == 4)))
+            //{
+            //    List<string> UrlPaths = new List<string>();
+            //    string Query = "";
+            //    TreeNode SiteMapNode = Node;
+            //    if (SiteMapNode.Text.StartsWith("?"))
+            //    {
+            //        Query = SiteMapNode.Text;
+            //        SiteMapNode = SiteMapNode.Parent;
+            //    }
+            //    while (SiteMapNode.Level > 2)
+            //    {
+            //        UrlPaths.Add(SiteMapNode.Text);
+            //        SiteMapNode = SiteMapNode.Parent;
+            //    }
+            //    UrlPaths.Reverse();
+            //    StringBuilder UrlPathBuilder = new StringBuilder();
+            //    foreach (string Path in UrlPaths)
+            //    {
+            //        UrlPathBuilder.Append("/"); UrlPathBuilder.Append(Path);
+            //    }
+            //    string Host = SiteMapNode.Text;
+            //    string Url = UrlPathBuilder.ToString();// +Query;
+                //if (Url.Length == 0)
+                //{
+                //    Url = "/*";
+                //}
+                //else
+                //{
+                //    Url = Url + "*";
+                //}
+            Request SelectedUrl = IronUI.GetSelectedUrlFromSiteMap();
+            if (SelectedUrl == null) return;
+            SelectedUrl.Url = string.Format("{0}*", SelectedUrl.UrlPath);
+            IronUI.ShowScanBranchForm(SelectedUrl);
+            //}
         }
 
         private void PluginEditorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2836,13 +3097,21 @@ namespace IronWASP
 
         private void CopyRequestToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Clipboard.SetText("Could not copy");
+            try
+            {
+                Clipboard.SetText("Could not copy");
+            }
+            catch { }
             IronLog.CopyRequest(GetSource(), GetID());
         }
 
         private void CopyResponseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Clipboard.SetText("Could not copy");
+            try
+            {
+                Clipboard.SetText("Could not copy");
+            }
+            catch { }
             IronLog.CopyResponse(GetSource(), GetID());
         }
 
@@ -2913,11 +3182,21 @@ namespace IronWASP
 
         private void StopAllScansToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            StopAllScansAction();
+        }
+
+        void StopAllScansAction()
+        {
             Thread T = new Thread(Scanner.StopAll);
             T.Start();
         }
 
         private void StartAllStoppedAndAbortedScansToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            StartAllStoppedAndAbortedScansAction();
+        }
+
+        void StartAllStoppedAndAbortedScansAction()
         {
             List<int> ToStart = new List<int>();
             foreach (DataGridViewRow Row in ASQueueGrid.Rows)
@@ -3010,10 +3289,30 @@ namespace IronWASP
             try
             {
                 int ID = Int32.Parse(ScanTraceGrid.SelectedCells[0].Value.ToString());
-                string Message = IronDB.GetScanTraceMessage(ID);
+                string[] OverviewAndMessage  = IronDB.GetScanTraceOverviewAndMessage(ID);
+                string OverviewXml = OverviewAndMessage[0];
+                string Message = OverviewAndMessage[1];
+                
+                
+                //string Message = IronDB.GetScanTraceMessage(ID);
                 StringBuilder SB = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;}");
                 SB.Append(Tools.RtfSafe(Message));
                 ScanTraceMsgRTB.Rtf = SB.ToString();
+
+                try
+                {
+                    List<Dictionary<string, string>> OverviewEntries = IronTrace.GetOverviewEntriesFromXml(OverviewXml);
+                    ScanTraceOverviewGrid.Rows.Clear();
+                    foreach (Dictionary<string, string> Entry in OverviewEntries)
+                    {
+                        ScanTraceOverviewGrid.Rows.Add(new object[] { Entry["id"], Entry["log_id"], Entry["payload"], Entry["code"], Entry["length"], Entry["mime"], Entry["time"], Entry["signature"] });
+                    }
+                }
+                catch 
+                {
+                    //Probaly an entry from the log of an older version
+                }
+                LoadSelectedTraceBtn.Enabled = true;
             }
             catch (Exception Exp)
             {
@@ -3031,61 +3330,6 @@ namespace IronWASP
             {
                 IronUI.LogGridStatus(true);
             }
-        }
-
-        private void MTRedGroupBtn_Click(object sender, EventArgs e)
-        {
-            TestIDLbl.BackColor = Color.Red;
-            TestIDLbl.Text = "ID: 0";
-            ManualTesting.CurrentGroup = "Red";
-            IronUI.ResetMTDisplayFields();
-            IronUI.UpdateTestGroupLogGrid(ManualTesting.RedGroupSessions);
-            ManualTesting.ShowSession(ManualTesting.RedGroupID);
-            if (ManualTesting.RedGroupID == 0) MTReqResTabs.SelectTab("MTRequestTab");
-        }
-
-        private void MTGreenGroupBtn_Click(object sender, EventArgs e)
-        {
-            TestIDLbl.BackColor = Color.Green;
-            TestIDLbl.Text = "ID: 0";
-            ManualTesting.CurrentGroup = "Green"; 
-            IronUI.ResetMTDisplayFields();
-            IronUI.UpdateTestGroupLogGrid(ManualTesting.GreenGroupSessions);
-            ManualTesting.ShowSession(ManualTesting.GreenGroupID);
-            if (ManualTesting.GreenGroupID == 0) MTReqResTabs.SelectTab("MTRequestTab");
-        }
-
-        private void MTBlueGroupBtn_Click(object sender, EventArgs e)
-        {
-            TestIDLbl.BackColor = Color.RoyalBlue;
-            TestIDLbl.Text = "ID: 0";
-            ManualTesting.CurrentGroup = "Blue";
-            IronUI.ResetMTDisplayFields();
-            IronUI.UpdateTestGroupLogGrid(ManualTesting.BlueGroupSessions);
-            ManualTesting.ShowSession(ManualTesting.BlueGroupID);
-            if (ManualTesting.BlueGroupID == 0) MTReqResTabs.SelectTab("MTRequestTab");
-        }
-
-        private void MTGrayGroupBtn_Click(object sender, EventArgs e)
-        {
-            TestIDLbl.BackColor = Color.Silver;
-            TestIDLbl.Text = "ID: 0";
-            ManualTesting.CurrentGroup = "Gray";
-            IronUI.ResetMTDisplayFields();
-            IronUI.UpdateTestGroupLogGrid(ManualTesting.GrayGroupSessions);
-            ManualTesting.ShowSession(ManualTesting.GrayGroupID);
-            if (ManualTesting.GrayGroupID == 0) MTReqResTabs.SelectTab("MTRequestTab");
-        }
-
-        private void MTBrownGroupBtn_Click(object sender, EventArgs e)
-        {
-            TestIDLbl.BackColor = Color.Chocolate;
-            TestIDLbl.Text = "ID: 0";
-            ManualTesting.CurrentGroup = "Brown";
-            IronUI.ResetMTDisplayFields();
-            IronUI.UpdateTestGroupLogGrid(ManualTesting.BrownGroupSessions);
-            ManualTesting.ShowSession(ManualTesting.BrownGroupID);
-            if (ManualTesting.BrownGroupID == 0) MTReqResTabs.SelectTab("MTRequestTab");
         }
 
         private void NextLogBtn_Click(object sender, EventArgs e)
@@ -3210,6 +3454,7 @@ namespace IronWASP
                     CurrentGrid = TestLogGrid;
                     break;
                 default:
+                    CurrentGrid = OtherLogGrid;
                     break;
             }
             return CurrentGrid;
@@ -3288,45 +3533,30 @@ namespace IronWASP
             {
                 return;
             }
-            IronUI.ResetMTDisplayFields();
+            
             try
             {
-                int ID = Int32.Parse(TestGroupLogGrid.SelectedCells[0].Value.ToString());
-                Session IrSe = null;
-                if (ManualTesting.RedGroupSessions.ContainsKey(ID))
+                if (TestGroupHistoryClickActionSelectLogRB.Checked)
                 {
-                    IrSe = ManualTesting.RedGroupSessions[ID];
-                    IrSe.Flags["Group"] = "Red";
+                    TestGroupLogGrid.SelectedRows[0].Cells[0].Value = !((bool)TestGroupLogGrid.SelectedRows[0].Cells[0].Value);
                 }
-                else if (ManualTesting.BlueGroupSessions.ContainsKey(ID))
-                {
-                    IrSe = ManualTesting.BlueGroupSessions[ID];
-                    IrSe.Flags["Group"] = "Blue";
-                }
-                else if (ManualTesting.GreenGroupSessions.ContainsKey(ID))
-                {
-                    IrSe = ManualTesting.GreenGroupSessions[ID];
-                    IrSe.Flags["Group"] = "Green";
-                }
-                else if (ManualTesting.GrayGroupSessions.ContainsKey(ID))
-                {
-                    IrSe = ManualTesting.GrayGroupSessions[ID];
-                    IrSe.Flags["Group"] = "Gray";
-                }
-                else if (ManualTesting.BrownGroupSessions.ContainsKey(ID))
-                {
-                    IrSe = ManualTesting.BrownGroupSessions[ID];
-                    IrSe.Flags["Group"] = "Brown";
-                }
-                if (IrSe == null)
-                    MTReqResTabs.SelectTab("MTRequestTab");
                 else
                 {
-                    IronUI.FillMTFields(IrSe);
-                    if (IrSe.Flags.ContainsKey("Reflecton"))
-                        IronUI.FillTestReflection(IrSe.Flags["Reflecton"].ToString());
-                    else
-                        IronUI.FillTestReflection("");
+                    IronUI.ResetMTDisplayFields();
+                    int ID = Int32.Parse(TestGroupLogGrid.SelectedCells[1].Value.ToString());
+                    Session IrSe = null;
+                    foreach (string Group in ManualTesting.GroupSessions.Keys)
+                    {
+                        if (ManualTesting.GroupSessions[Group].ContainsKey(ID))
+                        {
+                            IrSe = ManualTesting.GroupSessions[Group][ID];
+                            IrSe.Flags["Group"] = Group;
+                        }
+                    }
+                    if (IrSe != null)
+                    {
+                        IronUI.FillMTFields(IrSe);
+                    }
                 }
             }
             catch(Exception Exp)
@@ -3346,30 +3576,30 @@ namespace IronWASP
             ManualTesting.ShowPreviousSession();
         }
 
-        private void RedGroupToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            IronLog.MarkForTesting(GetSource(), GetID(),"Red");
-        }
+        //private void RedGroupToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    IronLog.MarkForTesting(GetSource(), GetID(),"Red");
+        //}
 
-        private void GreenGroupToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            IronLog.MarkForTesting(GetSource(), GetID(), "Green");
-        }
+        //private void GreenGroupToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    IronLog.MarkForTesting(GetSource(), GetID(), "Green");
+        //}
 
-        private void BlueGroupToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            IronLog.MarkForTesting(GetSource(), GetID(), "Blue");
-        }
+        //private void BlueGroupToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    IronLog.MarkForTesting(GetSource(), GetID(), "Blue");
+        //}
 
-        private void GrayGroupToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            IronLog.MarkForTesting(GetSource(), GetID(), "Gray");
-        }
+        //private void GrayGroupToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    IronLog.MarkForTesting(GetSource(), GetID(), "Gray");
+        //}
 
-        private void BrownGroupToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            IronLog.MarkForTesting(GetSource(), GetID(), "Brown");
-        }
+        //private void BrownGroupToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    IronLog.MarkForTesting(GetSource(), GetID(), "Brown");
+        //}
 
         private void ConfigureScanRequestSSLCB_Click(object sender, EventArgs e)
         {
@@ -3387,9 +3617,9 @@ namespace IronWASP
             IronUI.ShowConsoleStatus("",false);
             try
             {
-                if (IronUI.IsConfiguredScanFormOpen())
+                if (IronUI.IsStartScanWizardOpen())
                 {
-                    IronUI.CSF.Close();
+                    IronUI.SSW.Close();
                 }
             }
             catch { }
@@ -3398,27 +3628,7 @@ namespace IronWASP
                 try
                 {
                     Request Req = new Request(ConsoleScanUrlTB.Text);
-                    if (OptimalScanModeRB.Checked)
-                    {
-                        ScanManager.PrimaryHost = Req.Host;
-                        if (Req.SSL)
-                        {
-                            ScanManager.HTTPS = true;
-                            ScanManager.HTTP = false;
-                        }
-                        else
-                        {
-                            ScanManager.HTTP = true;
-                            ScanManager.HTTPS = false;
-                        }
-                        ScanManager.StartingUrl = Req.Url;
-                        ScanManager.StartScan();
-                        IronUI.UpdateConsoleControlsStatus(true);
-                    }
-                    else
-                    {
-                        IronUI.ShowConfiguredScanForm(Req);
-                    }
+                    IronUI.ShowStartScanWizard(Req);
                 }
                 catch (Exception Exp)
                 {
@@ -3722,6 +3932,7 @@ namespace IronWASP
         private void ConfigScannerThreadMaxCountTB_Scroll(object sender, EventArgs e)
         {
             ConfigScannerThreadMaxCountLbl.Text = ConfigScannerThreadMaxCountTB.Value.ToString();
+            ConfigScannerThreadMaxCountLbl.ForeColor = Color.FloralWhite;
         }
 
         private void SelectResponseForJavaScriptTestingToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3729,20 +3940,17 @@ namespace IronWASP
             IronLog.MarkForJavaScriptTesting(GetSource(), GetID());
         }
 
-        private void ConfigCrawlerThreadMaxCountTB_Scroll(object sender, EventArgs e)
-        {
-            ConfigCrawlerThreadMaxCountLbl.Text = ConfigCrawlerThreadMaxCountTB.Value.ToString();
-        }
-
         private void ConfigScannerSettingsApplyChangesLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Config.UpdateScannerSettingsFromUI();
             IronDB.StoreScannerSettings();
+            ConfigScannerThreadMaxCountLbl.ForeColor = Color.Black;
         }
 
         private void ConfigScannerSettingsCancelChangesLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             IronUI.UpdateScannerSettingsInUIFromConfig();
+            ConfigScannerThreadMaxCountLbl.ForeColor = Color.Black;
         }
 
         private void RenderHTMLToolStripMenuItem_Click(object sender, EventArgs e)
@@ -3755,7 +3963,7 @@ namespace IronWASP
         {
             try
             {
-                Tools.Run(Config.RootDir + "/" + "RenderHtml.exe");
+                Tools.Run(Config.RootDir + "/RenderHtml.exe");
             }
             catch (Exception Exp) { IronException.Report("Unable to Open RenderHtml", Exp); }
         }
@@ -3785,9 +3993,17 @@ namespace IronWASP
             if (JSTaintResultGrid.SelectedCells.Count < 1 || JSTaintResultGrid.SelectedCells[0].Value == null) return;
             try
             {
-                Clipboard.SetText("Copy Failed!");
+                try
+                {
+                    Clipboard.SetText("Copy Failed!");
+                }
+                catch { }
                 string Line = JSTaintResultGrid.SelectedCells[1].Value.ToString();
-                Clipboard.SetText(Line);
+                try
+                {
+                    Clipboard.SetText(Line);
+                }
+                catch { }
             }
             catch
             {}
@@ -3946,6 +4162,12 @@ namespace IronWASP
                     else
                         IronLog.MoveProbeLogRecordBack(Level);
                     break;
+                case ("OtherLogTab"):
+                    if (Forward)
+                        IronLog.MoveOtherLogRecordForward(Level);
+                    else
+                        IronLog.MoveOtherLogRecordBack(Level);
+                    break;
                 case ("SiteMapLogTab"):
                     IronUI.ShowLogBottomStatus("Cannot move SiteMap logs. Move Proxy/Probe logs and click on the SiteMap tree to display new logs", true);
                     break;
@@ -4010,11 +4232,11 @@ namespace IronWASP
             if (ProxyShowOriginalResponseCB.Checked)
             {
                 if (IronLog.CurrentSession.OriginalResponse != null)
-                    IronUI.FillLogFields(IronLog.CurrentSession.OriginalResponse);
+                    IronUI.FillLogFields(IronLog.CurrentSession.OriginalResponse, null);
             }
             else
             {
-                IronUI.FillLogFields(IronLog.CurrentSession.Response);
+                IronUI.FillLogFields(IronLog.CurrentSession.Response, null);
             }
         }
 
@@ -4035,6 +4257,7 @@ namespace IronWASP
         {
             if (this.CustomSendActivateCB.Checked)
             {
+                CustomSendErrorTB.Visible = false;
                 string Result = "";
                 if (this.CustomSendPythonRB.Checked)
                 {
@@ -4049,8 +4272,706 @@ namespace IronWASP
                     IronUI.ShowScriptedSendScriptException(Result);
                 }
             }
+            
             ManualTesting.ScriptedSendEnabled = this.CustomSendActivateCB.Checked;
             this.MTScriptedSendBtn.Enabled = ManualTesting.ScriptedSendEnabled;
+
+            if (this.CustomSendActivateCB.Checked)
+            {
+                ScriptedSendTP.BackColor = Color.DarkGreen;
+            }
+            else
+            {
+                ScriptedSendTP.BackColor = Color.White;
+            }
+        }
+
+        private void SelectedModuleReloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (PluginAndModuleTree.SelectedNode == null) return;
+            TreeNode SelectedNode = PluginAndModuleTree.SelectedNode;
+            if (SelectedNode.Level == 3 && SelectedNode.Parent.Parent.Index == 1)
+            {
+                IronThread.Run(Module.ReloadModule, SelectedNode.Name);
+            }
+        }
+
+        private void OtherLogSourceGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (OtherLogSourceGrid.SelectedRows == null) return;
+            if (OtherLogSourceGrid.SelectedRows.Count == 0) return;
+            IronLog.SelectedOtherSource = OtherLogSourceGrid.SelectedRows[0].Cells[0].Value.ToString();
+            IronLog.CurrentSource = IronLog.SelectedOtherSource;
+            Thread T = new Thread(IronLog.ShowOtherSourceRecords);
+            T.Start();
+        }
+
+        private void OtherLogGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (OtherLogGrid.SelectedCells.Count < 1 || OtherLogGrid.SelectedCells[0].Value == null || OtherLogGrid.SelectedRows.Count == 0)
+            {
+                return;
+            }
+            IronLog.ShowLog(IronLog.SelectedOtherSource, OtherLogGrid.SelectedCells[0].Value.ToString(), OtherLogGrid.SelectedRows[0].Index, false);
+            return;
+
+        }
+
+        //private void ConfigureScanRequestFormatPluginsGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        //{
+        //    if (Scanner.CurrentScanner == null) return;
+        //    if (Scanner.CurrentScanner.OriginalRequest == null) return;
+        //    string PluginName = "";
+        //    ASExceptionTB.Text = "";
+        //    foreach (DataGridViewRow Row in ConfigureScanRequestFormatPluginsGrid.Rows)
+        //    {
+        //        if (e.RowIndex == Row.Index)
+        //        {
+        //            Row.Cells[0].Value = true;
+        //            PluginName = Row.Cells[1].Value.ToString();
+        //        }
+        //        else
+        //        {
+        //            Row.Cells[0].Value = false;
+        //        }
+        //    }
+
+        //    ConfigureScanRequestFormatXMLTB.Text = "";
+            
+        //    //if (PluginName.Equals("None"))
+        //    //{
+        //    //    IronUI.UpdateScanBodyTabWithDataInDefaultFormat();
+        //    //    ConfigureScanRequestFormatXMLTB.Text = "";
+        //    //    Scanner.CurrentScanner.BodyFormat = new FormatPlugin();
+        //    //    return;
+        //    //}
+        //    if (!FormatPlugin.List().Contains(PluginName))
+        //    {
+        //        IronUI.ShowConfigureScanException("Format Plugin not found");
+        //        return;
+        //    }
+        //    FormatPlugin Plugin = FormatPlugin.Get(PluginName);
+        //    if (Scanner.CurrentScanner == null)
+        //    {
+        //        IronUI.ShowConfigureScanException("Invalid Request");
+        //        return;
+        //    }
+        //    if (Scanner.CurrentScanner.OriginalRequest == null)
+        //    {
+        //        IronUI.ShowConfigureScanException("Invalid Request");
+        //        return;
+        //    }
+        //    //Scanner.CurrentScanner.BodyFormat = Plugin;
+        //    Scanner.StartDeSerializingRequestBody(Scanner.CurrentScanner.OriginalRequest, Plugin, new List<bool>(), false);
+        //}
+
+       // private void ScanJobCustomizeBtn_Click(object sender, EventArgs e)
+       // {
+       //     ScanCustomizationAssistant SCA = new ScanCustomizationAssistant();
+       //     SCA.Show();
+       //}
+
+        //private void ASBaseTab_Deselecting(object sender, TabControlCancelEventArgs e)
+        //{
+        //    if (e.TabPageIndex == 0)
+        //    {
+        //        try
+        //        {
+        //            IronUI.HandleAnyChangesInConfigureScanRequest();
+        //        }
+        //        catch (Exception Exp)
+        //        {
+        //            IronUI.ShowConfigureScanException(Exp.Message);
+        //        }
+        //    }
+        //}
+
+        //private void ASBodyInjectTypeTabs_Selecting(object sender, TabControlCancelEventArgs e)
+        //{
+        //    //If none of the options are selected then select normal
+        //    if (!(ASBodyTypeNormalRB.Checked || ASBodyTypeFormatPluginRB.Checked || ASBodyTypeCustomRB.Checked))
+        //        ASBodyTypeNormalRB.Checked = true;
+
+        //    switch (e.TabPage.Name)
+        //    {
+        //        case ("ASBodyTypeNormalTab"):
+        //            if (!ASBodyTypeNormalRB.Checked)
+        //            {
+        //                if (ASBodyTypeFormatPluginRB.Checked)
+        //                    ASBodyInjectTypeTabs.SelectTab("ASBodyTypeFormatPluginTab");
+        //                else if(ASBodyTypeCustomRB.Checked)
+        //                    ASBodyInjectTypeTabs.SelectTab("ASBodyTypeCustomTab");
+        //            }
+        //            break;
+        //        case ("ASBodyTypeFormatPluginTab"):
+        //            if (!ASBodyTypeFormatPluginRB.Checked)
+        //            {
+        //                if (ASBodyTypeNormalRB.Checked)
+        //                    ASBodyInjectTypeTabs.SelectTab("ASBodyTypeNormalTab");
+        //                else if (ASBodyTypeCustomRB.Checked)
+        //                    ASBodyInjectTypeTabs.SelectTab("ASBodyTypeCustomTab");
+        //            }
+        //            break;
+        //        case ("ASBodyTypeCustomTab"):
+        //            if (!ASBodyTypeCustomRB.Checked)
+        //            {
+        //                if (ASBodyTypeFormatPluginRB.Checked)
+        //                    ASBodyInjectTypeTabs.SelectTab("ASBodyTypeFormatPluginTab");
+        //                else if (ASBodyTypeNormalRB.Checked)
+        //                    ASBodyInjectTypeTabs.SelectTab("ASBodyTypeNormalTab");
+        //            }
+        //            if (!ASRequestCustomInjectionMarkerTabs.SelectedTab.Name.Equals("ASRequestCustomMarkerSelectionTab"))
+        //                ASRequestCustomInjectionMarkerTabs.SelectTab("ASRequestCustomMarkerSelectionTab");
+        //            break;
+        //    }
+        //}
+
+        //private void ASBodyTypeNormalRB_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    if (ASBodyTypeNormalRB.Checked)
+        //    {
+        //        IronUI.UpdateScanBodyTabWithDataInDefaultFormat();
+        //        ASBodyInjectTypeTabs.SelectTab("ASBodyTypeNormalTab");
+        //    }
+        //}
+
+        //private void ASBodyTypeFormatPluginRB_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    if (ASBodyTypeFormatPluginRB.Checked)
+        //    {
+        //        ASRequestScanAllCB.Checked = false;
+        //        ASRequestScanBodyCB.Checked = false;
+        //        foreach (DataGridViewRow Row in ConfigureScanRequestFormatPluginsGrid.Rows)
+        //        {
+        //            Row.Cells[0].Value = false;
+        //        }
+        //        ConfigureScanRequestBodyTypeFormatPluginGrid.Rows.Clear();
+        //        ConfigureScanRequestFormatXMLTB.Text = "";
+        //        ASBodyInjectTypeTabs.SelectTab("ASBodyTypeFormatPluginTab");
+        //    }
+        //}
+
+        //private void ASBodyTypeCustomRB_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    if (ASBodyTypeCustomRB.Checked)
+        //    {
+        //        ASRequestScanAllCB.Checked = false;
+        //        ASRequestScanBodyCB.Checked = false;
+        //        ASBodyInjectTypeTabs.SelectTab("ASBodyTypeCustomTab");
+        //        if (Scanner.CurrentScanner != null && Scanner.CurrentScanner.OriginalRequest != null)
+        //        {
+        //            ASRequestCustomInjectionPointsHighlightTB.Text = Scanner.CurrentScanner.OriginalRequest.BodyString;
+        //        }
+        //        ASRequestCustomInjectionPointsHighlightLbl.Text = "Number of Injection Points Detected: 0";
+        //        ASRequestCustomInjectionMarkerTabs.SelectTab("ASRequestCustomMarkerSelectionTab");
+        //    }
+        //}
+
+        //private void ASRequestScanBodyTypeNormalGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        //{
+        //    if (ASRequestScanBodyTypeNormalGrid.SelectedCells.Count < 1 || ASRequestScanBodyTypeNormalGrid.SelectedCells[0].Value == null)
+        //    {
+        //        return;
+        //    }
+        //    if ((bool)this.ASRequestScanBodyTypeNormalGrid.SelectedCells[0].Value)
+        //    {
+        //        this.ASRequestScanBodyTypeNormalGrid.SelectedCells[0].Value = false;
+        //        this.ASRequestScanAllCB.Checked = false;
+        //        this.ASRequestScanBodyCB.Checked = false;
+        //    }
+        //    else
+        //    {
+        //        this.ASRequestScanBodyTypeNormalGrid.SelectedCells[0].Value = true;
+        //    }
+        //}
+
+        //private void ASApplyCustomMarkersLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        //{
+        //    string StartMarker = ASCustomStartMarkerTB.Text.Trim();
+        //    string EndMarker = ASCustomEndMarkerTB.Text.Trim();
+        //    if (StartMarker.Length == 0 || EndMarker.Length == 0)
+        //    {
+        //        IronUI.ShowConfigureScanException("Start and End markers cannot be empty.");
+        //        return;
+        //    }
+        //    if (StartMarker.Equals(EndMarker))
+        //    {
+        //        IronUI.ShowConfigureScanException("Start and End markers cannot be the same.");
+        //        return;
+        //    }
+        //    Scanner.CurrentScanner.CustomInjectionPointStartMarker = StartMarker;
+        //    Scanner.CurrentScanner.CustomInjectionPointEndMarker = EndMarker;
+        //    IronUI.DetectAndHighLightCustomInjectionPoints();
+        //}
+
+        //private void ASCustomStartMarkerTB_TextChanged(object sender, EventArgs e)
+        //{
+        //    ASRequestScanBodyCB.Checked = false;
+        //    ASRequestCustomInjectionPointsHighlightTB.Text = Scanner.CurrentScanner.OriginalRequest.BodyString;
+        //    ASRequestCustomInjectionPointsHighlightLbl.Text = "Number of Injection Points Detected: 0";
+        //}
+
+        //private void ASCustomEndMarkerTB_TextChanged(object sender, EventArgs e)
+        //{
+        //    ASRequestScanBodyCB.Checked = false;
+        //    ASRequestCustomInjectionPointsHighlightTB.Text = Scanner.CurrentScanner.OriginalRequest.BodyString;
+        //    ASRequestCustomInjectionPointsHighlightLbl.Text = "Number of Injection Points Detected: 0";
+        //}
+
+        private void ASClearScanBtn_Click(object sender, EventArgs e)
+        {
+            Scanner.ResetChangedStatus();
+            IronUI.ResetConfigureScanFields();
+            Scanner.CurrentScanner = null;
+            ScanDisplayPanel.Visible = false;
+            ScanTopPanel.Visible = true;
+            ScanJobsBaseSplit.SplitterDistance = 62;
+        }
+
+        private void ASStopAllScansLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            StopAllScansAction();
+        }
+
+        private void ASStartAllStoppedAndAbortedScansLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            StartAllStoppedAndAbortedScansAction();
+        }
+
+        private void CreateNewTestRequestBtn_Click(object sender, EventArgs e)
+        {
+            CreateNewRequestWizard CNRW = new CreateNewRequestWizard();
+            CNRW.Show();
+        }
+
+        void CreateImageList()
+        {
+            ImageList IL = new ImageList();
+            IL.ImageSize = new System.Drawing.Size(10, 10);
+            Bitmap BM = new Bitmap(10, 10);
+            Graphics G = Graphics.FromImage(BM);
+            SolidBrush B = new SolidBrush(Color.LightSkyBlue);
+            G.FillRectangle(B, 0, 0, 10, 10);
+            IL.Images.Add("Square", BM);
+
+            TestGroupsLV.SmallImageList = IL;
+            TestGroupsLV.LargeImageList = IL;
+        }
+
+        private void TestGroupsLV_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (TestGroupsLV.SelectedItems.Count > 0)
+            {
+                if (!MTBaseSplit.Visible) MTBaseSplit.Visible = true;
+                string Group = TestGroupsLV.SelectedItems[0].Name;
+                if (!Group.Equals(ManualTesting.CurrentGroup))
+                    ManualTesting.ShowGroup(Group);
+            }
+        }
+
+        private void MTDeleteGroupLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            try
+            {
+                TestGroupsLV.Items.RemoveByKey(ManualTesting.CurrentGroup);
+                IronUI.ResetMTDisplayFields();
+                TestIDLbl.Text = "ID: 0";
+                MTCurrentGroupNameTB.Text = "";
+                TestGroupLogGrid.Rows.Clear();
+                ManualTesting.ClearGroup();
+                //MTReqResTabs.SelectTab("MTRequestTab");
+                MTBaseSplit.Visible = false;
+                if (TestGroupsLV.Items.Count == 0)
+                {
+                    TestGroupsTitleTB.Visible = false;
+                    TestGroupsLV.Visible = false;
+                }
+            }
+            catch { }
+        }
+
+        private void MTRenameGroupLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            
+            string NewName = MTCurrentGroupNameTB.Text.Trim();
+            if (NewName.Length == 0)
+            {
+                MTCurrentGroupNameTB.Text = ManualTesting.CurrentGroup;
+                IronUI.ShowMTException("A group with name already exists");
+                return;
+            }
+            if (ManualTesting.GroupSessions.ContainsKey(NewName))
+            {
+                MTCurrentGroupNameTB.Text = ManualTesting.CurrentGroup;
+                IronUI.ShowMTException("A group with name already exists");
+                return;
+            }
+            Dictionary<int, Session> SessionsList = ManualTesting.GroupSessions[ManualTesting.CurrentGroup];
+            int CurrentId = ManualTesting.CurrentGroupLogId[ManualTesting.CurrentGroup];
+            ManualTesting.GroupSessions.Remove(ManualTesting.CurrentGroup);
+            ManualTesting.CurrentGroupLogId.Remove(ManualTesting.CurrentGroup);
+            string OldName = ManualTesting.CurrentGroup;
+            TestGroupsLV.Items[OldName].Name = NewName;
+            TestGroupsLV.Items[NewName].Text = NewName;
+            ManualTesting.CurrentGroup = NewName;
+            ManualTesting.GroupSessions[ManualTesting.CurrentGroup] = SessionsList;
+            ManualTesting.CurrentGroupLogId[ManualTesting.CurrentGroup] = CurrentId;
+            IronDB.RenameGroup(OldName, NewName);
+            IronUI.ShowMTException("");
+        }
+
+        private void SelectForManualTestingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IronLog.MarkForTesting(GetSource(), GetID(), "");
+        }
+
+        private void MTFollowRedirectBtn_Click(object sender, EventArgs e)
+        {
+            ManualTesting.FollowRedirect();
+        }
+
+        private void MTGetRedirectBtn_Click(object sender, EventArgs e)
+        {
+            ManualTesting.GetRedirect();
+        }
+
+        private void ProxyRequestView_RequestChanged()
+        {
+            IronProxy.RequestChanged = true;
+        }
+
+        private void ProxyResponseView_ResponseChanged()
+        {
+            IronProxy.ResponseChanged = true;
+        }
+
+        private void StartLogAnalyzerBtn_Click(object sender, EventArgs e)
+        {
+            LogAnalyzer LoAn = new LogAnalyzer();
+            LoAn.Show();
+        }
+
+        private void LoadSelectedTraceBtn_Click(object sender, EventArgs e)
+        {
+            LogTraceViewer TraceViewer = new LogTraceViewer();
+            TraceViewer.ScanTraceMsgRTB.Rtf = ScanTraceMsgRTB.Rtf;
+            foreach (DataGridViewRow Row in ScanTraceOverviewGrid.Rows)
+            {
+                object[] RowValues = new object[Row.Cells.Count + 1];
+                RowValues[0] = false;
+                foreach (DataGridViewCell Cell in Row.Cells)
+                {
+                    RowValues[Cell.ColumnIndex + 1] = Cell.Value;
+                }
+                TraceViewer.ScanTraceOverviewGrid.Rows.Add(RowValues);
+            }
+            TraceViewer.Show();
+        }
+
+        private void ASBodyInjectTypeTabs_Selecting(object sender, TabControlCancelEventArgs e)
+        {
+            if (ASBodyInjectTypeTabs.SelectedIndex != Scanner.CurrentScannerBodyFormatTabIndex)
+                ASBodyInjectTypeTabs.SelectTab(Scanner.CurrentScannerBodyFormatTabIndex);
+        }
+
+        private void TestGroupHistoryDoDiffBtn_Click(object sender, EventArgs e)
+        {
+            int ALogId = -1;
+            int BLogId = -1;
+            int SelectedRowsCount = 0;
+            foreach (DataGridViewRow Row in TestGroupLogGrid.Rows)
+            {
+                if ((bool)Row.Cells[0].Value)
+                {
+                    SelectedRowsCount++;
+                    if (ALogId == -1)
+                    {
+                        try
+                        {
+                            ALogId = Int32.Parse(Row.Cells[1].Value.ToString());
+                        }
+                        catch { }
+                    }
+                    else if (BLogId == -1)
+                    {
+                        try
+                        {
+                            BLogId = Int32.Parse(Row.Cells[1].Value.ToString());
+                        }
+                        catch { }
+                    }
+                }
+            }
+
+            if (SelectedRowsCount == 2)
+            {             
+                SessionsDiffer Sdiff = new SessionsDiffer();
+                Sdiff.SetSessions("Test", ALogId, BLogId);
+                Sdiff.Show();
+            }
+            else
+            {
+                MessageBox.Show(string.Format("Diff can be done only when two sessions are selected. You have selected {0} sessions", SelectedRowsCount), "Selection Error");
+            }
+        }
+
+        private void SessionPluginTraceLoadLogBtn_Click(object sender, EventArgs e)
+        {
+            IronTrace.LoadSessionPluginTraceLog();
+            if (!SessionPluginTraceBottomTabs.SelectedTab.Name.Equals("SessionPluginTraceLogViewTab"))
+            {
+                SessionPluginTraceBottomTabs.SelectTab("SessionPluginTraceLogViewTab");
+            }
+        }
+
+        private void sessionPluginCreationAssistantToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SessionPluginCreationAssistant SPCA = new SessionPluginCreationAssistant();
+            SPCA.Show();
+        }
+
+        private void SessionPluginTraceGrid_SelectionChanged(object sender, EventArgs e)
+        {
+            if (SessionPluginTraceGrid.SelectedCells == null || SessionPluginTraceGrid.SelectedCells.Count == 0) return;
+            try
+            {
+                IronTrace.SelectedSessionPluginTraceLogId = Int32.Parse(SessionPluginTraceGrid.SelectedRows[0].Cells["SessionPluginTraceLogIdClmn"].Value.ToString());
+                IronTrace.SelectedSessionPluginTraceSource = SessionPluginTraceGrid.SelectedRows[0].Cells["SessionPluginTraceLogSourceClmn"].Value.ToString();
+                SessionPluginTraceLoadLogBtn.Enabled = (IronTrace.SelectedSessionPluginTraceLogId > 0);
+                SessionPluginTraceMsgRTB.Text = SessionPluginTraceGrid.SelectedRows[0].Cells["SessionPluginTraceMessageClmn"].Value.ToString();
+                IronUI.ShowSessionPluginTraceLog(null, null);
+                if (!SessionPluginTraceBottomTabs.SelectedTab.Name.Equals("SessionPluginTraceMessageTab"))
+                {
+                    SessionPluginTraceBottomTabs.SelectTab("SessionPluginTraceMessageTab");
+                }
+            }
+            catch { }
+        }
+
+        private void activePluginCreationAssistantToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ActivePluginCreationAssistant APCA = new ActivePluginCreationAssistant();
+            APCA.Show();
+        }
+
+        private void MTMaximizeRequestViewBtn_Click(object sender, EventArgs e)
+        {
+            if (MTMaximizeRequestViewBtn.Text.Equals("\\/"))
+            {
+                MTBaseSplit.SplitterDistance = MTBaseSplit.Height - 10;
+                MTMaximizeRequestViewBtn.Text = "--";
+            }
+            else
+            {
+                MTBaseSplit.SplitterDistance = MTBaseSplit.Height/2;
+                MTMaximizeRequestViewBtn.Text = "\\/";
+            }
+        }
+
+        private void MTMaximizeResponseViewBtn_Click(object sender, EventArgs e)
+        {
+            if (MTMaximizeResponseViewBtn.Text.Equals("/\\"))
+            {
+                MTBaseSplit.SplitterDistance = 10;
+                MTMaximizeResponseViewBtn.Text = "--";
+            }
+            else
+            {
+                MTBaseSplit.SplitterDistance = MTBaseSplit.Height / 2;
+                MTMaximizeResponseViewBtn.Text = "/\\";
+            }
+        }
+
+        private void passivePluginCreationAssistantToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PassivePluginCreationAssistant PPCA = new PassivePluginCreationAssistant();
+            PPCA.Show();
+        }
+
+        private void scriptCreationAssistantToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ScriptCreationAssistant SCA = new ScriptCreationAssistant();
+            SCA.Show();
+        }
+
+        private void ShowScriptCreationAssistantBtn_Click(object sender, EventArgs e)
+        {
+            ScriptCreationAssistant SCA = new ScriptCreationAssistant();
+            SCA.Show();
+        }
+
+        private void ScriptedInterceptionRunScriptCreationAssistantBtn_Click(object sender, EventArgs e)
+        {
+            ScriptCreationAssistant SCA = new ScriptCreationAssistant();
+            SCA.Show();
+        }
+
+        private void ScriptedInterceptionRubyRB_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ScriptedInterceptionRubyRB.Checked)
+            {
+                this.ShowScriptedInterceptionTemplateLL.Text = "Show sample Ruby script";
+                
+                ScriptedInterceptionCTB.LangCode = 2;
+
+                this.ScriptedInterceptionScriptTopRTB.Rtf = @"{\rtf1{\colortbl ;\red0\green0\blue255;\red25\green25\blue112;} \cf1 def \cf0 \cf2 \b1 should_intercept \b0 \cf0 (sess)";
+                this.ScriptedInterceptionScriptBottomRTB.Rtf = @"{\rtf1{\colortbl ;\red0\green0\blue128;\red0\green0\blue255;} \cf1     return \cf0 false \par \cf2 end \cf0";
+                this.ScriptedInterceptionActivateScriptCB.Checked = false;
+                
+                Directory.SetCurrentDirectory(Config.RootDir);
+            }
+        }
+
+        private void ScriptedInterceptionPythonRB_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ScriptedInterceptionPythonRB.Checked)
+            {
+                this.ShowScriptedInterceptionTemplateLL.Text = "Show sample Python script";
+                
+                ScriptedInterceptionCTB.LangCode = 2;
+
+                this.ScriptedInterceptionScriptTopRTB.Rtf = @"{\rtf1{\colortbl ;\red0\green0\blue255;\red25\green25\blue112;} \cf1 def \cf0 \cf2 \b1 ShouldIntercept \b0 \cf0 (sess):";
+                this.ScriptedInterceptionScriptBottomRTB.Rtf = @"{\rtf1{\colortbl ;\red0\green0\blue128;} \cf1     return \cf0 False";
+                this.ScriptedInterceptionActivateScriptCB.Checked = false;
+
+                Directory.SetCurrentDirectory(Config.RootDir);
+            }
+        }
+
+        private void ScriptedInterceptionActivateScriptCB_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.ScriptedInterceptionActivateScriptCB.Checked)
+            {
+                ScriptedInterceptionErrorTB.Visible = false;
+                string Result = "";
+                if (this.ScriptedInterceptionPythonRB.Checked)
+                {
+                    Result = IronProxy.SetPyScriptedInterception(this.ScriptedInterceptionCTB.Text);
+                }
+                else
+                {
+                    Result = IronProxy.SetRbScriptedInterception(this.ScriptedInterceptionCTB.Text);
+                }
+                if (Result.Length > 0)
+                {
+                    IronUI.ShowScriptedInterceptionScriptException(Result);
+                }
+            }
+            
+            IronProxy.ScriptedInterceptionEnabled = this.ScriptedInterceptionActivateScriptCB.Checked;
+
+            if (IronProxy.ScriptedInterceptionEnabled)
+            {
+                this.InterceptRequestCB.Enabled = false;
+                this.InterceptResponseCB.Enabled = false;
+            }
+            else
+            {
+                this.InterceptRequestCB.Enabled = true;
+                this.InterceptResponseCB.Enabled = true;
+            }
+
+            if (this.ScriptedInterceptionActivateScriptCB.Checked)
+            {
+                ScriptedInterceptionBaseSplit.Panel1.BackColor = Color.DarkGreen;
+            }
+            else
+            {
+                ScriptedInterceptionBaseSplit.Panel1.BackColor = Color.White;
+            }
+        }
+
+        private void ScriptedInterceptionCTB_ValueChanged()
+        {
+            if (this.ScriptedInterceptionActivateScriptCB.Checked)
+            {
+                this.ScriptedInterceptionActivateScriptCB.Checked = false;
+            }
+            IronUI.ResetScriptedInterceptionScriptExceptionFields();
+            
+            if (IronProxy.ScriptedInterceptionEnabled)
+            {
+                IronProxy.ScriptedInterceptionEnabled = false;
+            }
+        }
+
+        private void ShowScriptedInterceptionTemplateLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            ShowSampleScriptedInterceptionScript();
+        }
+
+        void ShowSampleScriptedInterceptionScript()
+        {
+            try
+            {
+                if (ScriptedInterceptionPythonRB.Checked)
+                {
+                    ScriptedInterceptionCTB.Text = ScriptedInterceptor.GetSamplePythonScript();
+                }
+                else
+                {
+                    ScriptedInterceptionCTB.Text = ScriptedInterceptor.GetSampleRubyScript();
+                }
+            }
+            catch(Exception Exp) 
+            {
+                IronException.Report("Unable to show the sample script", Exp);
+            }
+        }
+
+        private void ShowScriptedSendTemplateLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            ShowSampleScriptedSendScript();
+        }
+
+        void ShowSampleScriptedSendScript()
+        {
+            try
+            {
+                if (CustomSendPythonRB.Checked)
+                {
+                    CustomSendTE.Text = ScriptedSender.GetSamplePythonScript();
+                }
+                else
+                {
+                    CustomSendTE.Text = ScriptedSender.GetSampleRubyScript();
+                }
+            }
+            catch(Exception Exp) 
+            {
+                IronException.Report("Unable to show the sample script", Exp);
+            }
+        }
+
+        private void TestAdvancedOptionsHelpLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            main_tab.SelectTab("mt_scripting");
+            ScriptingShellTabs.SelectTab("ScriptedSendTP");
+        }
+
+        private void ProxyInterceptTabs_Deselecting(object sender, TabControlCancelEventArgs e)
+        {
+            if (ScriptedInterceptionBaseSplit.SplitterDistance != 130)
+            {
+                try
+                {
+                    ScriptedInterceptionBaseSplit.SplitterDistance = 130;
+                }
+                catch { }
+                try
+                {
+                    ScriptedInterceptionBottomSplit.SplitterDistance = ScriptedInterceptionBottomSplit.Height - 118;
+                }
+                catch { }
+            }
+        }
+
+        private void ProxyInterceptTabs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ProxyInterceptTabs.SelectedIndex == 2 && !ScriptedInterceptionBaseSplit.Visible)
+            {
+                ScriptedInterceptionBaseSplit.Visible = true;
+            }
         }
     }
 }

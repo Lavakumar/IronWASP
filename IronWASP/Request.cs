@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -26,6 +26,7 @@ using System.Data;
 using System.Data.SQLite;
 using System.Drawing;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Threading;
 using System.Reflection;
@@ -49,6 +50,7 @@ namespace IronWASP
         public bool SSL = false;
         public string Method = "GET";
         public string HTTPVersion = "HTTP/1.1";
+        public bool CanRunPassivePlugins = true;
 
         //internal properties
         internal int ID=0;
@@ -72,7 +74,7 @@ namespace IronWASP
 
         //To be set explicitly when cloning
         public SessionPlugin SessionHandler = new SessionPlugin();
-        public RequestSource Source = RequestSource.Shell;
+        
 
         //private properties
         string bodyString = "";
@@ -84,6 +86,7 @@ namespace IronWASP
         BodyParameters body;//must instantiate in the constructor = new Parameters();
         CookieParameters cookie;//must instantiate in the constructor = new Parameters();
         RequestHeaderParameters headers;//must instantiate in the constructor = new Parameters();
+        string source = RequestSource.Shell;
 
         string DefaultBodyCharset = "ISO-8859-1";
 
@@ -151,6 +154,7 @@ namespace IronWASP
                 this.URL = value;
             }
         }
+
         public string Host
         {
             get
@@ -300,6 +304,23 @@ namespace IronWASP
             }
         }
 
+        internal string Source
+        {
+            get
+            {
+                return this.source;
+            }
+            set
+            {
+                 if(!RequestSource.IsValid(value))
+                    throw new Exception(string.Format("{0} - is an invalid value. Only alphabets are allowed in source names", value));
+                else if (RequestSource.IsBanned(value))
+                     throw new Exception(string.Format("{0} - is a banned word for Request Source", value));
+                else
+                    this.source = value;
+            }
+        }
+
         public string Hash = "";
 
         //getter properties
@@ -343,16 +364,25 @@ namespace IronWASP
         {
             get
             {
-                if (TextContentTypes.Contains("$NONE") && !Headers.Has("Content-Type")) return false;
-                
-                foreach (string Type in TextContentTypes)
+                try
                 {
-                    if (ContentType.IndexOf(Type, StringComparison.OrdinalIgnoreCase) > -1)
-                    {
-                        return false;
-                    }
+                    return Tools.IsBinary(this.BodyArray);
                 }
-                return true;
+                catch (Exception Exp)
+                {
+                    IronException.Report("Error checking request body for binary content", Exp);
+                    return false;
+                }
+                //if (TextContentTypes.Contains("$NONE") && !Headers.Has("Content-Type")) return false;
+                
+                //foreach (string Type in TextContentTypes)
+                //{
+                //    if (ContentType.IndexOf(Type, StringComparison.OrdinalIgnoreCase) > -1)
+                //    {
+                //        return false;
+                //    }
+                //}
+                //return true;
             }
         }
         public Response Response
@@ -460,7 +490,7 @@ namespace IronWASP
                 List<string> RawPaths = RawUrlPathParts;
                 for (int i = 0; i < RawPaths.Count; i++)
                 {
-                    RawPaths[i] = Decode(RawPaths[i]);
+                    RawPaths[i] = PathPartDecode(RawPaths[i]);
                 }
                 return RawPaths;
             }
@@ -485,6 +515,21 @@ namespace IronWASP
                 {
                     return UrlPath.Substring(0, UrlPath.LastIndexOf('/') + 1);
                 }
+            }
+        }
+
+        public string BaseUrl
+        {
+            get
+            {
+                StringBuilder SB = new StringBuilder();
+                if (this.SSL)
+                    SB.Append("https://");
+                else
+                    SB.Append("http://");
+                SB.Append(this.Host);
+                SB.Append("/");
+                return SB.ToString();
             }
         }
 
@@ -519,6 +564,13 @@ namespace IronWASP
                 {
                     return "";
                 }
+            }
+        }
+        public int LogId
+        {
+            get
+            {
+                return this.GetId();
             }
         }
 
@@ -575,8 +627,32 @@ namespace IronWASP
             }
             if (Sess.oFlags.ContainsKey("IronFlag-BuiltBy"))
             {
-                if (Sess.oFlags["IronFlag-BuiltBy"] == "ManualTestingSection")
-                    this.Source = RequestSource.Test;
+                switch (Sess.oFlags["IronFlag-BuiltBy"])
+                {
+                    case("ManualTestingSection"):
+                        this.Source = RequestSource.Test;
+                        break;
+                    case (RequestSource.Shell):
+                        this.Source = RequestSource.Shell;
+                        break;
+                    case (RequestSource.Probe):
+                        this.Source = RequestSource.Probe;
+                        break;
+                    case (RequestSource.Scan):
+                        this.Source = RequestSource.Scan;
+                        break;
+                    case (RequestSource.Stealth):
+                        this.Source = RequestSource.Stealth;
+                        break;
+                    default:
+                        if (Config.IsSourcePresent(Sess.oFlags["IronFlag-BuiltBy"]))
+                            this.Source = Sess.oFlags["IronFlag-BuiltBy"];
+                        break;
+                }
+            }
+            if (Sess.oFlags.ContainsKey("IronFlag-RunPassivePlugins"))
+            {
+                this.CanRunPassivePlugins = Sess.oFlags["IronFlag-RunPassivePlugins"].Equals("1");
             }
             this.AbsorbFullURL(Sess.fullUrl);
             this.Method = Sess.oRequest.headers.HTTPMethod;
@@ -717,13 +793,22 @@ namespace IronWASP
                 BuiltBy = "Stealth";
                 this.ID = Interlocked.Increment(ref Config.StealthRequestsCount);
             }
-            else
+            else if (this.Source == RequestSource.Shell)
             {
                 BuiltBy = "Shell";
                 this.ID = Interlocked.Increment(ref Config.ShellRequestsCount);
             }
+            else
+            {
+                BuiltBy = this.Source;
+                this.ID = Config.GetNewId(this.Source);
+            }
             Flags.Add("IronFlag-BuiltBy", BuiltBy);
             Flags.Add("IronFlag-ID", this.ID.ToString());
+            if(this.CanRunPassivePlugins)
+                Flags.Add("IronFlag-RunPassivePlugins", "1");
+            else
+                Flags.Add("IronFlag-RunPassivePlugins", "0");
             Fiddler.HTTPRequestHeaders ReqHeaders = new Fiddler.HTTPRequestHeaders();
             ReqHeaders.HTTPMethod = this.Method;
             ReqHeaders.HTTPVersion = this.HTTPVersion;
@@ -744,7 +829,7 @@ namespace IronWASP
                 }
             }
             this.MSR = new ManualResetEvent(false);
-            string DictID = this.ID.ToString() + "-" + BuiltBy;
+            string DictID = string.Format("{0}-{1}", this.ID, BuiltBy);
             this.TimeObject = DateTime.Now;
             lock (Config.APIResponseDict)
             {
@@ -781,6 +866,7 @@ namespace IronWASP
             Request ClonedRequest = new Request(this.ToString(), this.SSL);
             ClonedRequest.SessionHandler = this.SessionHandler;
             ClonedRequest.Source = this.Source;
+            ClonedRequest.CanRunPassivePlugins = this.CanRunPassivePlugins;
             if (CopyID) ClonedRequest.ID = this.ID;
             if (this.ScanID != 0)
             {
@@ -816,9 +902,29 @@ namespace IronWASP
             }
         }
 
+        public void SetSource(string EnteredSource)
+        {
+            if (RequestSource.IsInternal(EnteredSource))
+            {
+                throw new Exception(string.Format("{0} - is not allowed as a source name. Try another value.", EnteredSource));
+            }
+            else
+            {
+                if (EnteredSource.Trim().Length == 0)
+                {
+                    throw new Exception("Log Source cannot be empty");
+                }
+                if (!Regex.IsMatch(EnteredSource, "^[a-zA-Z\\s]+$"))
+                {
+                    throw new Exception("Log Source can only contain alphabets and space.");
+                }
+                this.Source = EnteredSource;
+            }
+        }
+
         public Request GetRedirect(Response Res)
         {
-            if (Res.Code == 301 || Res.Code == 302 || Res.Code == 303 || Res.Code == 307)
+            if (Res.IsRedirect)
             {
                 if (Res.Headers.Has("Location"))
                 {
@@ -877,6 +983,21 @@ namespace IronWASP
                         NewReq.CookieString = this.CookieString;
                         NewReq.SetCookie(Res.SetCookies);
                     }
+                    //Update the Source of the redirect request with the value of the current request
+                    NewReq.Source = this.Source;
+                    if (this.Source.Equals("Scan"))
+                        NewReq.ScanID = this.ScanID;
+                    //Update general headers associated with the current request in to the header of the redirect request
+                    foreach (string HeaderName in this.Headers.GetNames())
+                    {
+                        if (!(HeaderName.Equals("Host", StringComparison.OrdinalIgnoreCase) || HeaderName.Equals("Content-Length", StringComparison.OrdinalIgnoreCase) || HeaderName.Equals("Content-Type", StringComparison.OrdinalIgnoreCase) || HeaderName.Equals("Cookie", StringComparison.OrdinalIgnoreCase)))
+                        {
+                            foreach (string HeaderValue in this.Headers.GetAll(HeaderName))
+                            {
+                                NewReq.Headers.Add(HeaderName, HeaderValue);
+                            }
+                        }
+                    }
                     return NewReq;
                 }
             }
@@ -895,6 +1016,24 @@ namespace IronWASP
         public int GetId()
         {
             return this.ID;
+        }
+
+        public string ToTestUi()
+        {
+            return ToTestUi();
+        }
+
+        public string ToTestUi(string Name)
+        {
+            if (Name.Trim().Length == 0 || ManualTesting.GroupSessions.ContainsKey(Name))
+            {
+                return ManualTesting.CreateNewGroupWithRequest(this, false);
+            }
+            else
+            {
+                ManualTesting.CreateNewGroupWithRequest(this, Name, false);
+                return Name;
+            }
         }
 
         //internal non-static methods
@@ -1217,6 +1356,10 @@ namespace IronWASP
                     this.headers.Remove("Content-Length");
                 }
             }
+            else
+            {
+                this.headers.Set("Content-Length", "0");
+            }
             return;
         }
         void InitiateParameters()
@@ -1263,6 +1406,25 @@ namespace IronWASP
         {
             Session IrSe = Session.FromScanLog(ID);
             return IrSe.Request;
+        }
+        public static Request FromLog(int ID, string Source)
+        {
+            switch (Source)
+            {
+                case ("Proxy"):
+                    return FromProxyLog(ID);
+                case ("Probe"):
+                    return FromProbeLog(ID);
+                case ("Test"):
+                    return FromTestLog(ID);
+                case ("Shell"):
+                    return FromShellLog(ID);
+                case ("Scan"):
+                    return FromScanLog(ID);
+                default:
+                    Session IrSe = Session.FromLog(ID, Source);
+                    return IrSe.Request;
+            }
         }
         public static Request FromString(string RequestString)
         {
@@ -1335,10 +1497,53 @@ namespace IronWASP
             }
             return Requests;
         }
+        public static List<Request> FromLog(string Source)
+        {
+            switch (Source)
+            {
+                case ("Proxy"):
+                    return FromProxyLog();
+                case ("Probe"):
+                    return FromProbeLog();
+                case ("Test"):
+                    return FromTestLog();
+                case ("Shell"):
+                    return FromShellLog();
+                case ("Scan"):
+                    return FromScanLog();
+                default:
+                    List<Request> Requests = new List<Request>();
+                    List<Session> Sessions = Session.FromLog(Source);
+                    foreach (Session Sess in Sessions)
+                    {
+                        if (Sess.Request != null) Requests.Add(Sess.Request);
+                    }
+                    return Requests;
+            }
+        }
+
+        public static bool IsSame(Request A, Request B)
+        {
+            try
+            {
+                if (!A.GetHeadersAsString().Equals(B.GetHeadersAsString())) return false;
+                if (A.BodyLength != B.BodyLength) return false;
+                for (int i = 0; i < A.BodyLength; i++)
+                {
+                    if (A.BodyArray[i] != B.BodyArray[i]) return false;
+                }
+            }
+            catch { return false; }
+            return true;
+        }
 
         string PathPartEncode(string Value)
         {
             return Tools.UrlPathPartEncode(Value);
+        }
+        string PathPartDecode(string Value)
+        {
+            return Tools.UrlPathPartDecode(Value);
         }
 
         string Decode(string Value)

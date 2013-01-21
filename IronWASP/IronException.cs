@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -48,7 +48,7 @@ namespace IronWASP
             this.StackTrace = StackTrace;
         }
 
-        internal static void Report(string Title, string Message)
+        public static void Report(string Title, string Message)
         {
             Report(Title, Message, "");
         }

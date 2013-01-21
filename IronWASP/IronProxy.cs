@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -32,9 +32,22 @@ using System.Net.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
+using Microsoft.Scripting;
+using Microsoft.Scripting.Runtime;
+using Microsoft.Scripting.Hosting;
+using IronPython;
+using IronPython.Hosting;
+using IronPython.Modules;
+using IronPython.Runtime;
+using IronPython.Runtime.Exceptions;
+using IronRuby;
+using IronRuby.Hosting;
+using IronRuby.Runtime;
+using IronRuby.StandardLibrary;
+
 namespace IronWASP
 {
-    internal class IronProxy
+    public class IronProxy
     {
         internal static Dictionary<string, Session> InterceptedSessions = new Dictionary<string, Session>();
         internal static bool ManualTamperingFree = true;
@@ -151,8 +164,8 @@ namespace IronWASP
         internal static bool ResponseHeaderChanged = false;
         internal static bool ResponseBodyChanged = false;
 
-        internal static Thread RequestFormatThread;
-        internal static Thread ResponseFormatThread;
+        internal static ScriptedInterceptor ScInt = new ScriptedInterceptor();
+        internal static bool ScriptedInterceptionEnabled = false;
 
         internal static void Start()
         {
@@ -180,12 +193,12 @@ namespace IronWASP
                     {
                         string PluginName = "Internal SSL Checker";
                         string Signature = string.Format("SSLCertificateChecker|{0}|{1}|{2}", new object[] { Sess.host, Sess.port.ToString(), sslPolicyErrors.ToString() });
-                        if (PluginResult.IsSignatureUnique(PluginName, Sess.host, PluginResultType.Vulnerability, Signature))
+                        if (Finding.IsSignatureUnique(PluginName, Sess.host, FindingType.Vulnerability, Signature))
                         {
-                            PluginResult PR = new PluginResult(Sess.host);
+                            Finding PR = new Finding(Sess.host);
                             PR.Plugin = PluginName;
-                            PR.Severity = PluginResultSeverity.Medium;
-                            PR.Confidence = PluginResultConfidence.High;
+                            PR.Severity = FindingSeverity.Medium;
+                            PR.Confidence = FindingConfidence.High;
                             PR.Title = string.Format("SSL Certificate Error for {0}:{1} ", new object[] { Sess.host, Sess.port.ToString() });
                             PR.Summary = string.Format("The remote server running Host: {0} and Port: {1} returned an invalid SSL certificate.<i<br>> <i<h>>Error:<i</h>> {2}. <i<br>> <i<h>>Certificate Details:<i</h>> {3}", new object[] { Sess.host, Sess.port.ToString(), sslPolicyErrors.ToString(), ServerCertificate.Subject });
                             PR.Signature = Signature;
@@ -216,6 +229,7 @@ namespace IronWASP
             }
 
             Fiddler.CONFIG.IgnoreServerCertErrors = true;
+            //Fiddler.CONFIG.bReuseServerSockets = false;
             IronUI.UpdateProxyStatusInConfigPanel(true);
             if (IronProxy.LoopBackOnly)
             {
@@ -280,7 +294,7 @@ namespace IronWASP
                         IronException.Report("Error handling 'Manual Testing' Response", Exp.Message, Exp.StackTrace);
                     }
                 }
-                else if (Sess.oFlags["IronFlag-BuiltBy"].Equals("Shell") || Sess.oFlags["IronFlag-BuiltBy"].Equals("Scan") || Sess.oFlags["IronFlag-BuiltBy"].Equals("Probe") || Sess.oFlags["IronFlag-BuiltBy"].Equals("Stealth"))
+                else if (Sess.oFlags["IronFlag-BuiltBy"].Equals("Shell") || Sess.oFlags["IronFlag-BuiltBy"].Equals("Scan") || Sess.oFlags["IronFlag-BuiltBy"].Equals("Probe") || Sess.oFlags["IronFlag-BuiltBy"].Equals("Stealth") || Config.IsSourcePresent(Sess.oFlags["IronFlag-BuiltBy"]))
                 {
                     try
                     {
@@ -320,7 +334,7 @@ namespace IronWASP
                                 IronException.Report("Error handling 'Stealth' Response", Exp.Message, Exp.StackTrace);
                             }
                         }
-                        else
+                        else if (Sess.oFlags["IronFlag-BuiltBy"].Equals("Scan"))
                         {
                             try
                             {
@@ -330,6 +344,18 @@ namespace IronWASP
                             catch (Exception Exp)
                             {
                                 IronException.Report("Error handling 'Automated Scanning' Response", Exp.Message, Exp.StackTrace);
+                            }
+                        }
+                        else
+                        {
+                            try
+                            {
+                                IronUpdater.AddOtherSourceResponse(IrSe.Response);
+                                DictID = string.Format("{0}-{1}", Sess.oFlags["IronFlag-ID"], Sess.oFlags["IronFlag-BuiltBy"]);
+                            }
+                            catch (Exception Exp)
+                            {
+                                IronException.Report(string.Format("Error handling '{0}' Response", Sess.oFlags["IronFlag-BuiltBy"]), Exp.Message, Exp.StackTrace);
                             }
                         }
                         Config.APIResponseDict[DictID].SetResponse(IrSe.Response);
@@ -433,13 +459,17 @@ namespace IronWASP
                 IronException.Report("Error Cloning IronSession in BeforeRequest", Exp.Message, Exp.StackTrace);
             }
 
-            try
+            if (PluginStore.ShouldRunRequestBasedPassivePlugins())
             {
-                PluginStore.RunAllPassivePluginsBeforeRequestInterception(IrSe);
-            }
-            catch (Exception Exp)
-            {
-                IronException.Report("Error running 'BeforeInterception' Passive plugins on Request", Exp.Message, Exp.StackTrace);
+                try
+                {
+                    PluginStore.RunAllRequestBasedInlinePassivePlugins(IrSe);
+                    IrSe.UpdateFiddlerSessionFromIronSession();
+                }
+                catch (Exception Exp)
+                {
+                    IronException.Report("Error running 'Inline' Passive plugins on Request", Exp.Message, Exp.StackTrace);
+                }
             }
 
 
@@ -447,7 +477,7 @@ namespace IronWASP
             {
                 IrSe.ID = Interlocked.Increment(ref Config.ProxyRequestsCount);
                 IronUpdater.AddProxyRequest(IrSe.Request);
-                if(CanIntercept(IrSe.Request))
+                if(CanInterceptRequest(IrSe))
                 {
                     IrSe.MSR = new ManualResetEvent(false);
                     InterceptedSessions.Add(IrSe.ID + "-Request", IrSe);
@@ -455,6 +485,12 @@ namespace IronWASP
                     IronUI.SendSessionToProxy(IrSe);
                     InterceptedSessions[IrSe.ID + "-Request"].MSR.WaitOne();
                     InterceptedSessions.Remove(IrSe.ID + "-Request");
+                    
+                    IrSe.UpdateFiddlerSessionFromIronSession();
+                }
+                else if (ScriptedInterceptionEnabled)
+                {
+                    IrSe.UpdateFiddlerSessionFromIronSession();
                 }
                 else
                 {
@@ -475,18 +511,21 @@ namespace IronWASP
                 {
                     IronUpdater.AddProbeRequest(IrSe.Request);
                 }
+                else if (Config.IsSourcePresent(Sess.oFlags["IronFlag-BuiltBy"]))
+                {
+                    IronUpdater.AddOtherSourceRequest(IrSe.Request);
+                }
             }
 
 
-            try
-            {
-                PluginStore.RunAllPassivePluginsAfterRequestInterception(IrSe);
-            }
-            catch (Exception Exp)
-            {
-                IronException.Report("Error running 'AfterInterception' Passive plugins on Request", Exp.Message, Exp.StackTrace);
-            }
-
+            //try
+            //{
+            //    PluginStore.RunAllPassivePluginsAfterRequestInterception(IrSe);
+            //}
+            //catch (Exception Exp)
+            //{
+            //    IronException.Report("Error running 'AfterInterception' Passive plugins on Request", Exp.Message, Exp.StackTrace);
+            //}
 
             if (IronProxy.UseUpstreamProxy)
             {
@@ -567,21 +606,10 @@ namespace IronWASP
                 IronUpdater.AddProxyResponse(IrSe.Response);
             }
 
-
-            try
-            {
-                PluginStore.RunAllPassivePluginsBeforeResponseInterception(IrSe);
-            }
-            catch(Exception Exp)
-            {
-                IronException.Report("Error running 'BeforeInterception' Passive plugins on Response", Exp.Message, Exp.StackTrace);
-            }
-
-
             if (!IrSe.FiddlerSession.isFlagSet(Fiddler.SessionFlags.RequestGeneratedByFiddler))
             {
                 IrSe.Response.Host = IrSe.Request.Host;
-                if(CanIntercept(IrSe.Response, IrSe.Request))
+                if(CanInterceptResponse(IrSe))
                 {
                     IrSe.MSR = new ManualResetEvent(false);
                     IrSe.FiddlerSession.state = Fiddler.SessionStates.HandTamperResponse;
@@ -589,6 +617,12 @@ namespace IronWASP
                     IronUI.SendSessionToProxy(IrSe);
                     InterceptedSessions[IrSe.ID + "-Response"].MSR.WaitOne();
                     InterceptedSessions.Remove(IrSe.ID + "-Response");
+
+                    IrSe.UpdateFiddlerSessionFromIronSession();
+                }
+                else if (ScriptedInterceptionEnabled)
+                {
+                    IrSe.UpdateFiddlerSessionFromIronSession();
                 }
                 else
                 {
@@ -596,80 +630,97 @@ namespace IronWASP
                 }
             }
 
-
-            try
+            if (PluginStore.ShouldRunResponseBasedPassivePlugins())
             {
-                PluginStore.RunAllPassivePluginsAfterResponseInterception(IrSe);
-            }
-            catch(Exception Exp)
-            {
-                IronException.Report("Error running 'AfterInterception' Passive plugins on Response", Exp.Message, Exp.StackTrace);
+                try
+                {
+                    PluginStore.RunAllResponseBasedInlinePassivePlugins(IrSe);
+                    IrSe.UpdateFiddlerSessionFromIronSession();
+                }
+                catch (Exception Exp)
+                {
+                    IronException.Report("Error running 'BeforeInterception' Passive plugins on Response", Exp.Message, Exp.StackTrace);
+                }
             }
         }
 
-        internal static void UpdateCurrentSessionWithNewRequestHeader(string HeaderString)
+        //internal static void UpdateCurrentSessionWithNewRequestHeader(string HeaderString)
+        //{
+        //    string NewRequestHeaders = HeaderString.TrimEnd(new char[]{'\r','\n'});
+        //    NewRequestHeaders += "\r\n\r\n";
+        //    IronProxy.CurrentSession.Request = new Request(NewRequestHeaders, IronProxy.CurrentSession.Request.SSL, false);
+        //    IronProxy.CurrentSession.Request.ID = IronProxy.CurrentSession.OriginalRequest.ID;
+        //    byte[] OldBody = new byte[IronProxy.CurrentSession.OriginalRequest.BodyArray.Length];
+        //    IronProxy.CurrentSession.OriginalRequest.BodyArray.CopyTo(OldBody, 0);
+        //    IronProxy.CurrentSession.Request.BodyArray = OldBody;
+        //    IronProxy.CurrentSession.FiddlerSession.oRequest.headers.AssignFromString(IronProxy.CurrentSession.Request.GetHeadersAsString());
+        //}
+
+        //internal static void UpdateFiddlerSessionWithNewRequestHeader()
+        //{
+        //    IronProxy.CurrentSession.FiddlerSession.oRequest.headers.AssignFromString(IronProxy.CurrentSession.Request.GetHeadersAsString());
+        //}
+
+        //internal static void UpdateCurrentSessionWithNewRequestBodyText(string BodyString)
+        //{
+        //    if (IronProxy.CurrentSession.Request.IsBinary)
+        //    {
+        //        IronProxy.CurrentSession.Request.BodyArray = Encoding.UTF8.GetBytes(BodyString);
+        //    }
+        //    else
+        //    {
+        //        IronProxy.CurrentSession.Request.BodyString = BodyString;
+        //    }
+        //    IronProxy.CurrentSession.FiddlerSession.utilSetRequestBody(IronProxy.CurrentSession.Request.BodyString);
+        //}
+
+        //internal static void UpdateFiddlerSessionWithNewRequestBody()
+        //{
+        //    IronProxy.CurrentSession.FiddlerSession.utilSetRequestBody(IronProxy.CurrentSession.Request.BodyString);
+        //}
+
+        internal static void UpdateCurrentSessionWithNewRequest(Request Req)
         {
-            string NewRequestHeaders = HeaderString.TrimEnd(new char[]{'\r','\n'});
-            NewRequestHeaders += "\r\n\r\n";
-            IronProxy.CurrentSession.Request = new Request(NewRequestHeaders, IronProxy.CurrentSession.Request.SSL, false);
+            IronProxy.CurrentSession.Request = Req;
             IronProxy.CurrentSession.Request.ID = IronProxy.CurrentSession.OriginalRequest.ID;
-            byte[] OldBody = new byte[IronProxy.CurrentSession.OriginalRequest.BodyArray.Length];
-            IronProxy.CurrentSession.OriginalRequest.BodyArray.CopyTo(OldBody, 0);
-            IronProxy.CurrentSession.Request.BodyArray = OldBody;
-            IronProxy.CurrentSession.FiddlerSession.oRequest.headers.AssignFromString(IronProxy.CurrentSession.Request.GetHeadersAsString());
+            //UpdateFiddlerSessionWithNewRequest();
         }
 
-        internal static void UpdateFiddlerSessionWithNewRequestHeader()
-        {
-            IronProxy.CurrentSession.FiddlerSession.oRequest.headers.AssignFromString(IronProxy.CurrentSession.Request.GetHeadersAsString());
-        }
+        //internal static void UpdateFiddlerSessionWithNewRequest()
+        //{
+        //    IronProxy.CurrentSession.FiddlerSession.oRequest.headers.AssignFromString(IronProxy.CurrentSession.Request.GetHeadersAsString());
+        //    IronProxy.CurrentSession.FiddlerSession.requestBodyBytes = IronProxy.CurrentSession.Request.BodyArray;
+        //}
 
-        internal static void UpdateCurrentSessionWithNewRequestBodyText(string BodyString)
-        {
-            if (IronProxy.CurrentSession.Request.IsBinary)
-            {
-                IronProxy.CurrentSession.Request.BodyArray = Encoding.UTF8.GetBytes(BodyString);
-            }
-            else
-            {
-                IronProxy.CurrentSession.Request.BodyString = BodyString;
-            }
-            IronProxy.CurrentSession.FiddlerSession.utilSetRequestBody(IronProxy.CurrentSession.Request.BodyString);
-        }
+        //internal static void UpdateCurrentSessionWithNewResponseHeader(string HeaderString)
+        //{
+        //    string NewResponseHeaders = HeaderString.TrimEnd(new char[]{'\r','\n'});
+        //    NewResponseHeaders += "\r\n\r\n";
+        //    IronProxy.CurrentSession.Response = new Response(NewResponseHeaders);
+        //    IronProxy.CurrentSession.Response.ID = IronProxy.CurrentSession.OriginalResponse.ID;
+        //    IronProxy.CurrentSession.Response.BodyArray = new byte[IronProxy.CurrentSession.OriginalResponse.BodyArray.Length];
+        //    IronProxy.CurrentSession.OriginalResponse.BodyArray.CopyTo(IronProxy.CurrentSession.Response.BodyArray, 0);
+        //    IronProxy.CurrentSession.FiddlerSession.oResponse.headers.AssignFromString(IronProxy.CurrentSession.Response.GetHeadersAsString());
+        //}
 
-        internal static void UpdateFiddlerSessionWithNewRequestBody()
-        {
-            IronProxy.CurrentSession.FiddlerSession.utilSetRequestBody(IronProxy.CurrentSession.Request.BodyString);
-        }
+        //internal static void UpdateCurrentSessionWithNewResponseBodyText(string BodyString)
+        //{
+        //    IronProxy.CurrentSession.Response.BodyString = BodyString;
+        //    IronProxy.CurrentSession.FiddlerSession.utilSetResponseBody(IronProxy.CurrentSession.Response.BodyString);
+        //}
 
-        internal static void UpdateFiddlerSessionWithNewRequest()
+        internal static void UpdateCurrentSessionWithNewResponse(Response Res)
         {
-            IronProxy.CurrentSession.FiddlerSession.oRequest.headers.AssignFromString(IronProxy.CurrentSession.Request.GetHeadersAsString());
-            IronProxy.CurrentSession.FiddlerSession.requestBodyBytes = IronProxy.CurrentSession.Request.BodyArray;
-        }
-
-        internal static void UpdateCurrentSessionWithNewResponseHeader(string HeaderString)
-        {
-            string NewResponseHeaders = HeaderString.TrimEnd(new char[]{'\r','\n'});
-            NewResponseHeaders += "\r\n\r\n";
-            IronProxy.CurrentSession.Response = new Response(NewResponseHeaders);
+            IronProxy.CurrentSession.Response = Res;
             IronProxy.CurrentSession.Response.ID = IronProxy.CurrentSession.OriginalResponse.ID;
-            IronProxy.CurrentSession.Response.BodyArray = new byte[IronProxy.CurrentSession.OriginalResponse.BodyArray.Length];
-            IronProxy.CurrentSession.OriginalResponse.BodyArray.CopyTo(IronProxy.CurrentSession.Response.BodyArray, 0);
-            IronProxy.CurrentSession.FiddlerSession.oResponse.headers.AssignFromString(IronProxy.CurrentSession.Response.GetHeadersAsString());
+            //UpdateFiddlerSessionWithNewResponse();
         }
 
-        internal static void UpdateCurrentSessionWithNewResponseBodyText(string BodyString)
-        {
-            IronProxy.CurrentSession.Response.BodyString = BodyString;
-            IronProxy.CurrentSession.FiddlerSession.utilSetResponseBody(IronProxy.CurrentSession.Response.BodyString);
-        }
-
-        internal static void UpdateFiddlerSessionWithNewResponse()
-        {
-            IronProxy.CurrentSession.FiddlerSession.oResponse.headers.AssignFromString(IronProxy.CurrentSession.Response.GetHeadersAsString());
-            IronProxy.CurrentSession.FiddlerSession.responseBodyBytes = IronProxy.CurrentSession.Response.BodyArray;
-        }
+        //internal static void UpdateFiddlerSessionWithNewResponse()
+        //{
+        //    IronProxy.CurrentSession.FiddlerSession.oResponse.headers.AssignFromString(IronProxy.CurrentSession.Response.GetHeadersAsString());
+        //    IronProxy.CurrentSession.FiddlerSession.responseBodyBytes = IronProxy.CurrentSession.Response.BodyArray;
+        //}
 
         internal static void ForwardInterceptedMessage()
         {
@@ -803,11 +854,24 @@ namespace IronWASP
             }
         }
 
-        static bool CanIntercept(Request Req)
+        static bool CanInterceptRequest(Session Sess)
         {
-            if (InterceptRequest)
+            if (ScriptedInterceptionEnabled)
             {
-               return CanInterceptBasedOnFilter(Req);
+                try
+                {
+                    return ScInt.ShouldIntercept(Sess);
+                }
+                catch(Exception Exp)
+                {
+                    IronUI.ShowProxyException("Error in Scripted Interception Script");
+                    IronException.Report("Error in Scripted Interception Script", Exp);
+                    return false;
+                }
+            }
+            else if (InterceptRequest)
+            {
+               return CanInterceptBasedOnFilter(Sess.Request);
             }
             else
             {
@@ -815,7 +879,7 @@ namespace IronWASP
             }
         }
 
-        static bool CanInterceptBasedOnFilter(Request Req)
+        internal static bool CanInterceptBasedOnFilter(Request Req)
         {
             //Check Hostnames
             if (InterceptCheckHostNames)
@@ -924,149 +988,169 @@ namespace IronWASP
             return true;
         }
 
-        static bool CanIntercept(Response Res, Request Req)
+        static bool CanInterceptResponse(Session Sess)
         {
-            if (InterceptResponse)
+            if (ScriptedInterceptionEnabled)
             {
-                if (RequestRulesOnResponse)
+                try
                 {
-                    if (!CanInterceptBasedOnFilter(Req)) return false;
+                    return ScInt.ShouldIntercept(Sess);
                 }
-                //Check Hostnames
-                if (InterceptCheckHostNames)
+                catch (Exception Exp)
                 {
-                    if (InterceptCheckHostNamesPlus && InterceptHostNames.Count > 0)
-                    {
-                        bool Match = false;
-                        foreach (string HostName in InterceptHostNames)
-                        {
-                            if (Res.Host.Equals(HostName, StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                Match = true;
-                                break;
-                            }
-                        }
-                        if (!Match)
-                        {
-                            return false;
-                        }
-                    }
-                    if (InterceptCheckHostNamesMinus && DontInterceptHostNames.Count > 0)
-                    {
-                        foreach (string HostName in DontInterceptHostNames)
-                        {
-                            if (Res.Host.Equals(HostName, StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                return false;
-                            }
-                        }
-                    }
+                    IronUI.ShowProxyException("Error in Scripted Interception Script");
+                    IronException.Report("Error in Scripted Interception Script", Exp);
+                    return false;
                 }
-
-                //Check Methods Rule
-                int Code = Res.Code;
-                switch (Code)
-                {
-                    case 200:
-                        if(!Intercept200)
-                            return false;
-                        break;
-                    case 301:
-                    case 302:
-                        if(!Intercept301_2)
-                            return false;
-                        break;
-                    case 403:
-                        if(!Intercept403)
-                            return false;
-                        break;
-                    case 500:
-                        if(!Intercept500)
-                            return false;
-                        break;
-                    default:
-                        if(Code > 199 && Code < 300)
-                        {
-                            if(!Intercept2xx)
-                                return false;
-                        }
-                        else if(Code > 299  && Code < 400)
-                        {
-                            if(!Intercept3xx)
-                                return false;
-                        }
-                        else if(Code > 399 && Code < 500)
-                        {
-                            if(!Intercept500)
-                                return false;
-                        }
-                        else if(Code > 499 && Code < 600)
-                        {
-                            if(!Intercept5xx)
-                                return false;
-                        }
-                        break;
-                }
-
-                if (Res.BodyLength > 0)
-                {
-                    if (Res.ContentType.ToLower().Contains("html"))
-                    {
-                        if (!InterceptHTML) return false;
-                    }
-                    else if (Res.ContentType.ToLower().Contains("css"))
-                    {
-                        if (!InterceptCSS) return false;
-                    }
-                    else if (Res.ContentType.ToLower().Contains("javascript"))
-                    {
-                        if (!InterceptJS) return false;
-                    }
-                    else if (Res.ContentType.ToLower().Contains("xml"))
-                    {
-                        if (!InterceptXML) return false;
-                    }
-                    else if (Res.ContentType.ToLower().Contains("json"))
-                    {
-                        if (!InterceptJSON) return false;
-                    }
-                    else if (Res.ContentType.ToLower().Contains("text"))
-                    {
-                        if (!InterceptOtherText) return false;
-                    }
-                    else if (Res.ContentType.ToLower().Contains("jpg") || Res.ContentType.ToLower().Contains("png") || Res.ContentType.ToLower().Contains("jpeg") || Res.ContentType.ToLower().Contains("gif") || Res.ContentType.ToLower().Contains("ico"))
-                    {
-                        if (!InterceptImg) return false;
-                    }
-                    else
-                    {
-                        if (!InterceptOtherBinary) return false;
-                    }
-                }
-                
-                //Check Keyword
-                if (InterceptCheckResponseWithKeyword)
-                {
-                    if (InterceptCheckResponseWithKeywordPlus && InterceptResponseWithKeyword.Length > 0)
-                    {
-                        if (!Res.ToString().Contains(InterceptResponseWithKeyword))
-                        {
-                            return false;
-                        }
-                    }
-                    if (InterceptCheckResponseWithKeywordMinus && DontInterceptResponseWithKeyword.Length > 0)
-                    {
-                        if (Res.ToString().Contains(DontInterceptResponseWithKeyword))
-                        {
-                            return false;
-                        }
-                    }
-                }
+            }
+            else if (InterceptResponse)
+            {
+                return CanInterceptBasedOnFilter(Sess.Request, Sess.Response);
             }
             else
             {
                 return false;
             }
+        }
+
+        internal static bool CanInterceptBasedOnFilter(Request Req, Response Res)
+        {
+            if (RequestRulesOnResponse)
+            {
+                if (!CanInterceptBasedOnFilter(Req)) return false;
+            }
+
+            //Check Hostnames
+            if (InterceptCheckHostNames)
+            {
+                if (InterceptCheckHostNamesPlus && InterceptHostNames.Count > 0)
+                {
+                    bool Match = false;
+                    foreach (string HostName in InterceptHostNames)
+                    {
+                        if (Res.Host.Equals(HostName, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            Match = true;
+                            break;
+                        }
+                    }
+                    if (!Match)
+                    {
+                        return false;
+                    }
+                }
+                if (InterceptCheckHostNamesMinus && DontInterceptHostNames.Count > 0)
+                {
+                    foreach (string HostName in DontInterceptHostNames)
+                    {
+                        if (Res.Host.Equals(HostName, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            //Check Methods Rule
+            int Code = Res.Code;
+            switch (Code)
+            {
+                case 200:
+                    if (!Intercept200)
+                        return false;
+                    break;
+                case 301:
+                case 302:
+                    if (!Intercept301_2)
+                        return false;
+                    break;
+                case 403:
+                    if (!Intercept403)
+                        return false;
+                    break;
+                case 500:
+                    if (!Intercept500)
+                        return false;
+                    break;
+                default:
+                    if (Code > 199 && Code < 300)
+                    {
+                        if (!Intercept2xx)
+                            return false;
+                    }
+                    else if (Code > 299 && Code < 400)
+                    {
+                        if (!Intercept3xx)
+                            return false;
+                    }
+                    else if (Code > 399 && Code < 500)
+                    {
+                        if (!Intercept500)
+                            return false;
+                    }
+                    else if (Code > 499 && Code < 600)
+                    {
+                        if (!Intercept5xx)
+                            return false;
+                    }
+                    break;
+            }
+
+            if (Res.BodyLength > 0)
+            {
+                if (Res.ContentType.ToLower().Contains("html"))
+                {
+                    if (!InterceptHTML) return false;
+                }
+                else if (Res.ContentType.ToLower().Contains("css"))
+                {
+                    if (!InterceptCSS) return false;
+                }
+                else if (Res.ContentType.ToLower().Contains("javascript"))
+                {
+                    if (!InterceptJS) return false;
+                }
+                else if (Res.ContentType.ToLower().Contains("xml"))
+                {
+                    if (!InterceptXML) return false;
+                }
+                else if (Res.ContentType.ToLower().Contains("json"))
+                {
+                    if (!InterceptJSON) return false;
+                }
+                else if (Res.ContentType.ToLower().Contains("text"))
+                {
+                    if (!InterceptOtherText) return false;
+                }
+                else if (Res.ContentType.ToLower().Contains("jpg") || Res.ContentType.ToLower().Contains("png") || Res.ContentType.ToLower().Contains("jpeg") || Res.ContentType.ToLower().Contains("gif") || Res.ContentType.ToLower().Contains("ico"))
+                {
+                    if (!InterceptImg) return false;
+                }
+                else
+                {
+                    if (!InterceptOtherBinary) return false;
+                }
+            }
+
+            //Check Keyword
+            if (InterceptCheckResponseWithKeyword)
+            {
+                if (InterceptCheckResponseWithKeywordPlus && InterceptResponseWithKeyword.Length > 0)
+                {
+                    if (!Res.ToString().Contains(InterceptResponseWithKeyword))
+                    {
+                        return false;
+                    }
+                }
+                if (InterceptCheckResponseWithKeywordMinus && DontInterceptResponseWithKeyword.Length > 0)
+                {
+                    if (Res.ToString().Contains(DontInterceptResponseWithKeyword))
+                    {
+                        return false;
+                    }
+                }
+            }
+
             return true;
         }
 
@@ -1243,6 +1327,76 @@ namespace IronWASP
             return true;
         }
 
+
+        internal static string SetPyScriptedInterception(string FunctionCode)
+        {
+            ScriptEngine Engine = Python.CreateEngine();
+            StringBuilder FullCode = new StringBuilder();
+            FullCode.AppendLine("from IronWASP import *");
+            FullCode.AppendLine("import re");
+            FullCode.AppendLine("class si(ScriptedInterceptor):");
+            FullCode.AppendLine("\tdef ShouldIntercept(self, sess):");
+            string[] CodeLines = FunctionCode.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string Line in CodeLines)
+            {
+                FullCode.Append("\t\t");
+                FullCode.AppendLine(Line);
+            }
+            FullCode.AppendLine("\t\treturn False");
+            FullCode.AppendLine("");
+            FullCode.AppendLine("");
+            FullCode.AppendLine("s = si();");
+            FullCode.AppendLine("IronProxy.SetScriptedInterceptor(s)");
+            return SetScriptedSend(Engine, FullCode.ToString());
+        }
+
+        internal static string SetRbScriptedInterception(string FunctionCode)
+        {
+            ScriptEngine Engine = Ruby.CreateEngine();
+            StringBuilder FullCode = new StringBuilder();
+            FullCode.AppendLine("include IronWASP");
+            FullCode.AppendLine("class SI < ScriptedInterceptor");
+            FullCode.AppendLine("\tdef ShouldIntercept(sess)");
+            string[] CodeLines = FunctionCode.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string Line in CodeLines)
+            {
+                FullCode.Append("\t\t");
+                FullCode.AppendLine(Line);
+            }
+            FullCode.AppendLine("\t\treturn false");
+            FullCode.AppendLine("\tend");
+            FullCode.AppendLine("end");
+            FullCode.AppendLine("");
+            FullCode.AppendLine("s = SI.new");
+            FullCode.AppendLine("IronProxy.set_scripted_interceptor(s)");
+            return SetScriptedSend(Engine, FullCode.ToString());
+        }
+
+        internal static string SetScriptedSend(ScriptEngine Engine, string Code)
+        {
+            try
+            {
+                ScriptRuntime Runtime = Engine.Runtime;
+                Assembly MainAssembly = Assembly.GetExecutingAssembly();
+                string RootDir = Directory.GetParent(MainAssembly.Location).FullName;
+                Runtime.LoadAssembly(MainAssembly);
+                Runtime.LoadAssembly(typeof(String).Assembly);
+                Runtime.LoadAssembly(typeof(Uri).Assembly);
+                ScriptSource Source = Engine.CreateScriptSourceFromString(Code);
+                Source.ExecuteProgram();
+                return "";
+            }
+            catch (Exception Exp)
+            {
+                return Exp.Message;
+            }
+        }
+        public static void SetScriptedInterceptor(ScriptedInterceptor ScIn)
+        {
+            IronProxy.ScInt = ScIn;
+        }
+
+
         internal static void ResetChangedStatus()
         {
             ResetNonParameterChangedStatus();
@@ -1265,157 +1419,157 @@ namespace IronWASP
             RequestHeaderParametersChanged = false;
         }
 
-        internal static void StartDeSerializingRequestBody(Request Request, FormatPlugin Plugin)
-        {
-            BodyFormatParamters BFP = new BodyFormatParamters(Request, Plugin);
-            RequestFormatThread = new Thread(IronProxy.DeSerializeRequestBody);
-            RequestFormatThread.Start(BFP);
-        }
+        //internal static void StartDeSerializingRequestBody(Request Request, FormatPlugin Plugin)
+        //{
+        //    BodyFormatParamters BFP = new BodyFormatParamters(Request, Plugin);
+        //    RequestFormatThread = new Thread(IronProxy.DeSerializeRequestBody);
+        //    RequestFormatThread.Start(BFP);
+        //}
 
-        internal static void DeSerializeRequestBody(object BFPObject)
-        {
-            string PluginName = "";
-            try
-            {
-                BodyFormatParamters BFP = (BodyFormatParamters)BFPObject;
-                Request Request = BFP.Request;
-                FormatPlugin Plugin = BFP.Plugin;
-                PluginName = Plugin.Name;
+        //internal static void DeSerializeRequestBody(object BFPObject)
+        //{
+        //    string PluginName = "";
+        //    try
+        //    {
+        //        BodyFormatParamters BFP = (BodyFormatParamters)BFPObject;
+        //        Request Request = BFP.Request;
+        //        FormatPlugin Plugin = BFP.Plugin;
+        //        PluginName = Plugin.Name;
 
-                string XML = Plugin.ToXmlFromRequest(Request);
-                IronUI.FillProxyRequestFormatXML(XML);
-            }
-            catch (ThreadAbortException)
-            {
-                //
-            }
-            catch (Exception Exp)
-            {
-                IronException.Report("Error Deserializing 'Proxy' Request using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
-                IronUI.ShowProxyException("Error Deserializing");
-            }
-        }
+        //        string XML = Plugin.ToXmlFromRequest(Request);
+        //        IronUI.FillProxyRequestFormatXML(XML);
+        //    }
+        //    catch (ThreadAbortException)
+        //    {
+        //        //
+        //    }
+        //    catch (Exception Exp)
+        //    {
+        //        IronException.Report("Error Deserializing 'Proxy' Request using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
+        //        IronUI.ShowProxyException("Error Deserializing");
+        //    }
+        //}
 
-        internal static void StartSerializingRequestBody(Request Request, FormatPlugin Plugin, string XML)
-        {
-            BodyFormatParamters BFP = new BodyFormatParamters(Request, Plugin, XML);
-            RequestFormatThread = new Thread(IronProxy.SerializeRequestBody);
-            RequestFormatThread.Start(BFP);
-        }
+        //internal static void StartSerializingRequestBody(Request Request, FormatPlugin Plugin, string XML)
+        //{
+        //    BodyFormatParamters BFP = new BodyFormatParamters(Request, Plugin, XML);
+        //    RequestFormatThread = new Thread(IronProxy.SerializeRequestBody);
+        //    RequestFormatThread.Start(BFP);
+        //}
 
-        internal static void SerializeRequestBody(object BFPObject)
-        {
-            string PluginName = "";
-            try
-            {
-                BodyFormatParamters BFP = (BodyFormatParamters)BFPObject;
-                Request Request = BFP.Request;
-                FormatPlugin Plugin = BFP.Plugin;
-                PluginName = Plugin.Name;
-                string XML = BFP.XML;
+        //internal static void SerializeRequestBody(object BFPObject)
+        //{
+        //    string PluginName = "";
+        //    try
+        //    {
+        //        BodyFormatParamters BFP = (BodyFormatParamters)BFPObject;
+        //        Request Request = BFP.Request;
+        //        FormatPlugin Plugin = BFP.Plugin;
+        //        PluginName = Plugin.Name;
+        //        string XML = BFP.XML;
 
-                Request = Plugin.ToRequestFromXml(Request, XML);
-                IronProxy.CurrentSession.Request = Request;
-                IronProxy.UpdateFiddlerSessionWithNewRequest();
-                IronUI.FillProxyRequestWithNewRequestFromFormatXML(Request, PluginName);
-            }
-            catch (ThreadAbortException)
-            {
-                //
-            }
-            catch (Exception Exp)
-            {
-                IronException.Report("Error Serializing 'Proxy' Request using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
-                IronUI.ShowProxyException("Error Serializing");
-            }
-        }
+        //        Request = Plugin.ToRequestFromXml(Request, XML);
+        //        IronProxy.CurrentSession.Request = Request;
+        //        IronProxy.UpdateFiddlerSessionWithNewRequest();
+        //        IronUI.FillProxyRequestWithNewRequestFromFormatXML(Request, PluginName);
+        //    }
+        //    catch (ThreadAbortException)
+        //    {
+        //        //
+        //    }
+        //    catch (Exception Exp)
+        //    {
+        //        IronException.Report("Error Serializing 'Proxy' Request using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
+        //        IronUI.ShowProxyException("Error Serializing");
+        //    }
+        //}
 
-        internal static void StartDeSerializingResponseBody(Response Response, FormatPlugin Plugin)
-        {
-            BodyFormatParamters BFP = new BodyFormatParamters(Response, Plugin);
-            ResponseFormatThread = new Thread(IronProxy.DeSerializeResponseBody);
-            ResponseFormatThread.Start(BFP);
-        }
+        //internal static void StartDeSerializingResponseBody(Response Response, FormatPlugin Plugin)
+        //{
+        //    BodyFormatParamters BFP = new BodyFormatParamters(Response, Plugin);
+        //    ResponseFormatThread = new Thread(IronProxy.DeSerializeResponseBody);
+        //    ResponseFormatThread.Start(BFP);
+        //}
 
-        internal static void DeSerializeResponseBody(object BFPObject)
-        {
-            string PluginName = "";
-            try
-            {
-                BodyFormatParamters BFP = (BodyFormatParamters)BFPObject;
-                Response Response = BFP.Response;
-                FormatPlugin Plugin = BFP.Plugin;
-                PluginName = Plugin.Name;
+        //internal static void DeSerializeResponseBody(object BFPObject)
+        //{
+        //    string PluginName = "";
+        //    try
+        //    {
+        //        BodyFormatParamters BFP = (BodyFormatParamters)BFPObject;
+        //        Response Response = BFP.Response;
+        //        FormatPlugin Plugin = BFP.Plugin;
+        //        PluginName = Plugin.Name;
 
-                string XML = Plugin.ToXmlFromResponse(Response);
-                IronUI.FillProxyResponseFormatXML(XML);
-            }
-            catch (ThreadAbortException)
-            {
-                //
-            }
-            catch (Exception Exp)
-            {
-                IronException.Report("Error Deserializing 'Proxy' Response using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
-                IronUI.ShowProxyException("Error Deserializing");
-            }
-        }
+        //        string XML = Plugin.ToXmlFromResponse(Response);
+        //        IronUI.FillProxyResponseFormatXML(XML);
+        //    }
+        //    catch (ThreadAbortException)
+        //    {
+        //        //
+        //    }
+        //    catch (Exception Exp)
+        //    {
+        //        IronException.Report("Error Deserializing 'Proxy' Response using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
+        //        IronUI.ShowProxyException("Error Deserializing");
+        //    }
+        //}
 
-        internal static void StartSerializingResponseBody(Response Response, FormatPlugin Plugin, string XML)
-        {
-            BodyFormatParamters BFP = new BodyFormatParamters(Response, Plugin, XML);
-            ResponseFormatThread = new Thread(IronProxy.SerializeResponseBody);
-            ResponseFormatThread.Start(BFP);
-        }
+        //internal static void StartSerializingResponseBody(Response Response, FormatPlugin Plugin, string XML)
+        //{
+        //    BodyFormatParamters BFP = new BodyFormatParamters(Response, Plugin, XML);
+        //    ResponseFormatThread = new Thread(IronProxy.SerializeResponseBody);
+        //    ResponseFormatThread.Start(BFP);
+        //}
 
-        internal static void SerializeResponseBody(object BFPObject)
-        {
-            string PluginName = "";
-            try
-            {
-                BodyFormatParamters BFP = (BodyFormatParamters)BFPObject;
-                Response Response = BFP.Response;
-                FormatPlugin Plugin = BFP.Plugin;
-                PluginName = Plugin.Name;
-                string XML = BFP.XML;
-                IronProxy.CurrentSession.Response = Response;
-                Response = Plugin.ToResponseFromXml(Response, XML);
-                IronProxy.UpdateFiddlerSessionWithNewResponse();
-                IronUI.FillProxyResponseWithNewResponseFromFormatXML(Response, PluginName);
-            }
-            catch (ThreadAbortException)
-            {
-                //
-            }
-            catch (Exception Exp)
-            {
-                IronException.Report("Error Serializing Proxy Response using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
-                IronUI.ShowProxyException("Error Serializing");
-            }
-        }
-        internal static void TerminateAllFormatThreads()
-        {
-            TerminateRequestFormatThreads();
-            TerminateResponseFormatThreads();
-        }
-        internal static void TerminateRequestFormatThreads()
-        {
-            if (RequestFormatThread != null)
-            {
-                try { RequestFormatThread.Abort(); }
-                catch { }
-                finally { RequestFormatThread = null; }
-            }
-        }
-        internal static void TerminateResponseFormatThreads()
-        {
-            if (ResponseFormatThread != null)
-            {
-                try { ResponseFormatThread.Abort(); }
-                catch { }
-                finally { ResponseFormatThread = null; }
-            }
-        }
+        //internal static void SerializeResponseBody(object BFPObject)
+        //{
+        //    string PluginName = "";
+        //    try
+        //    {
+        //        BodyFormatParamters BFP = (BodyFormatParamters)BFPObject;
+        //        Response Response = BFP.Response;
+        //        FormatPlugin Plugin = BFP.Plugin;
+        //        PluginName = Plugin.Name;
+        //        string XML = BFP.XML;
+        //        IronProxy.CurrentSession.Response = Response;
+        //        Response = Plugin.ToResponseFromXml(Response, XML);
+        //        IronProxy.UpdateFiddlerSessionWithNewResponse();
+        //        IronUI.FillProxyResponseWithNewResponseFromFormatXML(Response, PluginName);
+        //    }
+        //    catch (ThreadAbortException)
+        //    {
+        //        //
+        //    }
+        //    catch (Exception Exp)
+        //    {
+        //        IronException.Report("Error Serializing Proxy Response using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
+        //        IronUI.ShowProxyException("Error Serializing");
+        //    }
+        //}
+        //internal static void TerminateAllFormatThreads()
+        //{
+        //    TerminateRequestFormatThreads();
+        //    TerminateResponseFormatThreads();
+        //}
+        //internal static void TerminateRequestFormatThreads()
+        //{
+        //    if (RequestFormatThread != null)
+        //    {
+        //        try { RequestFormatThread.Abort(); }
+        //        catch { }
+        //        finally { RequestFormatThread = null; }
+        //    }
+        //}
+        //internal static void TerminateResponseFormatThreads()
+        //{
+        //    if (ResponseFormatThread != null)
+        //    {
+        //        try { ResponseFormatThread.Abort(); }
+        //        catch { }
+        //        finally { ResponseFormatThread = null; }
+        //    }
+        //}
 
         internal static bool ValidProxyPort(string Port)
         {

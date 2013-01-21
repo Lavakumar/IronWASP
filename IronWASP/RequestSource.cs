@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -19,20 +19,49 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace IronWASP
 {
-    public enum RequestSource
+    public static class RequestSource
     {
-        Test,
-        Shell,
-        Scan,
-        Probe,
-        Proxy,
-        Trigger,
-        TestGroup,
-        SelectedLogEntry,
-        CurrentProxyInterception,
-        Stealth
+        static List<string> BannedSources = new List<string> { "Trigger", "TestGroup", "SelectedLogEntry", "CurrentProxyInterception" };
+        static List<string> InternalSources = new List<string> { "Proxy" };
+        
+        public const string Test = "Test";
+        public const string Shell = "Shell";
+        public const string Scan = "Scan";
+        public const string Probe = "Probe";
+        public const string Proxy = "Proxy";
+        public const string Stealth = "Stealth";
+        
+        internal const string Trigger = "Trigger";
+        internal const string TestGroup = "TestGroup";
+        internal const string SelectedLogEntry = "SelectedLogEntry";
+        internal const string CurrentProxyInterception = "CurrentProxyInterception";
+
+        public static bool IsBanned(string EnteredSource)
+        {
+            if (BannedSources.Contains(EnteredSource))
+                return true;
+            else
+                return false;
+        }
+        public static bool IsInternal(string EnteredSource)
+        {
+            if (InternalSources.Contains(EnteredSource))
+                return true;
+            else
+                return false;
+        }
+        public static bool IsValid(string EnteredSource)
+        {
+            Regex R = new Regex("^[a-zA-Z]*$");
+            if (EnteredSource.Length > 0 && R.IsMatch(EnteredSource))
+                return true;
+            else
+                return false;
+        }
+
     }
 }

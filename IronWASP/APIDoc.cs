@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -34,7 +34,7 @@ namespace IronWASP
         {
             try
             {
-                PyAPI.Load("APIdoc_Py.xml");
+                PyAPI.Load(string.Format("{0}//APIdoc_Py.xml", Config.Path));
             }
             catch(Exception Exp)
             {
@@ -42,7 +42,7 @@ namespace IronWASP
             }
             try
             {
-                RbAPI.Load("APIdoc_Rb.xml");
+                RbAPI.Load(string.Format("{0}//APIdoc_Rb.xml", Config.Path));
             }
             catch (Exception Exp)
             {

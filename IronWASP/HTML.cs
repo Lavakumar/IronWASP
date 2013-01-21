@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -29,7 +29,20 @@ namespace IronWASP
         public HtmlDocument Html = new HtmlDocument();
 
         static List<string> EventAttributes = new List<string>() { "onload", "onunload", "onabort", "onbeforeunload", "onhashchange", "onmessage", "onoffline", "ononline", "onpagehide", "onpageshow", "onpopstate", "onredo", "onresize", "onstorage", "onundo", "onunload", "onkeypress", "onkeydown", "onkeyup", "onmouseover", "onmousemove", "onmouseout", "onclick", "ondblclick", "onmousedown", "onmouseup", "onmousewheel", "ondrag", "ondragover", "ondragenter", "ondragleave", "ondrop", "ondragend", "onfocus", "onblur", "onchange", "oncontextmenu", "onformchange", "onforminput", "oninput", "oninvalid", "onselect", "onsubmit", "onreset", "onbeforeprint", "onafterprint", "onerror" };
-        
+
+        public string Title
+        {
+            get
+            {
+                try
+                {
+                    string TitleWithTag = this.Get("title")[0];
+                    return TitleWithTag.Substring(7, TitleWithTag.Length - 15);
+                }
+                catch { return ""; }
+            }
+        }
+
         public HTML(string HtmlString)
         {
             //http://stackoverflow.com/questions/2385840/how-to-get-all-input-elements-in-a-form-with-htmlagilitypack
@@ -535,10 +548,10 @@ namespace IronWASP
 
         public List<string> GetCss()
         {
-            return GetCss(false);
+            return GetCssOnWrappingCondition(false);
         }
 
-        public List<string> GetCss(bool WrapInLineCss)
+        public List<string> GetCssOnWrappingCondition(bool WrapInLineCss)
         {
             return GetCss("", WrapInLineCss);
         }

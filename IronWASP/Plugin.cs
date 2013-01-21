@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -29,14 +29,14 @@ namespace IronWASP
         public string Version = "0.0";
         internal string FileName = "";
 
-        public bool IsSignatureUnique(string Host, PluginResultType Type, string Signature)
+        public bool IsSignatureUnique(string Host, FindingType Type, string Signature)
         {
-            return PluginResult.IsSignatureUnique(this.Name, Host, Type, Signature);
+            return Finding.IsSignatureUnique(this.Name, Host, Type, Signature);
         }
 
-        public List<string> GetSignatureList(string Host, PluginResultType Type)
+        public List<string> GetSignatureList(string Host, FindingType Type)
         {
-            return PluginResult.GetSignatureList(this.Name, Host, Type);
+            return Finding.GetSignatureList(this.Name, Host, Type);
         }
     }
 }

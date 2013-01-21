@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -20,6 +20,8 @@ using System;
 using System.Threading;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml;
+using System.Threading;
 
 namespace IronWASP
 {
@@ -37,11 +39,22 @@ namespace IronWASP
         internal string Section = "";
         internal string Parameter = "";
         internal string Title = "";
+        internal string OverviewXml = "";
+
+        internal int LogId = 0;
+        internal string LogSource = "";
+        internal string SessionPluginName = "";
+        internal string Action = "";
 
         internal static int ScanTraceMin = 0;
         internal static int ScanTraceMax = 0;
 
+        internal static int SelectedSessionPluginTraceLogId = 0;
+        internal static string SelectedSessionPluginTraceSource = "";
+
         string Type = "Normal";
+
+        static Thread SessionLogLoadThread;
 
         internal IronTrace()
         {
@@ -59,7 +72,7 @@ namespace IronWASP
             this.Type = "Normal";
         }
 
-        internal IronTrace(int ScanID, string PluginName, string Section, string Parameter, string Title, string Message)
+        internal IronTrace(int ScanID, string PluginName, string Section, string Parameter, string Title, string Message, List<string[]> OverviewEntries)
         {
             this.ID = Interlocked.Increment(ref Config.ScanTraceCount);
             this.ScanID = ScanID;
@@ -68,7 +81,27 @@ namespace IronWASP
             this.Parameter = Parameter;
             this.Title = Title;
             this.Message = Message;
+            this.OverviewXml = GetXmlFromOverviewEntries(OverviewEntries);
             this.Type = "Scan";
+        }
+
+        internal IronTrace(Request Req, string PluginName, string Action, string Message)
+        {
+            this.ID = Interlocked.Increment(ref Config.SessionPluginTraceCount);
+            if (Req == null)
+            {
+                this.LogId = 0;
+                this.LogSource = "";
+            }
+            else
+            {
+                this.LogId = Req.LogId;
+                this.LogSource = Req.Source;
+            }
+            this.SessionPluginName = PluginName;
+            this.Action = Action;
+            this.Message = Message;
+            this.Type = "SessionPlugin";
         }
 
         internal void Report()
@@ -76,6 +109,10 @@ namespace IronWASP
             if (this.Type.Equals("Normal"))
             {
                 IronUpdater.AddTrace(this);
+            }
+            else if (this.Type.Equals("SessionPlugin"))
+            {
+                IronUpdater.AddSessionPluginTrace(this);
             }
             else
             {
@@ -159,6 +196,124 @@ namespace IronWASP
                 MinMax[1] = Records[Records.Count - 1].ID;
             }
             return MinMax;
+        }
+
+        internal static string GetXmlFromOverviewEntries(List<string[]> OverviewEntries)
+        {
+            //For reference
+            //if (this.TestResponse.ID == ResponseFromInjection.ID)
+            //    this.TraceOverviewEntries.Add(new string[] { Payload, ResponseFromInjection.ID.ToString(), ResponseFromInjection.Code.ToString(), ResponseFromInjection.BodyLength.ToString(), ResponseFromInjection.ContentType, ResponseFromInjection.RoundTrip.ToString(), Tools.MD5(ResponseFromInjection.ToString()) });
+            //else
+            //    this.TraceOverviewEntries.Add(new string[] { Payload, this.TestResponse.ID.ToString(), this.TestResponse.Code.ToString(), this.TestResponse.BodyLength.ToString(), this.TestResponse.ContentType, this.TestResponse.RoundTrip.ToString(), Tools.MD5(this.TestResponse.ToString()), ResponseFromInjection.ID.ToString(), ResponseFromInjection.Code.ToString(), ResponseFromInjection.BodyLength.ToString(), ResponseFromInjection.ContentType, ResponseFromInjection.RoundTrip.ToString(), Tools.MD5(ResponseFromInjection.ToString()) });
+
+            StringBuilder SB = new StringBuilder();
+            XmlWriter XW = XmlWriter.Create(SB);
+            XW.WriteStartDocument();
+            XW.WriteStartElement("overview");
+            for (int i = 0; i < OverviewEntries.Count; i++)
+            {
+                XW.WriteStartElement("entry");
+
+                XW.WriteStartElement("id"); XW.WriteValue(i + 1); XW.WriteEndElement();
+                XW.WriteStartElement("payload"); XW.WriteValue(Tools.Base64Encode(OverviewEntries[i][0])); XW.WriteEndElement();
+
+                XW.WriteStartElement("log_id"); XW.WriteValue(OverviewEntries[i][1]); XW.WriteEndElement();
+                XW.WriteStartElement("code"); XW.WriteValue(OverviewEntries[i][2]); XW.WriteEndElement();
+                XW.WriteStartElement("length"); XW.WriteValue(OverviewEntries[i][3]); XW.WriteEndElement();
+                XW.WriteStartElement("mime"); XW.WriteValue(OverviewEntries[i][4]); XW.WriteEndElement();
+                XW.WriteStartElement("time"); XW.WriteValue(OverviewEntries[i][5]); XW.WriteEndElement();
+                XW.WriteStartElement("signature"); XW.WriteValue(OverviewEntries[i][6]); XW.WriteEndElement();
+
+                XW.WriteEndElement();
+
+                if (OverviewEntries.Count == 13)
+                {
+                    XW.WriteStartElement("entry");
+
+                    XW.WriteStartElement("id"); XW.WriteValue(i + 1); XW.WriteEndElement();
+                    XW.WriteStartElement("payload"); XW.WriteValue(Tools.Base64Encode(OverviewEntries[i][0])); XW.WriteEndElement();
+
+                    XW.WriteStartElement("log_id"); XW.WriteValue(OverviewEntries[i][7]); XW.WriteEndElement();
+                    XW.WriteStartElement("code"); XW.WriteValue(OverviewEntries[i][8]); XW.WriteEndElement();
+                    XW.WriteStartElement("length"); XW.WriteValue(OverviewEntries[i][9]); XW.WriteEndElement();
+                    XW.WriteStartElement("mime"); XW.WriteValue(OverviewEntries[i][10]); XW.WriteEndElement();
+                    XW.WriteStartElement("time"); XW.WriteValue(OverviewEntries[i][11]); XW.WriteEndElement();
+                    XW.WriteStartElement("signature"); XW.WriteValue(OverviewEntries[i][12]); XW.WriteEndElement();
+
+                    XW.WriteEndElement();
+                }
+            }
+            XW.WriteEndElement();
+            XW.WriteEndDocument();
+            XW.Close();
+            return SB.ToString();
+        }
+
+        internal static List<Dictionary<string, string>> GetOverviewEntriesFromXml(string OverviewXml)
+        {
+            List<Dictionary<string, string>> OverviewEntries = new List<Dictionary<string, string>>();
+            XmlDocument XDoc = new XmlDocument();
+            try
+            {
+                XDoc.LoadXml(OverviewXml);
+                foreach (XmlNode EntryNode in XDoc.SelectNodes("//entry"))
+                {
+                    try
+                    {
+                        Dictionary<string, string> Entry = new Dictionary<string, string>()
+                        {
+                            {"id", EntryNode.SelectNodes("id")[0].InnerText},
+                            {"payload", Tools.EncodeForTrace(Tools.Base64Decode(EntryNode.SelectNodes("payload")[0].InnerText))},
+                            {"log_id", EntryNode.SelectNodes("log_id")[0].InnerText},
+                            {"code", EntryNode.SelectNodes("code")[0].InnerText},
+                            {"length", EntryNode.SelectNodes("length")[0].InnerText},
+                            {"mime", EntryNode.SelectNodes("mime")[0].InnerText},
+                            {"time", EntryNode.SelectNodes("time")[0].InnerText},
+                            {"signature", EntryNode.SelectNodes("signature")[0].InnerText}
+                        };
+                        OverviewEntries.Add(Entry);
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+            return OverviewEntries;
+        }
+
+        internal static void LoadSessionPluginTraceLog()
+        {
+            if (SelectedSessionPluginTraceLogId > 0 && SelectedSessionPluginTraceSource.Length > 0)
+            {
+                if (SessionLogLoadThread != null)
+                {
+                    try
+                    {
+                        SessionLogLoadThread.Abort();
+                    }
+                    catch { }
+                }
+                IronUI.ShowHideSessionPluginTraceProgressBar(true);
+                SessionLogLoadThread = new System.Threading.Thread(DoLoadSessionPluginTraceLog);
+                SessionLogLoadThread.Start();
+            }
+        }
+
+        static void DoLoadSessionPluginTraceLog()
+        {
+            try
+            {
+                Session Sess = Session.FromLog(SelectedSessionPluginTraceLogId, SelectedSessionPluginTraceSource);
+                IronUI.ShowSessionPluginTraceLog(Sess.Request, Sess.Response);
+            }
+            catch (ThreadAbortException) { }
+            catch (Exception Exp)
+            {
+                IronException.Report(string.Format("Error loading log-{0} from {1} log", SelectedSessionPluginTraceLogId, SelectedSessionPluginTraceSource), Exp);
+            }
+            finally
+            {
+                IronUI.ShowHideSessionPluginTraceProgressBar(false);
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -62,7 +62,7 @@ namespace IronWASP
             LoadAllPlugins();
         }
 
-        static ScriptEngine GetScriptEngine()
+        internal static ScriptEngine GetScriptEngine()
         {
             ScriptRuntimeSetup Setup = new ScriptRuntimeSetup();
             Setup.LanguageSetups.Add(IronRuby.Ruby.CreateRubySetup());
@@ -92,7 +92,7 @@ namespace IronWASP
             LoadAllSessionPlugins(Engine);
             IronUI.UpdateAllFormatPluginRows();
             IronUI.UpdateAllActivePluginRows();
-            IronUI.UpdateSessionPluginsInASTab();
+            //IronUI.UpdateSessionPluginsInASTab();
             IronUI.BuildPluginTree();
         }
 
@@ -104,7 +104,7 @@ namespace IronWASP
             LoadNewSessionPlugins();
             IronUI.UpdateAllFormatPluginRows();
             IronUI.UpdateAllActivePluginRows();
-            IronUI.UpdateSessionPluginsInASTab();
+            //IronUI.UpdateSessionPluginsInASTab();
             IronUI.BuildPluginTree();
         }
 
@@ -297,7 +297,7 @@ namespace IronWASP
         {
             ScriptEngine Engine = GetScriptEngine();
             LoadAllSessionPlugins(Engine);
-            IronUI.UpdateSessionPluginsInASTab();
+            //IronUI.UpdateSessionPluginsInASTab();
             IronUI.BuildPluginTree();
         }
 
@@ -320,7 +320,7 @@ namespace IronWASP
         {
             ScriptEngine Engine = GetScriptEngine();
             LoadNewSessionPlugins(Engine);
-            IronUI.UpdateSessionPluginsInASTab();
+            //IronUI.UpdateSessionPluginsInASTab();
             IronUI.BuildPluginTree();
         }
 
@@ -439,11 +439,11 @@ namespace IronWASP
             IronUI.BuildPluginTree();
         }
 
-        public static PluginResults RunPassivePlugin(PassivePlugin P, Session Irse)
+        public static Findings RunPassivePlugin(PassivePlugin P, Session Irse)
         {
-            PluginResults Results = new PluginResults();
-            P.Check(Irse, Results);
-            foreach (PluginResult PR in Results.GetAll())
+            Findings Results = new Findings();
+            P.Check(Irse, Results, false);
+            foreach (Finding PR in Results.GetAll())
             {
                 PR.Plugin = P.Name;
                 PR.Report();
@@ -451,14 +451,30 @@ namespace IronWASP
             return Results;
         }
 
-        public static void RunAllPassivePluginsBeforeRequestInterception(Session IrSe)
+        internal static bool ShouldRunRequestBasedPassivePlugins()
         {
-            foreach (string Name in PassivePlugin.List())
+            if (PassivePlugin.GetInLinePluginsForRequest().Count > 0)
+                return true;
+            else
+                return false;
+        }
+
+        internal static bool ShouldRunResponseBasedPassivePlugins()
+        {
+            if (PassivePlugin.GetInLinePluginsForResponse().Count > 0)
+                return true;
+            else
+                return false;
+        }
+
+        public static void RunAllRequestBasedInlinePassivePlugins(Session IrSe)
+        {
+            foreach (string Name in PassivePlugin.GetInLinePluginsForRequest())
             {
                 PassivePlugin P = PassivePlugin.Get(Name);
                 if ((P.WorksOn == PluginWorksOn.Request) || (P.WorksOn == PluginWorksOn.Both))
                 {
-                    if ((P.CallingState == PluginCallingState.BeforeInterception) || (P.CallingState == PluginCallingState.Both))
+                    if (P.CallingState == PluginCallingState.Inline)
                     {
                         try
                         {
@@ -467,28 +483,6 @@ namespace IronWASP
                         catch (Exception Exp)
                         {
                             IronException.Report("Error executing 'BeforeRequestInterception' Passive Plugin - " + Name, Exp.Message, Exp.StackTrace);
-                        }
-                    }
-                }
-            }
-        }
-
-        public static void RunAllPassivePluginsAfterRequestInterception(Session IrSe)
-        {
-            foreach (string Name in PassivePlugin.List())
-            {
-                PassivePlugin P = PassivePlugin.Get(Name);
-                if ((P.WorksOn == PluginWorksOn.Request) || (P.WorksOn == PluginWorksOn.Both))
-                {
-                    if ((P.CallingState == PluginCallingState.AfterInterception) || (P.CallingState == PluginCallingState.Both))
-                    {
-                        try
-                        {
-                            PluginStore.RunPassivePlugin(P, IrSe);
-                        }
-                        catch(Exception Exp)
-                        {
-                            IronException.Report("Error executing 'AfterRequestInterception' Passive Plugin - " + Name, Exp.Message, Exp.StackTrace);
                         }
                     }
                 }
@@ -517,14 +511,14 @@ namespace IronWASP
             }
         }
 
-        public static void RunAllPassivePluginsBeforeResponseInterception(Session IrSe)
+        public static void RunAllResponseBasedInlinePassivePlugins(Session IrSe)
         {
-            foreach (string Name in PassivePlugin.List())
+            foreach (string Name in PassivePlugin.GetInLinePluginsForResponse())
             {
                 PassivePlugin P = PassivePlugin.Get(Name); 
                 if ((P.WorksOn == PluginWorksOn.Response) || (P.WorksOn == PluginWorksOn.Both))
                 {
-                    if ((P.CallingState == PluginCallingState.BeforeInterception) || (P.CallingState == PluginCallingState.AfterInterception))
+                    if (P.CallingState == PluginCallingState.Inline)
                     {
                         try
                         {
@@ -538,28 +532,7 @@ namespace IronWASP
                 }
             }
         }
-        public static void RunAllPassivePluginsAfterResponseInterception(Session IrSe)
-        {
-            foreach (string Name in PassivePlugin.List())
-            {
-                PassivePlugin P = PassivePlugin.Get(Name);
-                if ((P.WorksOn == PluginWorksOn.Response) || (P.WorksOn == PluginWorksOn.Both))
-                {
-                    if ((P.CallingState == PluginCallingState.AfterInterception) || (P.CallingState == PluginCallingState.Both))
-                    {
-                        try
-                        {
-                            PluginStore.RunPassivePlugin(P, IrSe);
-                        }
-                        catch(Exception Exp)
-                        {
-                            IronException.Report("Error executing 'AfterResponseInterception' Passive Plugin : " + Name, Exp.Message, Exp.StackTrace);
-                        }
-                    }
-                }
-            }
-        }
-
+        
         public static void RunAllResponseBasedOfflinePassivePlugins(Session IrSe)
         {
             foreach (string Name in PassivePlugin.List())

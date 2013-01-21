@@ -1,4 +1,22 @@
-﻿using System;
+﻿//
+// Copyright 2011-2013 Lavakumar Kuppan
+//
+// This file is part of IronWASP
+//
+// IronWASP is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, version 3 of the License.
+//
+// IronWASP is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
+//
+
+using System;
 using System.Xml;
 using System.IO;
 using System.Windows.Forms;
@@ -304,6 +322,7 @@ namespace IronWASP
             SB.Append(XmlFromControlSizeProperty(C.Size));
             SB.Append(XmlFromControlLocationProperty(C));
             SB.Append(XmlFromControlAnchorProperty(C));
+            SB.Append(XmlFromControlDockProperty(C));
             SB.Append(XmlFromControlEnabledProperty(C));
             //SB.Append(XmlFromControlVisibleProperty(C));
             if (C.GetType() == typeof(ModDataGridView))
@@ -379,6 +398,11 @@ namespace IronWASP
             SB.Append(XmlFromTagValue(ModUiTags.AnchorRight, Anchors.Contains("Right")));
             SB.Append(EndTag(ModUiTags.Anchor));
             return SB.ToString();
+        }
+        static string XmlFromControlDockProperty(Control C)
+        {
+            string DockStyleName = C.Dock.ToString();
+            return XmlFromTagValue(ModUiTags.Dock, DockStyleName);
         }
         static string XmlFromControlFontProperty(Font F)
         {
@@ -581,7 +605,7 @@ namespace IronWASP
         static string XmlFromTagValue(string TagName, object Value)
         {
             StringBuilder SB = new StringBuilder();
-            SB.Append(StartTag(TagName)); SB.Append(Value.ToString()); SB.Append(EndTag(TagName));
+            SB.Append(StartTag(TagName)); SB.Append(Tools.XmlEncode(Value.ToString())); SB.Append(EndTag(TagName));
             return SB.ToString();
         }
         static string StartTag(string TagName)
@@ -768,6 +792,9 @@ namespace IronWASP
                 case (ModUiTags.Anchor):
                     SetAnchorInCode(PyCode, RbCode, ControlName, C, PropertyNode);
                     break;
+                case (ModUiTags.Dock):
+                    SetDockStyleInCode(PyCode, RbCode, ControlName, C, PropertyNode);
+                    break;
                 case (ModUiTags.Enabled):
                     SetEnabledInCode(PyCode, RbCode, ControlName, C, PropertyNode);
                     break;
@@ -932,6 +959,13 @@ namespace IronWASP
                 RbCode.AppendLine(string.Format("{0}.Anchor = ModUiTools.get_anchor_style_definition({1},{2},{3},{4})", ControlName, RbBool(Top), RbBool(Bottom), RbBool(Left), RbBool(Right)));
                 C.Anchor = ModUiTools.GetAnchorStyleDefinition(Top, Bottom, Left, Right);
             }
+        }
+        static void SetDockStyleInCode(StringBuilder PyCode, StringBuilder RbCode, string ControlName, Control C, XmlNode Node)
+        {
+            string DockStyleName = Node.InnerText;
+            PyCode.AppendLine(string.Format("{0}.Dock = ModUiTools.GetDockStyleDefinition('{1}')", ControlName, DockStyleName));
+            RbCode.AppendLine(string.Format("{0}.Dock = ModUiTools.get_dock_style_definition('{1}')", ControlName, DockStyleName));
+            C.Dock = ModUiTools.GetDockStyleDefinition(DockStyleName);
         }
         static void SetEnabledInCode(StringBuilder PyCode, StringBuilder RbCode, string ControlName, Control C, XmlNode Node)
         {
@@ -1598,6 +1632,24 @@ namespace IronWASP
             }
             return AS;
         }
+        public static DockStyle GetDockStyleDefinition(string DockStyleName)
+        {
+            switch (DockStyleName)
+            {
+                case("Fill"):
+                    return DockStyle.Fill;
+                case ("Top"):
+                    return DockStyle.Top;
+                case ("Left"):
+                    return DockStyle.Left;
+                case ("Right"):
+                    return DockStyle.Right;
+                case ("Bottom"):
+                    return DockStyle.Bottom;
+                default:
+                    return DockStyle.None;
+            }
+        }
         public static BorderStyle GetBorderStyleDefinition(string BorderStyleName)
         {
             switch (BorderStyleName)
@@ -1781,6 +1833,7 @@ namespace IronWASP
         public const string AnchorBottom = "bottom";
         public const string AnchorLeft = "left";
         public const string AnchorRight = "right";
+        public const string Dock = "dock";
         public const string Enabled = "enabled";
         public const string Visible = "visible";
         public const string BackColor = "back_color";

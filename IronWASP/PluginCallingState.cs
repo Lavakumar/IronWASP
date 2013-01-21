@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -24,9 +24,7 @@ namespace IronWASP
 {
     public enum PluginCallingState
     {
-        BeforeInterception,
-        AfterInterception,
-        Both,
+        Inline,
         Offline
     }
 }

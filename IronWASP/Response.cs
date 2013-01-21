@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using System.Threading;
 //using Fiddler;
 
 namespace IronWASP
@@ -62,6 +63,7 @@ namespace IronWASP
         bool isCss = false;
 
         internal int TTL = 0;
+        internal string Source = "Shell";
 
         //public getter/setter
         public string BodyString
@@ -226,15 +228,24 @@ namespace IronWASP
         {
             get
             {
-                if (TextContentTypes.Contains("$NONE") && !Headers.Has("Content-Type")) return false;
-                foreach (string Type in TextContentTypes)
+                try
                 {
-                    if (ContentType.IndexOf(Type, StringComparison.OrdinalIgnoreCase) > -1)
-                    {
-                        return false;
-                    }
+                    return Tools.IsBinary(this.BodyArray);
                 }
-                return true;
+                catch (Exception Exp)
+                {
+                    IronException.Report("Error checking response body for binary content", Exp);
+                    return false;
+                }
+                //if (TextContentTypes.Contains("$NONE") && !Headers.Has("Content-Type")) return false;
+                //foreach (string Type in TextContentTypes)
+                //{
+                //    if (ContentType.IndexOf(Type, StringComparison.OrdinalIgnoreCase) > -1)
+                //    {
+                //        return false;
+                //    }
+                //}
+                //return true;
             }
         }
         public int Code
@@ -305,19 +316,7 @@ namespace IronWASP
                 {
                     if (this.Headers.Has("Location"))
                     {
-                        string NewUrl = this.Headers.Get("Location");
-                        if (NewUrl.StartsWith("/"))
-                        {
-                            return true;
-                        }
-                        else if (NewUrl.StartsWith("http://") || NewUrl.StartsWith("https://"))
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
+                        return true;
                     }
                 }
                 return false;
@@ -333,6 +332,12 @@ namespace IronWASP
         {
             this.AbsorbResponseString(ResponseHeaders + "bw==");
             this.SetBody(BodyArray);
+        }
+
+        public Response(string ResponseHeaders, string BodyString)
+        {
+            this.AbsorbResponseString(ResponseHeaders + "bw==");
+            this.SetBody(BodyString);
         }
 
         internal Response(Fiddler.Session Sess)
@@ -353,6 +358,10 @@ namespace IronWASP
             if (Sess.oFlags.ContainsKey("IronFlag-SslError"))
             {
                 this.isSSlValid = false;
+            }
+            if (Sess.oFlags.ContainsKey("IronFlag-BuiltBy"))
+            {
+                this.Source = Sess.oFlags["IronFlag-BuiltBy"];
             }
             this.httpVersion = Sess.oResponse.headers.HTTPVersion;
             this.code = Sess.oResponse.headers.HTTPResponseCode;
@@ -421,6 +430,7 @@ namespace IronWASP
             }
             this.bodyString = BodyString;
             this.bodyArray = Encoding.GetEncoding(this.GetEncoding()).GetBytes(this.bodyString);
+            this.Headers.Set("Content-Length", this.bodyArray.Length.ToString());
             this.CheckBodyFormatAndHandleIt();
         }
 
@@ -439,6 +449,7 @@ namespace IronWASP
             }
             this.bodyArray = BodyArray;
             this.bodyString = Encoding.GetEncoding(this.GetEncoding(BodyArray)).GetString(this.bodyArray);
+            this.Headers.Set("Content-Length", this.bodyArray.Length.ToString());
             this.CheckBodyFormatAndHandleIt();
         }
 
@@ -446,7 +457,7 @@ namespace IronWASP
         {
             this.bodyString = "";
             this.bodyArray = new byte[0];
-            this.Headers.Set("Content-Type","0");
+            this.Headers.Set("Content-Length","0");
         }
 
         internal Response()
@@ -703,12 +714,48 @@ namespace IronWASP
             Response ClonedResponse = new Response(this.ToString());
             if (CopyID) ClonedResponse.ID = this.ID;
             ClonedResponse.TTL = this.TTL;
+            ClonedResponse.Source = this.Source;
             return ClonedResponse;
         }
 
         public void SaveBody(string FileName)
         {
             File.WriteAllBytes(FileName, this.bodyArray);
+        }
+
+        public void Render()
+        {
+            Thread T = new Thread(DoRendering);
+            T.Start();
+        }
+
+        void DoRendering()
+        {
+            try
+            {
+                string ToRenderPath = Config.RootDir + "\\to_render";
+                if (!File.Exists(ToRenderPath)) File.Create(ToRenderPath).Close();
+                FileStream ToRender = File.Open(ToRenderPath, FileMode.Truncate, FileAccess.Write);
+                ToRender.Write(this.BodyArray, 0, this.BodyArray.Length);
+                ToRender.Close();
+                Tools.RunWith(Config.RootDir + "\\RenderHtml.exe", ToRenderPath);
+            }
+            catch { }
+        }
+
+        public static bool IsSame(Response A, Response B)
+        {
+            try
+            {
+                if (!A.GetHeadersAsString().Equals(B.GetHeadersAsString())) return false;
+                if (A.BodyLength != B.BodyLength) return false;
+                for (int i = 0; i < A.BodyLength; i++)
+                {
+                    if (A.BodyArray[i] != B.BodyArray[i]) return false;
+                }
+            }
+            catch { return false; }
+            return true;
         }
     }
 }

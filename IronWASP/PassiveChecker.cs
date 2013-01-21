@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -81,6 +81,9 @@ namespace IronWASP
                 case RequestSource.Probe:
                     if (!RunOnProbeTraffic) return;
                     break;
+                default:
+                    if (!Sess.Request.CanRunPassivePlugins) return;
+                    break;
             }
             lock (CheckRequest)
             {
@@ -108,6 +111,9 @@ namespace IronWASP
                         break;
                     case RequestSource.Probe:
                         if (!RunOnProbeTraffic) return;
+                        break;
+                    default:
+                        if (!Sess.Request.CanRunPassivePlugins) return;
                         break;
                 }
                 lock (CheckResponse)

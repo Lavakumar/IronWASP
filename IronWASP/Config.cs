@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -22,6 +22,7 @@ using System.Text;
 using System.Reflection;
 using System.IO;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace IronWASP
 {
@@ -39,11 +40,16 @@ namespace IronWASP
         internal static int ExceptionsCount = 0;
         internal static int TraceCount = 0;
         internal static int ScanTraceCount = 0;
+        internal static int SessionPluginTraceCount = 0;
+
+        internal static Dictionary<string, int> OtherSourceCounterDict = new Dictionary<string, int>();
 
         internal static Dictionary<string, Request> APIResponseDict = new Dictionary<string, Request>();
         internal static bool OpeningIronProjectFile = false;
         internal static string RootDir = "";
         internal static bool BlinkPrompt = true;
+
+        public static Dictionary<string, Dictionary<string, string>> UserAgentsList = new Dictionary<string,Dictionary<string,string>>();
 
         static Dictionary<string, string> FiddlerFlags = new Dictionary<string, string>();
         internal static bool HasFiddlerFlags = false;
@@ -63,6 +69,7 @@ namespace IronWASP
                 return ProxyRequestsCount;
             }
         }
+
         public static int LastProbeLogId
         {
             get
@@ -99,6 +106,54 @@ namespace IronWASP
             }
         }
 
+        internal static bool IsSourcePresent(string Source)
+        {
+            if (OtherSourceCounterDict.ContainsKey(Source))
+                return true;
+            else
+                return false;
+        }
+
+        internal static List<string> GetOtherSourceList()
+        {
+            return new List<string>(OtherSourceCounterDict.Keys);
+        }
+
+        internal static int GetNewId(string Source)
+        {
+            int Result = 0;
+            lock(OtherSourceCounterDict)
+            {
+                if (!OtherSourceCounterDict.ContainsKey(Source))
+                    OtherSourceCounterDict[Source] = 0;
+                OtherSourceCounterDict[Source]++;
+                Result = OtherSourceCounterDict[Source];
+            }
+            return Result;
+        }
+
+        public static int GetLastLogId(string Source)
+        {
+            switch (Source)
+            {
+                case("Proxy"):
+                    return LastProxyLogId;
+                case ("Probe"):
+                    return LastProbeLogId;
+                case ("Test"):
+                    return LastTestLogId;
+                case ("Shell"):
+                    return LastShellLogId;
+                case ("Scan"):
+                    return LastScanLogId;
+                default:
+                    if (OtherSourceCounterDict.ContainsKey(Source))
+                        return OtherSourceCounterDict[Source];
+                    else
+                        throw new Exception(string.Format("No logs available for source - {0}", Source));
+            }
+            
+        }
 
         public static void SetFiddlerFlag(string Name, string Value)
         {
@@ -426,8 +481,6 @@ namespace IronWASP
         internal static void UpdateScannerSettingsFromUI()
         {
             Scanner.MaxParallelScanCount = IronUI.UI.ConfigScannerThreadMaxCountTB.Value;
-            Crawler.MaxCrawlThreads = IronUI.UI.ConfigCrawlerThreadMaxCountTB.Value;
-            Crawler.UserAgent = IronUI.UI.ConfigCrawlerUserAgentTB.Text;
         }
 
         internal static void UpdatePassiveAnalysisSettingsFromUI()
@@ -443,6 +496,51 @@ namespace IronWASP
         {
             Assembly MainAssembly = Assembly.GetExecutingAssembly();
             RootDir = Directory.GetParent(MainAssembly.Location).FullName;
+        }
+
+        internal static void ReadUserAgentsList()
+        {
+            try
+            {
+                XmlDocument UAL = new XmlDocument();
+                UAL.Load(string.Format("{0}//useragentswitcher.xml", Config.Path));
+                Config.UserAgentsList = new Dictionary<string, Dictionary<string, string>>();
+                foreach (XmlNode CategoryNode in UAL.SelectNodes("useragentswitcher")[0].SelectNodes("folder"))
+                {
+                    string CategoryName = CategoryNode.Attributes["description"].Value;
+                    Dictionary<string, string> CurrentCategoryList = new Dictionary<string, string>();
+                    foreach (XmlNode UserAgentNode in CategoryNode.SelectNodes("useragent"))
+                    {
+                        try
+                        {
+                            string Name = UserAgentNode.Attributes["description"].Value;
+                            string UserAgent = UserAgentNode.Attributes["useragent"].Value;
+                            if (Name.Length > 0 && UserAgent.Length > 0)
+                                CurrentCategoryList.Add(Name, UserAgent);
+                        }
+                        catch { }
+                    }
+                    foreach (XmlNode SubFolderNode in CategoryNode.SelectNodes("folder"))
+                    {
+                        foreach (XmlNode SubUserAgentNode in SubFolderNode.SelectNodes("useragent"))
+                        {
+                            try
+                            {
+                                string Name = SubUserAgentNode.Attributes["description"].Value;
+                                string UserAgent = SubUserAgentNode.Attributes["useragent"].Value;
+                                if (Name.Length > 0 && UserAgent.Length > 0)
+                                    CurrentCategoryList.Add(Name, UserAgent);
+                            }
+                            catch { }
+                        }
+                    }
+                    if (CurrentCategoryList.Count > 0)
+                    {
+                        Config.UserAgentsList[CategoryName] = CurrentCategoryList;
+                    }
+                }
+            }
+            catch { }
         }
     }
 }

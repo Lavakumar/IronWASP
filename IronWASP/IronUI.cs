@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -52,8 +52,8 @@ namespace IronWASP
         internal static AboutForm AF;
         internal static WaitForm WF;
         internal static AskUserWindow AUW;
-        internal static ScanBranchForm SBF;
-        internal static ConfiguredScan CSF;
+        internal static ScanBranchWizard SBF;
+        internal static StartScanWizard SSW;
         internal static LoadForm LF;
         internal static PluginEditor PE;
         internal static ModUiDesigner UD;
@@ -61,6 +61,10 @@ namespace IronWASP
         internal static EncodeDecodeWindow EDW;
         internal static ImportForm IF;
         internal static CloseForm CF;
+
+        static DateTime TopMostTime;
+
+        //internal static List<StartScanJobWizard> StartScanJobWizards = new List<StartScanJobWizard>();
 
         internal static bool BlockShell = false;
 
@@ -105,17 +109,30 @@ namespace IronWASP
         delegate void BuildPluginTree_d();
         internal static void BuildPluginTree()
         {
-            if (UI.PluginTree.InvokeRequired)
+            if (UI.PluginAndModuleTree.InvokeRequired)
             {
                 BuildPluginTree_d BPT_d = new BuildPluginTree_d(BuildPluginTree);
                 UI.Invoke(BPT_d, new object[] { });
             }
             else
             {
-                UI.PluginTree.BeginUpdate();
-                UI.PluginTree.Nodes.Clear();
-                TreeNode RootNode = UI.PluginTree.Nodes.Add("Plugins", "Plugins");
-                TreeNode Node = RootNode.Nodes.Add("PassivePlugins", "Passive Plugins");
+                UI.PluginAndModuleTree.BeginUpdate();
+                UI.PluginAndModuleTree.Nodes.Clear();
+                TreeNode RootNode = UI.PluginAndModuleTree.Nodes.Add("PluginsAndModules", "Plugins & Modules");
+                TreeNode PluginsNode = RootNode.Nodes.Add("Plugins", "Plugins");
+                TreeNode ModulesNode = RootNode.Nodes.Add("Modules", "Modules");
+
+                TreeNode Node = PluginsNode.Nodes.Add("ActivePlugins", "Active Plugins");
+                Node.Checked = true;
+
+                foreach (string Name in ActivePlugin.List())
+                {
+                    TreeNode SubNode = Node.Nodes.Add(Name, Name);
+                    SubNode.Checked = true;
+                    SubNode.ForeColor = Color.Green;
+                }
+                
+                Node = PluginsNode.Nodes.Add("PassivePlugins", "Passive Plugins");
                 Node.Checked = true;
                 foreach (string Name in PassivePlugin.List())
                 {
@@ -130,17 +147,9 @@ namespace IronWASP
                     SubNode.ForeColor = Color.Gray;
                 }
 
-                Node = RootNode.Nodes.Add("ActivePlugins", "Active Plugins");
-                Node.Checked = true;
+                
 
-                foreach (string Name in ActivePlugin.List())
-                {
-                    TreeNode SubNode = Node.Nodes.Add(Name, Name);
-                    SubNode.Checked = true;
-                    SubNode.ForeColor = Color.Green;
-                }
-
-                Node = RootNode.Nodes.Add("FormatPlugins", "Format Plugins");
+                Node = PluginsNode.Nodes.Add("FormatPlugins", "Format Plugins");
                 Node.Checked = true;
 
                 foreach (string Name in FormatPlugin.List())
@@ -150,7 +159,7 @@ namespace IronWASP
                     SubNode.ForeColor = Color.Green;
                 }
 
-                Node = RootNode.Nodes.Add("SessionPlugins", "Session Plugins");
+                Node = PluginsNode.Nodes.Add("SessionPlugins", "Session Plugins");
                 Node.Checked = true;
 
                 foreach (string Name in SessionPlugin.List())
@@ -160,8 +169,27 @@ namespace IronWASP
                     SubNode.ForeColor = Color.Green;
                 }
 
-                UI.PluginTree.EndUpdate();
-                UI.PluginTree.ExpandAll();
+                Node = ModulesNode.Nodes.Add("LoadedModules", "Loaded Modules");
+                Node.Checked = true;
+                foreach (string Name in Module.List())
+                {
+                    TreeNode SubNode = Node.Nodes.Add(Name, Name);
+                    SubNode.Checked = true;
+                    SubNode.ForeColor = Color.Green;
+                }
+
+                Node = ModulesNode.Nodes.Add("AllModules", "All Modules");
+                Node.Checked = true;
+
+                foreach (Module M in Module.ModuleListFromXml)
+                {
+                    TreeNode SubNode = Node.Nodes.Add(M.Name, M.Name);
+                    SubNode.Checked = true;
+                    SubNode.ForeColor = Color.Gray;
+                }
+
+                UI.PluginAndModuleTree.EndUpdate();
+                UI.PluginAndModuleTree.ExpandAll();
             }
         }
 
@@ -184,6 +212,10 @@ namespace IronWASP
             UI.CustomSendTopRtb.Rtf = @"{\rtf1{\colortbl ;\red0\green0\blue255;\red25\green25\blue112;} \cf1 def \cf0 \cf2 \b1 ScriptedSend \b0 \cf0 (req):";
             UI.CustomSendBottomRtb.Rtf = @"{\rtf1{\colortbl ;\red0\green0\blue128;} \cf1     return \cf0 res";
             UI.CustomSendTE.ActiveTextAreaControl.TextArea.KeyUp += new System.Windows.Forms.KeyEventHandler(UI.CustomSendTE_KeyUp);
+
+            //ScriptedInterception
+            UI.ScriptedInterceptionScriptTopRTB.Rtf = @"{\rtf1{\colortbl ;\red0\green0\blue255;\red25\green25\blue112;} \cf1 def \cf0 \cf2 \b1 ShouldIntercept \b0 \cf0 (sess):";
+            UI.ScriptedInterceptionScriptBottomRTB.Rtf = @"{\rtf1{\colortbl ;\red0\green0\blue128;} \cf1     return \cf0 False";
 
             //Plugin Viewer
             UI.PluginEditorInTE.ShowTabs = false;
@@ -212,17 +244,17 @@ namespace IronWASP
             }
             else
             {
-                UI.MTRequestFormatPluginsGrid.Rows.Clear();
-                UI.ProxyRequestFormatPluginsGrid.Rows.Clear();
-                UI.ProxyResponseFormatPluginsGrid.Rows.Clear();
+                //UI.MTRequestFormatPluginsGrid.Rows.Clear();
+                //UI.ProxyRequestFormatPluginsGrid.Rows.Clear();
+                //UI.ProxyResponseFormatPluginsGrid.Rows.Clear();
                 UI.ConfigureScanRequestFormatPluginsGrid.Rows.Clear();
-                UI.ConfigureScanRequestFormatPluginsGrid.Rows.Add(new object[] { "None" });
+                //UI.ConfigureScanRequestFormatPluginsGrid.Rows.Add(new object[] { false, "None" });
                 foreach (string Name in FormatPlugin.List())
                 {
-                    UI.MTRequestFormatPluginsGrid.Rows.Add(new object[] { Name });
-                    UI.ProxyRequestFormatPluginsGrid.Rows.Add(new object[] { Name });
-                    UI.ProxyResponseFormatPluginsGrid.Rows.Add(new object[] { Name });
-                    UI.ConfigureScanRequestFormatPluginsGrid.Rows.Add(new object[] { Name });
+                    //UI.MTRequestFormatPluginsGrid.Rows.Add(new object[] { Name });
+                    //UI.ProxyRequestFormatPluginsGrid.Rows.Add(new object[] { Name });
+                    //UI.ProxyResponseFormatPluginsGrid.Rows.Add(new object[] { Name });
+                    UI.ConfigureScanRequestFormatPluginsGrid.Rows.Add(new object[] { false, Name });
                 }
             }
         }
@@ -331,7 +363,7 @@ namespace IronWASP
                 if (!ManualTesting.CurrentGroup.Equals(IrSe.Flags["Group"].ToString())) return;
                 try
                 {
-                    UI.TestGroupLogGrid.Rows.Add(new object[] { IrSe.Request.ID, IrSe.Request.Host, IrSe.Request.Method, IrSe.Request.URL, IrSe.Request.SSL });
+                    UI.TestGroupLogGrid.Rows.Add(new object[] {false, IrSe.Request.ID, IrSe.Request.Host, IrSe.Request.Method, IrSe.Request.URL, IrSe.Request.SSL });
                 }
                 catch (Exception Exp)
                 {
@@ -368,9 +400,9 @@ namespace IronWASP
                     UI.TestGroupLogGrid.Rows[GridID].Cells["TestGroupLogGridForMIME"].Value = IrSe.Response.ContentType;
                     UI.TestGroupLogGrid.Rows[GridID].Cells["TestGroupLogGridForSetCookie"].Value = (IrSe.Response.SetCookies.Count > 0);
                     if(IrSe.Flags.ContainsKey("Reflecton"))
-                        UpdateManualTestingResponse(IrSe.Response, IrSe.Flags["Reflecton"].ToString());
+                        UpdateManualTestingResponse(IrSe.Response, IrSe.Request, IrSe.Flags["Reflecton"].ToString());
                     else
-                        UpdateManualTestingResponse(IrSe.Response, "");
+                        UpdateManualTestingResponse(IrSe.Response, IrSe.Request, "");
 
                 }
                 catch (Exception Exp)
@@ -397,9 +429,9 @@ namespace IronWASP
                     Session Irse = GroupList[ID];
                     if (Irse.Request == null) continue;
                     if(Irse.Response == null)
-                        UI.TestGroupLogGrid.Rows.Add(new object[] { Irse.Request.ID, Irse.Request.Host, Irse.Request.Method, Irse.Request.Url, Irse.Request.SSL});
+                        UI.TestGroupLogGrid.Rows.Add(new object[] {false, Irse.Request.ID, Irse.Request.Host, Irse.Request.Method, Irse.Request.Url, Irse.Request.SSL});
                     else
-                        UI.TestGroupLogGrid.Rows.Add(new object[] { Irse.Request.ID, Irse.Request.Host, Irse.Request.Method, Irse.Request.Url, Irse.Request.SSL, Irse.Response.Code, Irse.Response.BodyLength, Irse.Response.ContentType, (Irse.Response.SetCookies.Count > 0) });
+                        UI.TestGroupLogGrid.Rows.Add(new object[] {false, Irse.Request.ID, Irse.Request.Host, Irse.Request.Method, Irse.Request.Url, Irse.Request.SSL, Irse.Response.Code, Irse.Response.BodyLength, Irse.Response.ContentType, (Irse.Response.SetCookies.Count > 0) });
                 }
             }
         }
@@ -418,49 +450,56 @@ namespace IronWASP
             }
         }
 
-        delegate void SetNewTestRequest_d(Request Req, string Group);
-        internal static void SetNewTestRequest(Request Req, string Group)
+        delegate void SetNewTestRequest_d(Request Req, string Group, bool SwitchToMTSection);
+        internal static void SetNewTestRequest(Request Req, string Group, bool SwitchToMTSection)
         {
             if (UI.TestGroupLogGrid.InvokeRequired)
             {
                 SetNewTestRequest_d SNTR_d = new SetNewTestRequest_d(SetNewTestRequest);
-                UI.Invoke(SNTR_d, new object[] { Req, Group });
+                UI.Invoke(SNTR_d, new object[] { Req, Group, SwitchToMTSection });
             }
             else
             {
                 ResetMTDisplayFields();
-                switch (Group)
-                {
-                    case ("Red"):
-                        UI.TestIDLbl.BackColor = Color.Red;
-                        break;
-                    case ("Blue"):
-                        UI.TestIDLbl.BackColor = Color.RoyalBlue;
-                        break;
-                    case ("Green"):
-                        UI.TestIDLbl.BackColor = Color.Green;
-                        break;
-                    case ("Gray"):
-                        UI.TestIDLbl.BackColor = Color.Gray;
-                        break;
-                    case ("Brown"):
-                        UI.TestIDLbl.BackColor = Color.Brown;
-                        break;
-                }
+
+                //switch (Group)
+                //{
+                //    case ("Red"):
+                //        UI.TestIDLbl.BackColor = Color.Red;
+                //        break;
+                //    case ("Blue"):
+                //        UI.TestIDLbl.BackColor = Color.RoyalBlue;
+                //        break;
+                //    case ("Green"):
+                //        UI.TestIDLbl.BackColor = Color.Green;
+                //        break;
+                //    case ("Gray"):
+                //        UI.TestIDLbl.BackColor = Color.Gray;
+                //        break;
+                //    case ("Brown"):
+                //        UI.TestIDLbl.BackColor = Color.Brown;
+                //        break;
+                //}
+                UI.TestGroupsLV.Items.Add(Group, Group, 0);
+                UI.TestGroupsLV.Items[Group].Selected = true;
                 UI.TestIDLbl.Text = "ID: " + Req.ID.ToString();
+                UI.MTCurrentGroupNameTB.Text = Group;
                 FillMTFields(Req);
                 try
                 {
                     UI.TestGroupLogGrid.Rows.Clear();
-                    UI.TestGroupLogGrid.Rows.Add(new object[] { Req.ID, Req.Host, Req.Method, Req.URL, Req.SSL });
+                    UI.TestGroupLogGrid.Rows.Add(new object[] { false, Req.ID, Req.Host, Req.Method, Req.URL, Req.SSL });
                 }
                 catch (Exception Exp)
                 {
                     IronException.Report("Error Updating Test Grid with Request", Exp.Message, Exp.StackTrace);
                 }
-                UI.main_tab.SelectTab("mt_manual");
-                UI.MTTabs.SelectTab("MTTestTP");
-                UI.MTReqResTabs.SelectTab("MTRequestTab");
+                if(SwitchToMTSection)
+                    UI.main_tab.SelectTab("mt_manual");
+                //UI.MTReqResTabs.SelectTab("MTRequestTab");
+                UI.MTResponseSideTabs.SelectTab("MTResponseTab");
+                if (!UI.TestGroupsTitleTB.Visible) UI.TestGroupsTitleTB.Visible = true;
+                if (!UI.TestGroupsLV.Visible) UI.TestGroupsLV.Visible = true;
             }
         }
 
@@ -522,6 +561,88 @@ namespace IronWASP
                         catch(Exception Exp)
                         {
                             IronException.Report("Error Updating Response in Shell LogGrid", Exp.Message, Exp.StackTrace);
+                        }
+                    }
+                    else
+                    {
+                        //IronException.Report("Matching Request missing in Shell LogGrid", string.Format("Request ID - {0} is missing from the Shell LogGrid", new object[] { Res.ID.ToString() }), Res.ToString());
+                    }
+                }
+                ShowCurrentLogStat();
+            }
+        }
+
+        delegate void UpdateOtherSourceLogGrid_d(List<Request> Requests, List<Response> Responses, string CurrentSource, List<string> NewSources);
+        internal static void UpdateOtherSourceLogGrid(List<Request> Requests, List<Response> Responses, string CurrentSource, List<string> NewSources)
+        {
+            if (UI.OtherLogGrid.InvokeRequired)
+            {
+                UpdateOtherSourceLogGrid_d UOSLG_d = new UpdateOtherSourceLogGrid_d(UpdateOtherSourceLogGrid);
+                UI.Invoke(UOSLG_d, new object[] { Requests, Responses, CurrentSource, NewSources });
+            }
+            else
+            {
+                List<string> SourceRowsAvailable = new List<string>();
+                int RowCount = UI.OtherLogSourceGrid.Rows.Count;
+                foreach (DataGridViewRow Row in UI.OtherLogSourceGrid.Rows)
+                {
+                    SourceRowsAvailable.Add(Row.Cells[0].Value.ToString());                    
+                }
+                foreach (string NewSource in NewSources)
+                {
+                    if (!SourceRowsAvailable.Contains(NewSource))
+                        UI.OtherLogSourceGrid.Rows.Add(new object[]{NewSource});
+                }
+                if (RowCount == 0 && UI.OtherLogSourceGrid.Rows.Count > 0) UI.OtherLogSourceGrid.ClearSelection();
+                if (!SourceRowsAvailable.Contains(CurrentSource)) return;
+                foreach (Request Req in Requests)
+                {
+                    if (UI.OtherLogGrid.Rows.Count >= IronLog.MaxRowCount) break;
+                    try
+                    {
+                        int GridID = UI.OtherLogGrid.Rows.Add(new object[] { Req.ID, Req.Host, Req.Method, Req.URL, Req.StoredFile, Req.SSL, Req.StoredParameters });
+                        IronUpdater.OtherSourceGridMap.Add(Req.ID, GridID);
+                        if (Req.ID > IronLog.OtherSourceMax) IronLog.OtherSourceMax = Req.ID;
+                        if (Req.ID < IronLog.OtherSourceMin || IronLog.OtherSourceMin < 1) IronLog.OtherSourceMin = Req.ID;
+                    }
+                    catch (Exception Exp)
+                    {
+                        IronException.Report("Error Updating Request in Other Source LogGrid", Exp.Message, Exp.StackTrace);
+                    }
+                }
+                foreach (Response Res in Responses)
+                {
+                    bool MatchFound = true;
+                    if (IronUpdater.OtherSourceGridMap.ContainsKey(Res.ID))
+                    {
+                        try
+                        {
+                            int GridID = IronUpdater.OtherSourceGridMap[Res.ID];
+                            if (!((int)UI.OtherLogGrid.Rows[GridID].Cells["LogGridColumnForID"].Value == Res.ID))
+                            {
+                                MatchFound = false;
+                                foreach (DataGridViewRow Row in UI.OtherLogGrid.Rows)
+                                {
+                                    if ((int)Row.Cells["LogGridColumnForID"].Value == Res.ID)
+                                    {
+                                        GridID = Row.Index;
+                                        MatchFound = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (MatchFound)
+                            {
+                                UI.OtherLogGrid.Rows[GridID].Cells["LogGridColumnForCode"].Value = Res.Code;
+                                UI.OtherLogGrid.Rows[GridID].Cells["LogGridColumnForLength"].Value = Res.BodyArray.Length;
+                                UI.OtherLogGrid.Rows[GridID].Cells["LogGridColumnForMIME"].Value = Res.ContentType;
+                                UI.OtherLogGrid.Rows[GridID].Cells["LogGridColumnForSetCookie"].Value = (Res.SetCookies.Count > 0);
+                            }
+                            IronUpdater.OtherSourceGridMap.Remove(Res.ID);
+                        }
+                        catch (Exception Exp)
+                        {
+                            IronException.Report("Error Updating Response in Other Source LogGrid", Exp.Message, Exp.StackTrace);
                         }
                     }
                     else
@@ -725,6 +846,8 @@ namespace IronWASP
             }
         }
 
+
+
         delegate void SetScanTraceGrid_d(List<IronTrace> Traces);
         internal static void SetScanTraceGrid(List<IronTrace> Traces)
         {
@@ -741,6 +864,8 @@ namespace IronWASP
                 UpdateScanTraceGrid(Traces);
             }
         }
+
+
 
         delegate void ShowScanTraceStatus_d(string Message, bool Error);
         internal static void ShowScanTraceStatus(string Message, bool Error)
@@ -779,13 +904,37 @@ namespace IronWASP
             }
         }
 
-        delegate void UpdateManualTestingResponse_d(Response Res, string Reflection);
-        internal static void UpdateManualTestingResponse(Response Res, string Reflection)
+        delegate void UpdateSessionPluginTraceGrid_d(List<IronTrace> Traces);
+        internal static void UpdateSessionPluginTraceGrid(List<IronTrace> Traces)
         {
-            if (UI.MTResponseHeadersIDV.InvokeRequired)
+            if (UI.SessionPluginTraceGrid.InvokeRequired)
+            {
+                UpdateSessionPluginTraceGrid_d USTG_d = new UpdateSessionPluginTraceGrid_d(UpdateSessionPluginTraceGrid);
+                UI.Invoke(USTG_d, new object[] { Traces });
+            }
+            else
+            {
+                foreach (IronTrace Trace in Traces)
+                {
+                    try
+                    {
+                        UI.SessionPluginTraceGrid.Rows.Add(new object[] { Trace.ID, Trace.LogId, Trace.LogSource, Trace.SessionPluginName, Trace.Action, Trace.Message });
+                    }
+                    catch (Exception Exp)
+                    {
+                        IronException.Report("Error Updating Trace in SessionPluginTraceGrid", Exp.Message, Exp.StackTrace);
+                    }
+                }
+            }
+        }
+
+        delegate void UpdateManualTestingResponse_d(Response Res, Request Req, string Reflection);
+        internal static void UpdateManualTestingResponse(Response Res, Request Req, string Reflection)
+        {
+            if (UI.TestResponseView.InvokeRequired)
             {
                 UpdateManualTestingResponse_d UMTR_d = new UpdateManualTestingResponse_d(UpdateManualTestingResponse);
-                UI.Invoke(UMTR_d, new object[] { Res, Reflection });
+                UI.Invoke(UMTR_d, new object[] { Res, Req, Reflection });
             }
             else
             {
@@ -793,8 +942,8 @@ namespace IronWASP
                 {
                     if (ManualTesting.CurrentRequestID == Res.ID)
                     {
-                        FillMTFields(Res);
-                        FillTestReflection(Reflection);
+                        FillMTFields(Res, Req);
+                        //FillTestReflection(Reflection);
                         UI.TestIDLbl.Text = "ID: " + Res.ID.ToString();
                         EndMTSend(true);
                     }
@@ -809,7 +958,7 @@ namespace IronWASP
         delegate void UpdateManualTestingRequest_d(Request Req);
         internal static void UpdateManualTestingRequest(Request Req)
         {
-            if (UI.MTRequestHeadersIDV.InvokeRequired)
+            if (UI.TestRequestView.InvokeRequired)
             {
                 UpdateManualTestingRequest_d UMTR_d = new UpdateManualTestingRequest_d(UpdateManualTestingRequest);
                 UI.Invoke(UMTR_d, new object[] { Req });
@@ -819,7 +968,7 @@ namespace IronWASP
                 try
                 {
                     FillMTFields(Req);
-                    UI.MTIsSSLCB.Checked = Req.SSL;
+                    //UI.MTIsSSLCB.Checked = Req.SSL;
                     UI.TestIDLbl.Text = "ID: 0";
                     EndMTSend(false);
                 }
@@ -904,7 +1053,7 @@ namespace IronWASP
                     }
                     else
                     {
-                        IronException.Report("Matching Request missing in Proxy LogGrid", string.Format("Request ID - {0} is missing from the Proxy LogGrid", new object[]{ Res.ID.ToString()}), Res.ToString());
+                        //IronException.Report("Matching Request missing in Proxy LogGrid", string.Format("Request ID - {0} is missing from the Proxy LogGrid", new object[]{ Res.ID.ToString()}), Res.ToString());
                     }
                 }
                 ShowCurrentLogStat();
@@ -1112,6 +1261,14 @@ namespace IronWASP
                         Row.DefaultCellStyle.BackColor = Color.White;
                         break;
                 }
+                if (!UI.main_tab.SelectedTab.Name.Equals("mt_auto"))
+                {
+                    try
+                    {
+                        UI.ASQueueGrid.FirstDisplayedScrollingRowIndex = GridID;
+                    }
+                    catch { }
+                }
             }
         }
 
@@ -1141,14 +1298,13 @@ namespace IronWASP
             else
             {
                 UI.JSTaintTraceInRTB.Text = Input;
-                if (!UI.main_tab.SelectedTab.Name.Equals("mt_manual")) UI.main_tab.SelectTab("mt_manual");
-                if (!UI.MTTabs.SelectedTab.Name.Equals("MTJavaScriptTaintTP")) UI.MTTabs.SelectTab("MTJavaScriptTaintTP");
+                if (!UI.main_tab.SelectedTab.Name.Equals("mt_js")) UI.main_tab.SelectTab("mt_js");
                 if (!UI.JSTaintTabs.SelectedTab.Name.Equals("JSTaintInputTab")) UI.JSTaintTabs.SelectTab("JSTaintInputTab");
             }
         }
 
-        public delegate void UpdatePluginResultTree_d(List<PluginResult> PRs);
-        public static void UpdatePluginResultTree(List<PluginResult> PRs)
+        public delegate void UpdatePluginResultTree_d(List<Finding> PRs);
+        public static void UpdatePluginResultTree(List<Finding> PRs)
         {
             if (UI.IronTree.InvokeRequired)
             {
@@ -1161,27 +1317,27 @@ namespace IronWASP
                 
                 UI.IronTree.BeginUpdate();
                 UI.IronTree.Enabled = false;
-                foreach (PluginResult PR in PRs)
+                foreach (Finding PR in PRs)
                 {
-                    if (PR.ResultType == PluginResultType.Vulnerability)
+                    if (PR.Type == FindingType.Vulnerability)
                     {
                         string Title = "";
-                        if (PR.Confidence == PluginResultConfidence.High)
+                        if (PR.Confidence == FindingConfidence.High)
                         {
                             //Title = "+++ " + PR.Title;
                             Title = "+++ " + PR.Id.ToString();
                         }
-                        else if (PR.Confidence == PluginResultConfidence.Medium)
+                        else if (PR.Confidence == FindingConfidence.Medium)
                         {
                             //Title = "++- " + PR.Title;
                             Title = "++- " + PR.Id.ToString();
                         }
-                        else if (PR.Confidence == PluginResultConfidence.Low)
+                        else if (PR.Confidence == FindingConfidence.Low)
                         {
                             //Title = "+-- " + PR.Title;
                             Title = "+-- " + PR.Id.ToString();
                         }
-                        if (PR.Severity == PluginResultSeverity.High)
+                        if (PR.Severity == FindingSeverity.High)
                         {
                             if (!UI.IronTree.Nodes[0].Nodes[0].Nodes[0].Nodes.ContainsKey(PR.AffectedHost))
                             {
@@ -1196,7 +1352,7 @@ namespace IronWASP
                             //UI.IronTree.Nodes[0].Nodes[0].Nodes[0].Nodes[PR.AffectedHost].Nodes[PR.Plugin].Nodes.Add(PR.Id.ToString(), Title);
                             UI.IronTree.Nodes[0].Nodes[0].Nodes[0].Nodes[PR.AffectedHost].Nodes[PR.Title].Nodes.Add(PR.Id.ToString(), Title);
                         }
-                        else if (PR.Severity == PluginResultSeverity.Medium)
+                        else if (PR.Severity == FindingSeverity.Medium)
                         {
                             if (!UI.IronTree.Nodes[0].Nodes[0].Nodes[1].Nodes.ContainsKey(PR.AffectedHost))
                             {
@@ -1211,7 +1367,7 @@ namespace IronWASP
                             //UI.IronTree.Nodes[0].Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes[PR.Plugin].Nodes.Add(PR.Id.ToString(), Title);
                             UI.IronTree.Nodes[0].Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes[PR.Title].Nodes.Add(PR.Id.ToString(), Title);
                         }
-                        else if (PR.Severity == PluginResultSeverity.Low)
+                        else if (PR.Severity == FindingSeverity.Low)
                         {
                             if (!UI.IronTree.Nodes[0].Nodes[0].Nodes[2].Nodes.ContainsKey(PR.AffectedHost))
                             {
@@ -1227,7 +1383,7 @@ namespace IronWASP
                             UI.IronTree.Nodes[0].Nodes[0].Nodes[2].Nodes[PR.AffectedHost].Nodes[PR.Title].Nodes.Add(PR.Id.ToString(), Title);
                         }
                     }
-                    else if (PR.ResultType == PluginResultType.TestLead)
+                    else if (PR.Type == FindingType.TestLead)
                     {
                         if (!UI.IronTree.Nodes[0].Nodes[1].Nodes.ContainsKey(PR.AffectedHost))
                         {
@@ -1242,7 +1398,7 @@ namespace IronWASP
                         //UI.IronTree.Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes[PR.Plugin].Nodes.Add(PR.Id.ToString(), PR.Title);
                         UI.IronTree.Nodes[0].Nodes[1].Nodes[PR.AffectedHost].Nodes[PR.Title].Nodes.Add(PR.Id.ToString(), PR.Id.ToString());
                     }
-                    else if (PR.ResultType == PluginResultType.Information)
+                    else if (PR.Type == FindingType.Information)
                     {
                         if (!UI.IronTree.Nodes[0].Nodes[2].Nodes.ContainsKey(PR.AffectedHost))
                         {
@@ -1416,11 +1572,167 @@ namespace IronWASP
                 Node.Nodes.Add(QueryString, QueryString);
             }
         }
-        
+
+
+        internal static bool IsExceptionsNodeSelected()
+        {
+            TreeNode Node = UI.IronTree.SelectedNode;
+            if (Node == null) return false;
+            if (Node.Level == 2 && Node.Parent.Index == 3)
+            {
+                return true;
+            }
+            return false;
+        }
+        internal static bool IsFindingsNodeSelected()
+        {
+            TreeNode Node = UI.IronTree.SelectedNode;
+            if (Node == null) return false;
+            if (Node.Level == 4 && (Node.Parent.Parent.Parent.Index == 1 || Node.Parent.Parent.Parent.Index == 2))
+            {
+                return true;
+            }
+            else if (Node.Level == 5 && Node.Parent.Parent.Parent.Parent.Index == 0)
+            {
+                return true;
+            }
+            return false;
+        }
+        internal static bool IsSiteMapNodeSelected()
+        {
+            TreeNode Node = UI.IronTree.SelectedNode;
+            if (Node == null) return false;
+            if ((Node.Level > 5) || (Node.Level == 5 && (Node.Parent.Parent.Parent.Parent.Index == 4)) || (Node.Level == 4 && (Node.Parent.Parent.Parent.Index == 4)) || (Node.Level == 3 && (Node.Parent.Parent.Index == 4)) || (Node.Level == 2 && (Node.Parent.Index == 4)))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        internal static int GetFindingIdFromIronTree()
+        {
+            TreeNode Node = UI.IronTree.SelectedNode;
+            if (Node == null) return -1;
+            if (IsFindingsNodeSelected())
+            {
+                try
+                {
+                    return Int32.Parse(Node.Name);
+                }
+                catch { }
+            }
+            return -1;
+        }
+
+        internal static Request GetSelectedUrlFromSiteMap()
+        {
+            TreeNode Node = UI.IronTree.SelectedNode;
+            if (Node == null) return null;
+            if (IsSiteMapNodeSelected())
+            {
+                List<string> UrlPaths = new List<string>();
+                string Query = "";
+                TreeNode SiteMapNode = Node;
+                if (SiteMapNode.Text.StartsWith("?"))
+                {
+                    Query = SiteMapNode.Text;
+                    SiteMapNode = SiteMapNode.Parent;
+                }
+                while (SiteMapNode.Level > 2)
+                {
+                    UrlPaths.Add(SiteMapNode.Text);
+                    SiteMapNode = SiteMapNode.Parent;
+                }
+                UrlPaths.Reverse();
+                StringBuilder UrlBuilder = new StringBuilder();
+                foreach (string Path in UrlPaths)
+                {
+                    UrlBuilder.Append("/"); UrlBuilder.Append(Path);
+                }
+                UrlBuilder.Append(Query);
+                string BaseUrl = SiteMapNode.Text;
+                //string Url = UrlBuilder.ToString() + Query;
+                string Url = UrlBuilder.ToString();
+                if (Url == "//") Url = "/";
+                if (Url.StartsWith("/"))
+                    Url = Url.TrimStart(new char[]{'/'});
+                try
+                {
+                    return new Request(string.Format("{0}{1}", BaseUrl, Url));
+                }
+                catch { }
+                //IronUI.UpdateResultsTab(Host, Url);
+                //return null;
+            }
+            
+            //if (e.Node == null) return;
+            //if ((e.Node.Level > 5) || (e.Node.Level == 5 && (e.Node.Parent.Parent.Parent.Parent.Index == 4)) || (e.Node.Level == 4 && (e.Node.Parent.Parent.Parent.Index == 4)) || (e.Node.Level == 3 && (e.Node.Parent.Parent.Index == 4)) || (e.Node.Level == 2 && (e.Node.Parent.Index == 4)))
+            //{
+            //    List<string> UrlPaths = new List<string>();
+            //    string Query = "";
+            //    TreeNode SiteMapNode = e.Node;
+            //    if (SiteMapNode.Text.StartsWith("?"))
+            //    {
+            //        Query = SiteMapNode.Text;
+            //        SiteMapNode = SiteMapNode.Parent;
+            //    }
+            //    while (SiteMapNode.Level > 2)
+            //    {
+            //        UrlPaths.Add(SiteMapNode.Text);
+            //        SiteMapNode = SiteMapNode.Parent;
+            //    }
+            //    UrlPaths.Reverse();
+            //    StringBuilder UrlPathBuilder = new StringBuilder();
+            //    foreach (string Path in UrlPaths)
+            //    {
+            //        UrlPathBuilder.Append("/"); UrlPathBuilder.Append(Path);
+            //    }
+            //    string Host = SiteMapNode.Text;
+            //    string Url = UrlPathBuilder.ToString() + Query;
+            //    if (Url == "//") Url = "/";
+            //    IronUI.UpdateResultsTab(Host, Url);
+            //    return;
+            //}
+            
+            //if (UI.IronTree.SelectedNode == null) return "";
+            //TreeNode Node = UI.IronTree.SelectedNode;
+            //if ((Node.Level > 4) || (Node.Level == 4 && (Node.Parent.Parent.Parent.Index == 4)) || (Node.Level == 3 && (Node.Parent.Parent.Index == 4)) || (Node.Level == 2 && (Node.Parent.Index == 4)))
+            //{
+            //    List<string> UrlPaths = new List<string>();
+            //    string Query = "";
+            //    TreeNode SiteMapNode = Node;
+            //    if (SiteMapNode.Text.StartsWith("?"))
+            //    {
+            //        Query = SiteMapNode.Text;
+            //        SiteMapNode = SiteMapNode.Parent;
+            //    }
+            //    while (SiteMapNode.Level > 2)
+            //    {
+            //        UrlPaths.Add(SiteMapNode.Text);
+            //        SiteMapNode = SiteMapNode.Parent;
+            //    }
+            //    UrlPaths.Reverse();
+            //    StringBuilder UrlPathBuilder = new StringBuilder();
+            //    foreach (string Path in UrlPaths)
+            //    {
+            //        UrlPathBuilder.Append("/"); UrlPathBuilder.Append(Path);
+            //    }
+            //    string BaseUrl = SiteMapNode.Text;
+            //    string Url = UrlPathBuilder.ToString();// +Query;
+            //    if (Url.StartsWith("/"))
+            //    {
+            //        Url.TrimStart(new char[]{'/'});
+            //    }
+            //    return string.Format("{0}{1}", BaseUrl, Url);
+            //}
+            //return "";
+            return null;
+        }
+
         delegate void SendSessionToProxy_d(Session IrSe);
         internal static void SendSessionToProxy(Session IrSe)
         {
-            if (UI.ProxyRequestHeadersIDV.InvokeRequired)
+            if (UI.ProxyInterceptTabs.InvokeRequired)
             {
                 SendSessionToProxy_d sstp_d = new SendSessionToProxy_d(SendSessionToProxy);
                 UI.Invoke(sstp_d, new object[] { IrSe });
@@ -1431,8 +1743,7 @@ namespace IronWASP
                 {
                     FillInterceptorTab(IrSe);
                     if (!UI.main_tab.SelectedTab.Name.Equals("mt_proxy")) UI.main_tab.SelectTab("mt_proxy");
-                    UI.TopMost = true;
-                    UI.TopMost = false;
+                    MakeUiTopMost(true);
                 }
                 else
                 {
@@ -1463,90 +1774,95 @@ namespace IronWASP
                 UI.ProxyInterceptTabs.SelectedIndex = 0;
                 IronProxy.CurrentSession.OriginalRequest = IrSe.Request.GetClone(true);
                 FillProxyFields(IrSe.Request);
+                MakeProxyRequestFieldsReadOnly(false);
             }
             else
             {
                 UI.ProxyInterceptTabs.SelectedIndex = 1;
                 IronProxy.CurrentSession.OriginalResponse = IrSe.Response.GetClone(true);
-                FillProxyFields(IrSe.Response);
+                FillProxyFields(IrSe.Response, IrSe.Request);
                 FillProxyFields(IrSe.Request);
-                MakeProxyRequestFieldsReadOnly();
+                MakeProxyResponseFieldsReadOnly(false);
             }
             IronProxy.ResetChangedStatus();
+            UI.ProxyBaseSplit.Panel1.BackColor = Color.SkyBlue;
+            UI.ProxySendBtn.Enabled = true;
+            UI.ProxyDropBtn.Enabled = true;
         }
 
-        internal static void FillProxyFields(Request Request)
+        internal static void FillProxyFields(Request Req)
         {
-            FillProxyRequestHeaderFields(Request);
-            UI.ProxyRequestHeadersIDV.ReadOnly = false;
-            UI.ProxyRequestBodyIDV.ReadOnly = false;
-            if (Request.HasBody)
-            {
-                FillProxyRequestBodyFields(Request);
-            }
-            FillProxyParametersFields(Request);
-            UI.ProxyRequestParametersQueryGrid.Columns[1].ReadOnly = false;
-            UI.ProxyRequestParametersBodyGrid.Columns[1].ReadOnly = false;
-            UI.ProxyRequestParametersCookieGrid.Columns[1].ReadOnly = false;
-            UI.ProxyRequestParametersHeadersGrid.Columns[1].ReadOnly = false;
+            UI.ProxyRequestView.SetRequest(Req);
+            //FillProxyRequestHeaderFields(Request);
+            //UI.ProxyRequestHeadersIDV.ReadOnly = false;
+            //UI.ProxyRequestBodyIDV.ReadOnly = false;
+            //if (Request.HasBody)
+            //{
+            //    FillProxyRequestBodyFields(Request);
+            //}
+            //FillProxyParametersFields(Request);
+            //UI.ProxyRequestParametersQueryGrid.Columns[1].ReadOnly = false;
+            //UI.ProxyRequestParametersBodyGrid.Columns[1].ReadOnly = false;
+            //UI.ProxyRequestParametersCookieGrid.Columns[1].ReadOnly = false;
+            //UI.ProxyRequestParametersHeadersGrid.Columns[1].ReadOnly = false;
         }
 
-        internal static void FillProxyRequestHeaderFields(Request Request)
-        {
-            UI.ProxyRequestHeadersIDV.Text = Request.GetHeadersAsStringWithoutFullURL();
-        }
+        //internal static void FillProxyRequestHeaderFields(Request Request)
+        //{
+        //    UI.ProxyRequestHeadersIDV.Text = Request.GetHeadersAsStringWithoutFullURL();
+        //}
 
-        internal static void FillProxyRequestBodyFields(Request Request)
-        {
-            if (Request.IsBinary)
-            {
-                UI.ProxyRequestBodyIDV.Text = Encoding.UTF8.GetString(Request.BodyArray);
-                UI.ProxyRequestBodyIDV.ReadOnly = true;
-            }
-            else
-            {
-                UI.ProxyRequestBodyIDV.Text = Request.BodyString;
-            }
-        }
+        //internal static void FillProxyRequestBodyFields(Request Request)
+        //{
+        //    if (Request.IsBinary)
+        //    {
+        //        UI.ProxyRequestBodyIDV.Text = Encoding.UTF8.GetString(Request.BodyArray);
+        //        UI.ProxyRequestBodyIDV.ReadOnly = true;
+        //    }
+        //    else
+        //    {
+        //        UI.ProxyRequestBodyIDV.Text = Request.BodyString;
+        //    }
+        //}
 
-        internal static void FillProxyParametersFields(Request Request)
-        {
-            UI.ProxyRequestParametersQueryGrid.Rows.Clear();
-            foreach (string Name in Request.Query.GetNames())
-            {
-                foreach (string Value in Request.Query.GetAll(Name))
-                {
-                    UI.ProxyRequestParametersQueryGrid.Rows.Add(new object[] { Name, Value });
-                }
-            }
-            UI.ProxyRequestParametersBodyGrid.Rows.Clear();
-            foreach (string Name in Request.Body.GetNames())
-            {
-                foreach (string Value in Request.Body.GetAll(Name))
-                {
-                    UI.ProxyRequestParametersBodyGrid.Rows.Add(new object[] { Name, Value });
-                }
-            }
-            UI.ProxyRequestParametersCookieGrid.Rows.Clear();
-            foreach (string Name in Request.Cookie.GetNames())
-            {
-                foreach (string Value in Request.Cookie.GetAll(Name))
-                {
-                    UI.ProxyRequestParametersCookieGrid.Rows.Add(new object[] { Name, Value });
-                }
-            }
-            UI.ProxyRequestParametersHeadersGrid.Rows.Clear();
-            foreach (string Name in Request.Headers.GetNames())
-            {
-                if (!Name.Equals("Host", StringComparison.OrdinalIgnoreCase) && !Name.Equals("Cookie", StringComparison.OrdinalIgnoreCase))
-                {
-                    foreach (string Value in Request.Headers.GetAll(Name))
-                    {
-                        UI.ProxyRequestParametersHeadersGrid.Rows.Add(new object[] { Name, Value });
-                    }
-                }
-            }
-        }
+        //internal static void FillProxyParametersFields(Request Request)
+        //{
+        //    UI.ProxyRequestParametersQueryGrid.Rows.Clear();
+        //    foreach (string Name in Request.Query.GetNames())
+        //    {
+        //        foreach (string Value in Request.Query.GetAll(Name))
+        //        {
+        //            UI.ProxyRequestParametersQueryGrid.Rows.Add(new object[] { Name, Value });
+        //        }
+        //    }
+        //    UI.ProxyRequestParametersBodyGrid.Rows.Clear();
+        //    foreach (string Name in Request.Body.GetNames())
+        //    {
+        //        foreach (string Value in Request.Body.GetAll(Name))
+        //        {
+        //            UI.ProxyRequestParametersBodyGrid.Rows.Add(new object[] { Name, Value });
+        //        }
+        //    }
+        //    UI.ProxyRequestParametersCookieGrid.Rows.Clear();
+        //    foreach (string Name in Request.Cookie.GetNames())
+        //    {
+        //        foreach (string Value in Request.Cookie.GetAll(Name))
+        //        {
+        //            UI.ProxyRequestParametersCookieGrid.Rows.Add(new object[] { Name, Value });
+        //        }
+        //    }
+        //    UI.ProxyRequestParametersHeadersGrid.Rows.Clear();
+        //    foreach (string Name in Request.Headers.GetNames())
+        //    {
+        //        if (!Name.Equals("Host", StringComparison.OrdinalIgnoreCase) && !Name.Equals("Cookie", StringComparison.OrdinalIgnoreCase))
+        //        {
+        //            foreach (string Value in Request.Headers.GetAll(Name))
+        //            {
+        //                UI.ProxyRequestParametersHeadersGrid.Rows.Add(new object[] { Name, Value });
+        //            }
+        //        }
+        //    }
+        //}
 
         delegate void ShowProxyException_d(string Message);
         internal static void ShowProxyException(string Message)
@@ -1569,491 +1885,527 @@ namespace IronWASP
             UI.ProxyExceptionTB.Visible = false;
         }
 
-        internal static void UpdateProxyHeaderFieldsWithUIQueryParameters()
+        //internal static void UpdateProxyHeaderFieldsWithUIQueryParameters()
+        //{
+        //    IronProxy.CurrentSession.Request.Query.RemoveAll();
+        //    foreach (DataGridViewRow Row in UI.ProxyRequestParametersQueryGrid.Rows)
+        //    {
+        //        IronProxy.CurrentSession.Request.Query.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
+        //    }
+        //    FillProxyRequestHeaderFields(IronProxy.CurrentSession.Request);
+        //}
+        //internal static void UpdateProxyBodyFieldsWithUIBodyParameters()
+        //{
+        //    IronProxy.CurrentSession.Request.Body.RemoveAll();
+        //    foreach (DataGridViewRow Row in UI.ProxyRequestParametersBodyGrid.Rows)
+        //    {
+        //        IronProxy.CurrentSession.Request.Body.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
+        //    }
+        //    FillProxyRequestBodyFields(IronProxy.CurrentSession.Request);
+        //}
+        //internal static void UpdateProxyHeaderFieldsWithUICookieParameters()
+        //{
+        //    IronProxy.CurrentSession.Request.Cookie.RemoveAll();
+        //    foreach (DataGridViewRow Row in UI.ProxyRequestParametersCookieGrid.Rows)
+        //    {
+        //        IronProxy.CurrentSession.Request.Cookie.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
+        //    }
+        //    FillProxyRequestHeaderFields(IronProxy.CurrentSession.Request);
+        //}
+        //internal static void UpdateProxyHeaderFieldsWithUIHeadersParameters()
+        //{
+        //    Parameters TempHolder = new Parameters();
+        //    if (IronProxy.CurrentSession.Request.Headers.Has("Host"))
+        //    {
+        //        TempHolder.Set("Host", IronProxy.CurrentSession.Request.Headers.Get("Host"));
+        //    }
+        //    if (IronProxy.CurrentSession.Request.Headers.Has("Cookie"))
+        //    {
+        //        TempHolder.Set("Cookie", IronProxy.CurrentSession.Request.Headers.Get("Cookie"));
+        //    }
+        //    IronProxy.CurrentSession.Request.Headers.RemoveAll();
+        //    foreach (DataGridViewRow Row in UI.ProxyRequestParametersHeadersGrid.Rows)
+        //    {
+        //        IronProxy.CurrentSession.Request.Headers.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
+        //    }
+        //    foreach (string Name in TempHolder.GetNames())
+        //    {
+        //        IronProxy.CurrentSession.Request.Headers.Set(Name, TempHolder.Get(Name));
+        //    }
+        //    FillProxyRequestHeaderFields(IronProxy.CurrentSession.Request);
+        //}
+
+        //internal static void HandleAnyChangesInRequest()
+        //{
+        //    if (IronProxy.RequestHeaderChanged)
+        //    {
+        //        IronProxy.UpdateCurrentSessionWithNewRequestHeader(UI.ProxyRequestHeadersIDV.Text);
+        //        IronUI.FillProxyParametersFields(IronProxy.CurrentSession.Request);
+        //        IronProxy.ResetNonParameterChangedStatus();
+        //        IronProxy.ResetParametersChangedStatus();
+        //    }
+        //    if (IronProxy.RequestBodyChanged)
+        //    {
+        //        IronProxy.UpdateCurrentSessionWithNewRequestBodyText(UI.ProxyRequestBodyIDV.Text);
+        //        IronUI.FillProxyParametersFields(IronProxy.CurrentSession.Request);
+        //        IronProxy.ResetNonParameterChangedStatus();
+        //        IronProxy.ResetParametersChangedStatus();
+        //    }
+        //    if (IronProxy.RequestQueryParametersChanged)
+        //    {
+        //        UpdateProxyHeaderFieldsWithUIQueryParameters();
+        //        IronProxy.UpdateFiddlerSessionWithNewRequestHeader();
+        //        IronProxy.ResetNonParameterChangedStatus();
+        //        IronProxy.ResetParametersChangedStatus();
+        //    }
+        //    if (IronProxy.RequestBodyParametersChanged)
+        //    {
+        //        UpdateProxyBodyFieldsWithUIBodyParameters();
+        //        IronProxy.UpdateFiddlerSessionWithNewRequestBody();
+        //        IronProxy.ResetNonParameterChangedStatus();
+        //        IronProxy.ResetParametersChangedStatus();
+        //    }
+        //    if (IronProxy.RequestCookieParametersChanged)
+        //    {
+        //        UpdateProxyHeaderFieldsWithUICookieParameters();
+        //        IronProxy.UpdateFiddlerSessionWithNewRequestHeader();
+        //        IronProxy.ResetNonParameterChangedStatus();
+        //        IronProxy.ResetParametersChangedStatus();
+        //    }
+        //    if (IronProxy.RequestHeaderParametersChanged)
+        //    {
+        //        UpdateProxyHeaderFieldsWithUIHeadersParameters();
+        //        IronProxy.UpdateFiddlerSessionWithNewRequestHeader();
+        //        IronProxy.ResetNonParameterChangedStatus();
+        //        IronProxy.ResetParametersChangedStatus();
+        //    }
+        //}
+
+        internal static void FillProxyFields(Response Res, Request Req)
         {
-            IronProxy.CurrentSession.Request.Query.RemoveAll();
-            foreach (DataGridViewRow Row in UI.ProxyRequestParametersQueryGrid.Rows)
-            {
-                IronProxy.CurrentSession.Request.Query.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
-            }
-            FillProxyRequestHeaderFields(IronProxy.CurrentSession.Request);
-        }
-        internal static void UpdateProxyBodyFieldsWithUIBodyParameters()
-        {
-            IronProxy.CurrentSession.Request.Body.RemoveAll();
-            foreach (DataGridViewRow Row in UI.ProxyRequestParametersBodyGrid.Rows)
-            {
-                IronProxy.CurrentSession.Request.Body.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
-            }
-            FillProxyRequestBodyFields(IronProxy.CurrentSession.Request);
-        }
-        internal static void UpdateProxyHeaderFieldsWithUICookieParameters()
-        {
-            IronProxy.CurrentSession.Request.Cookie.RemoveAll();
-            foreach (DataGridViewRow Row in UI.ProxyRequestParametersCookieGrid.Rows)
-            {
-                IronProxy.CurrentSession.Request.Cookie.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
-            }
-            FillProxyRequestHeaderFields(IronProxy.CurrentSession.Request);
-        }
-        internal static void UpdateProxyHeaderFieldsWithUIHeadersParameters()
-        {
-            Parameters TempHolder = new Parameters();
-            if (IronProxy.CurrentSession.Request.Headers.Has("Host"))
-            {
-                TempHolder.Set("Host", IronProxy.CurrentSession.Request.Headers.Get("Host"));
-            }
-            if (IronProxy.CurrentSession.Request.Headers.Has("Cookie"))
-            {
-                TempHolder.Set("Cookie", IronProxy.CurrentSession.Request.Headers.Get("Cookie"));
-            }
-            IronProxy.CurrentSession.Request.Headers.RemoveAll();
-            foreach (DataGridViewRow Row in UI.ProxyRequestParametersHeadersGrid.Rows)
-            {
-                IronProxy.CurrentSession.Request.Headers.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
-            }
-            foreach (string Name in TempHolder.GetNames())
-            {
-                IronProxy.CurrentSession.Request.Headers.Set(Name, TempHolder.Get(Name));
-            }
-            FillProxyRequestHeaderFields(IronProxy.CurrentSession.Request);
+            UI.ProxyResponseView.SetResponse(Res, Req);
+            //UI.ProxyResponseHeadersIDV.Text = Response.GetHeadersAsString();
+            //UI.ProxyResponseHeadersIDV.ReadOnly = false;
+            //UI.ProxyResponseBodyIDV.ReadOnly = false;
+            //if (Response.HasBody)
+            //{
+            //    if (Response.IsBinary)
+            //    {
+            //        UI.ProxyResponseBodyIDV.Text = Encoding.UTF8.GetString(Response.BodyArray);
+            //        UI.ProxyResponseBodyIDV.ReadOnly = true;
+            //    }
+            //    else
+            //    {
+            //        UI.ProxyResponseBodyIDV.Text = Response.BodyString;
+            //    }
+            //}
         }
 
-        internal static void HandleAnyChangesInRequest()
-        {
-            if (IronProxy.RequestHeaderChanged)
-            {
-                IronProxy.UpdateCurrentSessionWithNewRequestHeader(UI.ProxyRequestHeadersIDV.Text);
-                IronUI.FillProxyParametersFields(IronProxy.CurrentSession.Request);
-                IronProxy.ResetNonParameterChangedStatus();
-                IronProxy.ResetParametersChangedStatus();
-            }
-            if (IronProxy.RequestBodyChanged)
-            {
-                IronProxy.UpdateCurrentSessionWithNewRequestBodyText(UI.ProxyRequestBodyIDV.Text);
-                IronUI.FillProxyParametersFields(IronProxy.CurrentSession.Request);
-                IronProxy.ResetNonParameterChangedStatus();
-                IronProxy.ResetParametersChangedStatus();
-            }
-            if (IronProxy.RequestQueryParametersChanged)
-            {
-                UpdateProxyHeaderFieldsWithUIQueryParameters();
-                IronProxy.UpdateFiddlerSessionWithNewRequestHeader();
-                IronProxy.ResetNonParameterChangedStatus();
-                IronProxy.ResetParametersChangedStatus();
-            }
-            if (IronProxy.RequestBodyParametersChanged)
-            {
-                UpdateProxyBodyFieldsWithUIBodyParameters();
-                IronProxy.UpdateFiddlerSessionWithNewRequestBody();
-                IronProxy.ResetNonParameterChangedStatus();
-                IronProxy.ResetParametersChangedStatus();
-            }
-            if (IronProxy.RequestCookieParametersChanged)
-            {
-                UpdateProxyHeaderFieldsWithUICookieParameters();
-                IronProxy.UpdateFiddlerSessionWithNewRequestHeader();
-                IronProxy.ResetNonParameterChangedStatus();
-                IronProxy.ResetParametersChangedStatus();
-            }
-            if (IronProxy.RequestHeaderParametersChanged)
-            {
-                UpdateProxyHeaderFieldsWithUIHeadersParameters();
-                IronProxy.UpdateFiddlerSessionWithNewRequestHeader();
-                IronProxy.ResetNonParameterChangedStatus();
-                IronProxy.ResetParametersChangedStatus();
-            }
-        }
+        //internal static void HandleAnyChangesInResponse()
+        //{
+        //    if (IronProxy.ResponseHeaderChanged)
+        //    {
+        //        IronProxy.UpdateCurrentSessionWithNewResponseHeader(UI.ProxyResponseHeadersIDV.Text);
+        //        IronProxy.ResetNonParameterChangedStatus();
+        //        IronProxy.ResetParametersChangedStatus();
+        //    }
+        //    if (IronProxy.ResponseBodyChanged)
+        //    {
+        //        IronProxy.UpdateCurrentSessionWithNewResponseBodyText(UI.ProxyResponseBodyIDV.Text);
+        //        IronProxy.ResetNonParameterChangedStatus();
+        //        IronProxy.ResetParametersChangedStatus();
+        //    }
+        //}
 
-        internal static void FillProxyFields(Response Response)
-        {
-            UI.ProxyResponseHeadersIDV.Text = Response.GetHeadersAsString();
-            UI.ProxyResponseHeadersIDV.ReadOnly = false;
-            UI.ProxyResponseBodyIDV.ReadOnly = false;
-            if (Response.HasBody)
-            {
-                if (Response.IsBinary)
-                {
-                    UI.ProxyResponseBodyIDV.Text = Encoding.UTF8.GetString(Response.BodyArray);
-                    UI.ProxyResponseBodyIDV.ReadOnly = true;
-                }
-                else
-                {
-                    UI.ProxyResponseBodyIDV.Text = Response.BodyString;
-                }
-            }
-        }
+        //delegate void FillProxyRequestFormatXML_d(string XML);
+        //internal static void FillProxyRequestFormatXML(string XML)
+        //{
+        //    if (UI.ProxyRequestFormatXMLTB.InvokeRequired)
+        //    {
+        //        FillProxyRequestFormatXML_d FPRFX_d = new FillProxyRequestFormatXML_d(FillProxyRequestFormatXML);
+        //        UI.Invoke(FPRFX_d, new object[] { XML });
+        //    }
+        //    else
+        //    {
+        //        UI.ProxyRequestFormatXMLTB.Text = XML;
+        //        UI.ProxyRequestFormatXMLTB.ReadOnly = false;
+        //    }
+        //}
 
-        internal static void HandleAnyChangesInResponse()
-        {
-            if (IronProxy.ResponseHeaderChanged)
-            {
-                IronProxy.UpdateCurrentSessionWithNewResponseHeader(UI.ProxyResponseHeadersIDV.Text);
-                IronProxy.ResetNonParameterChangedStatus();
-                IronProxy.ResetParametersChangedStatus();
-            }
-            if (IronProxy.ResponseBodyChanged)
-            {
-                IronProxy.UpdateCurrentSessionWithNewResponseBodyText(UI.ProxyResponseBodyIDV.Text);
-                IronProxy.ResetNonParameterChangedStatus();
-                IronProxy.ResetParametersChangedStatus();
-            }
-        }
+        //delegate void FillProxyRequestWithNewRequestFromFormatXML_d(Request Request, string PluginName);
+        //internal static void FillProxyRequestWithNewRequestFromFormatXML(Request Request, string PluginName)
+        //{
+        //    if (UI.ProxyRequestFormatXMLTB.InvokeRequired)
+        //    {
+        //        FillProxyRequestWithNewRequestFromFormatXML_d FPRWNRFFX_d = new FillProxyRequestWithNewRequestFromFormatXML_d(FillProxyRequestWithNewRequestFromFormatXML);
+        //        UI.Invoke(FPRWNRFFX_d, new object[] { Request, PluginName });
+        //    }
+        //    else
+        //    {
+        //        try
+        //        {
+        //            ResetProxyRequestDisplayFields();
+        //            FillProxyFields(Request);
+        //            IronProxy.ResetChangedStatus();
+        //            IronProxy.RequestChanged = true;//only then the edited request will be updated in the logs
+        //        }
+        //        catch (Exception Exp)
+        //        {
+        //            IronException.Report("Error displaying Updated 'Proxy' Request from Serializing XML using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
+        //            IronUI.ShowMTException("Error displaying updated Request");
+        //        }
+        //    }
+        //}
 
-        delegate void FillProxyRequestFormatXML_d(string XML);
-        internal static void FillProxyRequestFormatXML(string XML)
-        {
-            if (UI.ProxyRequestFormatXMLTB.InvokeRequired)
-            {
-                FillProxyRequestFormatXML_d FPRFX_d = new FillProxyRequestFormatXML_d(FillProxyRequestFormatXML);
-                UI.Invoke(FPRFX_d, new object[] { XML });
-            }
-            else
-            {
-                UI.ProxyRequestFormatXMLTB.Text = XML;
-                UI.ProxyRequestFormatXMLTB.ReadOnly = false;
-            }
-        }
+        //delegate void FillProxyResponseFormatXML_d(string XML);
+        //internal static void FillProxyResponseFormatXML(string XML)
+        //{
+        //    if (UI.ProxyResponseFormatXMLTB.InvokeRequired)
+        //    {
+        //        FillProxyResponseFormatXML_d FPRFX_d = new FillProxyResponseFormatXML_d(FillProxyResponseFormatXML);
+        //        UI.Invoke(FPRFX_d, new object[] { XML });
+        //    }
+        //    else
+        //    {
+        //        UI.ProxyResponseFormatXMLTB.Text = XML;
+        //        UI.ProxyResponseFormatXMLTB.ReadOnly = false;
+        //    }
+        //}
 
-        delegate void FillProxyRequestWithNewRequestFromFormatXML_d(Request Request, string PluginName);
-        internal static void FillProxyRequestWithNewRequestFromFormatXML(Request Request, string PluginName)
-        {
-            if (UI.ProxyRequestFormatXMLTB.InvokeRequired)
-            {
-                FillProxyRequestWithNewRequestFromFormatXML_d FPRWNRFFX_d = new FillProxyRequestWithNewRequestFromFormatXML_d(FillProxyRequestWithNewRequestFromFormatXML);
-                UI.Invoke(FPRWNRFFX_d, new object[] { Request, PluginName });
-            }
-            else
-            {
-                try
-                {
-                    ResetProxyRequestDisplayFields();
-                    FillProxyFields(Request);
-                    IronProxy.ResetChangedStatus();
-                    IronProxy.RequestChanged = true;//only then the edited request will be updated in the logs
-                }
-                catch (Exception Exp)
-                {
-                    IronException.Report("Error displaying Updated 'Proxy' Request from Serializing XML using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
-                    IronUI.ShowMTException("Error displaying updated Request");
-                }
-            }
-        }
-
-        delegate void FillProxyResponseFormatXML_d(string XML);
-        internal static void FillProxyResponseFormatXML(string XML)
-        {
-            if (UI.ProxyResponseFormatXMLTB.InvokeRequired)
-            {
-                FillProxyResponseFormatXML_d FPRFX_d = new FillProxyResponseFormatXML_d(FillProxyResponseFormatXML);
-                UI.Invoke(FPRFX_d, new object[] { XML });
-            }
-            else
-            {
-                UI.ProxyResponseFormatXMLTB.Text = XML;
-                UI.ProxyResponseFormatXMLTB.ReadOnly = false;
-            }
-        }
-
-        delegate void FillProxyResponseWithNewResponseFromFormatXML_d(Response Response, string PluginName);
-        internal static void FillProxyResponseWithNewResponseFromFormatXML(Response Response, string PluginName)
-        {
-            if (UI.ProxyResponseFormatXMLTB.InvokeRequired)
-            {
-                FillProxyResponseWithNewResponseFromFormatXML_d FPRWNRFFX_d = new FillProxyResponseWithNewResponseFromFormatXML_d(FillProxyResponseWithNewResponseFromFormatXML);
-                UI.Invoke(FPRWNRFFX_d, new object[] { Response, PluginName });
-            }
-            else
-            {
-                try
-                {
-                    ResetProxyResponseDisplayFields();
-                    FillProxyFields(Response);
-                    IronProxy.ResetChangedStatus();
-                    IronProxy.ResponseChanged = true;//only then the edited response will be updated in the logs
-                }
-                catch (Exception Exp)
-                {
-                    IronException.Report("Error displaying Updated 'Proxy' Request from Serializing XML using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
-                    IronUI.ShowMTException("Error displaying updated Request");
-                }
-            }
-        }
+        //delegate void FillProxyResponseWithNewResponseFromFormatXML_d(Response Response, string PluginName);
+        //internal static void FillProxyResponseWithNewResponseFromFormatXML(Response Response, string PluginName)
+        //{
+        //    if (UI.ProxyResponseFormatXMLTB.InvokeRequired)
+        //    {
+        //        FillProxyResponseWithNewResponseFromFormatXML_d FPRWNRFFX_d = new FillProxyResponseWithNewResponseFromFormatXML_d(FillProxyResponseWithNewResponseFromFormatXML);
+        //        UI.Invoke(FPRWNRFFX_d, new object[] { Response, PluginName });
+        //    }
+        //    else
+        //    {
+        //        try
+        //        {
+        //            ResetProxyResponseDisplayFields();
+        //            FillProxyFields(Response);
+        //            IronProxy.ResetChangedStatus();
+        //            IronProxy.ResponseChanged = true;//only then the edited response will be updated in the logs
+        //        }
+        //        catch (Exception Exp)
+        //        {
+        //            IronException.Report("Error displaying Updated 'Proxy' Request from Serializing XML using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
+        //            IronUI.ShowMTException("Error displaying updated Request");
+        //        }
+        //    }
+        //}
 
 
         internal static void ResetProxyInterceptionFields()
         {
             ResetProxyRequestDisplayFields();
             ResetProxyResponseDisplayFields();
-            MakeProxyFieldsReadOnly();
+            MakeProxyFieldsReadOnly(true);
             ResetProxyException();
         }
 
         internal static void ResetProxyRequestDisplayFields()
         {
-            UI.ProxyRequestHeadersIDV.Text = "";
-            UI.ProxyRequestBodyIDV.Text = "";
-            UI.ProxyRequestParametersQueryGrid.Rows.Clear();
-            UI.ProxyRequestParametersBodyGrid.Rows.Clear();
-            UI.ProxyRequestParametersCookieGrid.Rows.Clear();
-            UI.ProxyRequestParametersHeadersGrid.Rows.Clear();
+            //UI.ProxyRequestHeadersIDV.Text = "";
+            //UI.ProxyRequestBodyIDV.Text = "";
+            //UI.ProxyRequestParametersQueryGrid.Rows.Clear();
+            //UI.ProxyRequestParametersBodyGrid.Rows.Clear();
+            //UI.ProxyRequestParametersCookieGrid.Rows.Clear();
+            //UI.ProxyRequestParametersHeadersGrid.Rows.Clear();
             UI.ProxyShowOriginalRequestCB.Checked = false;
-            UI.ProxyRequestFormatXMLTB.Text = "";
+            //UI.ProxyRequestFormatXMLTB.Text = "";
+            UI.ProxyRequestView.ClearRequest();
         }
 
         internal static void ResetProxyResponseDisplayFields()
         {
-            UI.ProxyResponseHeadersIDV.Text = "";
-            UI.ProxyResponseBodyIDV.Text = "";
+            UI.ProxyResponseView.ClearResponse();
+            //UI.ProxyResponseHeadersIDV.Text = "";
+            //UI.ProxyResponseBodyIDV.Text = "";
             UI.ProxyShowOriginalResponseCB.Checked = false;
-            UI.ProxyResponseFormatXMLTB.Text = "";
+            //UI.ProxyResponseFormatXMLTB.Text = "";
         }
 
-        internal static void MakeProxyFieldsReadOnly()
+        internal static void MakeProxyFieldsReadOnly(bool ReadOnly)
         {
-            MakeProxyRequestFieldsReadOnly();
-            MakeProxyResponseFieldsReadOnly();
+            MakeProxyRequestFieldsReadOnly(ReadOnly);
+            MakeProxyResponseFieldsReadOnly(ReadOnly);
         }
 
-        internal static void MakeProxyRequestFieldsReadOnly()
+        internal static void MakeProxyRequestFieldsReadOnly(bool ReadOnly)
         {
-            UI.ProxyRequestHeadersIDV.ReadOnly = true;
-            UI.ProxyRequestBodyIDV.ReadOnly = true;
-            UI.ProxyRequestParametersQueryGrid.Columns[1].ReadOnly = true;
-            UI.ProxyRequestParametersBodyGrid.Columns[1].ReadOnly = true;
-            UI.ProxyRequestParametersCookieGrid.Columns[1].ReadOnly = true;
-            UI.ProxyRequestParametersHeadersGrid.Columns[1].ReadOnly = true;
-            UI.ProxyRequestFormatXMLTB.ReadOnly = true;
+            UI.ProxyRequestView.SetReadOnly(ReadOnly);
+            //UI.ProxyRequestHeadersIDV.ReadOnly = true;
+            //UI.ProxyRequestBodyIDV.ReadOnly = true;
+            //UI.ProxyRequestParametersQueryGrid.Columns[1].ReadOnly = true;
+            //UI.ProxyRequestParametersBodyGrid.Columns[1].ReadOnly = true;
+            //UI.ProxyRequestParametersCookieGrid.Columns[1].ReadOnly = true;
+            //UI.ProxyRequestParametersHeadersGrid.Columns[1].ReadOnly = true;
+            //UI.ProxyRequestFormatXMLTB.ReadOnly = true;
         }
-        internal static void MakeProxyResponseFieldsReadOnly()
+        internal static void MakeProxyResponseFieldsReadOnly(bool ReadOnly)
         {
-            UI.ProxyResponseHeadersIDV.ReadOnly = true;
-            UI.ProxyResponseBodyIDV.ReadOnly = true;
-            UI.ProxyResponseFormatXMLTB.ReadOnly = true;
+            UI.ProxyResponseView.SetReadOnly(ReadOnly);
+            //UI.ProxyResponseHeadersIDV.ReadOnly = true;
+            //UI.ProxyResponseBodyIDV.ReadOnly = true;
+            //UI.ProxyResponseFormatXMLTB.ReadOnly = true;
         }
 
         internal static void FillMTFields(Session IrSe)
         {
             IronUI.FillMTFields(IrSe.Request);
             ManualTesting.SetCurrentID(IrSe.Request.ID);
-            if (IrSe.Response != null) IronUI.FillMTFields(IrSe.Response);
+            if (IrSe.Response != null) IronUI.FillMTFields(IrSe.Response, IrSe.Request);
             UI.TestIDLbl.Text = "ID: " + IrSe.Request.ID.ToString();
-            string GroupColor = IrSe.Flags["Group"].ToString();
-            switch (GroupColor)
+            string Group = IrSe.Flags["Group"].ToString();
+            UI.MTCurrentGroupNameTB.Text = Group;
+            foreach (DataGridViewRow Row in UI.TestGroupLogGrid.Rows)
             {
-                case("Red"):
-                    UI.TestIDLbl.BackColor = Color.Red;
+                if (Row.Cells[1].Value.ToString().Equals(IrSe.Request.ID.ToString()))
+                {
+                    Row.Selected = true;
+                    try
+                    {
+                        UI.TestGroupLogGrid.FirstDisplayedScrollingRowIndex = Row.Index;
+                    }
+                    catch { }
                     break;
-                case ("Blue"):
-                    UI.TestIDLbl.BackColor = Color.RoyalBlue;
-                    break;
-                case ("Green"):
-                    UI.TestIDLbl.BackColor = Color.Green;
-                    break;
-                case ("Gray"):
-                    UI.TestIDLbl.BackColor = Color.Gray;
-                    break;
-                case ("Brown"):
-                    UI.TestIDLbl.BackColor = Color.Brown;
-                    break;
+                }
             }
+            //switch (GroupColor)
+            //{
+            //    case("Red"):
+            //        UI.TestIDLbl.BackColor = Color.Red;
+            //        break;
+            //    case ("Blue"):
+            //        UI.TestIDLbl.BackColor = Color.RoyalBlue;
+            //        break;
+            //    case ("Green"):
+            //        UI.TestIDLbl.BackColor = Color.Green;
+            //        break;
+            //    case ("Gray"):
+            //        UI.TestIDLbl.BackColor = Color.Gray;
+            //        break;
+            //    case ("Brown"):
+            //        UI.TestIDLbl.BackColor = Color.Brown;
+            //        break;
+            //}
         }
 
         internal static void FillMTFields(Request Request)
         {
-            FillMTRequestHeaderFields(Request);
-            if (Request.HasBody)
-            {
-                FillMTRequestBodyFields(Request);
-            }
-            FillMTParametersFields(Request);
-            UI.MTRequestParametersQueryGrid.Columns[1].ReadOnly = false;
-            UI.MTRequestParametersBodyGrid.Columns[1].ReadOnly = false;
-            UI.MTRequestParametersCookieGrid.Columns[1].ReadOnly = false;
-            UI.MTRequestParametersHeadersGrid.Columns[1].ReadOnly = false;
+            //FillMTRequestHeaderFields(Request);
+            //if (Request.HasBody)
+            //{
+            //    FillMTRequestBodyFields(Request);
+            //}
+            //FillMTParametersFields(Request);
+            //UI.MTRequestParametersQueryGrid.Columns[1].ReadOnly = false;
+            //UI.MTRequestParametersBodyGrid.Columns[1].ReadOnly = false;
+            //UI.MTRequestParametersCookieGrid.Columns[1].ReadOnly = false;
+            //UI.MTRequestParametersHeadersGrid.Columns[1].ReadOnly = false;
+            UI.TestRequestView.SetRequest(Request);
             ManualTesting.ResetChangedStatus();
             ManualTesting.CurrentRequest = Request;
         }
 
-        internal static void FillMTRequestHeaderFields(Request Request)
-        {
-            UI.MTRequestHeadersIDV.Text = Request.GetHeadersAsStringWithoutFullURL();
-            UI.MTIsSSLCB.Checked = Request.SSL;
-        }
+        //internal static void FillMTRequestHeaderFields(Request Request)
+        //{
+        //    UI.MTRequestHeadersIDV.Text = Request.GetHeadersAsStringWithoutFullURL();
+        //    UI.MTIsSSLCB.Checked = Request.SSL;
+        //}
 
-        internal static void FillMTRequestBodyFields(Request Request)
-        {
-            if (Request.IsBinary)
-            {
-                UI.MTRequestBodyIDV.Text = Encoding.UTF8.GetString(Request.BodyArray);
-                UI.MTRequestBodyIDV.ReadOnly = true;
-            }
-            else
-            {
-                UI.MTRequestBodyIDV.Text = Request.BodyString;
-            }
-        }
+        //internal static void FillMTRequestBodyFields(Request Request)
+        //{
+        //    if (Request.IsBinary)
+        //    {
+        //        UI.MTRequestBodyIDV.Text = Encoding.UTF8.GetString(Request.BodyArray);
+        //        UI.MTRequestBodyIDV.ReadOnly = true;
+        //    }
+        //    else
+        //    {
+        //        UI.MTRequestBodyIDV.Text = Request.BodyString;
+        //    }
+        //}
 
-        internal static void FillMTParametersFields(Request Request)
-        {
-            UI.MTRequestParametersQueryGrid.Rows.Clear();
-            foreach (string Name in Request.Query.GetNames())
-            {
-                foreach (string Value in Request.Query.GetAll(Name))
-                {
-                    UI.MTRequestParametersQueryGrid.Rows.Add(new object[] { Name, Value });
-                }
-            }
-            UI.MTRequestParametersBodyGrid.Rows.Clear();
-            foreach (string Name in Request.Body.GetNames())
-            {
-                foreach (string Value in Request.Body.GetAll(Name))
-                {
-                    UI.MTRequestParametersBodyGrid.Rows.Add(new object[] { Name, Value });
-                }
-            }
-            UI.MTRequestParametersCookieGrid.Rows.Clear();
-            foreach (string Name in Request.Cookie.GetNames())
-            {
-                foreach (string Value in Request.Cookie.GetAll(Name))
-                {
-                    UI.MTRequestParametersCookieGrid.Rows.Add(new object[] { Name, Value });
-                }
-            }
-            UI.MTRequestParametersHeadersGrid.Rows.Clear();
-            foreach (string Name in Request.Headers.GetNames())
-            {
-                if (!Name.Equals("Host", StringComparison.OrdinalIgnoreCase) && !Name.Equals("Cookie", StringComparison.OrdinalIgnoreCase))
-                {
-                    foreach (string Value in Request.Headers.GetAll(Name))
-                    {
-                        UI.MTRequestParametersHeadersGrid.Rows.Add(new object[] { Name, Value });
-                    }
-                }
-            }
-        }
+        //internal static void FillMTParametersFields(Request Request)
+        //{
+        //    UI.MTRequestParametersQueryGrid.Rows.Clear();
+        //    foreach (string Name in Request.Query.GetNames())
+        //    {
+        //        foreach (string Value in Request.Query.GetAll(Name))
+        //        {
+        //            UI.MTRequestParametersQueryGrid.Rows.Add(new object[] { Name, Value });
+        //        }
+        //    }
+        //    UI.MTRequestParametersBodyGrid.Rows.Clear();
+        //    foreach (string Name in Request.Body.GetNames())
+        //    {
+        //        foreach (string Value in Request.Body.GetAll(Name))
+        //        {
+        //            UI.MTRequestParametersBodyGrid.Rows.Add(new object[] { Name, Value });
+        //        }
+        //    }
+        //    UI.MTRequestParametersCookieGrid.Rows.Clear();
+        //    foreach (string Name in Request.Cookie.GetNames())
+        //    {
+        //        foreach (string Value in Request.Cookie.GetAll(Name))
+        //        {
+        //            UI.MTRequestParametersCookieGrid.Rows.Add(new object[] { Name, Value });
+        //        }
+        //    }
+        //    UI.MTRequestParametersHeadersGrid.Rows.Clear();
+        //    foreach (string Name in Request.Headers.GetNames())
+        //    {
+        //        if (!Name.Equals("Host", StringComparison.OrdinalIgnoreCase) && !Name.Equals("Cookie", StringComparison.OrdinalIgnoreCase))
+        //        {
+        //            foreach (string Value in Request.Headers.GetAll(Name))
+        //            {
+        //                UI.MTRequestParametersHeadersGrid.Rows.Add(new object[] { Name, Value });
+        //            }
+        //        }
+        //    }
+        //}
 
-        internal static void UpdateMTHeaderFieldsWithUIQueryParameters()
-        {
-            if (ManualTesting.CurrentRequest == null) return;
-            ManualTesting.CurrentRequest.Query.RemoveAll();
-            foreach (DataGridViewRow Row in UI.MTRequestParametersQueryGrid.Rows)
-            {
-                ManualTesting.CurrentRequest.Query.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
-            }
-            FillMTRequestHeaderFields(ManualTesting.CurrentRequest);
-        }
-        internal static void UpdateMTBodyFieldsWithUIBodyParameters()
-        {
-            if (ManualTesting.CurrentRequest == null) return;
-            ManualTesting.CurrentRequest.Body.RemoveAll();
-            foreach (DataGridViewRow Row in UI.MTRequestParametersBodyGrid.Rows)
-            {
-                ManualTesting.CurrentRequest.Body.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
-            }
-            FillMTRequestBodyFields(ManualTesting.CurrentRequest);
-        }
-        internal static void UpdateMTHeaderFieldsWithUICookieParameters()
-        {
-            if (ManualTesting.CurrentRequest == null) return;
-            ManualTesting.CurrentRequest.Cookie.RemoveAll();
-            foreach (DataGridViewRow Row in UI.MTRequestParametersCookieGrid.Rows)
-            {
-                ManualTesting.CurrentRequest.Cookie.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
-            }
-            FillMTRequestHeaderFields(ManualTesting.CurrentRequest);
-        }
-        internal static void UpdateMTHeaderFieldsWithUIHeadersParameters()
-        {
-            if (ManualTesting.CurrentRequest == null) return;
-            Parameters TempHolder = new Parameters();
-            if (ManualTesting.CurrentRequest.Headers.Has("Host"))
-            {
-                TempHolder.Set("Host", ManualTesting.CurrentRequest.Headers.Get("Host"));
-            }
-            if (ManualTesting.CurrentRequest.Headers.Has("Cookie"))
-            {
-                TempHolder.Set("Cookie", ManualTesting.CurrentRequest.Headers.Get("Cookie"));
-            }
-            ManualTesting.CurrentRequest.Headers.RemoveAll();
-            foreach (DataGridViewRow Row in UI.MTRequestParametersHeadersGrid.Rows)
-            {
-                ManualTesting.CurrentRequest.Headers.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
-            }
-            foreach (string Name in TempHolder.GetNames())
-            {
-                ManualTesting.CurrentRequest.Headers.Set(Name, TempHolder.Get(Name));
-            }
-            FillMTRequestHeaderFields(ManualTesting.CurrentRequest);
-        }
+        //internal static void UpdateMTHeaderFieldsWithUIQueryParameters()
+        //{
+        //    if (ManualTesting.CurrentRequest == null) return;
+        //    ManualTesting.CurrentRequest.Query.RemoveAll();
+        //    foreach (DataGridViewRow Row in UI.MTRequestParametersQueryGrid.Rows)
+        //    {
+        //        ManualTesting.CurrentRequest.Query.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
+        //    }
+        //    FillMTRequestHeaderFields(ManualTesting.CurrentRequest);
+        //}
+        //internal static void UpdateMTBodyFieldsWithUIBodyParameters()
+        //{
+        //    if (ManualTesting.CurrentRequest == null) return;
+        //    ManualTesting.CurrentRequest.Body.RemoveAll();
+        //    foreach (DataGridViewRow Row in UI.MTRequestParametersBodyGrid.Rows)
+        //    {
+        //        ManualTesting.CurrentRequest.Body.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
+        //    }
+        //    FillMTRequestBodyFields(ManualTesting.CurrentRequest);
+        //}
+        //internal static void UpdateMTHeaderFieldsWithUICookieParameters()
+        //{
+        //    if (ManualTesting.CurrentRequest == null) return;
+        //    ManualTesting.CurrentRequest.Cookie.RemoveAll();
+        //    foreach (DataGridViewRow Row in UI.MTRequestParametersCookieGrid.Rows)
+        //    {
+        //        ManualTesting.CurrentRequest.Cookie.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
+        //    }
+        //    FillMTRequestHeaderFields(ManualTesting.CurrentRequest);
+        //}
+        //internal static void UpdateMTHeaderFieldsWithUIHeadersParameters()
+        //{
+        //    if (ManualTesting.CurrentRequest == null) return;
+        //    Parameters TempHolder = new Parameters();
+        //    if (ManualTesting.CurrentRequest.Headers.Has("Host"))
+        //    {
+        //        TempHolder.Set("Host", ManualTesting.CurrentRequest.Headers.Get("Host"));
+        //    }
+        //    if (ManualTesting.CurrentRequest.Headers.Has("Cookie"))
+        //    {
+        //        TempHolder.Set("Cookie", ManualTesting.CurrentRequest.Headers.Get("Cookie"));
+        //    }
+        //    ManualTesting.CurrentRequest.Headers.RemoveAll();
+        //    foreach (DataGridViewRow Row in UI.MTRequestParametersHeadersGrid.Rows)
+        //    {
+        //        ManualTesting.CurrentRequest.Headers.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
+        //    }
+        //    foreach (string Name in TempHolder.GetNames())
+        //    {
+        //        ManualTesting.CurrentRequest.Headers.Set(Name, TempHolder.Get(Name));
+        //    }
+        //    FillMTRequestHeaderFields(ManualTesting.CurrentRequest);
+        //}
 
-        internal static void HandleAnyChangesInMTRequest()
+        //internal static void HandleAnyChangesInMTRequest()
+        //{
+        //    if (ManualTesting.RequestHeaderChanged)
+        //    {
+        //        ManualTesting.UpdateCurrentRequestWithNewHeader(UI.MTRequestHeadersIDV.Text);
+        //        if (ManualTesting.CurrentRequest == null) return;
+        //        IronUI.FillMTParametersFields(ManualTesting.CurrentRequest);
+        //        if (ManualTesting.RequestBodyChanged)
+        //        {
+        //            ManualTesting.RequestHeaderChanged = false;
+        //        }
+        //        else
+        //        {
+        //            ManualTesting.ResetNonParameterChangedStatus();
+        //        }
+        //        ManualTesting.ResetParametersChangedStatus();
+        //    }
+        //    if (ManualTesting.RequestBodyChanged)
+        //    {
+        //        ManualTesting.UpdateCurrentRequestWithNewBodyText(UI.MTRequestBodyIDV.Text);
+        //        if (ManualTesting.CurrentRequest == null) return;
+        //        IronUI.FillMTParametersFields(ManualTesting.CurrentRequest);
+        //        ManualTesting.ResetNonParameterChangedStatus();
+        //        ManualTesting.ResetParametersChangedStatus();
+        //    }
+        //    if (ManualTesting.CurrentRequest == null) return;
+        //    if (ManualTesting.RequestQueryParametersChanged)
+        //    {
+        //        UpdateMTHeaderFieldsWithUIQueryParameters();
+        //        ManualTesting.ResetNonParameterChangedStatus();
+        //        ManualTesting.ResetParametersChangedStatus();
+        //    }
+        //    if (ManualTesting.RequestBodyParametersChanged)
+        //    {
+        //        UpdateMTBodyFieldsWithUIBodyParameters();
+        //        ManualTesting.ResetNonParameterChangedStatus();
+        //        ManualTesting.ResetParametersChangedStatus();
+        //    }
+        //    if (ManualTesting.RequestCookieParametersChanged)
+        //    {
+        //        UpdateMTHeaderFieldsWithUICookieParameters();
+        //        ManualTesting.ResetNonParameterChangedStatus();
+        //        ManualTesting.ResetParametersChangedStatus();
+        //    }
+        //    if (ManualTesting.RequestHeaderParametersChanged)
+        //    {
+        //        UpdateMTHeaderFieldsWithUIHeadersParameters();
+        //        ManualTesting.ResetNonParameterChangedStatus();
+        //        ManualTesting.ResetParametersChangedStatus();
+        //    }
+        //}
+
+        internal static void FillMTFields(Response Res, Request Req)
         {
-            if (ManualTesting.RequestHeaderChanged)
+            //UI.MTResponseHeadersIDV.Text = Response.GetHeadersAsString();
+            //if (Response.HasBody)
+            //{
+            //    if (Response.IsBinary)
+            //    {
+            //        UI.MTResponseBodyIDV.Text = Encoding.UTF8.GetString(Response.BodyArray);
+            //        UI.MTResponseBodyIDV.ReadOnly = true;
+            //    }
+            //    else
+            //    {
+            //        UI.MTResponseBodyIDV.Text = Response.BodyString;
+            //    }
+            //}
+            UI.TestResponseView.SetResponse(Res, Req);
+            try
             {
-                ManualTesting.UpdateCurrentRequestWithNewHeader(UI.MTRequestHeadersIDV.Text);
-                if (ManualTesting.CurrentRequest == null) return;
-                IronUI.FillMTParametersFields(ManualTesting.CurrentRequest);
-                if (ManualTesting.RequestBodyChanged)
+                Request RedirectRequest = ManualTesting.GetRedirectRequestOnly();
+                if (RedirectRequest == null)
                 {
-                    ManualTesting.RequestHeaderChanged = false;
+                    UI.MTFollowRedirectBtn.Visible = false;
+                    UI.MTGetRedirectBtn.Visible = false;
                 }
                 else
                 {
-                    ManualTesting.ResetNonParameterChangedStatus();
-                }
-                ManualTesting.ResetParametersChangedStatus();
-            }
-            if (ManualTesting.RequestBodyChanged)
-            {
-                ManualTesting.UpdateCurrentRequestWithNewBodyText(UI.MTRequestBodyIDV.Text);
-                if (ManualTesting.CurrentRequest == null) return;
-                IronUI.FillMTParametersFields(ManualTesting.CurrentRequest);
-                ManualTesting.ResetNonParameterChangedStatus();
-                ManualTesting.ResetParametersChangedStatus();
-            }
-            if (ManualTesting.CurrentRequest == null) return;
-            if (ManualTesting.RequestQueryParametersChanged)
-            {
-                UpdateMTHeaderFieldsWithUIQueryParameters();
-                ManualTesting.ResetNonParameterChangedStatus();
-                ManualTesting.ResetParametersChangedStatus();
-            }
-            if (ManualTesting.RequestBodyParametersChanged)
-            {
-                UpdateMTBodyFieldsWithUIBodyParameters();
-                ManualTesting.ResetNonParameterChangedStatus();
-                ManualTesting.ResetParametersChangedStatus();
-            }
-            if (ManualTesting.RequestCookieParametersChanged)
-            {
-                UpdateMTHeaderFieldsWithUICookieParameters();
-                ManualTesting.ResetNonParameterChangedStatus();
-                ManualTesting.ResetParametersChangedStatus();
-            }
-            if (ManualTesting.RequestHeaderParametersChanged)
-            {
-                UpdateMTHeaderFieldsWithUIHeadersParameters();
-                ManualTesting.ResetNonParameterChangedStatus();
-                ManualTesting.ResetParametersChangedStatus();
-            }
-        }
-
-        internal static void FillMTFields(Response Response)
-        {
-            UI.MTResponseHeadersIDV.Text = Response.GetHeadersAsString();
-            if (Response.HasBody)
-            {
-                if (Response.IsBinary)
-                {
-                    UI.MTResponseBodyIDV.Text = Encoding.UTF8.GetString(Response.BodyArray);
-                    UI.MTResponseBodyIDV.ReadOnly = true;
-                }
-                else
-                {
-                    UI.MTResponseBodyIDV.Text = Response.BodyString;
+                    UI.MTFollowRedirectBtn.Visible = true;
+                    UI.MTGetRedirectBtn.Visible = true;
                 }
             }
+            catch { }
         }
 
         
@@ -2066,23 +2418,27 @@ namespace IronWASP
 
         internal static void ResetMTRequestDisplayFields()
         {
-            UI.MTRequestHeadersIDV.Text = "";
-            UI.MTRequestBodyIDV.Text = "";
-            UI.MTRequestParametersQueryGrid.Rows.Clear();
-            UI.MTRequestParametersBodyGrid.Rows.Clear();
-            UI.MTRequestParametersCookieGrid.Rows.Clear();
-            UI.MTRequestParametersHeadersGrid.Rows.Clear();
-            UI.MTRequestHeadersIDV.ReadOnly = false;
-            UI.MTRequestBodyIDV.ReadOnly = false;
-            UI.MTRequestFormatXMLTB.Text = "";
-            UI.MTRequestFormatXMLTB.ReadOnly = true;
+            UI.TestRequestView.ClearRequest();
+        //    UI.MTRequestHeadersIDV.Text = "";
+        //    UI.MTRequestBodyIDV.Text = "";
+        //    UI.MTRequestParametersQueryGrid.Rows.Clear();
+        //    UI.MTRequestParametersBodyGrid.Rows.Clear();
+        //    UI.MTRequestParametersCookieGrid.Rows.Clear();
+        //    UI.MTRequestParametersHeadersGrid.Rows.Clear();
+        //    UI.MTRequestHeadersIDV.ReadOnly = false;
+        //    UI.MTRequestBodyIDV.ReadOnly = false;
+        //    UI.MTRequestFormatXMLTB.Text = "";
+        //    UI.MTRequestFormatXMLTB.ReadOnly = true;
         }
 
         internal static void ResetMTResponseDisplayFields()
         {
-            UI.MTResponseHeadersIDV.Text = "";
-            UI.MTResponseBodyIDV.Text = "";
-            FillTestReflection("");
+            //UI.MTResponseHeadersIDV.Text = "";
+            //UI.MTResponseBodyIDV.Text = "";
+            //FillTestReflection("");
+            UI.TestResponseView.ClearResponse();
+            UI.MTFollowRedirectBtn.Visible = false;
+            UI.MTGetRedirectBtn.Visible = false;
         }
 
         internal static void ResetMTExceptionFields()
@@ -2098,43 +2454,50 @@ namespace IronWASP
             UI.CustomSendActivateCB.Checked = false;
         }
 
-        delegate void FillMTRequestFormatXML_d(string XML);
-        internal static void FillMTRequestFormatXML(string XML)
+        internal static void ResetScriptedInterceptionScriptExceptionFields()
         {
-            if (UI.MTRequestFormatXMLTB.InvokeRequired)
-            {
-                FillMTRequestFormatXML_d FMTRFX_d = new FillMTRequestFormatXML_d(FillMTRequestFormatXML);
-                UI.Invoke(FMTRFX_d, new object[] { XML });
-            }
-            else
-            {
-                UI.MTRequestFormatXMLTB.Text = XML;
-                UI.MTRequestFormatXMLTB.ReadOnly = false;
-            }
+            UI.ScriptedInterceptionErrorTB.Text = "";
+            UI.ScriptedInterceptionErrorTB.Visible = false;
+            UI.ScriptedInterceptionActivateScriptCB.Checked = false;
         }
 
-        delegate void FillMTRequestWithNewRequestFromFormatXML_d(Request Request, string PluginName);
-        internal static void FillMTRequestWithNewRequestFromFormatXML(Request Request, string PluginName)
-        {
-            if (UI.MTRequestFormatXMLTB.InvokeRequired)
-            {
-                FillMTRequestWithNewRequestFromFormatXML_d FMTRWNRFFX_d = new FillMTRequestWithNewRequestFromFormatXML_d(FillMTRequestWithNewRequestFromFormatXML);
-                UI.Invoke(FMTRWNRFFX_d, new object[] { Request, PluginName });
-            }
-            else
-            {
-                try
-                {
-                    ResetMTRequestDisplayFields();
-                    FillMTFields(Request);
-                }
-                catch(Exception Exp)
-                {
-                    IronException.Report("Error displaying Updated 'Manual Testing' Request from Serializing XML using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
-                    IronUI.ShowMTException("Error displaying updated Request");
-                }
-            }
-        }
+        //delegate void FillMTRequestFormatXML_d(string XML);
+        //internal static void FillMTRequestFormatXML(string XML)
+        //{
+        //    if (UI.MTRequestFormatXMLTB.InvokeRequired)
+        //    {
+        //        FillMTRequestFormatXML_d FMTRFX_d = new FillMTRequestFormatXML_d(FillMTRequestFormatXML);
+        //        UI.Invoke(FMTRFX_d, new object[] { XML });
+        //    }
+        //    else
+        //    {
+        //        UI.MTRequestFormatXMLTB.Text = XML;
+        //        UI.MTRequestFormatXMLTB.ReadOnly = false;
+        //    }
+        //}
+
+        //delegate void FillMTRequestWithNewRequestFromFormatXML_d(Request Request, string PluginName);
+        //internal static void FillMTRequestWithNewRequestFromFormatXML(Request Request, string PluginName)
+        //{
+        //    if (UI.MTRequestFormatXMLTB.InvokeRequired)
+        //    {
+        //        FillMTRequestWithNewRequestFromFormatXML_d FMTRWNRFFX_d = new FillMTRequestWithNewRequestFromFormatXML_d(FillMTRequestWithNewRequestFromFormatXML);
+        //        UI.Invoke(FMTRWNRFFX_d, new object[] { Request, PluginName });
+        //    }
+        //    else
+        //    {
+        //        try
+        //        {
+        //            ResetMTRequestDisplayFields();
+        //            FillMTFields(Request);
+        //        }
+        //        catch(Exception Exp)
+        //        {
+        //            IronException.Report("Error displaying Updated 'Manual Testing' Request from Serializing XML using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
+        //            IronUI.ShowMTException("Error displaying updated Request");
+        //        }
+        //    }
+        //}
 
         delegate void ShowMTException_d(string Message);
         internal static void ShowMTException(string Message)
@@ -2165,6 +2528,279 @@ namespace IronWASP
                 UI.CustomSendErrorTB.Visible = true;
                 UI.CustomSendActivateCB.Checked = false;
             }
+        }
+
+        delegate void ShowScriptedInterceptionScriptException_d(string Message);
+        internal static void ShowScriptedInterceptionScriptException(string Message)
+        {
+            if (UI.CustomSendErrorTB.InvokeRequired)
+            {
+                ShowScriptedInterceptionScriptException_d SSISE_d = new ShowScriptedInterceptionScriptException_d(ShowScriptedSendScriptException);
+                UI.Invoke(SSISE_d, new object[] { Message });
+            }
+            else
+            {
+                UI.ScriptedInterceptionErrorTB.Text = "Exception:\r\n" + Message;
+                UI.ScriptedInterceptionErrorTB.Visible = true;
+                UI.ScriptedInterceptionActivateScriptCB.Checked = false;
+            }
+        }
+
+        delegate void SetAutomatedScanningScanner_d(Scanner ScannerToSet, string XML, string[,] XmlInjectionPoints);
+        internal static void SetAutomatedScanningScanner(Scanner ScannerToSet, string XML, string[,] XmlInjectionPoints)
+        {
+            if (UI.ASRequestTabs.InvokeRequired)
+            {
+                SetAutomatedScanningScanner_d SASS_d = new SetAutomatedScanningScanner_d(SetAutomatedScanningScanner);
+                UI.Invoke(SASS_d, new object[] { ScannerToSet, XML, XmlInjectionPoints });
+            }
+            else
+            {
+                try
+                {
+                    Scanner.CurrentScanner = ScannerToSet;
+                    Scanner.CurrentScanID = ScannerToSet.ID;
+                    IronUI.FillConfigureScanFullFields(ScannerToSet.OriginalRequest);
+                    UI.ASRequestTabs.SelectTab(0);
+                    IronUI.UpdateScanTabsWithRequestData();
+                    //if (ScannerToSet.BodyFormat.Name.Length > 0 && XmlInjectionPoints.Length > 0 && ScannerToSet.Status.Equals("Not Started"))
+                    //    IronUI.FillConfigureScanFormatDetails(XML, XmlInjectionPoints, new List<bool>(), false, ScannerToSet.BodyFormat.Name);
+                    UI.ScanIDLbl.Text = string.Format("Scan ID: {0}", ScannerToSet.ID);
+                    UI.ScanStatusLbl.Text = string.Format("Scan Status: {0}", ScannerToSet.Status);
+                    Scanner.ResetChangedStatus();
+                    UI.ScanTopPanel.Visible = false;
+                    UI.ScanJobsBaseSplit.SplitterDistance = 350;
+                    UI.ScanDisplayPanel.Visible = true;
+                }
+                catch (Exception Exp)
+                {
+                    IronException.Report("Unable to display Request in 'Automated Scanning' section", Exp.Message, Exp.StackTrace);
+                    IronUI.ShowConfigureScanException("Unable to display request");
+                    return;
+                }
+
+                if (UI.ASScanPluginsGrid.Rows.Count > 0)
+                {
+                    UI.ASScanPluginsGrid.Rows[0].Cells[0].Value = false;
+                    foreach (DataGridViewRow Row in UI.ASScanPluginsGrid.Rows)
+                    {
+                        if (Row.Index > 0)
+                        {
+                            Row.Cells[0].Value = ScannerToSet.ShowChecks().Contains(Row.Cells[1].Value.ToString());
+                        }
+                    }
+                    if (UI.ASScanPluginsGrid.Rows.Count > 1)
+                    {
+                        bool AllSelected = true;
+                        for (int i = 1; i < UI.ASScanPluginsGrid.Rows.Count; i++)
+                        {
+                            if (!(bool)UI.ASScanPluginsGrid.Rows[i].Cells[0].Value)
+                            {
+                                AllSelected = false;
+                                break;
+                            }
+                        }
+                        if (AllSelected) UI.ASScanPluginsGrid.Rows[0].Cells[0].Value = true;
+                    }
+                }
+
+                if (ScannerToSet.SessionHandler.Name.Length > 0)
+                    UI.SessionPluginLbl.Text = string.Format("Selection Plugin: {0}", ScannerToSet.SessionHandler.Name);
+                else
+                    UI.SessionPluginLbl.Text = "Selection Plugin: -";
+
+                //UI.ASSessionPluginsCombo.Items.Add("");
+                //int SelectedSessionPluginID = -1;
+                //bool SelectedSessionPluginFound = false;
+                //foreach (string Name in SessionPlugin.List())
+                //{
+                //    int ItemID = UI.ASSessionPluginsCombo.Items.Add(Name);
+                //    if (!SelectedSessionPluginFound)
+                //    {
+                //        if (ScannerToSet.SessionHandler.Name.Equals(Name))
+                //        {
+                //            SelectedSessionPluginID = ItemID;
+                //            SelectedSessionPluginFound = true;
+                //        }
+                //    }
+                //}
+
+                //if (SelectedSessionPluginID >= 0) UI.ASSessionPluginsCombo.SelectedIndex = SelectedSessionPluginID;
+                try
+                {
+                    FillInjectionsPointsinUI(ScannerToSet);
+                }
+                catch (Exception Exp)
+                {
+                    IronException.Report("Error restoring 'Automated Scan' configuration information from DB", Exp.Message, Exp.StackTrace);
+                    IronUI.ShowConfigureScanException("Error retriving scan information");
+                }
+
+                string ScanStatus = ScannerToSet.Status;
+                if (ScanStatus.Equals("Completed"))
+                {
+                    UI.ASStartScanBtn.Text = "Scan Again";
+                }
+                else if (ScanStatus.Equals("Running"))
+                {
+                    UI.ASStartScanBtn.Text = "Stop Scan";
+                }
+                else if (ScanStatus.Equals("Not Started") || ScanStatus.Equals("Incomplete") || ScanStatus.Equals("Aborted") || ScanStatus.Equals("Stopped"))
+                {
+                    UI.ASStartScanBtn.Text = "Start Scan";
+                }
+                if (!UI.ASBaseTabs.SelectedTab.Name.Equals("ASRequestTab"))
+                    UI.ASBaseTabs.SelectTab("ASRequestTab");
+                UI.ASStartScanBtn.Enabled = true;
+            }
+        }
+
+        static void FillInjectionsPointsinUI(Scanner Scanner)
+        {
+            bool AllUrl = UI.ASRequestScanURLGrid.Rows.Count > 0;
+            foreach (DataGridViewRow Row in UI.ASRequestScanURLGrid.Rows)
+            {
+                bool Result = Scanner.URLInjections.Contains(Row.Index);
+                if (AllUrl)
+                {
+                    AllUrl = Result;
+                }
+                Row.Cells[0].Value = Result;
+            }
+
+            int SubParameterIndex = 0;
+            string LastParameterName = "";
+
+            bool AllQuery = UI.ASRequestScanQueryGrid.Rows.Count > 0;
+            foreach (DataGridViewRow Row in UI.ASRequestScanQueryGrid.Rows)
+            {
+                string Name = Row.Cells[1].Value.ToString();
+                if (Name.Equals(LastParameterName))
+                {
+                    SubParameterIndex++;
+                }
+                else
+                {
+                    SubParameterIndex = 0;
+                }
+                bool Result = Scanner.QueryInjections.Has(Name) && Scanner.QueryInjections.GetAll(Name).Contains(SubParameterIndex);
+                if (AllQuery)
+                {
+                    AllQuery = Result;
+                }
+                Row.Cells[0].Value = Result;
+                LastParameterName = Name;
+            }
+
+            SubParameterIndex = 0;
+            LastParameterName = "";
+
+            bool AllBody = UI.ConfigureScanRequestBodyTypeFormatPluginGrid.Rows.Count > 0;
+            if (Scanner.BodyFormat.Name.Length > 0)
+            {
+                foreach (DataGridViewRow Row in UI.ConfigureScanRequestBodyTypeFormatPluginGrid.Rows)
+                {
+                    bool Result = Scanner.BodyXmlInjections.Contains(Row.Index);
+                    if (AllBody)
+                    {
+                        AllBody = Result;
+                    }
+                    Row.Cells[0].Value = Result;
+                }
+            }
+            else if (Scanner.CustomInjectionPointStartMarker.Length > 0 && Scanner.CustomInjectionPointEndMarker.Length > 0)
+            {
+                AllBody = true;
+            }
+            else
+            {
+                foreach (DataGridViewRow Row in UI.ASRequestScanBodyTypeNormalGrid.Rows)
+                {
+                    string Name = Row.Cells[1].Value.ToString();
+                    if (Name.Equals(LastParameterName))
+                    {
+                        SubParameterIndex++;
+                    }
+                    else
+                    {
+                        SubParameterIndex = 0;
+                    }
+                    bool Result = Scanner.BodyInjections.Has(Name) && Scanner.BodyInjections.GetAll(Name).Contains(SubParameterIndex);
+                    if (AllBody)
+                    {
+                        AllBody = Result;
+                    }
+                    Row.Cells[0].Value = Result;
+                    LastParameterName = Name;
+                }
+            }
+
+            SubParameterIndex = 0;
+            LastParameterName = "";
+
+            bool AllCookie = UI.ASRequestScanCookieGrid.Rows.Count > 0;
+            foreach (DataGridViewRow Row in UI.ASRequestScanCookieGrid.Rows)
+            {
+                string Name = Row.Cells[1].Value.ToString();
+                if (Name.Equals(LastParameterName))
+                {
+                    SubParameterIndex++;
+                }
+                else
+                {
+                    SubParameterIndex = 0;
+                }
+                bool Result = Scanner.CookieInjections.Has(Name) && Scanner.CookieInjections.GetAll(Name).Contains(SubParameterIndex);
+                if (AllCookie)
+                {
+                    AllCookie = Result;
+                }
+                Row.Cells[0].Value = Result;
+                LastParameterName = Name;
+            }
+
+            SubParameterIndex = 0;
+            LastParameterName = "";
+
+            bool AllHeaders = UI.ASRequestScanHeadersGrid.Rows.Count > 0;
+            foreach (DataGridViewRow Row in UI.ASRequestScanHeadersGrid.Rows)
+            {
+                string Name = Row.Cells[1].Value.ToString();
+                if (Name.Equals(LastParameterName))
+                {
+                    SubParameterIndex++;
+                }
+                else
+                {
+                    SubParameterIndex = 0;
+                }
+                bool Result = Scanner.HeadersInjections.Has(Name) && Scanner.HeadersInjections.GetAll(Name).Contains(SubParameterIndex);
+                if (AllHeaders)
+                {
+                    AllHeaders = Result;
+                }
+                Row.Cells[0].Value = Result;
+                LastParameterName = Name;
+            }
+
+            bool AllNames = false;
+            UI.ASRequestScanQueryParameterNameCB.Checked = Scanner.ParameterNameInjections.Has("Query");
+            UI.ASRequestScanBodyParameterNameCB.Checked = Scanner.ParameterNameInjections.Has("Body");
+            UI.ASRequestScanCookieParameterNameCB.Checked = Scanner.ParameterNameInjections.Has("Cookie");
+            UI.ASRequestScanHeadersParameterNameCB.Checked = Scanner.ParameterNameInjections.Has("Headers");
+
+            if (UI.ASRequestScanQueryParameterNameCB.Checked && UI.ASRequestScanBodyParameterNameCB.Checked && UI.ASRequestScanCookieParameterNameCB.Checked && UI.ASRequestScanHeadersParameterNameCB.Checked)
+            {
+                AllNames = true;
+            }
+
+            UI.ASRequestScanAllCB.Checked = AllUrl && AllQuery && AllBody && AllCookie && AllHeaders;
+            UI.ASRequestScanURLCB.Checked = AllUrl;
+            UI.ASRequestScanQueryCB.Checked = AllQuery;
+            UI.ASRequestScanBodyCB.Checked = AllBody;
+            UI.ASRequestScanCookieCB.Checked = AllCookie;
+            UI.ASRequestScanHeadersCB.Checked = AllHeaders;
+            UI.ASRequestScanParameterNamesCB.Checked = AllNames;
         }
 
         internal static void FillConfigureScanFullFields(Request Request)
@@ -2215,46 +2851,58 @@ namespace IronWASP
 
         
 
-        internal static void HandleAnyChangesInConfigureScanRequest()
-        {
-            if(Scanner.CurrentScanner != null)
-                if (Scanner.CurrentScanner.OriginalRequest != null)  Scanner.CurrentScanner.OriginalRequest.SSL = UI.ConfigureScanRequestSSLCB.Checked;
+        //internal static void HandleAnyChangesInConfigureScanRequest()
+        //{
+        //    if(Scanner.CurrentScanner != null)
+        //        if (Scanner.CurrentScanner.OriginalRequest != null)  Scanner.CurrentScanner.OriginalRequest.SSL = UI.ConfigureScanRequestSSLCB.Checked;
 
-            if (Scanner.RequestHeadersChanged)
-            {
-                if (Scanner.CurrentScanner == null)
-                {
-                    if (UI.ASStartScanBtn.Text.Equals("Scan"))
-                    {
-                        try
-                        {
-                            Scanner.CurrentScanner = new Scanner(new Request(UI.ASRequestRawHeadersIDV.Text.TrimEnd() + "\r\n\r\n", UI.ConfigureScanRequestSSLCB.Checked, false));
-                            UpdateScanTabsWithRequestData();
-                            Scanner.RequestHeadersChanged = false;
-                        }
-                        catch (Exception Exp)
-                        {
-                            IronUI.ShowConfigureScanException(Exp.Message);
-                        }
-                    }
-                }
-                else
-                {
-                    Scanner.CurrentScanner.ReloadRequestFromHeaderString(UI.ASRequestRawHeadersIDV.Text);
-                    UpdateScanTabsWithRequestData();
-                    Scanner.RequestHeadersChanged = false;
-                }
-            }
-            if (Scanner.RequestBodyChanged)
-            {
-                if (Scanner.CurrentScanner != null)
-                {
-                    Scanner.CurrentScanner.OriginalRequest.BodyString = UI.ASRequestRawBodyIDV.Text;
-                    Scanner.RequestBodyChanged = false;
-                    UpdateScanBodyTabWithDataInDefaultFormat();
-                }
-            }
-        }
+        //    if (Scanner.RequestHeadersChanged)
+        //    {
+        //        if (Scanner.CurrentScanner == null)
+        //        {
+        //            if (UI.ASStartScanBtn.Text.Equals("Scan"))
+        //            {
+        //                try
+        //                {
+        //                    Scanner.CurrentScanner = new Scanner(new Request(UI.ASRequestRawHeadersIDV.Text.TrimEnd() + "\r\n\r\n", UI.ConfigureScanRequestSSLCB.Checked, false));
+        //                    UpdateScanTabsWithRequestData();
+        //                    Scanner.RequestHeadersChanged = false;
+        //                }
+        //                catch (Exception Exp)
+        //                {
+        //                    IronUI.ShowConfigureScanException(Exp.Message);
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            Scanner.CurrentScanner.ReloadRequestFromHeaderString(UI.ASRequestRawHeadersIDV.Text);
+        //            UpdateScanTabsWithRequestData();
+        //            Scanner.RequestHeadersChanged = false;
+        //        }
+        //    }
+        //    if (Scanner.RequestBodyChanged)
+        //    {
+        //        if (Scanner.CurrentScanner != null)
+        //        {
+        //            Scanner.CurrentScanner.OriginalRequest.BodyString = UI.ASRequestRawBodyIDV.Text;
+        //            Scanner.RequestBodyChanged = false;
+        //            if (UI.ASBodyTypeCustomRB.Checked)
+        //            {
+        //                DetectAndHighLightCustomInjectionPoints();
+        //            }
+        //            else if (UI.ASBodyTypeFormatPluginRB.Checked)
+        //            {
+        //                Scanner.CurrentScanner.BodyFormat = new FormatPlugin();
+        //                UpdateScanBodyTabWithXmlArray();
+        //            }
+        //            else
+        //            {
+        //                UpdateScanBodyTabWithDataInDefaultFormat();
+        //            }
+        //        }
+        //    }
+        //}
 
         internal static void UpdateScanTabsWithRequestData()
         {
@@ -2273,7 +2921,11 @@ namespace IronWASP
                 }
             }
 
-            if (Scanner.CurrentScanner.BodyFormat.Name.Length > 0)
+            if (Scanner.CurrentScanner.CustomInjectionPointStartMarker.Length > 0 && Scanner.CurrentScanner.CustomInjectionPointEndMarker.Length > 0)
+            {
+                UpdateScanBodyTabWithCustomInjectionMarkers();
+            }
+            else if (Scanner.CurrentScanner.BodyFormat.Name.Length > 0)
             {
                 UpdateScanBodyTabWithXmlArray();
             }
@@ -2303,60 +2955,187 @@ namespace IronWASP
             }
         }
 
+        delegate void UpdateScanBodyTabWithDataInDefaultFormat_d();
         internal static void UpdateScanBodyTabWithDataInDefaultFormat()
         {
-            Scanner.CurrentScanner.BodyFormat = new FormatPlugin();
-            UI.ASRequestScanAllCB.Checked = false;
-            UI.ASRequestScanBodyCB.Checked = false;
-            UI.ConfigureScanRequestBodyGrid.Rows.Clear();
-            foreach (string Name in Scanner.CurrentScanner.OriginalRequest.Body.GetNames())
+            if (UI.ConfigureScanRequestBodyTypeFormatPluginGrid.InvokeRequired)
             {
-                foreach (string Value in Scanner.CurrentScanner.OriginalRequest.Body.GetAll(Name))
+                UpdateScanBodyTabWithDataInDefaultFormat_d USBTWDF_d = new UpdateScanBodyTabWithDataInDefaultFormat_d(UpdateScanBodyTabWithDataInDefaultFormat);
+                UI.Invoke(USBTWDF_d, new object[] { });
+            }
+            else
+            {
+                UI.ASRequestScanAllCB.Checked = false;
+                UI.ASRequestScanBodyCB.Checked = false;
+                
+                if (Scanner.CurrentScanner == null) return;
+                if (Scanner.CurrentScanner.OriginalRequest == null) return;
+                
+                Scanner.CurrentScanner.BodyFormat = new FormatPlugin();
+                Scanner.CurrentScanner.CustomInjectionPointStartMarker = "";
+                Scanner.CurrentScanner.CustomInjectionPointEndMarker = "";
+
+                Scanner.CurrentScannerBodyFormatTabIndex = 0;
+                if (!UI.ASBodyInjectTypeTabs.SelectedTab.Name.Equals("ASBodyTypeNormalTab")) UI.ASBodyInjectTypeTabs.SelectTab("ASBodyTypeNormalTab");
+
+                UI.ASRequestScanBodyTypeNormalGrid.Rows.Clear();
+                foreach (string Name in Scanner.CurrentScanner.OriginalRequest.Body.GetNames())
                 {
-                    UI.ConfigureScanRequestBodyGrid.Rows.Add(new object[] { false, Name, Value });
+                    foreach (string Value in Scanner.CurrentScanner.OriginalRequest.Body.GetAll(Name))
+                    {
+                        UI.ASRequestScanBodyTypeNormalGrid.Rows.Add(new object[] { false, Name, Value });
+                    }
                 }
             }
         }
 
+        delegate void UpdateScanBodyTabWithXmlArray_d();
         internal static void UpdateScanBodyTabWithXmlArray()
         {
-            UI.ASRequestScanAllCB.Checked = false;
-            UI.ASRequestScanBodyCB.Checked = false;
-            UI.ConfigureScanRequestBodyGrid.Rows.Clear();
-            foreach (string Name in Scanner.CurrentScanner.BodyXmlInjectionParameters.GetNames())
+            if (UI.ConfigureScanRequestBodyTypeFormatPluginGrid.InvokeRequired)
             {
-                UI.ConfigureScanRequestBodyGrid.Rows.Add(new object[] { false, Name, Scanner.CurrentScanner.BodyXmlInjectionParameters.Get(Name) });
+                UpdateScanBodyTabWithXmlArray_d USBTWXA_d = new UpdateScanBodyTabWithXmlArray_d(UpdateScanBodyTabWithXmlArray);
+                UI.Invoke(USBTWXA_d, new object[] { });
+            }
+            else
+            {
+                UI.ASRequestScanAllCB.Checked = false;
+                UI.ASRequestScanBodyCB.Checked = false;
+
+                if (Scanner.CurrentScanner == null) return;
+                if (Scanner.CurrentScanner.OriginalRequest == null) return;
+
+                Scanner.CurrentScannerBodyFormatTabIndex = 1;
+                if (!UI.ASBodyInjectTypeTabs.SelectedTab.Name.Equals("ASBodyTypeFormatPluginTab")) UI.ASBodyInjectTypeTabs.SelectTab("ASBodyTypeFormatPluginTab");
+
+                foreach (DataGridViewRow Row in UI.ConfigureScanRequestFormatPluginsGrid.Rows)
+                {
+                    if (Row.Cells[1].Value.ToString().Equals(Scanner.CurrentScanner.BodyFormat.Name))
+                        Row.Cells[0].Value = true;
+                    else
+                        Row.Cells[0].Value = false;
+                }
+
+                UI.ConfigureScanRequestBodyTypeFormatPluginGrid.Rows.Clear();
+                UI.ConfigureScanRequestFormatXMLTB.Text = "";
+
+                foreach (string Name in Scanner.CurrentScanner.BodyXmlInjectionParameters.GetNames())
+                {
+                    UI.ConfigureScanRequestBodyTypeFormatPluginGrid.Rows.Add(new object[] { false, Name, Scanner.CurrentScanner.BodyXmlInjectionParameters.Get(Name) });
+                }
             }
         }
 
-        internal static void ResetConfigureScanFields()
+        internal static void UpdateScanBodyTabWithCustomInjectionMarkers()
         {
             UI.ASRequestScanAllCB.Checked = false;
-            UI.ASRequestScanURLCB.Checked = false;
-            UI.ASRequestScanQueryCB.Checked = false;
             UI.ASRequestScanBodyCB.Checked = false;
-            UI.ASRequestScanCookieCB.Checked = false;
-            UI.ASRequestScanHeadersCB.Checked = false;
-            UI.ASRequestScanURLGrid.Rows.Clear();
-            UI.ASRequestScanQueryGrid.Rows.Clear();
-            UI.ConfigureScanRequestBodyGrid.Rows.Clear();
-            UI.ASRequestScanCookieGrid.Rows.Clear();
-            UI.ASRequestScanHeadersGrid.Rows.Clear();
-            UI.ASSessionPluginsCombo.Items.Clear();
-            UI.ASSessionPluginsCombo.Text = "";
-            UI.ASRequestRawHeadersIDV.Text = "";
-            UI.ASRequestRawBodyIDV.Text = "";
-            UI.ConfigureScanRequestSSLCB.Checked = false;
-            UI.ScanIDLbl.Text = "Scan ID:";
-            UI.ScanStatusLbl.Text = "Scan Status:";
-            ResetConfigureScanException();
 
+            if (Scanner.CurrentScanner == null) return;
+            if (Scanner.CurrentScanner.OriginalRequest == null) return;
+
+            Scanner.CurrentScannerBodyFormatTabIndex = 2;
+            if (!UI.ASBodyInjectTypeTabs.SelectedTab.Name.Equals("ASBodyTypeCustomTab")) UI.ASBodyInjectTypeTabs.SelectTab("ASBodyTypeCustomTab");
+
+            if (Scanner.CurrentScanner.CustomInjectionPointStartMarker.Length > 0)
+                UI.ASCustomStartMarkerTB.Text = Scanner.CurrentScanner.CustomInjectionPointStartMarker;
+            else
+                UI.ASCustomStartMarkerTB.Text = Scanner.DefaultStartMarker;
+
+            if (Scanner.CurrentScanner.CustomInjectionPointEndMarker.Length > 0)
+                UI.ASCustomEndMarkerTB.Text = Scanner.CurrentScanner.CustomInjectionPointEndMarker;
+            else
+                UI.ASCustomEndMarkerTB.Text = Scanner.DefaultEndMarker;
+
+            DetectAndHighLightCustomInjectionPoints();
+        }
+
+        internal static void DetectAndHighLightCustomInjectionPoints()
+        {
+            if (Scanner.CurrentScanner == null) return;
+            if (Scanner.CurrentScanner.OriginalRequest == null) return;
+
+            UI.ASRequestCustomInjectionPointsHighlightTB.Text = Scanner.CurrentScanner.OriginalRequest.BodyString;
+            string StartMarker = Scanner.CurrentScanner.CustomInjectionPointStartMarker;
+            string EndMarker = Scanner.CurrentScanner.CustomInjectionPointEndMarker;
+            if (StartMarker.Length == 0 || EndMarker.Length == 0 || StartMarker.Equals(EndMarker))
+            {
+                return;
+            }
+            int SSI = UI.ASRequestCustomInjectionPointsHighlightTB.SelectionStart;
+            int SSL = UI.ASRequestCustomInjectionPointsHighlightTB.SelectionLength;
+            string TempText = UI.ASRequestCustomInjectionPointsHighlightTB.Text;
+            UI.ASRequestCustomInjectionPointsHighlightTB.Text = TempText;//this is done to clear all previous selection highlighting
+            bool CheckFurther = true;
+            int Pointer = 0;
+            string Content = UI.ASRequestCustomInjectionPointsHighlightTB.Text;
+            int MatchCount = 0;
+            while (CheckFurther && Content.Length > Pointer)
+            {
+                int Start = Content.IndexOf(StartMarker, Pointer);
+                int Stop = -1;
+                if (Content.Length >= (Start + StartMarker.Length))
+                    Stop = Content.IndexOf(EndMarker, Start + StartMarker.Length);
+                if (Start == -1 || Stop == -1) CheckFurther = false;
+                if (CheckFurther)
+                {
+                    UI.ASRequestCustomInjectionPointsHighlightTB.SelectionStart = Start;
+                    UI.ASRequestCustomInjectionPointsHighlightTB.SelectionLength = (Stop + EndMarker.Length) - Start;
+                    UI.ASRequestCustomInjectionPointsHighlightTB.SelectionBackColor = Color.Orange;
+                    MatchCount++;
+                }
+                Pointer = Stop + EndMarker.Length;
+            }
+            UI.ASRequestCustomInjectionPointsHighlightTB.SelectionStart = SSI;
+            UI.ASRequestCustomInjectionPointsHighlightTB.SelectionLength = SSL;
+
+            UI.ASRequestCustomInjectionPointsHighlightLbl.Text = string.Format("No. of Injection Points: {0}", MatchCount);
+            if (MatchCount > 0)
+                UI.ASRequestScanBodyCB.Checked = true;
+            else
+                UI.ASRequestScanBodyCB.Checked = false;
+        }
+
+        delegate void ResetConfigureScanFields_d();
+        internal static void ResetConfigureScanFields()
+        {
+            if (UI.ASRequestScanAllCB.InvokeRequired)
+            {
+                ResetConfigureScanFields_d RCSF_d = new ResetConfigureScanFields_d(ResetConfigureScanFields);
+                UI.Invoke(RCSF_d, new object[] { });
+            }
+            else
+            {
+                UI.ASRequestScanAllCB.Checked = false;
+                UI.ASRequestScanURLCB.Checked = false;
+                UI.ASRequestScanQueryCB.Checked = false;
+                UI.ASRequestScanBodyCB.Checked = false;
+                UI.ASRequestScanCookieCB.Checked = false;
+                UI.ASRequestScanHeadersCB.Checked = false;
+                UI.ASRequestScanURLGrid.Rows.Clear();
+                UI.ASRequestScanQueryGrid.Rows.Clear();
+                UI.ASRequestScanBodyTypeNormalGrid.Rows.Clear();
+                UI.ConfigureScanRequestBodyTypeFormatPluginGrid.Rows.Clear();
+                UI.ASRequestCustomInjectionPointsHighlightTB.Text = "";
+                UI.ASRequestCustomInjectionPointsHighlightLbl.Text = "Number of Injection Points Detected: 0";
+                UI.ASRequestScanCookieGrid.Rows.Clear();
+                UI.ASRequestScanHeadersGrid.Rows.Clear();
+                //UI.ASSessionPluginsCombo.Items.Clear();
+                //UI.ASSessionPluginsCombo.Text = "";
+                UI.SessionPluginLbl.Text = "Session Plugin: ";
+                UI.ASRequestRawHeadersIDV.Text = "";
+                UI.ASRequestRawBodyIDV.Text = "";
+                UI.ConfigureScanRequestSSLCB.Checked = false;
+                UI.ScanIDLbl.Text = "Scan ID:";
+                UI.ScanStatusLbl.Text = "Scan Status:";
+                ResetConfigureScanException();
+            }
         }
 
         delegate void FillConfigureScanFormatDetails_d(string XML, string[,] InjectionArray, List<bool> CheckStatus, bool CheckAll, string PluginName);
         internal static void FillConfigureScanFormatDetails(string XML, string[,] InjectionArray, List<bool> CheckStatus, bool CheckAll, string PluginName)
         {
-            if (UI.ConfigureScanRequestBodyGrid.InvokeRequired)
+            if (UI.ConfigureScanRequestBodyTypeFormatPluginGrid.InvokeRequired)
             {
                 FillConfigureScanFormatDetails_d FCSFD_d = new FillConfigureScanFormatDetails_d(FillConfigureScanFormatDetails);
                 UI.Invoke(FCSFD_d, new object[] { XML, InjectionArray, CheckStatus, CheckAll, PluginName });
@@ -2372,29 +3151,28 @@ namespace IronWASP
                         CheckStatus.Add(CheckAll);
                     }
                 }
-                UI.ASRequestTabs.SelectTab("ASRequestBodyTab");
-                UI.ConfigureScanRequestBodyGrid.Rows.Clear();
+                //UI.ASRequestTabs.SelectTab("ASRequestBodyTab");
+                UI.ConfigureScanRequestBodyTypeFormatPluginGrid.Rows.Clear();
                 Parameters BodyXmlInjectionParameters = new Parameters();
                 for (int i = 0; i < InjectionArray.GetLength(0); i++)
                 {
-                    UI.ConfigureScanRequestBodyGrid.Rows.Add(new object[] { CheckStatus[i], InjectionArray[i, 0], InjectionArray[i, 1] });
+                    UI.ConfigureScanRequestBodyTypeFormatPluginGrid.Rows.Add(new object[] { CheckStatus[i], InjectionArray[i, 0], InjectionArray[i, 1] });
                     BodyXmlInjectionParameters.Add(InjectionArray[i, 0], InjectionArray[i, 1]);
-                    Scanner.CurrentScanner.BodyXmlInjectionParameters = BodyXmlInjectionParameters;
                 }
+                Scanner.CurrentScanner.BodyXmlInjectionParameters = BodyXmlInjectionParameters;
                 UI.ASRequestScanBodyCB.Checked = CheckAll;
                 foreach (DataGridViewRow Row in UI.ConfigureScanRequestFormatPluginsGrid.Rows)
                 {
-                    if (Row.Cells[0].Value.ToString().Equals(PluginName))
-                    {
-                        Row.Selected = true;
-                        break;
-                    }
+                    if (Row.Cells[1].Value.ToString().Equals(PluginName))
+                        Row.Cells[0].Value = true;
+                    else
+                        Row.Cells[0].Value = false;
                 }
             }
         }
 
-        delegate void UpdateResultsTab_d(PluginResult PR);
-        internal static void UpdateResultsTab(PluginResult PR)
+        delegate void UpdateResultsTab_d(Finding PR);
+        internal static void UpdateResultsTab(Finding PR)
         {
             if (UI.ResultsDisplayRTB.InvokeRequired)
             {
@@ -2408,7 +3186,7 @@ namespace IronWASP
                 SB.Append(@" \b \fs30"); SB.Append(Tools.RtfSafe(PR.Title)); SB.Append(@"\b0  \fs20  \par  \par");
                 SB.Append(@" \cf1 \b ID: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(PR.Id.ToString())); SB.Append(@" \par");
                 SB.Append(@" \cf1 \b Plugin: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(PR.Plugin)); SB.Append(@" \par");
-                if (PR.ResultType == PluginResultType.Vulnerability)
+                if (PR.Type == FindingType.Vulnerability)
                 {
                     SB.Append(@" \cf1 \b Severity: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(PR.Severity.ToString())); SB.Append(@" \par");
                     SB.Append(@" \cf1 \b Confidence: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(PR.Confidence.ToString())); SB.Append(@" \par");
@@ -2465,13 +3243,15 @@ namespace IronWASP
             }
         }
 
-        delegate void UpdateResultsTabWithSiteMapLog_d(string Host, string Url);
-        internal static void UpdateResultsTab(string Host, string Url)
+        //delegate void UpdateResultsTabWithSiteMapLog_d(string Host, string Url);
+        //internal static void UpdateResultsTab(string Host, string Url)
+        delegate void UpdateResultsTabWithSiteMapLog_d(Request UrlReq);
+        internal static void UpdateResultsTab(Request UrlReq)
         {
             if (UI.ResultsDisplayRTB.InvokeRequired)
             {
                 UpdateResultsTabWithSiteMapLog_d URTWSML_d = new UpdateResultsTabWithSiteMapLog_d(UpdateResultsTab);
-                UI.Invoke(URTWSML_d, new object[] { Host, Url });
+                UI.Invoke(URTWSML_d, new object[] { UrlReq });
             }
             else
             {
@@ -2479,36 +3259,41 @@ namespace IronWASP
                 UI.SiteMapLogGrid.Rows.Clear();
                 foreach (DataGridViewRow Row in UI.ProxyLogGrid.Rows)
                 {
-                    if (!Row.Cells["ProxyLogGridColumnForHostName"].Value.ToString().Equals(Host)) continue;
-                    if (!Row.Cells["ProxyLogGridColumnForURL"].Value.ToString().StartsWith(Url)) continue;
+                    if ((bool)Row.Cells["ProxyLogGridColumnForSSL"].Value != UrlReq.SSL) continue;
+                    if (!Row.Cells["ProxyLogGridColumnForHostName"].Value.ToString().Equals(UrlReq.Host)) continue;
+                    if (!Row.Cells["ProxyLogGridColumnForURL"].Value.ToString().StartsWith(UrlReq.Url)) continue;
 
                     UI.SiteMapLogGrid.Rows.Add(new object[] { Row.Cells["ProxyLogGridColumnForID"].Value, "Proxy", Row.Cells["ProxyLogGridColumnForHostName"].Value, Row.Cells["ProxyLogGridColumnForMethod"].Value, Row.Cells["ProxyLogGridColumnForURL"].Value, Row.Cells["ProxyLogGridColumnForFile"].Value, Row.Cells["ProxyLogGridColumnForSSL"].Value, Row.Cells["ProxyLogGridColumnForParameters"].Value, Row.Cells["ProxyLogGridColumnForCode"].Value, Row.Cells["ProxyLogGridColumnForLength"].Value, Row.Cells["ProxyLogGridColumnForMIME"].Value, Row.Cells["ProxyLogGridColumnForSetCookie"].Value });
                 }
                 foreach (DataGridViewRow Row in UI.TestLogGrid.Rows)
                 {
-                    if (!Row.Cells["MTLogGridColumnForHostName"].Value.ToString().Equals(Host)) continue;
-                    if (!Row.Cells["MTLogGridColumnForURL"].Value.ToString().StartsWith(Url)) continue;
+                    if ((bool)Row.Cells["MTLogGridColumnForSSL"].Value != UrlReq.SSL) continue;
+                    if (!Row.Cells["MTLogGridColumnForHostName"].Value.ToString().Equals(UrlReq.Host)) continue;
+                    if (!Row.Cells["MTLogGridColumnForURL"].Value.ToString().StartsWith(UrlReq.Url)) continue;
 
                     UI.SiteMapLogGrid.Rows.Add(new object[] { Row.Cells["MTLogGridColumnForID"].Value, "Test", Row.Cells["MTLogGridColumnForHostName"].Value, Row.Cells["MTLogGridColumnForMethod"].Value, Row.Cells["MTLogGridColumnForURL"].Value, Row.Cells["MTLogGridColumnForFile"].Value, Row.Cells["MTLogGridColumnForSSL"].Value, Row.Cells["MTLogGridColumnForParameters"].Value, Row.Cells["MTLogGridColumnForCode"].Value, Row.Cells["MTLogGridColumnForLength"].Value, Row.Cells["MTLogGridColumnForMIME"].Value, Row.Cells["MTLogGridColumnForSetCookie"].Value });
                 }
                 foreach (DataGridViewRow Row in UI.ShellLogGrid.Rows)
                 {
-                    if (!Row.Cells["ScriptingLogGridColumnForHostName"].Value.ToString().Equals(Host)) continue;
-                    if (!Row.Cells["ScriptingLogGridColumnForURL"].Value.ToString().StartsWith(Url)) continue;
+                    if ((bool)Row.Cells["ScriptingLogGridColumnForSSL"].Value != UrlReq.SSL) continue;
+                    if (!Row.Cells["ScriptingLogGridColumnForHostName"].Value.ToString().Equals(UrlReq.Host)) continue;
+                    if (!Row.Cells["ScriptingLogGridColumnForURL"].Value.ToString().StartsWith(UrlReq.Url)) continue;
 
                     UI.SiteMapLogGrid.Rows.Add(new object[] { Row.Cells["ScriptingLogGridColumnForID"].Value, "Shell", Row.Cells["ScriptingLogGridColumnForHostName"].Value, Row.Cells["ScriptingLogGridColumnForMethod"].Value, Row.Cells["ScriptingLogGridColumnForURL"].Value, Row.Cells["ScriptingLogGridColumnForFile"].Value, Row.Cells["ScriptingLogGridColumnForSSL"].Value, Row.Cells["ScriptingLogGridColumnForParameters"].Value, Row.Cells["ScriptingLogGridColumnForCode"].Value, Row.Cells["ScriptingLogGridColumnForLength"].Value, Row.Cells["ScriptingLogGridColumnForMIME"].Value, Row.Cells["ScriptingLogGridColumnForSetCookie"].Value });
                 }
                 foreach (DataGridViewRow Row in UI.ProbeLogGrid.Rows)
                 {
-                    if (!Row.Cells["ProbeLogGridColumnForHostName"].Value.ToString().Equals(Host)) continue;
-                    if (!Row.Cells["ProbeLogGridColumnForURL"].Value.ToString().StartsWith(Url)) continue;
+                    if ((bool)Row.Cells["ProbeLogGridColumnForSSL"].Value != UrlReq.SSL) continue;
+                    if (!Row.Cells["ProbeLogGridColumnForHostName"].Value.ToString().Equals(UrlReq.Host)) continue;
+                    if (!Row.Cells["ProbeLogGridColumnForURL"].Value.ToString().StartsWith(UrlReq.Url)) continue;
 
                     UI.SiteMapLogGrid.Rows.Add(new object[] { Row.Cells["ProbeLogGridColumnForID"].Value, "Probe", Row.Cells["ProbeLogGridColumnForHostName"].Value, Row.Cells["ProbeLogGridColumnForMethod"].Value, Row.Cells["ProbeLogGridColumnForURL"].Value, Row.Cells["ProbeLogGridColumnForFile"].Value, Row.Cells["ProbeLogGridColumnForSSL"].Value, Row.Cells["ProbeLogGridColumnForParameters"].Value, Row.Cells["ProbeLogGridColumnForCode"].Value, Row.Cells["ProbeLogGridColumnForLength"].Value, Row.Cells["ProbeLogGridColumnForMIME"].Value, Row.Cells["ProbeLogGridColumnForSetCookie"].Value });
                 }
                 foreach (DataGridViewRow Row in UI.ScanLogGrid.Rows)
                 {
-                    if (!Row.Cells["ScanLogGridColumnForHost"].Value.ToString().Equals(Host)) continue;
-                    if (!Row.Cells["ScanLogGridColumnForURL"].Value.ToString().StartsWith(Url)) continue;
+                    if ((bool)Row.Cells["ScanLogGridColumnForSSL"].Value != UrlReq.SSL) continue;
+                    if (!Row.Cells["ScanLogGridColumnForHost"].Value.ToString().Equals(UrlReq.Host)) continue;
+                    if (!Row.Cells["ScanLogGridColumnForURL"].Value.ToString().StartsWith(UrlReq.Url)) continue;
 
                     UI.SiteMapLogGrid.Rows.Add(new object[] { Row.Cells["ScanLogGridColumnForID"].Value, "Scan", Row.Cells["ScanLogGridColumnForHost"].Value, Row.Cells["ScanLogGridColumnForMethod"].Value, Row.Cells["ScanLogGridColumnForURL"].Value, Row.Cells["ScanLogGridColumnForFile"].Value, Row.Cells["ScanLogGridColumnForSSL"].Value, Row.Cells["ScanLogGridColumnForParameters"].Value, Row.Cells["ScanLogGridColumnForCode"].Value, Row.Cells["ScanLogGridColumnForLength"].Value, Row.Cells["ScanLogGridColumnForMIME"].Value, Row.Cells["ScanLogGridColumnForSetCookie"].Value });
                 }
@@ -2526,7 +3311,7 @@ namespace IronWASP
             if (PluginDetails[4].Equals("Ruby")) Language = "Ruby";
             StringBuilder SB = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;}");
             SB.Append(@" \b \fs30"); SB.Append(Tools.RtfSafe(PluginDetails[0])); SB.Append(@"\b0 ");
-            SB.Append(@" \par"); SB.Append(@" \par"); SB.Append(@" \fs20");
+            SB.Append(@" \par \par \fs20");
             SB.Append(@" \cf1 \b Language: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(PluginDetails[4])); SB.Append(@" \par");
             SB.Append(@" \cf1 \b File: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(PluginDetails[2])); SB.Append(@" \par");
             SB.Append(@" \par");
@@ -2538,7 +3323,27 @@ namespace IronWASP
             UI.PluginEditorInTE.SetHighlighting(Language);
             UI.PluginEditorInTE.Refresh();
         }
-        
+
+        internal static void DisplayModuleDetails(string[] ModuleDetails)
+        {
+            string Language = "Python";
+            if (ModuleDetails[4].Equals("Ruby")) Language = "Ruby";
+            StringBuilder SB = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;}");
+            SB.Append(@" \b \fs30"); SB.Append(Tools.RtfSafe(ModuleDetails[5])); SB.Append(@"\b0 ");
+            SB.Append(@" \par \par \fs20");
+            SB.Append(@" \cf1 \b Name: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(ModuleDetails[0])); SB.Append(@" \par");
+            SB.Append(@" \cf1 \b Language: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(ModuleDetails[4])); SB.Append(@" \par");
+            SB.Append(@" \cf1 \b File: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(ModuleDetails[2])); SB.Append(@" \par");
+            SB.Append(@" \par");
+            SB.Append(@" \cf1 \b Description: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(ModuleDetails[1])); SB.Append(@" \par");
+            SB.Append(@" \par");
+            UI.PluginDetailsRTB.Rtf = SB.ToString();
+            UI.PluginEditorInTE.Text = ModuleDetails[3];
+            Directory.SetCurrentDirectory(Config.RootDir);
+            UI.PluginEditorInTE.SetHighlighting(Language);
+            UI.PluginEditorInTE.Refresh();
+        }
+
         delegate void FreezeInteractiveShellUI_d();
         internal static void FreezeInteractiveShellUI()
         {
@@ -2709,8 +3514,7 @@ namespace IronWASP
             {
                 IronUI.ShowProxyException(Error);
                 if(!IronUI.UI.main_tab.SelectedTab.Name.Equals("mt_proxy")) IronUI.UI.main_tab.SelectTab("mt_proxy");
-                IronUI.UI.TopMost = true;
-                IronUI.UI.TopMost = false;
+                MakeUiTopMost(true);
             }
         }
 
@@ -2922,13 +3726,19 @@ namespace IronWASP
             }
         }
 
+        delegate void UpdateScannerSettingsInUIFromConfig_d();
         internal static void UpdateScannerSettingsInUIFromConfig()
         {
-            UI.ConfigScannerThreadMaxCountTB.Value = Scanner.MaxParallelScanCount;
-            UI.ConfigScannerThreadMaxCountLbl.Text = UI.ConfigScannerThreadMaxCountTB.Value.ToString();
-            UI.ConfigCrawlerThreadMaxCountTB.Value = Crawler.MaxCrawlThreads;
-            UI.ConfigCrawlerThreadMaxCountLbl.Text = UI.ConfigCrawlerThreadMaxCountTB.Value.ToString();
-            UI.ConfigCrawlerUserAgentTB.Text = Crawler.UserAgent;
+            if (UI.ConfigScannerThreadMaxCountTB.InvokeRequired)
+            {
+                UpdateScannerSettingsInUIFromConfig_d CALL_d = new UpdateScannerSettingsInUIFromConfig_d(UpdateScannerSettingsInUIFromConfig);
+                UI.Invoke(CALL_d, new object[] { });
+            }
+            else
+            {
+                UI.ConfigScannerThreadMaxCountTB.Value = Scanner.MaxParallelScanCount;
+                UI.ConfigScannerThreadMaxCountLbl.Text = UI.ConfigScannerThreadMaxCountTB.Value.ToString();
+            }
         }
 
         internal static void UpdatePassiveAnalysisSettingsInUIFromConfig()
@@ -3286,6 +4096,46 @@ namespace IronWASP
             }
         }
 
+        delegate void SetOtherSourceGridRows_d(List<object[]> Rows, string Source);
+        internal static void SetOtherSourceGridRows(List<object[]> Rows, string Source)
+        {
+            if (UI.OtherLogGrid.InvokeRequired)
+            {
+                SetOtherSourceGridRows_d SOSGR_d = new SetOtherSourceGridRows_d(SetOtherSourceGridRows);
+                UI.Invoke(SOSGR_d, new object[] { Rows, Source });
+            }
+            else
+            {
+                List<string> Sources = new List<string>();
+                foreach (DataGridViewRow Row in UI.OtherLogSourceGrid.Rows)
+                {
+                    Sources.Add(Row.Cells[0].Value.ToString());
+                }
+                if (!Source.Contains(Source))
+                {
+                    UI.OtherLogSourceGrid.Rows.Add(new object[]{Source});
+                }
+                UI.OtherLogGrid.Rows.Clear();
+                IronLog.OtherSourceMin = 0;
+                IronLog.OtherSourceMax = 0;
+                foreach (object[] Row in Rows)
+                {
+                    if (UI.OtherLogGrid.Rows.Count >= IronLog.MaxRowCount) break;
+                    try
+                    {
+                        UI.OtherLogGrid.Rows.Add(Row);
+                        int ID = (int)Row[0];
+                        if (ID > IronLog.OtherSourceMax) IronLog.OtherSourceMax = ID;
+                        if (ID < IronLog.OtherSourceMin || IronLog.OtherSourceMin < 1) IronLog.OtherSourceMin = ID;
+                    }
+                    catch { }
+                }
+                Rows.Clear();
+                ShowCurrentLogStat();
+                ShowLogBottomStatus("", false);
+            }
+        }
+
         delegate void ClearAllProbeGridRows_d();
         static void ClearAllProbeGridRows()
         {
@@ -3605,6 +4455,14 @@ namespace IronWASP
             int StartID = 0;
             int Counter = 0;
 
+            try
+            {
+                IronDB.ReadOtherSourceLogInformation();
+                IronDB.MakeLogFileVersionCompliant();
+                IronUI.UpdateOtherSourceLogGrid(new List<Request>(), new List<Response>(), "", new List<string>(Config.OtherSourceCounterDict.Keys));
+            }
+            catch{ ShowWaitFormMessage("Error reading Other Source Log DB.."); }
+
             //StepWaitFormProgressBar();
             ShowWaitFormGridMessage(1, Counter, "In Progress", 2, true);
             ShowWaitFormMessage("Updating Proxy Logs..");
@@ -3678,13 +4536,40 @@ namespace IronWASP
 
             //test groups
             ClearTestGroupLogGrid();
-            IronDB.LoadTestGroups();
-            UI.TestIDLbl.BackColor = Color.Red;
+            try
+            {
+                IronDB.LoadTestGroups();
+            }
+            catch { }
+            //UI.TestIDLbl.BackColor = Color.Red;
             UI.TestIDLbl.Text = "ID: 0";
-            ManualTesting.CurrentGroup = "Red";
+            //ManualTesting.CurrentGroup = "Red";
+            UI.MTCurrentGroupNameTB.Text = "";
             IronUI.ResetMTDisplayFields();
-            IronUI.UpdateTestGroupLogGrid(ManualTesting.RedGroupSessions);
-            ManualTesting.ShowSession(ManualTesting.RedGroupID);
+            UI.TestGroupsLV.Items.Clear();
+            foreach (string Group in ManualTesting.GroupSessions.Keys)
+            {
+                UI.TestGroupsLV.Items.Add(Group, Group, 0);
+            }
+            if (UI.TestGroupsLV.Items.Count > 0)
+            {
+                UI.TestGroupsTitleTB.Visible = true;
+                UI.TestGroupsLV.Visible = true;
+            }
+            else
+            {
+                UI.TestGroupsTitleTB.Visible = false;
+                UI.TestGroupsLV.Visible = false;
+            }
+            //if (ManualTesting.GroupSessions.Keys.Count > 0)
+            //{
+                //string FirstKey = (new List<string>(ManualTesting.GroupSessions.Keys))[0];
+                //IronUI.UpdateTestGroupLogGrid(ManualTesting.RedGroupSessions);
+                //IronUI.UpdateTestGroupLogGrid(ManualTesting.GroupSessions[FirstKey]);
+                //ManualTesting.ShowSession(ManualTesting.RedGroupID);
+                //ManualTesting.ShowSession(ManualTesting.CurrentGroupLogId[FirstKey]);
+                
+            //}
             Counter = 0;
 
             //StepWaitFormProgressBar();
@@ -3902,6 +4787,7 @@ namespace IronWASP
             SetScanTraceGrid(AllScanTraces);
             //Config.ScanTraceCount = StartID;
             Config.ScanTraceCount = IronDB.GetLastScanTraceLogRowId();
+            Config.SessionPluginTraceCount = IronDB.GetLastSessionPluginTraceLogRowId();
             if(Success) ShowWaitFormGridMessage(5, Counter, "Done", 1, false);
 
             //WF.Text = "Updating Automated Scanning Logs..";
@@ -4027,8 +4913,8 @@ namespace IronWASP
             //BuildIronTree();
 
             StartID = 0;
-            List<PluginResult> AllPluginResultLogRecords = new List<PluginResult>();
-            List<PluginResult> PluginResultLogRecords = new List<PluginResult>();
+            List<Finding> AllPluginResultLogRecords = new List<Finding>();
+            List<Finding> PluginResultLogRecords = new List<Finding>();
 
             try
             {
@@ -4043,10 +4929,10 @@ namespace IronWASP
             while (PluginResultLogRecords.Count > 0)
             {
                 Counter = Counter + PluginResultLogRecords.Count;
-                foreach (PluginResult PR in PluginResultLogRecords)
+                foreach (Finding PR in PluginResultLogRecords)
                 {
                     if (PR.Id > StartID) StartID = PR.Id;
-                    PluginResult.IsSignatureUnique(PR.Plugin, PR.AffectedHost, PR.ResultType, PR.Signature, true);
+                    Finding.IsSignatureUnique(PR.Plugin, PR.AffectedHost, PR.Type, PR.Signature, true);
                 }
 
                 AllPluginResultLogRecords.AddRange(PluginResultLogRecords);
@@ -4194,7 +5080,7 @@ namespace IronWASP
         internal static void DisplayPluginResultsTrigger(int TriggerID)
         {
             ResetPluginResultsFields();
-            Trigger SelectedTrigger = PluginResult.CurrentPluginResult.Triggers.GetTrigger(TriggerID);
+            Trigger SelectedTrigger = Finding.CurrentPluginResult.Triggers.GetTrigger(TriggerID);
             UI.ResultsRequestTriggerTB.Text = SelectedTrigger.RequestTrigger;
             UI.ResultsResponseTriggerTB.Text = SelectedTrigger.ResponseTrigger;
             if (SelectedTrigger.Request != null)
@@ -4276,8 +5162,10 @@ namespace IronWASP
         internal static void StartMTSend(int ID)
         {
             UI.TestIDLbl.Text = "ID: " + ID.ToString();
-            UI.MTResponseHeadersIDV.Text = "Waiting for Response";
-            UI.MTReqResTabs.SelectTab("MTResponseTab");
+            UI.TestResponseView.ShowStatusMsg("Waiting for Response");
+            UI.TestResponseView.ShowProgressBar(true);
+            //UI.MTReqResTabs.SelectTab("MTResponseTab");
+            UI.MTResponseSideTabs.SelectTab("MTResponseTab");
         }
 
         internal static void EndMTSend(bool ShowResponseTab)
@@ -4285,10 +5173,10 @@ namespace IronWASP
             UI.MTScriptedSendBtn.Enabled = ManualTesting.ScriptedSendEnabled;
             UI.MTSendBtn.Enabled = true;
             if(ShowResponseTab)
-                UI.MTReqResTabs.SelectTab("MTResponseTab");
-            else
-                UI.MTReqResTabs.SelectTab("MTRequestTab");
-
+                UI.MTResponseSideTabs.SelectTab("MTResponseTab");
+                //UI.MTReqResTabs.SelectTab("MTResponseTab");
+            //else
+            //    UI.MTReqResTabs.SelectTab("MTRequestTab");
         }
 
         delegate void AskUser_d();
@@ -4463,7 +5351,8 @@ namespace IronWASP
             }
         }
 
-        internal static void ShowScanBranchForm(string HostName, string UrlPattern)
+        //internal static void ShowScanBranchForm(string HostName, string UrlPattern)
+        internal static void ShowScanBranchForm(Request UrlReq)
         {
             if (IsScanBranchFormOpen())
             {
@@ -4471,34 +5360,12 @@ namespace IronWASP
             }
             else
             {
-                IronUI.SBF = new ScanBranchForm();
-                IronUI.SBF.ScanBranchHostNameTB.Text = HostName;
-                IronUI.SBF.ScanBranchUrlPatternTB.Text = UrlPattern;
-                IronUI.SBF.Height = 230;
-                IronUI.SBF.ScanBranchConfigTabs.Visible = false;
+                IronUI.SBF = new ScanBranchWizard();
+                IronUI.SBF.BaseRequest = UrlReq;
+                IronUI.SBF.ScanBranchHostNameTB.Text = UrlReq.BaseUrl;
+                IronUI.SBF.ScanBranchUrlPatternTB.Text = UrlReq.Url;
+
                 IronUI.SBF.ScanBranchStatsPanel.Visible = false;
-                IronUI.SBF.ScanBranchFilterBtn.Text = "Show Filter";
-
-                IronUI.SBF.ScanBranchScanPluginsGrid.Rows.Clear();
-                IronUI.SBF.ScanBranchScanPluginsGrid.Rows.Add(new object[]{true, "All"});
-                foreach (string Name in ActivePlugin.List())
-                {
-                    IronUI.SBF.ScanBranchScanPluginsGrid.Rows.Add(new object[] { true, Name });
-                }
-
-                IronUI.SBF.ScanBranchSessionPluginsCombo.Items.Clear();
-                IronUI.SBF.ScanBranchSessionPluginsCombo.Items.Add("");
-                foreach (string Name in SessionPlugin.List())
-                {
-                    IronUI.SBF.ScanBranchSessionPluginsCombo.Items.Add(Name);
-                }
-
-                IronUI.SBF.ScanBranchFormatPluginsCombo.Items.Clear();
-                IronUI.SBF.ScanBranchFormatPluginsCombo.Items.Add("");
-                foreach (string Name in FormatPlugin.List())
-                {
-                    IronUI.SBF.ScanBranchFormatPluginsCombo.Items.Add(Name);
-                }
 
                 IronUI.SBF.Show();
             }
@@ -4516,146 +5383,20 @@ namespace IronWASP
             {
                 if (Progress) IronUI.SBF.ScanBranchProgressBar.PerformStep();
                 IronUI.SBF.ScanBranchProgressLbl.Text = Message;
-                if (ScanDone == TotalScans) IronUI.SBF.ScanBranchCancelBtn.Text = "Close";
+                if (ScanDone == TotalScans) IronUI.SBF.FinalBtn.Text = "Close";
                 if (CloseWindow) IronUI.SBF.Close();
             }
         }
 
-        internal static void UpdateScanBranchConfigFromUI()
+        
+
+        internal static bool IsStartScanWizardOpen()
         {
-            ScanBranch.HostName = IronUI.SBF.ScanBranchHostNameTB.Text;
-            ScanBranch.UrlPattern = IronUI.SBF.ScanBranchUrlPatternTB.Text;
-            ScanBranch.HTTP = IronUI.SBF.ScanBranchHTTPCB.Checked;
-            ScanBranch.HTTPS = IronUI.SBF.ScanBranchHTTPSCB.Checked;
-
-            ScanBranch.ScanAll = IronUI.SBF.ScanBranchInjectAllCB.Checked;
-            ScanBranch.ScanUrl = IronUI.SBF.ScanBranchInjectURLCB.Checked;
-            ScanBranch.ScanQuery = IronUI.SBF.ScanBranchInjectQueryCB.Checked;
-            ScanBranch.ScanBody = IronUI.SBF.ScanBranchInjectBodyCB.Checked;
-            ScanBranch.ScanCookie = IronUI.SBF.ScanBranchInjectCookieCB.Checked;
-            ScanBranch.ScanHeaders = IronUI.SBF.ScanBranchInjectHeadersCB.Checked;
-
-            ScanBranch.PickFromProxyLog = IronUI.SBF.ScanBranchPickProxyLogCB.Checked;
-            ScanBranch.PickFromProbeLog = IronUI.SBF.ScanBranchPickProbeLogCB.Checked;
-            ScanBranch.ProxyLogIDs.Clear();
-            ScanBranch.ProbeLogIDs.Clear();
-
-            ScanBranch.SessionPlugin = "";
-            if (IronUI.SBF.ScanBranchSessionPluginsCombo.SelectedItem != null)
-            {
-                string PluginName = IronUI.SBF.ScanBranchSessionPluginsCombo.SelectedItem.ToString();
-                if (PluginName.Length > 0)
-                {
-                    if (SessionPlugin.List().Contains(PluginName))
-                    {
-                        ScanBranch.SessionPlugin = PluginName;
-                    }
-                }
-            }
-
-            ScanBranch.FormatPlugin = "";
-            if (IronUI.SBF.ScanBranchFormatPluginsCombo.SelectedItem != null)
-            {
-                string PluginName = IronUI.SBF.ScanBranchFormatPluginsCombo.SelectedItem.ToString();
-                if (PluginName.Length > 0)
-                {
-                    if (FormatPlugin.List().Contains(PluginName))
-                    {
-                        ScanBranch.FormatPlugin = PluginName;
-                    }
-                }
-            }
-
-            ScanBranch.ActivePlugins.Clear();
-
-            foreach (DataGridViewRow Row in IronUI.SBF.ScanBranchScanPluginsGrid.Rows)
-            {
-                if (Row.Cells[1].Value.ToString().Equals("All") && ((bool) Row.Cells[0].Value))
-                {
-                    ScanBranch.ActivePlugins.Clear();
-                    ScanBranch.ActivePlugins.AddRange(ActivePlugin.List());
-                    break;
-                }
-                else
-                {
-                    if ((bool)Row.Cells[0].Value)
-                    {
-                        ScanBranch.ActivePlugins.Add(Row.Cells[1].Value.ToString());
-                    }
-                }
-            }
-
-            ScanBranch.SelectGET = IronUI.SBF.ScanBranchGETMethodCB.Checked;
-            ScanBranch.SelectPOST = IronUI.SBF.ScanBranchPOSTMethodCB.Checked;
-            ScanBranch.SelectOtherMethods = IronUI.SBF.ScanBranchOtherMethodsCB.Checked;
-
-            ScanBranch.Select200 = IronUI.SBF.ScanBranchCode200CB.Checked;
-            ScanBranch.Select2xx = IronUI.SBF.ScanBranchCode2xxCB.Checked;
-            ScanBranch.Select301_2 = IronUI.SBF.ScanBranchCode301_2CB.Checked;
-            ScanBranch.Select3xx = IronUI.SBF.ScanBranchCode3xxCB.Checked;
-            ScanBranch.Select304 = IronUI.SBF.ScanBranchCode304CB.Checked;
-            ScanBranch.Select403 = IronUI.SBF.ScanBranchCode403CB.Checked;
-            ScanBranch.Select4xx = IronUI.SBF.ScanBranchCode4xxCB.Checked;
-            ScanBranch.Select500 = IronUI.SBF.ScanBranchCode500CB.Checked;
-            ScanBranch.Select5xx = IronUI.SBF.ScanBranchCode5xxCB.Checked;
-
-            ScanBranch.SelectHTML = IronUI.SBF.ScanBranchContentHTMLCB.Checked;
-            ScanBranch.SelectJS = IronUI.SBF.ScanBranchContentJSCB.Checked;
-            ScanBranch.SelectCSS = IronUI.SBF.ScanBranchContentCSSCB.Checked;
-            ScanBranch.SelectJSON = IronUI.SBF.ScanBranchContentJSONCB.Checked;
-            ScanBranch.SelectXML = IronUI.SBF.ScanBranchContentXMLCB.Checked;
-            ScanBranch.SelectOtherText = IronUI.SBF.ScanBranchContentOtherTextCB.Checked;
-            ScanBranch.SelectImg = IronUI.SBF.ScanBranchContentImgCB.Checked;
-            ScanBranch.SelectOtherBinary = IronUI.SBF.ScanBranchContentOtherBinaryCB.Checked;
-
-            ScanBranch.SelectCheckFileExtensions = IronUI.SBF.ScanBranchFileExtensionsCB.Checked;
-            ScanBranch.SelectCheckFileExtensionsPlus = IronUI.SBF.ScanBranchFileExtensionsPlusRB.Checked;
-            ScanBranch.SelectFileExtensions.Clear();
-            ScanBranch.SelectFileExtensions.AddRange(IronUI.SBF.ScanBranchFileExtensionsPlusTB.Text.Split(new string[]{","}, StringSplitOptions.RemoveEmptyEntries));
-            ScanBranch.SelectCheckFileExtensionsMinus = IronUI.SBF.ScanBranchFileExtensionsMinusRB.Checked;
-            ScanBranch.DontSelectFileExtensions.Clear();
-            ScanBranch.DontSelectFileExtensions.AddRange(IronUI.SBF.ScanBranchFileExtensionsMinusTB.Text.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
-
-            ScanBranch.SelectCheckQueryParameters = IronUI.SBF.ScanBranchQueryParametersCB.Checked;
-            ScanBranch.SelectCheckQueryParametersPlus = IronUI.SBF.ScanBranchQueryParametersPlusRB.Checked;
-            ScanBranch.SelectQueryParameters.Clear();
-            ScanBranch.SelectQueryParameters.AddRange(IronUI.SBF.ScanBranchQueryParametersPlusTB.Text.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
-            ScanBranch.SelectCheckQueryParametersMinus = IronUI.SBF.ScanBranchQueryParametersMinusRB.Checked;
-            ScanBranch.DontSelectQueryParameters.Clear();
-            ScanBranch.DontSelectQueryParameters.AddRange(IronUI.SBF.ScanBranchQueryParametersMinusTB.Text.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
-
-            ScanBranch.SelectCheckBodyParameters = IronUI.SBF.ScanBranchBodyParametersCB.Checked;
-            ScanBranch.SelectCheckBodyParametersPlus = IronUI.SBF.ScanBranchBodyParametersPlusRB.Checked;
-            ScanBranch.SelectBodyParameters.Clear();
-            ScanBranch.SelectBodyParameters.AddRange(IronUI.SBF.ScanBranchBodyParametersPlusTB.Text.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
-            ScanBranch.SelectCheckBodyParametersMinus = IronUI.SBF.ScanBranchBodyParametersMinusRB.Checked;
-            ScanBranch.DontSelectBodyParameters.Clear();
-            ScanBranch.DontSelectBodyParameters.AddRange(IronUI.SBF.ScanBranchBodyParametersMinusTB.Text.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
-
-            ScanBranch.SelectCheckCookieParameters = IronUI.SBF.ScanBranchCookieParametersCB.Checked;
-            ScanBranch.SelectCheckCookieParametersPlus = IronUI.SBF.ScanBranchCookieParametersPlusRB.Checked;
-            ScanBranch.SelectCookieParameters.Clear();
-            ScanBranch.SelectCookieParameters.AddRange(IronUI.SBF.ScanBranchCookieParametersPlusTB.Text.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
-            ScanBranch.SelectCheckCookieParametersMinus = IronUI.SBF.ScanBranchCookieParametersMinusRB.Checked;
-            ScanBranch.DontSelectCookieParameters.Clear();
-            ScanBranch.DontSelectCookieParameters.AddRange(IronUI.SBF.ScanBranchCookieParametersMinusTB.Text.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
-
-            ScanBranch.SelectCheckHeadersParameters = IronUI.SBF.ScanBranchHeadersParametersCB.Checked;
-            ScanBranch.SelectCheckHeadersParametersPlus = IronUI.SBF.ScanBranchHeadersParametersPlusRB.Checked;
-            ScanBranch.SelectHeadersParameters.Clear();
-            ScanBranch.SelectHeadersParameters.AddRange(IronUI.SBF.ScanBranchHeadersParametersPlusTB.Text.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
-            ScanBranch.SelectCheckHeadersParametersMinus = IronUI.SBF.ScanBranchHeadersParametersMinusRB.Checked;
-            ScanBranch.DontSelectHeadersParameters.Clear();
-            ScanBranch.DontSelectHeadersParameters.AddRange(IronUI.SBF.ScanBranchHeadersParametersMinusTB.Text.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
-        }
-
-        internal static bool IsConfiguredScanFormOpen()
-        {
-            if (IronUI.CSF == null)
+            if (IronUI.SSW == null)
             {
                 return false;
             }
-            else if (IronUI.CSF.IsDisposed)
+            else if (IronUI.SSW.IsDisposed)
             {
                 return false;
             }
@@ -4665,56 +5406,45 @@ namespace IronWASP
             }
         }
 
-        internal static void ShowConfiguredScanForm(Request Req)
+        internal static void ShowStartScanWizard(Request Req)
         {
-            if (IsConfiguredScanFormOpen())
+            if (IsStartScanWizardOpen())
             {
-                IronUI.CSF.Activate();
+                IronUI.SSW.Activate();
             }
             else
             {
-                IronUI.CSF = new ConfiguredScan();
-                IronUI.CSF.ConfigureScanHostNameTB.Text = Req.Host;
-                IronUI.CSF.ConfigureScanStartingUrlTB.Text = Req.Url;
-                IronUI.CSF.ConfigureScanBaseUrlTB.Text = "/";
-                IronUI.CSF.ConfigureScanHTTPCB.Checked = !Req.SSL;
-                IronUI.CSF.ConfigureScanHTTPSCB.Checked = Req.SSL;
-
-                IronUI.CSF.ConfigureScanSessionPluginsCombo.Items.Clear();
-                IronUI.CSF.ConfigureScanSessionPluginsCombo.Items.Add("");
-                foreach (string Name in SessionPlugin.List())
-                {
-                    IronUI.CSF.ConfigureScanSessionPluginsCombo.Items.Add(Name);
-                }
-
-                IronUI.CSF.Show();
+                UI.ConsoleScanUrlTB.ReadOnly = true;
+                IronUI.SSW = new StartScanWizard();
+                IronUI.SSW.BaseRequest = Req;
+                IronUI.SSW.Show();
             }
         }
 
-        delegate void ShowConfiguredScanMessage_d(string Message, bool Error);
-        internal static void ShowConfiguredScanMessage(string Message, bool Error)
-        {
-            if (CSF.InvokeRequired)
-            {
-                ShowConfiguredScanMessage_d SCSM_d = new ShowConfiguredScanMessage_d(ShowConfiguredScanMessage);
-                LF.Invoke(SCSM_d, new object[] { Message, Error });
-            }
-            else
-            {
-                if (Message.Equals("0"))
-                {
-                    CSF.Close();
-                }
-                else
-                {
-                    CSF.ConfigureScanErrorTB.Text = Message;
-                    if (Error)
-                        CSF.ConfigureScanErrorTB.ForeColor = Color.Red;
-                    else
-                        CSF.ConfigureScanErrorTB.ForeColor = Color.Black;
-                }
-            }
-        }
+        //delegate void ShowConfiguredScanMessage_d(string Message, bool Error);
+        //internal static void ShowConfiguredScanMessage(string Message, bool Error)
+        //{
+        //    if (SSW.InvokeRequired)
+        //    {
+        //        ShowConfiguredScanMessage_d SCSM_d = new ShowConfiguredScanMessage_d(ShowConfiguredScanMessage);
+        //        LF.Invoke(SCSM_d, new object[] { Message, Error });
+        //    }
+        //    else
+        //    {
+        //        if (Message.Equals("0"))
+        //        {
+        //            SSW.Close();
+        //        }
+        //        else
+        //        {
+        //            SSW.ConfigureScanErrorTB.Text = Message;
+        //            if (Error)
+        //                SSW.ConfigureScanErrorTB.ForeColor = Color.Red;
+        //            else
+        //                SSW.ConfigureScanErrorTB.ForeColor = Color.Black;
+        //        }
+        //    }
+        //}
 
         delegate void ShowLoadMessage_d(string Message);
         internal static void ShowLoadMessage(string Message)
@@ -4998,23 +5728,25 @@ namespace IronWASP
 
         internal static void ResetLogRequestDisplayFields()
         {
-            UI.LogRequestHeadersIDV.Text = "";
-            UI.LogRequestBodyIDV.Text = "";
-            UI.LogRequestParametersQueryGrid.Rows.Clear();
-            UI.LogRequestParametersBodyGrid.Rows.Clear();
-            UI.LogRequestParametersCookieGrid.Rows.Clear();
-            UI.LogRequestParametersHeadersGrid.Rows.Clear();
+            UI.LogRequestView.ClearRequest();
+            //UI.LogRequestHeadersIDV.Text = "";
+            //UI.LogRequestBodyIDV.Text = "";
+            //UI.LogRequestParametersQueryGrid.Rows.Clear();
+            //UI.LogRequestParametersBodyGrid.Rows.Clear();
+            //UI.LogRequestParametersCookieGrid.Rows.Clear();
+            //UI.LogRequestParametersHeadersGrid.Rows.Clear();
             UI.ProxyShowOriginalRequestCB.Checked = false;
-            UI.LogRequestFormatXMLTB.Text = "";
+            //UI.LogRequestFormatXMLTB.Text = "";
         }
 
         internal static void ResetLogResponseDisplayFields()
         {
-            UI.LogResponseHeadersIDV.Text = "";
-            UI.LogResponseBodyIDV.Text = "";
+            UI.LogResponseView.ClearResponse();
+            //UI.LogResponseHeadersIDV.Text = "";
+            //UI.LogResponseBodyIDV.Text = "";
             UI.ProxyShowOriginalResponseCB.Checked = false;
-            UI.LogResponseFormatXMLTB.Text = "";
-            UI.LogReflectionRTB.Text = "";
+            //UI.LogResponseFormatXMLTB.Text = "";
+            //UI.LogReflectionRTB.Text = "";
         }
 
         delegate void ShowLogStatus_d(string Message, bool Error);
@@ -5058,7 +5790,15 @@ namespace IronWASP
                 {
                     UI.MainLogStatusLbl.ForeColor = Color.Black;
                 }
-                UI.MainLogStatusLbl.Text = Message;
+                if (Message.Length == 0)
+                {
+                    UI.MainLogStatusLbl.ForeColor = Color.Black;
+                    UI.MainLogStatusLbl.Text = IronLog.MainLogDefaultMsg;
+                }
+                else
+                {
+                    UI.MainLogStatusLbl.Text = Message;
+                }
                 UI.MainLogStatusLbl.Visible = true;
             }
         }
@@ -5090,6 +5830,9 @@ namespace IronWASP
                     case ("ProbeLogTab"):
                         UI.MainLogStatLbl.Text = string.Format("Showing {0} - {1} of Probe Logs", IronLog.ProbeMin, IronLog.ProbeMax);
                         break;
+                    case ("OtherLogTab"):
+                        UI.MainLogStatLbl.Text = string.Format("Showing {0} - {1} of {2} Logs", IronLog.OtherSourceMin, IronLog.OtherSourceMax, IronLog.SelectedOtherSource);
+                        break;
                     case ("SiteMapLogTab"):
                         UI.MainLogStatLbl.Text = string.Format("Showing Logs based on SiteMap");
                         break;
@@ -5097,20 +5840,20 @@ namespace IronWASP
             }
         }
 
-        delegate void FillLogDisplayFields_d(Session IrSe, string Reflection);
-        internal static void FillLogDisplayFields(Session IrSe, string Reflection)
+        delegate void FillLogDisplayFields_d(Session IrSe);
+        internal static void FillLogDisplayFields(Session IrSe)
         {
             if (UI.LogDisplayTabs.InvokeRequired)
             {
                 FillLogDisplayFields_d FLDF_d = new FillLogDisplayFields_d(FillLogDisplayFields);
-                UI.Invoke(FLDF_d, new object[] { IrSe, Reflection });
+                UI.Invoke(FLDF_d, new object[] { IrSe });
             }
             else
             {
                 if (IrSe == null) return;
                 if (IrSe.Request != null) FillLogFields(IrSe.Request);
-                if (IrSe.Response != null) FillLogFields(IrSe.Response);
-                FillLogReflection(Reflection);
+                if (IrSe.Response != null) FillLogFields(IrSe.Response, IrSe.Request);
+                //FillLogReflection(Reflection);
                 try
                 {
                     UI.LogSourceLbl.Text = "Source: " + IronLog.CurrentSourceName;
@@ -5125,114 +5868,120 @@ namespace IronWASP
             }
         }
 
-        internal static void FillLogFields(Request Request)
+        internal static void FillLogFields(Request Req)
         {
-            FillLogRequestHeaderFields(Request);
-            if (Request.HasBody)
-            {
-                FillLogRequestBodyFields(Request);
-            }
-            else
-            {
-                FillLogRequestBodyFields(null);
-            }
-            FillLogParametersFields(Request);
+            UI.LogRequestView.SetRequest(Req);
+            //FillLogRequestHeaderFields(Request);
+            //if (Request.HasBody)
+            //{
+            //    FillLogRequestBodyFields(Request);
+            //}
+            //else
+            //{
+            //    FillLogRequestBodyFields(null);
+            //}
+            //FillLogParametersFields(Request);
         }
 
-        internal static void FillLogRequestHeaderFields(Request Request)
+        //internal static void FillLogRequestHeaderFields(Request Request)
+        //{
+        //    UI.LogRequestHeadersIDV.Text = Request.GetHeadersAsStringWithoutFullURL();
+        //}
+
+        //internal static void FillLogRequestBodyFields(Request Request)
+        //{
+        //    if (Request == null)
+        //    {
+        //        UI.LogRequestBodyIDV.Text = "";
+        //        return;
+        //    }
+        //    if (Request.IsBinary)
+        //    {
+        //        UI.LogRequestBodyIDV.Text = Encoding.UTF8.GetString(Request.BodyArray);
+        //    }
+        //    else
+        //    {
+        //        UI.LogRequestBodyIDV.Text = Request.BodyString;
+        //    }
+        //}
+
+        //internal static void FillLogParametersFields(Request Request)
+        //{
+        //    UI.LogRequestParametersQueryGrid.Rows.Clear();
+        //    foreach (string Name in Request.Query.GetNames())
+        //    {
+        //        foreach (string Value in Request.Query.GetAll(Name))
+        //        {
+        //            UI.LogRequestParametersQueryGrid.Rows.Add(new object[] { Name, Value });
+        //        }
+        //    }
+        //    UI.LogRequestParametersBodyGrid.Rows.Clear();
+        //    foreach (string Name in Request.Body.GetNames())
+        //    {
+        //        foreach (string Value in Request.Body.GetAll(Name))
+        //        {
+        //            UI.LogRequestParametersBodyGrid.Rows.Add(new object[] { Name, Value });
+        //        }
+        //    }
+        //    UI.LogRequestParametersCookieGrid.Rows.Clear();
+        //    foreach (string Name in Request.Cookie.GetNames())
+        //    {
+        //        foreach (string Value in Request.Cookie.GetAll(Name))
+        //        {
+        //            UI.LogRequestParametersCookieGrid.Rows.Add(new object[] { Name, Value });
+        //        }
+        //    }
+        //    UI.LogRequestParametersHeadersGrid.Rows.Clear();
+        //    foreach (string Name in Request.Headers.GetNames())
+        //    {
+        //        if (!Name.Equals("Host", StringComparison.OrdinalIgnoreCase) && !Name.Equals("Cookie", StringComparison.OrdinalIgnoreCase))
+        //        {
+        //            foreach (string Value in Request.Headers.GetAll(Name))
+        //            {
+        //                UI.LogRequestParametersHeadersGrid.Rows.Add(new object[] { Name, Value });
+        //            }
+        //        }
+        //    }
+        //}
+
+        //internal static void FillLogFields(Response Res)
+        //{
+        //    
+        //    UI.LogResponseHeadersIDV.Text = Response.GetHeadersAsString();
+        //    if (Response.HasBody)
+        //    {
+        //        if (Response.IsBinary)
+        //        {
+        //            UI.LogResponseBodyIDV.Text = Encoding.UTF8.GetString(Response.BodyArray);
+        //        }
+        //        else
+        //        {
+        //            UI.LogResponseBodyIDV.Text = Response.BodyString;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        UI.LogResponseBodyIDV.Text = "";
+        //    }
+        //}
+        internal static void FillLogFields(Response Res, Request Req)
         {
-            UI.LogRequestHeadersIDV.Text = Request.GetHeadersAsStringWithoutFullURL();
+            UI.LogResponseView.SetResponse(Res, Req);
         }
 
-        internal static void FillLogRequestBodyFields(Request Request)
-        {
-            if (Request == null)
-            {
-                UI.LogRequestBodyIDV.Text = "";
-                return;
-            }
-            if (Request.IsBinary)
-            {
-                UI.LogRequestBodyIDV.Text = Encoding.UTF8.GetString(Request.BodyArray);
-            }
-            else
-            {
-                UI.LogRequestBodyIDV.Text = Request.BodyString;
-            }
-        }
+        //internal static void FillLogReflection(string Reflection)
+        //{
+        //    StringBuilder ReflectionBuilder = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;}");
+        //    ReflectionBuilder.Append(Tools.RtfSafe( Reflection));
+        //    UI.LogReflectionRTB.Rtf = ReflectionBuilder.ToString();
+        //}
 
-        internal static void FillLogParametersFields(Request Request)
-        {
-            UI.LogRequestParametersQueryGrid.Rows.Clear();
-            foreach (string Name in Request.Query.GetNames())
-            {
-                foreach (string Value in Request.Query.GetAll(Name))
-                {
-                    UI.LogRequestParametersQueryGrid.Rows.Add(new object[] { Name, Value });
-                }
-            }
-            UI.LogRequestParametersBodyGrid.Rows.Clear();
-            foreach (string Name in Request.Body.GetNames())
-            {
-                foreach (string Value in Request.Body.GetAll(Name))
-                {
-                    UI.LogRequestParametersBodyGrid.Rows.Add(new object[] { Name, Value });
-                }
-            }
-            UI.LogRequestParametersCookieGrid.Rows.Clear();
-            foreach (string Name in Request.Cookie.GetNames())
-            {
-                foreach (string Value in Request.Cookie.GetAll(Name))
-                {
-                    UI.LogRequestParametersCookieGrid.Rows.Add(new object[] { Name, Value });
-                }
-            }
-            UI.LogRequestParametersHeadersGrid.Rows.Clear();
-            foreach (string Name in Request.Headers.GetNames())
-            {
-                if (!Name.Equals("Host", StringComparison.OrdinalIgnoreCase) && !Name.Equals("Cookie", StringComparison.OrdinalIgnoreCase))
-                {
-                    foreach (string Value in Request.Headers.GetAll(Name))
-                    {
-                        UI.LogRequestParametersHeadersGrid.Rows.Add(new object[] { Name, Value });
-                    }
-                }
-            }
-        }
-
-        internal static void FillLogFields(Response Response)
-        {
-            UI.LogResponseHeadersIDV.Text = Response.GetHeadersAsString();
-            if (Response.HasBody)
-            {
-                if (Response.IsBinary)
-                {
-                    UI.LogResponseBodyIDV.Text = Encoding.UTF8.GetString(Response.BodyArray);
-                }
-                else
-                {
-                    UI.LogResponseBodyIDV.Text = Response.BodyString;
-                }
-            }
-            else
-            {
-                UI.LogResponseBodyIDV.Text = "";
-            }
-        }
-
-        internal static void FillLogReflection(string Reflection)
-        {
-            StringBuilder ReflectionBuilder = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;}");
-            ReflectionBuilder.Append(Tools.RtfSafe( Reflection));
-            UI.LogReflectionRTB.Rtf = ReflectionBuilder.ToString();
-        }
-
-        internal static void FillTestReflection(string Reflection)
-        {
-            StringBuilder ReflectionBuilder = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;}");
-            ReflectionBuilder.Append(Tools.RtfSafe(Reflection));
-            UI.MTReflectionsRTB.Rtf = ReflectionBuilder.ToString();
-        }
+        //internal static void FillTestReflection(string Reflection)
+        //{
+        //    StringBuilder ReflectionBuilder = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;}");
+        //    ReflectionBuilder.Append(Tools.RtfSafe(Reflection));
+        //    UI.MTReflectionsRTB.Rtf = ReflectionBuilder.ToString();
+        //}
 
         delegate void SetClipBoard_d(string Message);
         internal static void SetClipBoard(string Message)
@@ -5244,7 +5993,11 @@ namespace IronWASP
             }
             else
             {
-                Clipboard.SetText(Message);
+                try
+                {
+                    Clipboard.SetText(Message);
+                }
+                catch { }
             }
         }
 
@@ -5429,7 +6182,11 @@ namespace IronWASP
                 }
                 UI.JSTaintResultGrid.Rows[LineNo].Cells[0].Style.BackColor = Color.DarkBlue;
                 UI.JSTaintResultGrid.Rows[LineNo].Cells[0].Style.SelectionBackColor = Color.DarkBlue;
-                UI.JSTaintResultGrid.FirstDisplayedScrollingRowIndex = LineNo;
+                try
+                {
+                    UI.JSTaintResultGrid.FirstDisplayedScrollingRowIndex = LineNo;
+                }
+                catch { }
             }
         }
 
@@ -5712,7 +6469,7 @@ namespace IronWASP
                 catch { }
                 try { SBF.Visible = Visble; }
                 catch { }
-                try { CSF.Visible = Visble; }
+                try { SSW.Visible = Visble; }
                 catch { }
                 try { PE.Visible = Visble; }
                 catch { }
@@ -5725,21 +6482,125 @@ namespace IronWASP
             }
         }
 
-        delegate void UpdateSessionPluginsInASTab_d();
-        internal static void UpdateSessionPluginsInASTab()
+        //delegate void UpdateSessionPluginsInASTab_d();
+        //internal static void UpdateSessionPluginsInASTab()
+        //{
+        //    if (UI.ConsoleScanUrlTB.InvokeRequired)
+        //    {
+        //        UpdateSessionPluginsInASTab_d USPIAST_d = new UpdateSessionPluginsInASTab_d(UpdateSessionPluginsInASTab);
+        //        UI.Invoke(USPIAST_d, new object[] { });
+        //    }
+        //    else
+        //    {
+        //        UI.ASSessionPluginsCombo.Items.Clear();
+        //        UI.ASSessionPluginsCombo.Items.Add("");
+        //        foreach (string Name in SessionPlugin.List())
+        //        {
+        //            UI.ASSessionPluginsCombo.Items.Add(Name);
+        //        }
+        //    }
+        //}
+
+        //internal static void AddStartScanJobWizard(StartScanJobWizard SSW)
+        //{
+        //    lock (StartScanJobWizards)
+        //    {
+        //        List<int> ToRemove = new List<int>();
+        //        for (int i = 0; i < StartScanJobWizards.Count; i++)
+        //        {
+        //            if (StartScanJobWizards[i] == null)
+        //                ToRemove.Add(i);
+        //            else if (StartScanJobWizards[i].IsDisposed)
+        //                ToRemove.Add(i);
+        //        }
+        //        for (int i = 0; i < ToRemove.Count; i++)
+        //        {
+        //            StartScanJobWizards.RemoveAt(ToRemove[i] + i);
+        //        }
+        //        StartScanJobWizards.Add(SSW);
+        //    }
+        //}
+
+        delegate void ShowHideSessionPluginTraceProgressBar_d(bool Show);
+        internal static void ShowHideSessionPluginTraceProgressBar(bool Show)
         {
-            if (UI.ConsoleScanUrlTB.InvokeRequired)
+            if (UI.SessionPluginTraceLoadLogProgressBar.InvokeRequired)
             {
-                UpdateSessionPluginsInASTab_d USPIAST_d = new UpdateSessionPluginsInASTab_d(UpdateSessionPluginsInASTab);
-                UI.Invoke(USPIAST_d, new object[] { });
+                ShowHideSessionPluginTraceProgressBar_d SHSPTPB_d = new ShowHideSessionPluginTraceProgressBar_d(ShowHideSessionPluginTraceProgressBar);
+                UI.Invoke(SHSPTPB_d, new object[] { Show });
             }
             else
             {
-                UI.ASSessionPluginsCombo.Items.Clear();
-                UI.ASSessionPluginsCombo.Items.Add("");
-                foreach (string Name in SessionPlugin.List())
+                UI.SessionPluginTraceLoadLogProgressBar.Visible = Show;
+            }
+        }
+
+        delegate void ShowSessionPluginTraceLog_d(Request Req, Response Res);
+        internal static void ShowSessionPluginTraceLog(Request Req, Response Res)
+        {
+            if (UI.SessionPluginTraceBottomTabs.InvokeRequired)
+            {
+                ShowSessionPluginTraceLog_d SSPTL_d = new ShowSessionPluginTraceLog_d(ShowSessionPluginTraceLog);
+                UI.Invoke(SSPTL_d, new object[] { Req, Res });
+            }
+            else
+            {
+                if (Req == null)
                 {
-                    UI.ASSessionPluginsCombo.Items.Add(Name);
+                    UI.SessionPluginTraceRequestView.ClearRequest();
+                }
+                else
+                {
+                    UI.SessionPluginTraceRequestView.SetRequest(Req);
+                    if (Res == null)
+                    {
+                        UI.SessionPluginTraceResponseView.ClearResponse();
+                    }
+                    else
+                    {
+                        UI.SessionPluginTraceResponseView.SetResponse(Res, Req);
+                    }
+                }
+            }
+        }
+
+        static void TurnOffTopMost()
+        {
+            Thread.Sleep(1000);
+            MakeUiTopMost(false);
+        }
+
+        delegate void MakeUiTopMost_d(bool TopMost);
+        internal static void MakeUiTopMost(bool TopMost)
+        {
+            if (UI.InvokeRequired)
+            {
+                MakeUiTopMost_d MUTM_d = new MakeUiTopMost_d(MakeUiTopMost);
+                UI.Invoke(MUTM_d, new object[] { TopMost });
+            }
+            else
+            {
+                if (TopMost)
+                {
+                    UI.TopMost = true;
+                    TopMostTime = DateTime.Now;
+                    Thread T = new Thread(TurnOffTopMost);
+                    T.Start();
+                }
+                else
+                {
+                    if (TopMostTime == null)
+                    {
+                        UI.TopMost = false;
+                    }
+                    else
+                    {
+                        DateTime CurrentTime = DateTime.Now;
+                        if ((CurrentTime.TimeOfDay.TotalSeconds - TopMostTime.TimeOfDay.TotalSeconds) > 1)
+                        {
+                            UI.TopMost = false;
+                        }
+                    }
                 }
             }
         }

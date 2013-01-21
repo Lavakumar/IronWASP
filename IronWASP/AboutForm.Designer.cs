@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -107,7 +107,7 @@ namespace IronWASP
             this.AboutFormCopyrightTB.ReadOnly = true;
             this.AboutFormCopyrightTB.Size = new System.Drawing.Size(244, 21);
             this.AboutFormCopyrightTB.TabIndex = 2;
-            this.AboutFormCopyrightTB.Text = "Copyright © 2012 Lavakumar Kuppan";
+            this.AboutFormCopyrightTB.Text = "Copyright © 2013 Lavakumar Kuppan";
             // 
             // AboutFormVersionTB
             // 
@@ -120,7 +120,7 @@ namespace IronWASP
             this.AboutFormVersionTB.ReadOnly = true;
             this.AboutFormVersionTB.Size = new System.Drawing.Size(166, 23);
             this.AboutFormVersionTB.TabIndex = 3;
-            this.AboutFormVersionTB.Text = "Installed Version: 0.9.1.5";
+            this.AboutFormVersionTB.Text = "Installed Version: 0.9.5.0";
             // 
             // panel2
             // 

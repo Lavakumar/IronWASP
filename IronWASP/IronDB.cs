@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -41,6 +41,376 @@ namespace IronWASP
         internal static string TraceLogFile = "";
         internal static string ConfigFile = Config.RootDir + "\\IronConfig.exe";
 
+        
+
+        internal static void LogMTRequest(Request Request)
+        {
+            SQLiteConnection MT_DB = new SQLiteConnection("data source=" + TestLogFile);
+            MT_DB.Open();
+            try
+            {
+                SQLiteCommand Cmd = MT_DB.CreateCommand();
+                Cmd.CommandText = "INSERT INTO TestLog (ID, SSL, HostName, Method, URL, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, Notes) VALUES (@ID, @SSL, @HostName, @Method, @URL, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @Notes)";
+                Cmd.Parameters.AddWithValue("@ID", Request.ID);
+                Cmd.Parameters.AddWithValue("@SSL", AsInt(Request.SSL));
+                Cmd.Parameters.AddWithValue("@HostName", Request.Host);
+                Cmd.Parameters.AddWithValue("@Method", Request.Method);
+                Cmd.Parameters.AddWithValue("@URL", Request.URL);
+                Cmd.Parameters.AddWithValue("@File", Request.File);
+                Cmd.Parameters.AddWithValue("@Parameters", Request.GetParametersString());
+                //Cmd.Parameters.AddWithValue("@RequestHeaders", Request.GetHeadersAsStringWithoutFullURL());
+                Cmd.Parameters.AddWithValue("@RequestHeaders", Request.GetHeadersAsString());
+                if (Request.IsBinary)
+                    Cmd.Parameters.AddWithValue("@RequestBody", Request.BinaryBodyString);
+                else
+                    Cmd.Parameters.AddWithValue("@RequestBody", Request.BodyString);
+                //Cmd.Parameters.AddWithValue("@RequestBody", Request.BodyString);
+                Cmd.Parameters.AddWithValue("@BinaryRequest", AsInt(Request.IsBinary));
+                Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
+                Cmd.ExecuteNonQuery();
+            }
+            catch(Exception Exp)
+            {
+                throw Exp;
+            }
+            MT_DB.Close();
+        }
+        internal static void LogMTResponse(Response Response)
+        {
+            SQLiteConnection MT_DB = new SQLiteConnection("data source=" + TestLogFile);
+            MT_DB.Open();
+            try
+            {
+                SQLiteCommand Cmd = MT_DB.CreateCommand();
+                Cmd.CommandText = "UPDATE TestLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, Notes=@Notes WHERE ID=@ID";
+                Cmd.Parameters.AddWithValue("@Code", Response.Code);
+                Cmd.Parameters.AddWithValue("@Length", Response.BodyLength);
+                Cmd.Parameters.AddWithValue("@MIME", Response.ContentType);
+                Cmd.Parameters.AddWithValue("@SetCookie", AsInt((Response.SetCookies.Count > 0)));
+                Cmd.Parameters.AddWithValue("@ResponseHeaders", Response.GetHeadersAsString());
+                if (Response.IsBinary)
+                    Cmd.Parameters.AddWithValue("@ResponseBody", Response.BinaryBodyString);
+                else
+                    Cmd.Parameters.AddWithValue("@ResponseBody", Response.BodyString);
+                //Cmd.Parameters.AddWithValue("@ResponseBody", Response.BodyString);
+                Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(Response.IsBinary));
+                Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
+                Cmd.Parameters.AddWithValue("@ID", Response.ID);
+                Cmd.ExecuteNonQuery();
+            }
+            catch(Exception Exp)
+            {
+                MT_DB.Close();
+                throw Exp;
+            }
+            MT_DB.Close();
+        }
+
+        //internal static void AddToTestGroup(int ID, string Group)
+        //{
+        //    SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
+        //    string CMD = "";
+        //    switch(Group)
+        //    {
+        //        case("Red"):
+        //            CMD = "INSERT INTO TestGroups (Red, Green, Blue, Gray, Brown) VALUES (@ID,0,0,0,0)";
+        //            break;
+        //        case ("Green"):
+        //            CMD = "INSERT INTO TestGroups (Red, Green, Blue, Gray, Brown) VALUES (0,@ID,0,0,0)";
+        //            break;
+        //        case ("Blue"):
+        //            CMD = "INSERT INTO TestGroups (Red, Green, Blue, Gray, Brown) VALUES (0,0,@ID,0,0)";
+        //            break;
+        //        case ("Gray"):
+        //            CMD = "INSERT INTO TestGroups (Red, Green, Blue, Gray, Brown) VALUES (0,0,0,@ID,0)";
+        //            break;
+        //        case ("Brown"):
+        //            CMD = "INSERT INTO TestGroups (Red, Green, Blue, Gray, Brown) VALUES (0,0,0,0,@ID)";
+        //            break;
+        //    }
+        //    DB.Open();
+        //    try
+        //    {
+        //        SQLiteCommand Cmd = DB.CreateCommand();
+        //        Cmd.CommandText = CMD;
+        //        Cmd.Parameters.AddWithValue("@ID", ID);
+        //        Cmd.ExecuteNonQuery();
+        //    }
+        //    catch (Exception Exp)
+        //    {
+        //        DB.Close();
+        //        throw Exp;
+        //    }
+        //    DB.Close();
+        //}
+
+        internal static void AddToTestGroup(int ID, string Group)
+        {
+            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
+            string CMD = "INSERT INTO TestGroups (Name, ID) VALUES (@Name, @ID)";
+            DB.Open();
+            try
+            {
+                SQLiteCommand Cmd = DB.CreateCommand();
+                Cmd.CommandText = CMD;
+                Cmd.Parameters.AddWithValue("@Name", Group);
+                Cmd.Parameters.AddWithValue("@ID", ID);
+                Cmd.ExecuteNonQuery();
+            }
+            catch (Exception Exp)
+            {
+                DB.Close();
+                throw Exp;
+            }
+            DB.Close();
+        }
+
+        //internal static void ClearGroup(string Group)
+        //{
+        //    SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
+        //    string CMD = "";
+        //    switch (Group)
+        //    {
+        //        case ("Red"):
+        //            CMD = "UPDATE TestGroups SET Red=0";
+        //            break;
+        //        case ("Blue"):
+        //            CMD = "UPDATE TestGroups SET Blue=0";
+        //            break;
+        //        case ("Green"):
+        //            CMD = "UPDATE TestGroups SET Green=0";
+        //            break;
+        //        case ("Gray"):
+        //            CMD = "UPDATE TestGroups SET Gray=0";
+        //            break;
+        //        case ("Brown"):
+        //            CMD = "UPDATE TestGroups SET Brown=0";
+        //            break;
+        //    }
+        //    DB.Open();
+        //    try
+        //    {
+        //        SQLiteCommand Cmd = DB.CreateCommand();
+        //        Cmd.CommandText = CMD;
+        //        Cmd.ExecuteNonQuery();
+        //    }
+        //    catch (Exception Exp)
+        //    {
+        //        DB.Close();
+        //        throw Exp;
+        //    }
+        //    DB.Close();
+        //}
+
+        internal static void ClearGroup(string Group)
+        {
+            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
+            string CMD = "DELETE FROM TestGroups WHERE Name=@Name";
+            DB.Open();
+            try
+            {
+                SQLiteCommand Cmd = DB.CreateCommand();
+                Cmd.CommandText = CMD;
+                Cmd.Parameters.AddWithValue("@Name", Group);
+                Cmd.ExecuteNonQuery();
+            }
+            catch (Exception Exp)
+            {
+                DB.Close();
+                throw Exp;
+            }
+            DB.Close();
+        }
+
+        internal static void RenameGroup(string OldGroup, string NewGroup)
+        {
+            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
+            string CMD = "UPDATE TestGroups SET Name=@NewName WHERE Name=@OldName";
+            DB.Open();
+            try
+            {
+                SQLiteCommand Cmd = DB.CreateCommand();
+                Cmd.CommandText = CMD;
+                Cmd.Parameters.AddWithValue("@OldName", OldGroup);
+                Cmd.Parameters.AddWithValue("@NewName", NewGroup);
+                Cmd.ExecuteNonQuery();
+            }
+            catch (Exception Exp)
+            {
+                DB.Close();
+                throw Exp;
+            }
+            DB.Close();
+        }
+
+        //internal static void LoadTestGroups()
+        //{
+        //    SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
+            
+        //    List<int> RedGroup = new List<int>();
+        //    List<int> BlueGroup = new List<int>();
+        //    List<int> GreenGroup = new List<int>();
+        //    List<int> GrayGroup = new List<int>();
+        //    List<int> BrownGroup = new List<int>();
+
+        //    DB.Open();
+        //    try
+        //    {
+        //        SQLiteCommand Cmd = DB.CreateCommand();
+        //        Cmd.CommandText = "SELECT Red, Green, Blue, Gray, Brown FROM TestGroups";
+        //        SQLiteDataReader result = Cmd.ExecuteReader();
+        //        while (result.Read())
+        //        {
+        //            try
+        //            {
+        //                int Red = Int32.Parse(result["Red"].ToString());
+        //                if (Red != 0) RedGroup.Add(Red);
+        //            }catch { }
+        //            try
+        //            {
+        //                int Green = Int32.Parse(result["Green"].ToString());
+        //                if (Green != 0) GreenGroup.Add(Green);
+        //            }
+        //            catch { }
+        //            try
+        //            {
+        //                int Blue = Int32.Parse(result["Blue"].ToString());
+        //                if (Blue != 0) BlueGroup.Add(Blue);
+        //            }
+        //            catch { }
+        //            try
+        //            {
+        //                int Gray = Int32.Parse(result["Gray"].ToString());
+        //                if (Gray != 0) GrayGroup.Add(Gray);
+        //            }
+        //            catch { }
+        //            try
+        //            {
+        //                int Brown = Int32.Parse(result["Brown"].ToString());
+        //                if (Brown != 0) BrownGroup.Add(Brown);
+        //            }
+        //            catch { }
+        //        }
+        //        RedGroup.Sort(); BlueGroup.Sort(); GreenGroup.Sort(); GrayGroup.Sort(); BrownGroup.Sort();
+        //        foreach (int ID in RedGroup)
+        //        {
+        //            try
+        //            {
+        //                Session Irse = Session.FromTestLog(ID);
+        //                ManualTesting.RedGroupSessions.Add(ID, Irse);
+        //                ManualTesting.RedGroupID = ID;
+        //            }
+        //            catch { }
+        //        }
+        //        foreach (int ID in BlueGroup)
+        //        {
+        //            try
+        //            {
+        //                Session Irse = Session.FromTestLog(ID);
+        //                ManualTesting.BlueGroupSessions.Add(ID, Irse);
+        //                ManualTesting.BlueGroupID = ID;
+        //            }
+        //            catch { }
+        //        }
+        //        foreach (int ID in GreenGroup)
+        //        {
+        //            try
+        //            {
+        //                Session Irse = Session.FromTestLog(ID);
+        //                ManualTesting.GreenGroupSessions.Add(ID, Irse);
+        //                ManualTesting.GreenGroupID = ID;
+        //            }
+        //            catch { }
+        //        }
+        //        foreach (int ID in GrayGroup)
+        //        {
+        //            try
+        //            {
+        //                Session Irse = Session.FromTestLog(ID);
+        //                ManualTesting.GrayGroupSessions.Add(ID, Irse);
+        //                ManualTesting.GrayGroupID = ID;
+        //            }
+        //            catch { }
+        //        }
+        //        foreach (int ID in BrownGroup)
+        //        {
+        //            try
+        //            {
+        //                Session Irse = Session.FromTestLog(ID);
+        //                ManualTesting.BrownGroupSessions.Add(ID, Irse);
+        //                ManualTesting.BrownGroupID = ID;
+        //            }
+        //            catch { }
+        //        }
+        //    }
+        //    catch (Exception Exp)
+        //    {
+        //        DB.Close();
+        //        throw Exp;
+        //    }
+        //    DB.Close();
+        //}
+
+        internal static void LoadTestGroups()
+        {
+            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
+
+            Dictionary<string, List<int>> Groups = new Dictionary<string, List<int>>();
+
+            DB.Open();
+            try
+            {
+                SQLiteCommand Cmd = DB.CreateCommand();
+                Cmd.CommandText = "SELECT Name, ID FROM TestGroups";
+                SQLiteDataReader result = Cmd.ExecuteReader();
+                while (result.Read())
+                {
+                    try
+                    {
+                        int ID = Int32.Parse(result["ID"].ToString());
+                        string Group = result["Name"].ToString();
+                        if (ID != 0)
+                        {
+                            if (!Groups.ContainsKey(Group))
+                                Groups[Group] = new List<int>();
+                            Groups[Group].Add(ID);
+                        }
+                    }
+                    catch { }
+                }
+                Dictionary<string, Dictionary<int, Session>> GroupSessions = new Dictionary<string, Dictionary<int, Session>>();
+                Dictionary<string,int> CurrentGroupLogId = new Dictionary<string,int>();
+                foreach (string Group in Groups.Keys)
+                {
+                    Groups[Group].Sort();
+                    foreach (int ID in Groups[Group])
+                    {
+                        Session Irse = Session.FromTestLog(ID);
+                        if (!GroupSessions.ContainsKey(Group))
+                            GroupSessions[Group] = new Dictionary<int, Session>();
+                        GroupSessions[Group][ID] = Irse;
+                        
+                        CurrentGroupLogId[Group] = ID;
+                    }
+                }
+                lock (ManualTesting.GroupSessions)
+                {
+                    ManualTesting.GroupSessions = new Dictionary<string,Dictionary<int,Session>>(GroupSessions);
+                }
+                lock (ManualTesting.CurrentGroupLogId)
+                {
+                    ManualTesting.CurrentGroupLogId = new Dictionary<string,int>(CurrentGroupLogId);
+                }
+            }
+            catch (Exception Exp)
+            {
+                DB.Close();
+                throw Exp;
+            }
+            DB.Close();
+        }
+
+        #region LogRequestResponses
         internal static void LogProxyMessages(List<Session> IronSessions, List<Request> Requests, List<Response> Responses, List<Request> OriginalRequests, List<Response> OriginalResponses, List<Request> EditedRequests, List<Response> EditedResponses)
         {
             SQLiteConnection Log = new SQLiteConnection("data source=" + ProxyLogFile);
@@ -65,7 +435,7 @@ namespace IronWASP
                             Cmd.Parameters.AddWithValue("@Parameters", IrSe.Request.StoredParameters);
                             //Cmd.Parameters.AddWithValue("@RequestHeaders", IrSe.Request.GetHeadersAsString());//IrSe.Request.GetHeadersAsStringWithoutFullURL());
                             Cmd.Parameters.AddWithValue("@RequestHeaders", IrSe.Request.StoredHeadersString);
-                            if(IrSe.Request.IsBinary)
+                            if (IrSe.Request.IsBinary)
                                 Cmd.Parameters.AddWithValue("@RequestBody", IrSe.Request.StoredBinaryBodyString);
                             else
                                 Cmd.Parameters.AddWithValue("@RequestBody", IrSe.Request.BodyString);
@@ -243,258 +613,12 @@ namespace IronWASP
                     InsertLogs.Commit();
                 }
             }
-            catch(Exception Exp)
+            catch (Exception Exp)
             {
                 Log.Close();
                 throw Exp;
             }
             Log.Close();
-        }
-
-        internal static void LogMTRequest(Request Request)
-        {
-            SQLiteConnection MT_DB = new SQLiteConnection("data source=" + TestLogFile);
-            MT_DB.Open();
-            try
-            {
-                SQLiteCommand Cmd = MT_DB.CreateCommand();
-                Cmd.CommandText = "INSERT INTO TestLog (ID, SSL, HostName, Method, URL, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, Notes) VALUES (@ID, @SSL, @HostName, @Method, @URL, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @Notes)";
-                Cmd.Parameters.AddWithValue("@ID", Request.ID);
-                Cmd.Parameters.AddWithValue("@SSL", AsInt(Request.SSL));
-                Cmd.Parameters.AddWithValue("@HostName", Request.Host);
-                Cmd.Parameters.AddWithValue("@Method", Request.Method);
-                Cmd.Parameters.AddWithValue("@URL", Request.URL);
-                Cmd.Parameters.AddWithValue("@File", Request.File);
-                Cmd.Parameters.AddWithValue("@Parameters", Request.GetParametersString());
-                //Cmd.Parameters.AddWithValue("@RequestHeaders", Request.GetHeadersAsStringWithoutFullURL());
-                Cmd.Parameters.AddWithValue("@RequestHeaders", Request.GetHeadersAsString());
-                if (Request.IsBinary)
-                    Cmd.Parameters.AddWithValue("@RequestBody", Request.BinaryBodyString);
-                else
-                    Cmd.Parameters.AddWithValue("@RequestBody", Request.BodyString);
-                //Cmd.Parameters.AddWithValue("@RequestBody", Request.BodyString);
-                Cmd.Parameters.AddWithValue("@BinaryRequest", AsInt(Request.IsBinary));
-                Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
-                Cmd.ExecuteNonQuery();
-            }
-            catch(Exception Exp)
-            {
-                throw Exp;
-            }
-            MT_DB.Close();
-        }
-        internal static void LogMTResponse(Response Response)
-        {
-            SQLiteConnection MT_DB = new SQLiteConnection("data source=" + TestLogFile);
-            MT_DB.Open();
-            try
-            {
-                SQLiteCommand Cmd = MT_DB.CreateCommand();
-                Cmd.CommandText = "UPDATE TestLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, Notes=@Notes WHERE ID=@ID";
-                Cmd.Parameters.AddWithValue("@Code", Response.Code);
-                Cmd.Parameters.AddWithValue("@Length", Response.BodyLength);
-                Cmd.Parameters.AddWithValue("@MIME", Response.ContentType);
-                Cmd.Parameters.AddWithValue("@SetCookie", AsInt((Response.SetCookies.Count > 0)));
-                Cmd.Parameters.AddWithValue("@ResponseHeaders", Response.GetHeadersAsString());
-                if (Response.IsBinary)
-                    Cmd.Parameters.AddWithValue("@ResponseBody", Response.BinaryBodyString);
-                else
-                    Cmd.Parameters.AddWithValue("@ResponseBody", Response.BodyString);
-                //Cmd.Parameters.AddWithValue("@ResponseBody", Response.BodyString);
-                Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(Response.IsBinary));
-                Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
-                Cmd.Parameters.AddWithValue("@ID", Response.ID);
-                Cmd.ExecuteNonQuery();
-            }
-            catch(Exception Exp)
-            {
-                MT_DB.Close();
-                throw Exp;
-            }
-            MT_DB.Close();
-        }
-
-        internal static void AddToTestGroup(int ID, string Group)
-        {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
-            string CMD = "";
-            switch(Group)
-            {
-                case("Red"):
-                    CMD = "INSERT INTO TestGroups (Red, Green, Blue, Gray, Brown) VALUES (@ID,0,0,0,0)";
-                    break;
-                case ("Green"):
-                    CMD = "INSERT INTO TestGroups (Red, Green, Blue, Gray, Brown) VALUES (0,@ID,0,0,0)";
-                    break;
-                case ("Blue"):
-                    CMD = "INSERT INTO TestGroups (Red, Green, Blue, Gray, Brown) VALUES (0,0,@ID,0,0)";
-                    break;
-                case ("Gray"):
-                    CMD = "INSERT INTO TestGroups (Red, Green, Blue, Gray, Brown) VALUES (0,0,0,@ID,0)";
-                    break;
-                case ("Brown"):
-                    CMD = "INSERT INTO TestGroups (Red, Green, Blue, Gray, Brown) VALUES (0,0,0,0,@ID)";
-                    break;
-            }
-            DB.Open();
-            try
-            {
-                SQLiteCommand Cmd = DB.CreateCommand();
-                Cmd.CommandText = CMD;
-                Cmd.Parameters.AddWithValue("@ID", ID);
-                Cmd.ExecuteNonQuery();
-            }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
-        }
-
-        internal static void ClearGroup(string Group)
-        {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
-            string CMD = "";
-            switch (Group)
-            {
-                case ("Red"):
-                    CMD = "UPDATE TestGroups SET Red=0";
-                    break;
-                case ("Blue"):
-                    CMD = "UPDATE TestGroups SET Blue=0";
-                    break;
-                case ("Green"):
-                    CMD = "UPDATE TestGroups SET Green=0";
-                    break;
-                case ("Gray"):
-                    CMD = "UPDATE TestGroups SET Gray=0";
-                    break;
-                case ("Brown"):
-                    CMD = "UPDATE TestGroups SET Brown=0";
-                    break;
-            }
-            DB.Open();
-            try
-            {
-                SQLiteCommand Cmd = DB.CreateCommand();
-                Cmd.CommandText = CMD;
-                Cmd.ExecuteNonQuery();
-            }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
-        }
-
-        internal static void LoadTestGroups()
-        {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
-            
-            List<int> RedGroup = new List<int>();
-            List<int> BlueGroup = new List<int>();
-            List<int> GreenGroup = new List<int>();
-            List<int> GrayGroup = new List<int>();
-            List<int> BrownGroup = new List<int>();
-
-            DB.Open();
-            try
-            {
-                SQLiteCommand Cmd = DB.CreateCommand();
-                Cmd.CommandText = "SELECT Red, Green, Blue, Gray, Brown FROM TestGroups";
-                SQLiteDataReader result = Cmd.ExecuteReader();
-                while (result.Read())
-                {
-                    try
-                    {
-                        int Red = Int32.Parse(result["Red"].ToString());
-                        if (Red != 0) RedGroup.Add(Red);
-                    }catch { }
-                    try
-                    {
-                        int Green = Int32.Parse(result["Green"].ToString());
-                        if (Green != 0) GreenGroup.Add(Green);
-                    }
-                    catch { }
-                    try
-                    {
-                        int Blue = Int32.Parse(result["Blue"].ToString());
-                        if (Blue != 0) BlueGroup.Add(Blue);
-                    }
-                    catch { }
-                    try
-                    {
-                        int Gray = Int32.Parse(result["Gray"].ToString());
-                        if (Gray != 0) GrayGroup.Add(Gray);
-                    }
-                    catch { }
-                    try
-                    {
-                        int Brown = Int32.Parse(result["Brown"].ToString());
-                        if (Brown != 0) BrownGroup.Add(Brown);
-                    }
-                    catch { }
-                }
-                RedGroup.Sort(); BlueGroup.Sort(); GreenGroup.Sort(); GrayGroup.Sort(); BrownGroup.Sort();
-                foreach (int ID in RedGroup)
-                {
-                    try
-                    {
-                        Session Irse = Session.FromTestLog(ID);
-                        ManualTesting.RedGroupSessions.Add(ID, Irse);
-                        ManualTesting.RedGroupID = ID;
-                    }
-                    catch { }
-                }
-                foreach (int ID in BlueGroup)
-                {
-                    try
-                    {
-                        Session Irse = Session.FromTestLog(ID);
-                        ManualTesting.BlueGroupSessions.Add(ID, Irse);
-                        ManualTesting.BlueGroupID = ID;
-                    }
-                    catch { }
-                }
-                foreach (int ID in GreenGroup)
-                {
-                    try
-                    {
-                        Session Irse = Session.FromTestLog(ID);
-                        ManualTesting.GreenGroupSessions.Add(ID, Irse);
-                        ManualTesting.GreenGroupID = ID;
-                    }
-                    catch { }
-                }
-                foreach (int ID in GrayGroup)
-                {
-                    try
-                    {
-                        Session Irse = Session.FromTestLog(ID);
-                        ManualTesting.GrayGroupSessions.Add(ID, Irse);
-                        ManualTesting.GrayGroupID = ID;
-                    }
-                    catch { }
-                }
-                foreach (int ID in BrownGroup)
-                {
-                    try
-                    {
-                        Session Irse = Session.FromTestLog(ID);
-                        ManualTesting.BrownGroupSessions.Add(ID, Irse);
-                        ManualTesting.BrownGroupID = ID;
-                    }
-                    catch { }
-                }
-            }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         internal static void LogShellMessages(List<Session> IronSessions, List<Request> Requests, List<Response> Responses)
@@ -788,6 +912,108 @@ namespace IronWASP
             }
             Log.Close();
         }
+
+        internal static void LogOtherSourceMessages(List<Session> IronSessions, List<Request> Requests, List<Response> Responses, string Source)
+        {
+            SQLiteConnection Log = new SQLiteConnection("data source=" + GetOtherSourceLogFileName(Source));
+            Log.Open();
+            try
+            {
+                using (SQLiteTransaction Create = Log.BeginTransaction())
+                {
+                    using (SQLiteCommand Cmd = new SQLiteCommand(Log))
+                    {
+                        Cmd.CommandText = "CREATE TABLE IF NOT EXISTS Log (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, Notes TEXT)";
+                        Cmd.ExecuteNonQuery();
+                        
+                        //Insert Request/Response in to DB
+                        foreach (Session IrSe in IronSessions)
+                        {
+                            Cmd.CommandText = "INSERT INTO Log (ID , SSL, HostName, Method, URL, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, Code, Length, MIME, SetCookie, ResponseHeaders, ResponseBody, BinaryResponse, Notes) VALUES (@ID , @SSL, @HostName, @Method, @URL, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @Code, @Length, @MIME, @SetCookie, @ResponseHeaders, @ResponseBody, @BinaryResponse, @Notes)";
+                            Cmd.Parameters.AddWithValue("@ID", IrSe.Request.ID);
+                            Cmd.Parameters.AddWithValue("@SSL", AsInt(IrSe.Request.SSL));
+                            Cmd.Parameters.AddWithValue("@HostName", IrSe.Request.Host);
+                            Cmd.Parameters.AddWithValue("@Method", IrSe.Request.Method);
+                            Cmd.Parameters.AddWithValue("@URL", IrSe.Request.URL);
+                            Cmd.Parameters.AddWithValue("@File", IrSe.Request.StoredFile);
+                            Cmd.Parameters.AddWithValue("@Parameters", IrSe.Request.StoredParameters);
+                            //Cmd.Parameters.AddWithValue("@RequestHeaders", IrSe.Request.GetHeadersAsStringWithoutFullURL());
+                            Cmd.Parameters.AddWithValue("@RequestHeaders", IrSe.Request.StoredHeadersString);
+                            if (IrSe.Request.IsBinary)
+                                Cmd.Parameters.AddWithValue("@RequestBody", IrSe.Request.StoredBinaryBodyString);
+                            else
+                                Cmd.Parameters.AddWithValue("@RequestBody", IrSe.Request.BodyString);
+                            //Cmd.Parameters.AddWithValue("@RequestBody", IrSe.Request.BodyString);
+                            Cmd.Parameters.AddWithValue("@BinaryRequest", AsInt(IrSe.Request.IsBinary));
+                            Cmd.Parameters.AddWithValue("@Code", IrSe.Response.Code);
+                            Cmd.Parameters.AddWithValue("@Length", IrSe.Response.BodyLength);
+                            Cmd.Parameters.AddWithValue("@MIME", IrSe.Response.ContentType);
+                            Cmd.Parameters.AddWithValue("@SetCookie", AsInt((IrSe.Response.SetCookies.Count > 0)));
+
+                            //Cmd.Parameters.AddWithValue("@ResponseHeaders", IrSe.Response.GetHeadersAsString());
+                            Cmd.Parameters.AddWithValue("@ResponseHeaders", IrSe.Response.StoredHeadersString);
+                            if (IrSe.Response.IsBinary)
+                                Cmd.Parameters.AddWithValue("@ResponseBody", IrSe.Response.StoredBinaryBodyString);
+                            else
+                                Cmd.Parameters.AddWithValue("@ResponseBody", IrSe.Response.BodyString);
+                            //Cmd.Parameters.AddWithValue("@ResponseBody", IrSe.Response.BodyString);
+                            Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(IrSe.Response.IsBinary));
+                            Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
+                            Cmd.ExecuteNonQuery();
+                        }
+                        foreach (Request Req in Requests)
+                        {
+                            Cmd.CommandText = "INSERT INTO Log (ID , SSL, HostName, Method, URL, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, Notes) VALUES (@ID , @SSL, @HostName, @Method, @URL, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @Notes)";
+                            Cmd.Parameters.AddWithValue("@ID", Req.ID);
+                            Cmd.Parameters.AddWithValue("@SSL", AsInt(Req.SSL));
+                            Cmd.Parameters.AddWithValue("@HostName", Req.Host);
+                            Cmd.Parameters.AddWithValue("@Method", Req.Method);
+                            Cmd.Parameters.AddWithValue("@URL", Req.URL);
+                            Cmd.Parameters.AddWithValue("@File", Req.StoredFile);
+                            Cmd.Parameters.AddWithValue("@Parameters", Req.StoredParameters);
+                            //Cmd.Parameters.AddWithValue("@RequestHeaders", Req.GetHeadersAsStringWithoutFullURL());
+                            Cmd.Parameters.AddWithValue("@RequestHeaders", Req.StoredHeadersString);
+                            if (Req.IsBinary)
+                                Cmd.Parameters.AddWithValue("@RequestBody", Req.StoredBinaryBodyString);
+                            else
+                                Cmd.Parameters.AddWithValue("@RequestBody", Req.BodyString);
+                            //Cmd.Parameters.AddWithValue("@RequestBody", Req.BodyString);
+                            Cmd.Parameters.AddWithValue("@BinaryRequest", AsInt(Req.IsBinary));
+                            Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
+                            Cmd.ExecuteNonQuery();
+                        }
+                        foreach (Response Res in Responses)
+                        {
+                            Cmd.CommandText = "UPDATE Log SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, Notes=@Notes WHERE ID=@ID";
+                            Cmd.Parameters.AddWithValue("@Code", Res.Code);
+                            Cmd.Parameters.AddWithValue("@Length", Res.BodyLength);
+                            Cmd.Parameters.AddWithValue("@MIME", Res.ContentType);
+                            Cmd.Parameters.AddWithValue("@SetCookie", AsInt((Res.SetCookies.Count > 0)));
+                            //Cmd.Parameters.AddWithValue("@ResponseHeaders", Res.GetHeadersAsString());
+                            Cmd.Parameters.AddWithValue("@ResponseHeaders", Res.StoredHeadersString);
+                            if (Res.IsBinary)
+                                Cmd.Parameters.AddWithValue("@ResponseBody", Res.StoredBinaryBodyString);
+                            else
+                                Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
+                            //Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
+                            Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(Res.IsBinary));
+                            Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
+                            Cmd.Parameters.AddWithValue("@ID", Res.ID);
+                            Cmd.ExecuteNonQuery();
+                        }
+                    }
+                    Create.Commit();
+                }
+            }
+            catch (Exception Exp)
+            {
+                Log.Close();
+                throw Exp;
+            }
+            Log.Close();
+        }
+        #endregion
+
         internal static void CreateScan(int ScanID, Request Req)
         {
             SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
@@ -863,13 +1089,47 @@ namespace IronWASP
                     {
                         foreach (IronTrace Trace in Traces)
                         {
-                            Cmd.CommandText = "INSERT INTO ScanTrace (ID, ScanID, PluginName, Section, Parameter, Title, Message) VALUES (@ID, @ScanID, @PluginName, @Section, @Parameter, @Title, @Message)";
+                            Cmd.CommandText = "INSERT INTO ScanTrace (ID, ScanID, PluginName, Section, Parameter, Title, Message, OverviewXml) VALUES (@ID, @ScanID, @PluginName, @Section, @Parameter, @Title, @Message, @OverviewXml)";
                             Cmd.Parameters.AddWithValue("@ID", Trace.ID.ToString());
                             Cmd.Parameters.AddWithValue("@ScanID", Trace.ScanID.ToString());
                             Cmd.Parameters.AddWithValue("@PluginName", Trace.PluginName);
                             Cmd.Parameters.AddWithValue("@Section", Trace.Section);
                             Cmd.Parameters.AddWithValue("@Parameter", Trace.Parameter);
                             Cmd.Parameters.AddWithValue("@Title", Trace.Title);
+                            Cmd.Parameters.AddWithValue("@Message", Trace.Message);
+                            Cmd.Parameters.AddWithValue("@OverviewXml", Trace.OverviewXml);
+                            Cmd.ExecuteNonQuery();
+                        }
+                    }
+                    Create.Commit();
+                }
+            }
+            catch (Exception Exp)
+            {
+                Log.Close();
+                throw Exp;
+            }
+            Log.Close();
+        }
+
+        internal static void LogSessionPluginTraces(List<IronTrace> Traces)
+        {
+            SQLiteConnection Log = new SQLiteConnection("data source=" + TraceLogFile);
+            Log.Open();
+            try
+            {
+                using (SQLiteTransaction Create = Log.BeginTransaction())
+                {
+                    using (SQLiteCommand Cmd = new SQLiteCommand(Log))
+                    {
+                        foreach (IronTrace Trace in Traces)
+                        {
+                            Cmd.CommandText = "INSERT INTO SessionPluginTrace (ID, LogId, LogSource, PluginName, Action, Message) VALUES (@ID, @LogId, @LogSource, @PluginName, @Action, @Message)";
+                            Cmd.Parameters.AddWithValue("@ID", Trace.ID.ToString());
+                            Cmd.Parameters.AddWithValue("@LogId", Trace.LogId.ToString());
+                            Cmd.Parameters.AddWithValue("@LogSource", Trace.LogSource);
+                            Cmd.Parameters.AddWithValue("@PluginName", Trace.SessionPluginName);
+                            Cmd.Parameters.AddWithValue("@Action", Trace.Action);
                             Cmd.Parameters.AddWithValue("@Message", Trace.Message);
                             Cmd.ExecuteNonQuery();
                         }
@@ -968,7 +1228,7 @@ namespace IronWASP
 
         }
 
-        internal static void LogPluginResults(List<PluginResult> Results)
+        internal static void LogPluginResults(List<Finding> Results)
         {
             SQLiteConnection Log = new SQLiteConnection("data source=" + PluginResultsLogFile);
             Log.Open();
@@ -978,7 +1238,7 @@ namespace IronWASP
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(Log))
                     {
-                        foreach (PluginResult PR in Results)
+                        foreach (Finding PR in Results)
                         {
                             Cmd.CommandText = "INSERT INTO PluginResult (ID, HostName, Title, Plugin, Summary, Severity, Confidence, Type, UniquenessString) VALUES (@ID,@HostName,@Title,@Plugin,@Summary,@Severity,@Confidence,@Type,@UniquenessString)";
                             Cmd.Parameters.AddWithValue("@ID", PR.Id);
@@ -988,7 +1248,7 @@ namespace IronWASP
                             Cmd.Parameters.AddWithValue("@Summary", PR.Summary);
                             Cmd.Parameters.AddWithValue("@Severity", GetSeverity(PR.Severity));
                             Cmd.Parameters.AddWithValue("@Confidence", GetConfidence(PR.Confidence));
-                            Cmd.Parameters.AddWithValue("@Type", GetResultType(PR.ResultType));
+                            Cmd.Parameters.AddWithValue("@Type", GetResultType(PR.Type));
                             Cmd.Parameters.AddWithValue("@UniquenessString", PR.Signature);
                             Cmd.ExecuteNonQuery();
 
@@ -1056,6 +1316,7 @@ namespace IronWASP
             DB.Close();
         }
 
+        #region StoreConfig
         internal static void StoreProxyConfig()
         {
             SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
@@ -1487,6 +1748,524 @@ namespace IronWASP
             DB.Close();
         }
 
+        internal static void StoreCharacterEscapingRules()
+        {
+            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
+            DB.Open();
+            try
+            {
+                using (SQLiteTransaction Create = DB.BeginTransaction())
+                {
+                    using (SQLiteCommand Cmd = new SQLiteCommand(DB))
+                    {
+                        Cmd.CommandText = "DELETE FROM CharacterEscapingRules";
+                        Cmd.ExecuteNonQuery();
+                        foreach (string[] Rule in Scanner.UserSpecifiedEncodingRuleList)
+                        {
+                            Cmd.CommandText = "INSERT INTO CharacterEscapingRules (RawCharacter, EncodedCharacter) VALUES (@RawCharacter, @EncodedCharacter)";
+                            Cmd.Parameters.AddWithValue("@RawCharacter", Rule[0]);
+                            Cmd.Parameters.AddWithValue("@EncodedCharacter", Rule[1]);
+                            Cmd.ExecuteNonQuery();
+                        }
+                    }
+                    Create.Commit();
+                }
+            }
+            catch (Exception Exp)
+            {
+                DB.Close();
+                throw Exp;
+            }
+            DB.Close();
+        }
+
+        internal static void StoreParametersBlackList()
+        {
+            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
+            DB.Open();
+            try
+            {
+                using (SQLiteTransaction Create = DB.BeginTransaction())
+                {
+                    using (SQLiteCommand Cmd = new SQLiteCommand(DB))
+                    {
+                        Cmd.CommandText = "DELETE FROM ParametersBlackList";
+                        Cmd.ExecuteNonQuery();
+                        foreach (string ParameterName in StartScanJobWizard.ParametersBlackList)
+                        {
+                            Cmd.CommandText = "INSERT INTO ParametersBlackList (ParameterSection, ParameterName) VALUES (@ParameterSection, @ParameterName)";
+                            Cmd.Parameters.AddWithValue("@ParameterSection", "All");
+                            Cmd.Parameters.AddWithValue("@ParameterName", ParameterName);
+                            Cmd.ExecuteNonQuery();
+                        }
+                    }
+                    Create.Commit();
+                }
+            }
+            catch (Exception Exp)
+            {
+                DB.Close();
+                throw Exp;
+            }
+            DB.Close();
+        }
+        #endregion
+
+        #region Search DB
+        internal static List<LogRow> SearchLogs(LogSearchQuery Query, int MinId, int MaxId)
+        {
+            List<LogRow> Results = new List<LogRow>();
+            string DataSource = string.Format("data source={0}",GetLogSourceFileName(Query.LogSource));
+            string QueryWithoutIds = GetQueryWithoutIdsParts(Query);
+            string FullQuery = string.Format(QueryWithoutIds, GetLogIdsRangeSearchQueryPart(MinId, MaxId));
+            return SearchDB(DataSource, FullQuery, Query);
+        }
+        internal static List<LogRow> SearchLogs(LogSearchQuery Query, List<int> LogIds, int StartIndex, int Count)
+        {
+            List<LogRow> Results = new List<LogRow>();
+            string DataSource = string.Format("data source={0}", GetLogSourceFileName(Query.LogSource));
+            string QueryWithoutIds = GetQueryWithoutIdsParts(Query);
+            string FullQuery = string.Format(QueryWithoutIds, GetLogIdsRangeSearchQueryPart(LogIds, StartIndex, Count));
+            return SearchDB(DataSource, FullQuery, Query);
+        }
+        internal static List<LogRow> SearchLogs(LogSearchQuery Query, int ScanID)
+        {
+            List<LogRow> Results = new List<LogRow>();
+            string DataSource = string.Format("data source={0}", GetLogSourceFileName(Query.LogSource));
+            string QueryWithoutIds = GetQueryWithoutIdsParts(Query);
+            string FullQuery = string.Format(QueryWithoutIds, GetLogIdsRangeSearchQueryPart(ScanID));
+            return SearchDB(DataSource, FullQuery, Query);
+        }
+
+        static List<LogRow> SearchDB(string DataSource, string CmdString, LogSearchQuery Query)
+        {
+            List<LogRow> IronLogRecords = new List<LogRow>();
+            SQLiteConnection DB = new SQLiteConnection(DataSource);
+            DB.Open();
+            try
+            {
+                SQLiteCommand cmd = DB.CreateCommand();
+                cmd.CommandText = CmdString;
+                if (Query.UrlMatchString.Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@UrlMatchKeyword", GetUrlSearchQueryValuePart(Query.UrlMatchMode, Query.UrlMatchString));
+                }
+                if (Query.Keyword.Length > 0)
+                {
+                    cmd.Parameters.AddWithValue("@Keyword", string.Format("%{0}%",Query.Keyword));
+                }
+
+                if (Query.MethodsToCheck.Count > 0)
+                {
+                    for (int i = 0; i < Query.MethodsToCheck.Count; i++)
+                    {
+                        cmd.Parameters.AddWithValue(string.Format("@Method{0}", i), Query.MethodsToCheck[i]);
+                    }
+                }
+                else if (Query.MethodsToIgnore.Count > 0)
+                {
+                    for (int i = 0; i < Query.MethodsToIgnore.Count; i++)
+                    {
+                        cmd.Parameters.AddWithValue(string.Format("@Method{0}", i), Query.MethodsToIgnore[i]);
+                    }
+                }
+
+                if (Query.HostNamesToCheck.Count > 0)
+                {
+                    for (int i = 0; i < Query.HostNamesToCheck.Count; i++)
+                    {
+                        cmd.Parameters.AddWithValue(string.Format("@HostName{0}", i), Query.HostNamesToCheck[i]);
+                    }
+                }
+                else if (Query.HostNamesToIgnore.Count > 0)
+                {
+                    for (int i = 0; i < Query.HostNamesToIgnore.Count; i++)
+                    {
+                        cmd.Parameters.AddWithValue(string.Format("@HostName{0}", i), Query.HostNamesToIgnore[i]);
+                    }
+                }
+
+                if (Query.CodesToCheck.Count > 0)
+                {
+                    for (int i = 0; i < Query.CodesToCheck.Count; i++)
+                    {
+                        cmd.Parameters.AddWithValue(string.Format("@Code{0}", i), Query.CodesToCheck[i]);
+                    }
+                }
+                else if (Query.CodesToIgnore.Count > 0)
+                {
+                    for (int i = 0; i < Query.CodesToIgnore.Count; i++)
+                    {
+                        cmd.Parameters.AddWithValue(string.Format("@Code{0}", i), Query.CodesToIgnore[i]);
+                    }
+                }
+
+                if (Query.FileExtensionsToCheck.Count > 0)
+                {
+                    for (int i = 0; i < Query.FileExtensionsToCheck.Count; i++)
+                    {
+                        cmd.Parameters.AddWithValue(string.Format("@File{0}", i), Query.FileExtensionsToCheck[i]);
+                    }
+                }
+                else if (Query.FileExtensionsToIgnore.Count > 0)
+                {
+                    for (int i = 0; i < Query.FileExtensionsToIgnore.Count; i++)
+                    {
+                        cmd.Parameters.AddWithValue(string.Format("@File{0}", i), Query.FileExtensionsToIgnore[i]);
+                    }
+                }
+
+                SQLiteDataReader result = cmd.ExecuteReader();
+                while (result.Read())
+                {
+                    try
+                    {
+                        LogRow LR = new LogRow();
+                        try { LR.ID = Int32.Parse(result["ID"].ToString()); }
+                        catch { continue; }
+                        LR.Host = result["HostName"].ToString();
+                        LR.Method = result["Method"].ToString();
+                        LR.Url = result["URL"].ToString();
+                        LR.File = result["File"].ToString();
+                        LR.SSL = result["SSL"].ToString().Equals("1");
+                        LR.Parameters = result["Parameters"].ToString();
+                        try
+                        { LR.Code = Int32.Parse(result["Code"].ToString()); }
+                        catch { LR.Code = -1; }
+                        try
+                        { LR.Length = Int32.Parse(result["Length"].ToString()); }
+                        catch { LR.Length = 0; }
+                        LR.Mime = result["MIME"].ToString();
+                        LR.SetCookie = result["SetCookie"].ToString().Equals("1");
+                        IronLogRecords.Add(LR);
+                    }
+                    catch { }
+                }
+                result.Close();
+            }
+            catch (Exception Exp)
+            {
+                DB.Close();
+                throw Exp;
+            }
+            DB.Close();
+            return IronLogRecords;
+        }
+        
+
+        internal static string GetQueryWithoutIdsParts(LogSearchQuery Query)
+        {
+            string QueryFirstPart = string.Format("SELECT ID, SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse FROM {0} WHERE ", GetLogTableName(Query.LogSource));
+
+            StringBuilder SB = new StringBuilder();
+            bool AndRequired = true;
+
+            if (Query.HostNamesToCheck.Count > 0 || Query.HostNamesToIgnore.Count > 0)
+            {
+                if (AndRequired) SB.Append(" AND ");
+                SB.Append(GetHostNamesSearchQueryPart(Query));
+                AndRequired = true;
+            }
+
+            if (Query.CodesToCheck.Count > 0 || Query.CodesToIgnore.Count > 0)
+            {
+                if (AndRequired) SB.Append(" AND ");
+                SB.Append(GetCodesSearchQueryPart(Query));
+                AndRequired = true;
+            }
+
+            if (Query.FileExtensionsToCheck.Count > 0 || Query.FileExtensionsToIgnore.Count > 0)
+            {
+                if (AndRequired) SB.Append(" AND ");
+                SB.Append(GetFilesSearchQueryPart(Query));
+                AndRequired = true;
+            }
+
+            if (Query.MethodsToCheck.Count > 0 || Query.MethodsToIgnore.Count > 0)
+            {
+                if (AndRequired) SB.Append(" AND ");
+                SB.Append(GetMethodsSearchQueryPart(Query));
+                AndRequired = true;
+            }
+
+            if (Query.UrlMatchString.Length > 0)
+            {
+                if (AndRequired) SB.Append(" AND ");
+                SB.Append(GetUrlSearchQueryPart(Query.UrlMatchMode));
+                AndRequired = true;
+            }
+
+            if (Query.Keyword.Length > 0)
+            {
+                if (AndRequired) SB.Append(" AND ");
+                SB.Append(GetKeywordSearchQueryPart(Query.Keyword, Query.SearchRequestHeaders, Query.SearchRequestBody, Query.SearchResponseHeaders, Query.SearchResponseBody));
+                AndRequired = true;
+            }
+
+            StringBuilder FinalSB = new StringBuilder();
+            FinalSB.Append(QueryFirstPart); FinalSB.Append(" {0} ");
+            FinalSB.Append(SB.ToString());
+            return FinalSB.ToString();
+        }
+        static string GetLogIdsRangeSearchQueryPart(int MinId, int MaxId)
+        {
+            return string.Format("(ID>{0} AND ID<{1})", MinId, MaxId);
+        }
+        static string GetLogIdsRangeSearchQueryPart(List<int> Ids, int StartIndex, int Count)
+        {
+            StringBuilder SB = new StringBuilder();
+            int Counter = 0;
+            for (int i = StartIndex; i < Ids.Count; i++)
+            {
+                if (Counter > Count) break;
+                if (SB.Length > 0) SB.Append(" OR ");
+                SB.Append(string.Format(" ID={0} ", Ids[i]));
+                Counter++;
+            }
+            return string.Format("({0})", SB.ToString());
+        }
+        static string GetLogIdsRangeSearchQueryPart(int ScanID)
+        {
+            return string.Format("(ScanID={0})", ScanID);
+        }
+        static string GetHostNamesSearchQueryPart(LogSearchQuery Query)
+        {
+            List<string> HostNames = new List<string>();
+            bool Negate = false;
+            if(Query.HostNamesToCheck.Count > 0)
+            {
+                HostNames = new List<string>(Query.HostNamesToCheck);
+                Negate = false;
+            }
+            else if (Query.HostNamesToIgnore.Count > 0)
+            {
+                HostNames = new List<string>(Query.HostNamesToIgnore);
+                Negate = true;
+            }
+            StringBuilder SB = new StringBuilder();
+            for (int i=0; i< HostNames.Count ; i++)
+            {
+                if (SB.Length > 0)
+                {
+                    if (Negate)
+                        SB.Append(" AND ");
+                    else
+                        SB.Append(" OR ");
+                }
+                SB.Append("HostName");
+                if (Negate)
+                    SB.Append("!=");
+                else
+                    SB.Append("=");
+                SB.Append(string.Format("@HostName{0}", i));
+            }
+            return string.Format("({0})", SB.ToString());
+        }
+        static string GetMethodsSearchQueryPart(LogSearchQuery Query)
+        {
+            List<string> Methods = new List<string>();
+            bool Negate = false;
+            if (Query.MethodsToCheck.Count > 0)
+            {
+                Methods = new List<string>(Query.MethodsToCheck);
+                Negate = false;
+            }
+            else if (Query.MethodsToIgnore.Count > 0)
+            {
+                Methods = new List<string>(Query.MethodsToIgnore);
+                Negate = true;
+            }
+            StringBuilder SB = new StringBuilder();
+            for (int i=0; i< Methods.Count ; i++)
+            {
+                if (SB.Length > 0)
+                {
+                    if (Negate)
+                        SB.Append(" AND ");
+                    else
+                        SB.Append(" OR ");
+                }
+                SB.Append("Method");
+                if (Negate)
+                    SB.Append("!=");
+                else
+                    SB.Append("=");
+                SB.Append(string.Format("@Method{0}", i));
+            }
+            return string.Format("({0})", SB.ToString());
+        }
+        static string GetCodesSearchQueryPart(LogSearchQuery Query)
+        {
+            List<int> Codes = new List<int>();
+            bool Negate = false;
+            if (Query.CodesToCheck.Count > 0)
+            {
+                Codes = new List<int>(Query.CodesToCheck);
+                Negate = false;
+            }
+            else if (Query.CodesToIgnore.Count > 0)
+            {
+                Codes = new List<int>(Query.CodesToIgnore);
+                Negate = true;
+            }
+            StringBuilder SB = new StringBuilder();
+            for (int i = 0; i < Codes.Count; i++)
+            {
+                if (SB.Length > 0)
+                {
+                    if (Negate)
+                        SB.Append(" AND ");
+                    else
+                        SB.Append(" OR ");
+                }
+                SB.Append("Code");
+                if (Negate)
+                    SB.Append("!=");
+                else
+                    SB.Append("=");
+                SB.Append(string.Format("@Code{0}", i));
+            }
+            return string.Format("({0})", SB.ToString());
+        }
+        static string GetFilesSearchQueryPart(LogSearchQuery Query)
+        {
+            List<string> Files = new List<string>();
+            bool Negate = false;
+            if (Query.FileExtensionsToCheck.Count > 0)
+            {
+                Files = new List<string>(Query.FileExtensionsToCheck);
+                Negate = false;
+            }
+            else if (Query.FileExtensionsToIgnore.Count > 0)
+            {
+                Files = new List<string>(Query.FileExtensionsToIgnore);
+                Negate = true;
+            }
+            StringBuilder SB = new StringBuilder();
+            for (int i = 0; i < Files.Count; i++)
+            {
+                if (SB.Length > 0)
+                {
+                    if (Negate)
+                        SB.Append(" AND ");
+                    else
+                        SB.Append(" OR ");
+                }
+                SB.Append("File");
+                if (Negate)
+                    SB.Append("!=");
+                else
+                    SB.Append("=");
+                SB.Append(string.Format("@File{0}", i));
+            }
+            return string.Format("({0})", SB.ToString());
+        }
+        static string GetUrlSearchQueryPart(int UrlMatchType)
+        {
+            switch (UrlMatchType)
+            {
+                //match
+                case(0):
+                case(2):
+                case(3):
+                    return "URL LIKE @UrlMatchKeyword";
+                //don't match
+                case (1):
+                    return "URL NOT LIKE @UrlMatchKeyword";
+                //equal
+                case (4):
+                    return "URL = @UrlMatchKeyword";
+                //not equal
+                case (5):
+                    return "URL != @UrlMatchKeyword";
+                default:
+                    return "";
+            }
+        }
+        static string GetUrlSearchQueryValuePart(int UrlMatchType, string Keyword)
+        {
+            switch (UrlMatchType)
+            {
+                //match and dont match
+                case (0):
+                case (1):
+                    return string.Format("%{0}%", Keyword);
+                //starts with
+                case (2):
+                    return string.Format("{0}%", Keyword);
+                //ends with
+                case (3):
+                    return string.Format("%{0}", Keyword);
+                //equal and not equal
+                case (4):
+                    return Keyword;
+                default:
+                    return "";
+            }
+        }
+        static string GetKeywordSearchQueryPart(string Keyword, bool RequestHeaders, bool RequestBody, bool ResponseHeaders, bool ResponseBody)
+        {
+            StringBuilder SB = new StringBuilder();
+            if (RequestHeaders)
+            {
+                SB.Append(" RequestHeaders LIKE @Keyword ");
+            }
+            if (ResponseHeaders)
+            {
+                if (SB.Length > 0) SB.Append(" OR ");
+                SB.Append(" ResponseHeaders LIKE @Keyword ");
+            }
+            if (RequestBody)
+            {
+                if (SB.Length > 0) SB.Append(" OR ");
+                SB.Append(" (RequestBody LIKE @Keyword AND BinaryRequest != 1) ");
+            }
+            if (ResponseBody)
+            {
+                if (SB.Length > 0) SB.Append(" OR ");
+                SB.Append(" (ResponseBody LIKE @Keyword AND BinaryResponse != 1) ");
+            }
+            return string.Format("({0})", SB.ToString());
+        }
+        #endregion
+
+        static string GetLogSourceFileName(string LogName)
+        {
+            switch (LogName)
+            {
+                case("Proxy"):
+                    return ProxyLogFile;
+                case("Probe"):
+                    return ProbeLogFile;
+                case ("Test"):
+                    return TestLogFile;
+                case ("Shell"):
+                    return ShellLogFile;
+                case ("Scan"):
+                    return ScanLogFile;
+                default:
+                    return GetOtherSourceLogFileName(LogName);
+            }
+        }
+        static string GetLogTableName(string LogName)
+        {
+            switch (LogName)
+            {
+                case ("Proxy"):
+                    return "ProxyLog";
+                case ("Probe"):
+                    return "ProbeLog";
+                case ("Test"):
+                    return "TestLog";
+                case ("Shell"):
+                    return "ShellLog";
+                case ("Scan"):
+                    return "ScanLog";
+                default:
+                    return "Log";
+            }
+        }
+        
         internal static IronLogRecord GetRecordFromProxyLog(int ID)
         {
             string DataSource = "data source=" + ProxyLogFile;
@@ -1515,6 +2294,12 @@ namespace IronWASP
         {
             string DataSource = "data source=" + ScanLogFile;
             string Cmd = "SELECT RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse FROM ScanLog WHERE ID=@ID LIMIT 1";
+            return GetRecordFromDB(DataSource, Cmd, ID, false);
+        }
+        internal static IronLogRecord GetRecordFromOtherSourceLog(int ID, string Source)
+        {
+            string DataSource = "data source=" + GetOtherSourceLogFileName(Source);
+            string Cmd = "SELECT RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse FROM Log WHERE ID=@ID LIMIT 1";
             return GetRecordFromDB(DataSource, Cmd, ID, false);
         }
 
@@ -1588,6 +2373,12 @@ namespace IronWASP
         {
             string DataSource = "data source=" + ScanLogFile;
             string Cmd = "SELECT ID, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse FROM ScanLog";
+            return GetRecordsFromDB(DataSource, Cmd, false);
+        }
+        internal static List<IronLogRecord> GetRecordsFromOtherSourceLog(string Source)
+        {
+            string DataSource = "data source=" + GetOtherSourceLogFileName(Source);
+            string Cmd = "SELECT ID, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse FROM Log";
             return GetRecordsFromDB(DataSource, Cmd, false);
         }
 
@@ -1675,6 +2466,16 @@ namespace IronWASP
             string Cmd = "SELECT ID , ScanID, SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse FROM ScanLog WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
             return GetRecordsFromDB(DataSource, Cmd, "scan", StartIndex, Count);
         }
+        public static List<LogRow> GetRecordsFromSelectedOtherSourceLog(int StartIndex, int Count)
+        {
+            return GetRecordsFromOtherSourceLog(StartIndex, Count, IronLog.SelectedOtherSource);
+        }
+        public static List<LogRow> GetRecordsFromOtherSourceLog(int StartIndex, int Count, string Source)
+        {
+            string DataSource = "data source=" + GetOtherSourceLogFileName(Source);
+            string Cmd = "SELECT ID , SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse FROM Log WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
+            return GetRecordsFromDB(DataSource, Cmd, Source, StartIndex, Count);
+        }
 
         static List<LogRow> GetRecordsFromDB(string DataSource, string CmdString, string LogType, int StartIndex, int Count)
         {
@@ -1730,6 +2531,7 @@ namespace IronWASP
             return IronLogRecords;
         }
 
+        #region GetLastId
         public static int GetLastProxyLogRowId()
         {
             string DataSource = "data source=" + ProxyLogFile;
@@ -1760,6 +2562,12 @@ namespace IronWASP
             string Cmd = "SELECT max(ID) FROM ShellLog";
             return GetLastRowIdFromDB(DataSource, Cmd);
         }
+        public static int GetLastLogRowId(string Source)
+        {
+            string DataSource = "data source=" + GetOtherSourceLogFileName(Source);
+            string Cmd = "SELECT max(ID) FROM Log";
+            return GetLastRowIdFromDB(DataSource, Cmd);
+        }
         public static int GetLastTraceLogRowId()
         {
             string DataSource = "data source=" + TraceLogFile;
@@ -1770,6 +2578,12 @@ namespace IronWASP
         {
             string DataSource = "data source=" + TraceLogFile;
             string Cmd = "SELECT max(ID) FROM ScanTrace";
+            return GetLastRowIdFromDB(DataSource, Cmd);
+        }
+        public static int GetLastSessionPluginTraceLogRowId()
+        {
+            string DataSource = "data source=" + TraceLogFile;
+            string Cmd = "SELECT max(ID) FROM SessionPluginTrace";
             return GetLastRowIdFromDB(DataSource, Cmd);
         }
         public static int GetLastPluginResultLogRowId()
@@ -1816,6 +2630,7 @@ namespace IronWASP
             DB.Close();
             return LastRowId;
         }
+        #endregion
 
         public static List<LogRow> GetRecordsFromProxyLogForUrl(string Host, string Url, int StartIndex, int Count)
         {
@@ -1908,6 +2723,8 @@ namespace IronWASP
             string[] ScanPluginsArray = result["ScanPlugins"].ToString().Split(new char[] { ',' });
             DB.Close();
             ScannerFromLog = new Scanner(Req);
+            ScannerFromLog.ScanID = ScanID;
+
             if (Status.Equals("Not Started")) return ScannerFromLog;
 
             if (SessionPluginName.Length > 0)
@@ -1939,7 +2756,7 @@ namespace IronWASP
             ScannerFromLog.Status = Status;
             return ScannerFromLog;
         }
-        internal static PluginResult GetPluginResultFromDB(int ID)
+        internal static Finding GetPluginResultFromDB(int ID)
         {
             SQLiteConnection DB = new SQLiteConnection("data source=" + PluginResultsLogFile);
             DB.Open();
@@ -1947,14 +2764,14 @@ namespace IronWASP
             cmd.CommandText = "SELECT HostName, Title, Plugin, Summary, Severity, Confidence, Type, UniquenessString FROM PluginResult WHERE ID=@ID LIMIT 1";
             cmd.Parameters.AddWithValue("@ID", ID);
             SQLiteDataReader result = cmd.ExecuteReader();
-            PluginResult PR = new PluginResult(result["HostName"].ToString());
+            Finding PR = new Finding(result["HostName"].ToString());
             PR.Id = ID;
             PR.Title = result["Title"].ToString();
             PR.Plugin = result["Plugin"].ToString();
             PR.Summary = result["Summary"].ToString();
             PR.Severity = GetSeverity(Int32.Parse(result["Severity"].ToString()));
             PR.Confidence = GetConfidence(Int32.Parse(result["Confidence"].ToString()));
-            PR.ResultType = GetResultType(Int32.Parse(result["Type"].ToString()));
+            PR.Type = GetResultType(Int32.Parse(result["Type"].ToString()));
             PR.Signature = result["UniquenessString"].ToString();
             result.Close();
             cmd.CommandText = "SELECT RequestTrigger, RequestHeaders, RequestBody, BinaryRequest, ResponseTrigger, ResponseHeaders, ResponseBody, BinaryResponse  FROM Triggers WHERE ID=@ID";
@@ -2034,6 +2851,26 @@ namespace IronWASP
             return Message;
         }
 
+        internal static string[] GetScanTraceOverviewAndMessage(int ID)
+        {
+            SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile);
+            DB.Open();
+            SQLiteCommand cmd = DB.CreateCommand();
+            cmd.CommandText = "SELECT Message, OverviewXml FROM ScanTrace WHERE ID=@ID";
+            cmd.Parameters.AddWithValue("@ID", ID);
+            SQLiteDataReader result = cmd.ExecuteReader();
+            string Message = result["Message"].ToString();
+            string Overview = "";
+            try
+            {
+                Overview = result["OverviewXml"].ToString();
+            }
+            catch { }
+            result.Close();
+            DB.Close();
+            return new string[]{Overview, Message};
+        }
+
         internal static string GetScanStatus(int ScanID)
         {
             SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
@@ -2053,6 +2890,7 @@ namespace IronWASP
             return Message;
         }
 
+        #region UpdateConfigFromDB
         internal static void UpdateProxyConfigFromDB()
         {
             SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
@@ -2507,6 +3345,61 @@ namespace IronWASP
             DB.Close();
         }
 
+        internal static void UpdateParametersBlackListFromDB()
+        {
+            try
+            {
+                SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
+                DB.Open();
+                SQLiteCommand cmd = DB.CreateCommand();
+                cmd.CommandText = "SELECT ParameterSection, ParameterName FROM ParametersBlackList";
+                SQLiteDataReader result = cmd.ExecuteReader();
+
+                StartScanJobWizard.ParametersBlackList = new List<string>();
+                if (result.HasRows)
+                {
+                    while (result.Read())
+                    {
+                        StartScanJobWizard.ParametersBlackList.Add(result["ParameterName"].ToString());
+                    }
+                }
+                result.Close();
+                DB.Close();
+            }
+            catch(Exception Exp) 
+            {
+                IronException.Report("Unable to read ParametersBlackList from the config file", Exp);
+            }
+        }
+
+        internal static void UpdateCharacterEscapingRulesFromDB()
+        {
+            try
+            {
+                SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
+                DB.Open();
+                SQLiteCommand cmd = DB.CreateCommand();
+                cmd.CommandText = "SELECT RawCharacter, EncodedCharacter FROM CharacterEscapingRules";
+                SQLiteDataReader result = cmd.ExecuteReader();
+
+                Scanner.UserSpecifiedEncodingRuleList = new List<string[]>();
+                if (result.HasRows)
+                {
+                    while (result.Read())
+                    {
+                        Scanner.UserSpecifiedEncodingRuleList.Add(new string[] { result["RawCharacter"].ToString(), result["EncodedCharacter"].ToString() });
+                    }
+                }
+                result.Close();
+                DB.Close();
+            }
+            catch (Exception Exp)
+            {
+                IronException.Report("Unable to read CharacterEscapingRules from the config file", Exp);
+            }
+        }
+
+
         internal static void UpdateConfigFromDB()
         {
             UpdateProxyConfigFromDB();
@@ -2520,8 +3413,10 @@ namespace IronWASP
             UpdateJSTaintConfigFromDB();
             UpdateScannerSettingsFromDB();
             UpdatePassiveAnalysisSettingsFromDB();
+            UpdateCharacterEscapingRulesFromDB();
+            UpdateParametersBlackListFromDB();
         }
-
+        #endregion
 
         //internal static List<LogRow> GetProxyLogRecords(int StartID)
         //{
@@ -2726,9 +3621,9 @@ namespace IronWASP
             return ScanQueueRecords;
         }
 
-        internal static List<PluginResult > GetPluginResultsLogRecords(int StartID)
+        internal static List<Finding > GetPluginResultsLogRecords(int StartID)
         {
-            List<PluginResult> PluginResultsLogRecords = new List<PluginResult>();
+            List<Finding> PluginResultsLogRecords = new List<Finding>();
             SQLiteConnection DB = new SQLiteConnection("data source=" + PluginResultsLogFile);
             DB.Open();
             SQLiteCommand cmd = DB.CreateCommand();
@@ -2737,14 +3632,14 @@ namespace IronWASP
             SQLiteDataReader result = cmd.ExecuteReader();
             while (result.Read())
             {
-                PluginResult PR = new PluginResult(result["HostName"].ToString());
+                Finding PR = new Finding(result["HostName"].ToString());
                 PR.Id = Int32.Parse(result["ID"].ToString());
                 PR.Title = result["Title"].ToString();
                 PR.Plugin = result["Plugin"].ToString();
                 PR.AffectedHost = result["HostName"].ToString();
                 PR.Severity = GetSeverity(Int32.Parse(result["Severity"].ToString()));
                 PR.Confidence = GetConfidence(Int32.Parse(result["Confidence"].ToString()));
-                PR.ResultType = GetResultType(Int32.Parse(result["Type"].ToString()));
+                PR.Type = GetResultType(Int32.Parse(result["Type"].ToString()));
                 PR.Signature = result["UniquenessString"].ToString();
                 PluginResultsLogRecords.Add(PR);
             }
@@ -2864,7 +3759,9 @@ namespace IronWASP
                     cmd.ExecuteNonQuery();
                     cmd.CommandText = "CREATE TABLE IF NOT EXISTS ScanQueue (ScanID INT PRIMARY KEY, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Status TEXT, Method TEXT, URL TEXT, SessionPlugin TEXT, InjectionPoints TEXT, FormatPlugin TEXT, ScanPlugins TEXT)";
                     cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS TestGroups (Red INT, Green INT, Blue INT, Gray INT, Brown INT)";
+                    //cmd.CommandText = "CREATE TABLE IF NOT EXISTS TestGroups (Red INT, Green INT, Blue INT, Gray INT, Brown INT)";
+                    //cmd.CommandText = "CREATE TABLE IF NOT EXISTS NamedTestGroups (Name TEXT, ID INT)";
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS TestGroups (Name TEXT, ID INT)";
                     cmd.ExecuteNonQuery();
                 }
                 create.Commit();
@@ -2992,7 +3889,11 @@ namespace IronWASP
                     cmd.ExecuteNonQuery();
                     cmd.CommandText = "DROP TABLE IF EXISTS ScanTrace";
                     cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ScanTrace (ID INT PRIMARY KEY, ScanID INT, PluginName TEXT, Section TEXT, Parameter TEXT, Title TEXT, Message TEXT)";
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ScanTrace (ID INT PRIMARY KEY, ScanID INT, PluginName TEXT, Section TEXT, Parameter TEXT, Title TEXT, Message TEXT, OverviewXml TEXT)";
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = "DROP TABLE IF EXISTS SessionPluginTrace";
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS SessionPluginTrace (ID INT PRIMARY KEY, LogId INT, LogSource TEXT, PluginName TEXT, Action TEXT, Message TEXT)";
                     cmd.ExecuteNonQuery();
                 }
                 create.Commit();
@@ -3032,53 +3933,169 @@ namespace IronWASP
                     cmd.ExecuteNonQuery();
                     cmd.CommandText = "CREATE TABLE IF NOT EXISTS PassiveAnalysisSettings (Proxy INT, Shell INT, Test INT, Scan INT, Probe INT)";
                     cmd.ExecuteNonQuery();
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS CharacterEscapingRules (RawCharacter TEXT, EncodedCharacter TEXT)";
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ParametersBlackList (ParameterSection TEXT, ParameterName TEXT)";
+                    cmd.ExecuteNonQuery();
                 }
                 create.Commit();
             }
             log.Close();
         }
 
-        static int GetConfidence(PluginResultConfidence Confidence)
+        internal static void CreateLogFilesOnStartUp()
         {
-            if (Confidence == PluginResultConfidence.High) return 9;
-            if (Confidence == PluginResultConfidence.Medium) return 6;
-            if (Confidence == PluginResultConfidence.Low) return 3;
+            string Path = DateTime.Now.ToString("yyyy_MMM_d__HH_mm_ss_tt");
+            string LogDir = Config.RootDir + "\\log\\";
+            while (Directory.Exists(LogDir + Path))
+            {
+                Path = DateTime.Now.ToString("yyyy_MMM_d__HH_mm_ss_tt") + "_ticks_" + DateTime.Now.Ticks.ToString();
+            }
+            Directory.CreateDirectory(LogDir + Path);
+            UpdateLogFilePaths(LogDir + Path);
+        }
+
+        internal static void MakeLogFileVersionCompliant()
+        {
+            #region Manual Testing Groups
+            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
+            DB.Open();
+            try
+            {
+                SQLiteCommand Cmd = DB.CreateCommand();
+                Cmd.CommandText = "SELECT Name FROM TestGroups WHERE ID=1";
+                SQLiteDataReader result = Cmd.ExecuteReader();
+                result.Close();
+            }
+            catch
+            {
+                try
+                {
+                    SQLiteCommand Cmd = DB.CreateCommand();
+                    Cmd.CommandText = "ALTER TABLE TestGroups ADD COLUMN Name TEXT";
+                    Cmd.ExecuteNonQuery();
+                    Cmd.CommandText = "ALTER TABLE TestGroups ADD COLUMN ID INT";
+                    Cmd.ExecuteNonQuery();
+                }
+                catch { }
+            }
+            DB.Close();
+            #endregion
+
+            #region Scan Trace Overview
+            DB = new SQLiteConnection("data source=" + TraceLogFile);
+            DB.Open();
+            try
+            {
+                SQLiteCommand cmd = DB.CreateCommand();
+                cmd.CommandText = "SELECT OverviewXml FROM ScanTrace WHERE ID=1";
+                SQLiteDataReader result = cmd.ExecuteReader();
+                result.Close();
+            }
+            catch 
+            {
+                try
+                {
+                    SQLiteCommand Cmd = DB.CreateCommand();
+                    Cmd.CommandText = "ALTER TABLE ScanTrace ADD COLUMN OverviewXml TEXT";
+                    Cmd.ExecuteNonQuery();
+                }
+                catch { }
+            }
+            DB.Close();
+            #endregion
+
+            #region SessionPlugin Trace Logging
+            DB = new SQLiteConnection("data source=" + TraceLogFile);
+            DB.Open();
+            try
+            {
+                SQLiteCommand cmd = DB.CreateCommand();
+                cmd.CommandText = "SELECT LogId FROM SessionPluginTrace WHERE ID=1";
+                SQLiteDataReader result = cmd.ExecuteReader();
+                result.Close();
+            }
+            catch
+            {
+                try
+                {
+                    SQLiteCommand Cmd = DB.CreateCommand();
+                    Cmd.CommandText = "CREATE TABLE IF NOT EXISTS SessionPluginTrace (ID INT PRIMARY KEY, LogId INT, LogSource TEXT, PluginName TEXT, Action TEXT, Message TEXT)";
+                    Cmd.ExecuteNonQuery();
+                }
+                catch { }
+            }
+            DB.Close();
+            #endregion
+        }
+
+        static string GetOtherSourceLogFileName(string Source)
+        {
+            string FileName = string.Format("{0}\\LogsFor{1}.ironlog", LogPath, Source);
+            return FileName;
+        }
+
+        internal static void ReadOtherSourceLogInformation()
+        {
+            string[] Files = Directory.GetFiles(LogPath);
+            List<string> Sources = new List<string>();
+            foreach (string F in Files)
+            {
+                string FileName = Path.GetFileName(F);
+                if (FileName.EndsWith(".ironlog") && FileName.StartsWith("LogsFor"))
+                {
+                    Sources.Add(FileName.Substring(7, FileName.Length - 15));
+                }
+            }
+            foreach (string Source in Sources)
+            {
+                int LastId = IronDB.GetLastLogRowId(Source);
+                Config.OtherSourceCounterDict[Source] = LastId;
+            }
+        }
+
+        #region Helpers
+        static int GetConfidence(FindingConfidence Confidence)
+        {
+            if (Confidence == FindingConfidence.High) return 9;
+            if (Confidence == FindingConfidence.Medium) return 6;
+            if (Confidence == FindingConfidence.Low) return 3;
             return 3;
         }
-        static int GetSeverity(PluginResultSeverity Severity)
+        static int GetSeverity(FindingSeverity Severity)
         {
-            if (Severity == PluginResultSeverity.High) return 9;
-            if (Severity == PluginResultSeverity.Medium) return 6;
-            if (Severity == PluginResultSeverity.Low) return 3;
+            if (Severity == FindingSeverity.High) return 9;
+            if (Severity == FindingSeverity.Medium) return 6;
+            if (Severity == FindingSeverity.Low) return 3;
             return 3;
         }
-        static int GetResultType(PluginResultType ResultType)
+        static int GetResultType(FindingType ResultType)
         {
-            if (ResultType == PluginResultType.Vulnerability) return 9;
-            if (ResultType == PluginResultType.TestLead) return 6;
-            if (ResultType == PluginResultType.Information) return 3;
+            if (ResultType == FindingType.Vulnerability) return 9;
+            if (ResultType == FindingType.TestLead) return 6;
+            if (ResultType == FindingType.Information) return 3;
             return 3;
         }
-        static PluginResultConfidence GetConfidence( int Confidence)
+        static FindingConfidence GetConfidence( int Confidence)
         {
-            if (Confidence == 9) return PluginResultConfidence.High;
-            if (Confidence == 6) return PluginResultConfidence.Medium;
-            if (Confidence == 3) return PluginResultConfidence.Low;
-            return PluginResultConfidence.Low;
+            if (Confidence == 9) return FindingConfidence.High;
+            if (Confidence == 6) return FindingConfidence.Medium;
+            if (Confidence == 3) return FindingConfidence.Low;
+            return FindingConfidence.Low;
         }
-        static PluginResultSeverity GetSeverity(int Severity)
+        static FindingSeverity GetSeverity(int Severity)
         {
-            if (Severity == 9) return PluginResultSeverity.High;
-            if (Severity == 6) return PluginResultSeverity.Medium;
-            if (Severity == 3) return PluginResultSeverity.Low;
-            return PluginResultSeverity.Low;
+            if (Severity == 9) return FindingSeverity.High;
+            if (Severity == 6) return FindingSeverity.Medium;
+            if (Severity == 3) return FindingSeverity.Low;
+            return FindingSeverity.Low;
         }
-        static PluginResultType GetResultType(int ResultType)
+        static FindingType GetResultType(int ResultType)
         {
-            if (ResultType == 9) return PluginResultType.Vulnerability;
-            if (ResultType == 6) return PluginResultType.TestLead;
-            if (ResultType == 3) return PluginResultType.Information;
-            return PluginResultType.Information;
+            if (ResultType == 9) return FindingType.Vulnerability;
+            if (ResultType == 6) return FindingType.TestLead;
+            if (ResultType == 3) return FindingType.Information;
+            return FindingType.Information;
         }
 
         internal static void UpdateLogFilePaths(string LogPath)
@@ -3095,18 +4112,6 @@ namespace IronWASP
             TraceLogFile = LogPath + "\\Trace.ironlog";
         }
 
-        internal static void CreateLogFilesOnStartUp()
-        {
-            string Path = DateTime.Now.ToString("yyyy_MMM_ddd_d__HH_mm_ss_tt");
-            string LogDir = Config.RootDir + "\\log\\";
-            while (Directory.Exists(LogDir + Path))
-            {
-                Path = DateTime.Now.ToString("yyyy_MMM_ddd_d__HH_mm_ss_tt") + "_ticks_" + DateTime.Now.Ticks.ToString();
-            }
-            Directory.CreateDirectory(LogDir + Path);
-            UpdateLogFilePaths(LogDir + Path);
-        }
-
         internal static int AsInt(bool Input)
         {
             if (Input)
@@ -3118,5 +4123,6 @@ namespace IronWASP
                 return 0;
             }
         }
+        #endregion
     }
 }

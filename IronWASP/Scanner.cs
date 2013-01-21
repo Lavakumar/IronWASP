@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -23,11 +23,13 @@ using System.Text;
 
 namespace IronWASP
 {
-    public class Scanner
+   public class Scanner
    { 
         internal static Scanner CurrentScanner;
         internal static int CurrentScanID;
         internal static Queue<Scanner> ScanQueue = new Queue<Scanner>();
+
+        internal static int CurrentScannerBodyFormatTabIndex = 0;
 
         internal static int MaxParallelScanCount = 3;
 
@@ -39,13 +41,20 @@ namespace IronWASP
         static List<int> ActiveScanIDs = new List<int>();
 
         internal static bool NewScansAllowed = true;
+        internal const string DefaultStartMarker = "<<+++>>";
+        internal const string DefaultEndMarker = "<<--->>";
+
+        internal static List<string[]> DefaultEncodingRuleList = new List<string[]>() { new string[] { ">", "%3e" }, new string[] { "<", "%3c" }, new string[] { "\"", "%22" }, new string[] { "%", "%25" },
+                                                                                        new string[] { ">", "&gt;" }, new string[] { "<", "&lt;" } , new string[] { "&", "&amp;" }};
+
+        internal static List<string[]> UserSpecifiedEncodingRuleList = new List<string[]>();
 
         private int scanID=0;
         internal Request OriginalRequest;
         internal Response OriginalResponse;
         internal Request CurrentRequest;
 
-        PluginResults PRs = new PluginResults();
+        Findings PRs = new Findings();
         Dictionary<string, string> Plugins = new Dictionary<string, string>();
         
         internal List<int> URLInjections = new List<int>();
@@ -56,11 +65,14 @@ namespace IronWASP
         internal List<string> BodyCustomInjectionParts = new List<string>();
         internal InjectionParameters CookieInjections = new InjectionParameters();
         internal InjectionParameters HeadersInjections = new InjectionParameters();
+        internal InjectionParameters ParameterNameInjections = new InjectionParameters();
+
+        int CurrentInjectionPointIndex = 0;
 
         internal string ActivePluginName = "";
 
         public SessionPlugin SessionHandler = new SessionPlugin();
-        public FormatPlugin BodyFormat = new FormatPlugin();
+        FormatPlugin bodyFormat = new FormatPlugin();
 
         //used only for updating the UI when pulling scanner from DB
         internal string Status = "Not Started";
@@ -82,11 +94,13 @@ namespace IronWASP
         string CurrentParameterValue = "";
         int CurrentSubParameterPosition = 0;
 
-        string[,] XmlInjectionArray = new string[0,0];
+        internal string[,] XmlInjectionArray = new string[0,0];
+        internal string InjectionArrayXML = "";
         string XmlInjectionSignature = "";
 
-        string CustomInjectionPointStartMarker = "";
-        string CustomInjectionPointEndMarker = "";
+        internal string CustomInjectionPointStartMarker = "";
+        internal string CustomInjectionPointEndMarker = "";
+        internal List<string[]> CharacterEscapingRules = new List<string[]>();
 
         internal static Thread RequestFormatThread;
 
@@ -95,8 +109,11 @@ namespace IronWASP
         string TraceTitle = "";
         int TraceTitleWeight = 0;
         string CurrentPlugin = "";
+        List<string[]> TraceOverviewEntries = new List<string[]>();
 
         bool StartedFromASTab = false;
+
+        protected string LogSource = RequestSource.Scan;
 
         public string InjectedSection
         {
@@ -175,6 +192,30 @@ namespace IronWASP
             }
         }
 
+        public FormatPlugin BodyFormat
+        {
+            get
+            {
+                return this.bodyFormat;
+            }
+            set
+            {
+                this.bodyFormat = value;
+                this.BodyXmlInjections = new List<int>();
+
+                this.BodyXmlInjectionParameters = new Parameters();
+                XmlInjectionArray = new string[,]{};
+                if (value.Name.Length > 0)
+                {
+                    XmlInjectionSignature = Tools.MD5("Name:" + value.Name + "|Body" + this.OriginalRequest.BodyString);
+                }
+                else
+                {
+                    XmlInjectionSignature = "";
+                }
+            }
+        }
+
         internal int ScanID
         {
             get
@@ -208,7 +249,10 @@ namespace IronWASP
         {
             get
             {
-                return URLInjections.Count + QueryInjections.Count + BodyInjections.Count + CookieInjections.Count + HeadersInjections.Count + BodyXmlInjectionParameters.Count;
+                if(this.CustomInjectionPointStartMarker.Length > 0 && this.CustomInjectionPointEndMarker.Length > 0)
+                    return ParameterNameInjections.Count + URLInjections.Count + QueryInjections.Count + CookieInjections.Count + HeadersInjections.Count + GetCustomInjectionPointsCount();
+                else
+                    return ParameterNameInjections.Count + URLInjections.Count + QueryInjections.Count + BodyInjections.Count + CookieInjections.Count + HeadersInjections.Count + BodyXmlInjectionParameters.Count;
             }
         }
 
@@ -292,118 +336,40 @@ namespace IronWASP
                 }
             }
         }
+
+        void PrepareScanner()
+        {
+            this.OriginalRequest.SessionHandler = this.SessionHandler;
+            //this.OriginalResponse = this.OriginalRequest.Send();//this is just a temp value since calling inject from GetBaseLine would require a response object
+            this.OriginalResponse = null;
+            //this.TestResponse = this.OriginalResponse;
+            this.TestResponse = null;
+            this.CurrentRequest = this.OriginalRequest;
+            this.OriginalResponse = SessionHandler.GetBaseLine(this, null);
+            this.CurrentRequest = this.OriginalRequest;
+            this.TestResponse = this.OriginalResponse;
+        }
+
         public void Scan()
         {
             try
             {
                 if (this.StartedFromASTab) AddActiveScanID(this.ScanID);
-                
-                this.OriginalRequest.SessionHandler = this.SessionHandler;
-                this.OriginalResponse = this.OriginalRequest.Send();//this is just a temp value since calling inject from GetBaseLine would require a response object
-                this.TestResponse = this.OriginalResponse;
-                this.CurrentRequest = this.OriginalRequest;
-                this.OriginalResponse = SessionHandler.GetBaseLine(this, this.OriginalRequest);
-                this.CurrentRequest = this.OriginalRequest;
-                this.TestResponse = this.OriginalResponse;
 
+                this.PrepareScanner();
+                
                 foreach (string AP in this.Plugins.Keys)
                 {
                     this.CurrentPlugin = AP;
-                    this.CurrentSection = "URL";
-                    foreach (int URLPartPosition in this.URLInjections)
+                    
+                    this.Reset();
+                    while (this.HasMore())
                     {
-                        this.CurrentURLPartPosition = URLPartPosition;
-                        this.CurrentParameterName = "";
-                        this.CurrentSubParameterPosition = 0;
-                        this.CurrentParameterValue = this.CurrentRequest.UrlPathParts[URLPartPosition];
+                        this.Next();
                         this.CheckWithActivePlugin(AP);
                     }
-                    this.CurrentSection = "Query";
-                    foreach (string ParameterName in this.QueryInjections.GetAll())
-                    {
-                        this.CurrentParameterName = ParameterName;
-                        foreach (int SubParameterPosition in this.QueryInjections.GetAll(ParameterName))
-                        {
-                            this.CurrentSubParameterPosition = SubParameterPosition;
-                            this.CurrentParameterValue = this.CurrentRequest.Query.GetAll(ParameterName)[SubParameterPosition];
-                            this.CheckWithActivePlugin(AP);
-                        }
-                    }
-                    this.CurrentSection = "Body";
-                    if (BodyFormat.Name.Length > 0)
-                    {
-                        if (this.BodyXmlInjections.Count != XmlInjectionArray.GetLength(0) || !XmlInjectionSignature.Equals(Tools.MD5("Name:" + BodyFormat.Name + "|Body" + this.OriginalRequest.BodyString)))
-                        {
-                            string Xml = BodyFormat.ToXmlFromRequest(this.OriginalRequest);
-                            XmlInjectionArray = FormatPlugin.XmlToArray(Xml);
-                            XmlInjectionSignature = Tools.MD5("Name:" + BodyFormat.Name + "|Body" + this.OriginalRequest.BodyString);
-                        }
-                        foreach (int BodyXmlPosition in this.BodyXmlInjections)
-                        {
-                            this.CurrentBodyXmlPosition = BodyXmlPosition;
-                            if (XmlInjectionArray.GetLength(0) > BodyXmlPosition)
-                            {
-                                this.CurrentParameterName = XmlInjectionArray[BodyXmlPosition, 0];
-                                this.CurrentParameterValue = XmlInjectionArray[BodyXmlPosition, 1];
-                            }
-                            else
-                            {
-                                this.CurrentParameterName = "";
-                                this.CurrentParameterValue = "";
-                            }
-                            this.CurrentSubParameterPosition = 0;
-                            this.CheckWithActivePlugin(AP);
-                        }
-                    }
-                    else if (CustomInjectionPointStartMarker.Length > 0 && CustomInjectionPointEndMarker.Length > 0)
-                    {
-                        for (int i = 0; i < this.GetCustomInjectionPointsCount(); i++)
-                        {
-                            this.CurrentCustomInjectionPosition = i;
-                            this.CurrentParameterName = String.Format("Custom Injection Point no. {0}", i + 1);
-                            this.CurrentParameterValue = GetValueAtCustomInjectionPoint(i);
-                            this.CheckWithActivePlugin(AP);
-                        }
-                        this.CurrentParameterName = "";
-                        this.CurrentParameterValue = "";
-                        this.CurrentSubParameterPosition = 0;
-                    }
-                    else
-                    {
-                        foreach (string ParameterName in this.BodyInjections.GetAll())
-                        {
-                            this.CurrentParameterName = ParameterName;
-                            foreach (int SubParameterPosition in this.BodyInjections.GetAll(ParameterName))
-                            {
-                                this.CurrentSubParameterPosition = SubParameterPosition;
-                                this.CurrentParameterValue = this.CurrentRequest.Body.GetAll(ParameterName)[SubParameterPosition];
-                                this.CheckWithActivePlugin(AP);
-                            }
-                        }
-                    }
-                    this.CurrentSection = "Cookie";
-                    foreach (string ParameterName in this.CookieInjections.GetAll())
-                    {
-                        this.CurrentParameterName = ParameterName;
-                        foreach (int SubParameterPosition in this.CookieInjections.GetAll(ParameterName))
-                        {
-                            this.CurrentSubParameterPosition = SubParameterPosition;
-                            this.CurrentParameterValue = this.CurrentRequest.Cookie.GetAll(ParameterName)[SubParameterPosition];
-                            this.CheckWithActivePlugin(AP);
-                        }
-                    }
-                    this.CurrentSection = "Headers";
-                    foreach (string ParameterName in this.HeadersInjections.GetAll())
-                    {
-                        this.CurrentParameterName = ParameterName;
-                        foreach (int SubParameterPosition in this.HeadersInjections.GetAll(ParameterName))
-                        {
-                            this.CurrentSubParameterPosition = SubParameterPosition;
-                            this.CurrentParameterValue = this.CurrentRequest.Headers.GetAll(ParameterName)[SubParameterPosition];
-                            this.CheckWithActivePlugin(AP);
-                        }
-                    }
                 }
+
                 if (this.StartedFromASTab)
                 {
                     Interlocked.Decrement(ref Config.ActiveScansCount);
@@ -427,6 +393,176 @@ namespace IronWASP
             catch (Exception Exp)
             {
                 HandleScannerException(true, Exp);
+            }
+        }
+
+        public bool HasMore()
+        {
+            if (CurrentInjectionPointIndex < this.InjectionPointsCount)
+                return true;
+            else
+                return false;
+        }
+
+        public void Reset()
+        {
+            this.CurrentInjectionPointIndex = 0;
+        }
+
+        public void Next()
+        {
+            if (this.CurrentRequest == null) this.PrepareScanner();
+            
+            CurrentInjectionPointIndex++;
+
+            int LocalPointCounter = 0;
+            
+            this.CurrentSection = "URL";
+            foreach (int URLPartPosition in this.URLInjections)
+            {
+                LocalPointCounter++;
+
+                if (LocalPointCounter == CurrentInjectionPointIndex)
+                {
+                    this.CurrentURLPartPosition = URLPartPosition;
+                    this.CurrentParameterName = "";
+                    this.CurrentSubParameterPosition = 0;
+                    this.CurrentParameterValue = this.CurrentRequest.UrlPathParts[URLPartPosition];
+                    return;
+                }
+            }
+
+            this.CurrentSection = "Query";
+            foreach (string ParameterName in this.QueryInjections.GetAll())
+            {
+                this.CurrentParameterName = ParameterName;
+                foreach (int SubParameterPosition in this.QueryInjections.GetAll(ParameterName))
+                {
+                    LocalPointCounter++;
+
+                    if (LocalPointCounter == CurrentInjectionPointIndex)
+                    {
+                        this.CurrentSubParameterPosition = SubParameterPosition;
+                        this.CurrentParameterValue = this.CurrentRequest.Query.GetAll(ParameterName)[SubParameterPosition];
+                        return;
+                    }
+                }
+            }
+            this.CurrentSection = "Body";
+            if (BodyFormat.Name.Length > 0)
+            {
+                if (this.BodyXmlInjections.Count != XmlInjectionArray.GetLength(0) || !XmlInjectionSignature.Equals(Tools.MD5("Name:" + BodyFormat.Name + "|Body:" + this.OriginalRequest.BodyString)))
+                {
+                    string Xml = BodyFormat.ToXmlFromRequest(this.OriginalRequest);
+                    XmlInjectionArray = FormatPlugin.XmlToArray(Xml);
+                    XmlInjectionSignature = Tools.MD5("Name:" + BodyFormat.Name + "|Body:" + this.OriginalRequest.BodyString);
+                }
+                foreach (int BodyXmlPosition in this.BodyXmlInjections)
+                {
+                    LocalPointCounter++;
+
+                    if (LocalPointCounter == CurrentInjectionPointIndex)
+                    {
+                        this.CurrentBodyXmlPosition = BodyXmlPosition;
+                        if (XmlInjectionArray.GetLength(0) > BodyXmlPosition)
+                        {
+                            this.CurrentParameterName = XmlInjectionArray[BodyXmlPosition, 0];
+                            this.CurrentParameterValue = XmlInjectionArray[BodyXmlPosition, 1];
+                        }
+                        else
+                        {
+                            this.CurrentParameterName = "";
+                            this.CurrentParameterValue = "";
+                        }
+                        this.CurrentSubParameterPosition = 0;
+                        return;
+                    }
+                }
+            }
+            else if (CustomInjectionPointStartMarker.Length > 0 && CustomInjectionPointEndMarker.Length > 0)
+            {
+                this.CurrentParameterName = "";
+                this.CurrentParameterValue = "";
+                this.CurrentSubParameterPosition = 0;
+
+                for (int i = 0; i < this.GetCustomInjectionPointsCount(); i++)
+                {
+                    LocalPointCounter++;
+
+                    if (LocalPointCounter == CurrentInjectionPointIndex)
+                    {
+                        this.CurrentCustomInjectionPosition = i;
+                        this.CurrentParameterName = String.Format("Custom Injection Point no. {0}", i + 1);
+                        this.CurrentParameterValue = GetValueAtCustomInjectionPoint(i);
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                foreach (string ParameterName in this.BodyInjections.GetAll())
+                {
+                    this.CurrentParameterName = ParameterName;
+                    foreach (int SubParameterPosition in this.BodyInjections.GetAll(ParameterName))
+                    {
+                        LocalPointCounter++;
+
+                        if (LocalPointCounter == CurrentInjectionPointIndex)
+                        {
+                            this.CurrentSubParameterPosition = SubParameterPosition;
+                            this.CurrentParameterValue = this.CurrentRequest.Body.GetAll(ParameterName)[SubParameterPosition];
+                            return;
+                        }
+                    }
+                }
+            }
+
+            this.CurrentSection = "Cookie";
+            foreach (string ParameterName in this.CookieInjections.GetAll())
+            {
+                this.CurrentParameterName = ParameterName;
+                foreach (int SubParameterPosition in this.CookieInjections.GetAll(ParameterName))
+                {
+                    LocalPointCounter++;
+
+                    if (LocalPointCounter == CurrentInjectionPointIndex)
+                    {
+                        this.CurrentSubParameterPosition = SubParameterPosition;
+                        this.CurrentParameterValue = this.CurrentRequest.Cookie.GetAll(ParameterName)[SubParameterPosition];
+                        return;
+                    }
+                }
+            }
+
+            this.CurrentSection = "Headers";
+            foreach (string ParameterName in this.HeadersInjections.GetAll())
+            {
+                this.CurrentParameterName = ParameterName;
+                foreach (int SubParameterPosition in this.HeadersInjections.GetAll(ParameterName))
+                {
+                    LocalPointCounter++;
+
+                    if (LocalPointCounter == CurrentInjectionPointIndex)
+                    {
+                        this.CurrentSubParameterPosition = SubParameterPosition;
+                        this.CurrentParameterValue = this.CurrentRequest.Headers.GetAll(ParameterName)[SubParameterPosition];
+                        return;
+                    }
+                }
+            }
+
+            this.CurrentSection = "ParameterNames";
+            foreach (string ParameterName in this.ParameterNameInjections.GetAll())
+            {
+                LocalPointCounter++;
+
+                if (LocalPointCounter == CurrentInjectionPointIndex)
+                {
+                    this.CurrentParameterName = ParameterName;
+                    this.CurrentSubParameterPosition = 0;
+                    this.CurrentParameterValue = "";
+                    return;
+                }
             }
         }
 
@@ -475,6 +611,7 @@ namespace IronWASP
             IronDB.UpdateScanStatus(ScanID, Status);
         }
 
+        #region InjectAndScanInShell
         public void ScanAll()
         {
             this.ResetInjectionParameters();
@@ -615,18 +752,36 @@ namespace IronWASP
             {
                 throw new Exception("Format Plugin Not Selected");
             }
-            if (this.BodyXmlInjectionParameters.Count == 0 || !XmlInjectionSignature.Equals(Tools.MD5("Name:" + BodyFormat.Name + "|Body" + this.OriginalRequest.BodyString)))
+            if (this.BodyXmlInjectionParameters.Count == 0)
             {
-                string Xml = BodyFormat.ToXmlFromRequest(this.OriginalRequest);
-                XmlInjectionArray = FormatPlugin.XmlToArray(Xml);
-                for (int i = 0; i < XmlInjectionArray.GetLength(0); i++)
-                {
-                    this.BodyXmlInjectionParameters.Add(XmlInjectionArray[i, 0], XmlInjectionArray[i, 1]);
-                }
+                DeserializeRequestBodyWithFormatPlugin();
+                //string Xml = BodyFormat.ToXmlFromRequest(this.OriginalRequest);
+                //InjectionArrayXML = Xml;
+                //XmlInjectionArray = FormatPlugin.XmlToArray(Xml);
+                //XmlInjectionSignature = Tools.MD5("Name:" + BodyFormat.Name + "|Body" + this.OriginalRequest.BodyString);
+                //for (int i = 0; i < XmlInjectionArray.GetLength(0); i++)
+                //{
+                //    this.BodyXmlInjectionParameters.Add(XmlInjectionArray[i, 0], XmlInjectionArray[i, 1]);
+                //}
             }
+            //if (this.BodyXmlInjectionParameters.Count == 0 || !XmlInjectionSignature.Equals(Tools.MD5("Name:" + BodyFormat.Name + "|Body" + this.OriginalRequest.BodyString)))
             if (BodyXmlInjectionParameters.Count == 0) throw new Exception("No parameters to Inject");
+            //if (!XmlInjectionSignature.Equals(Tools.MD5("Name:" + BodyFormat.Name + "|Body:" + this.OriginalRequest.BodyString)))
+            //{
+            //    string Xml = BodyFormat.ToXmlFromRequest(this.OriginalRequest);
+            //    XmlInjectionArray = FormatPlugin.XmlToArray(Xml);
+            //    for (int i = 0; i < XmlInjectionArray.GetLength(0); i++)
+            //    {
+            //        this.BodyXmlInjectionParameters.Add(XmlInjectionArray[i, 0], XmlInjectionArray[i, 1]);
+            //    }
+            //}
+            if (XmlInjectionPoint >= BodyXmlInjectionParameters.Count) throw new Exception("Injection point is outside the list of available values");
             if (!this.BodyXmlInjections.Contains(XmlInjectionPoint)) this.BodyXmlInjections.Add(XmlInjectionPoint);
+            this.CustomInjectionPointStartMarker = "";
+            this.CustomInjectionPointEndMarker = "";
+            this.BodyInjections = new InjectionParameters();
         }
+        
         public void InjectBody(string StartMarker, string EndMarker)
         {
             if (StartMarker.Length == 0)
@@ -643,6 +798,22 @@ namespace IronWASP
             }
             this.CustomInjectionPointStartMarker = StartMarker;
             this.CustomInjectionPointEndMarker = EndMarker;
+            this.BodyFormat = new FormatPlugin();
+            this.BodyXmlInjectionParameters = new Parameters();
+            this.BodyXmlInjections = new List<int>();
+            this.BodyInjections = new InjectionParameters();
+        }
+        public void AddEscapeRule(string RawCharacter, string EncodedCharacter)
+        {
+            for (int i=0; i < this.CharacterEscapingRules.Count; i++)
+            {
+                if (this.CharacterEscapingRules[i][0].Equals(RawCharacter))
+                {
+                    this.CharacterEscapingRules[i][1] = EncodedCharacter;
+                    return;
+                }
+            }
+            this.CharacterEscapingRules.Add(new string[]{RawCharacter, EncodedCharacter});
         }
         public void ScanCookie(string ParameterName)
         {
@@ -716,6 +887,11 @@ namespace IronWASP
             {
                 this.BodyInjections.Add(ParameterName, SubParameterPosition);
             }
+            this.CustomInjectionPointStartMarker = "";
+            this.CustomInjectionPointEndMarker = "";
+            this.BodyFormat = new FormatPlugin();
+            this.BodyXmlInjectionParameters = new Parameters();
+            this.BodyXmlInjections = new List<int>();
         }
         public void ScanCookie(string ParameterName, int SubParameterPosition)
         {
@@ -754,6 +930,38 @@ namespace IronWASP
                 }
             }
         }
+        public void InjectParameterNames()
+        {
+            ParameterNameInjections.Add("Query", 1);
+            ParameterNameInjections.Add("Body", 1);
+            ParameterNameInjections.Add("Cookie", 1);
+            ParameterNameInjections.Add("Headers", 1);
+        }
+        public void InjectParameterName(string ParameterSectionName)
+        {
+            if ((new List<string>() { "Query", "Body", "Cookie", "Headers" }).Contains(ParameterSectionName))
+            {
+                ParameterNameInjections.Add(ParameterSectionName, 1);
+            }
+            else
+            {
+                throw new Exception("Only 'Query', 'Body', 'Cookie', 'Headers' are the accepted parameter values");
+            }
+        }
+        #endregion
+
+        internal void DeserializeRequestBodyWithFormatPlugin()
+        {
+            string Xml = BodyFormat.ToXmlFromRequest(this.OriginalRequest);
+            InjectionArrayXML = Xml;
+            XmlInjectionArray = FormatPlugin.XmlToArray(Xml);
+            XmlInjectionSignature = Tools.MD5("Name:" + BodyFormat.Name + "|Body" + this.OriginalRequest.BodyString);
+            this.BodyXmlInjectionParameters = new Parameters();
+            for (int i = 0; i < XmlInjectionArray.GetLength(0); i++)
+            {
+                this.BodyXmlInjectionParameters.Add(XmlInjectionArray[i, 0], XmlInjectionArray[i, 1]);
+            }
+        }
 
         public Response RawInject(string Payload)
         {
@@ -770,14 +978,16 @@ namespace IronWASP
             return this.Inject("", 0, true, false);
         }
         
-        private Response Inject(string RawPayload, int ReDoCount, bool DummmyInjection, bool Raw)
+        private Response Inject(string RawPayload, int ReDoCount, bool PayloadLessInjection, bool Raw)
         {
-            this.CurrentRequest = SessionHandler.Update(this.CurrentRequest, this.TestResponse);
-            this.TestRequest = SessionHandler.PrepareForInjection(this.CurrentRequest.GetClone());
+            //this.CurrentRequest = SessionHandler.Update(this.CurrentRequest, this.TestResponse);
+            this.CurrentRequest = SessionHandler.DoBeforeSending(this.CurrentRequest, this.TestResponse);
+            //this.TestRequest = SessionHandler.PrepareForInjection(this.CurrentRequest.GetClone());
+            this.TestRequest = this.CurrentRequest.GetClone();
             string Payload = "";
-            if (!DummmyInjection) Payload = SessionHandler.ProcessInjection(this, this.TestRequest, RawPayload);
+            if (!PayloadLessInjection) Payload = SessionHandler.EncodePayload(this.CurrentSection, this.TestRequest, RawPayload);
             List<string> SubValues = new List<string>();
-            if (!DummmyInjection)
+            if (!PayloadLessInjection)
             {
                 if (this.CurrentSection.Equals("URL"))
                 {
@@ -852,25 +1062,73 @@ namespace IronWASP
                     else
                         this.TestRequest.Headers.Set(this.CurrentParameterName, SubValues);
                 }
+                else if (this.CurrentSection.Equals("ParameterNames"))
+                {
+                    switch (this.CurrentParameterName)
+                    {
+                        case("Query"):
+                            if (Raw)
+                                this.TestRequest.Query.RawSet(Payload, "0");
+                            else
+                                this.TestRequest.Query.Set(Payload, "0");
+                            break;
+                        case ("Body"):
+                            if (Raw)
+                                this.TestRequest.Body.RawSet(Payload, "0");
+                            else
+                                this.TestRequest.Body.Set(Payload, "0");
+                            break;
+                        case ("Cookie"):
+                            if (Raw)
+                                this.TestRequest.Cookie.RawSet(Payload, "0");
+                            else
+                                this.TestRequest.Cookie.Set(Payload, "0");
+                            break;
+                        case ("Headers"):
+                            if (Raw)
+                                this.TestRequest.Headers.RawSet(Payload, "0");
+                            else
+                                this.TestRequest.Headers.Set(Payload, "0");
+                            break;
+                    }
+                }
             }
+            if (this.CustomInjectionPointStartMarker.Length > 0 && this.CustomInjectionPointEndMarker.Length > 0)
+            {
+                this.TestRequest.BodyString = this.TestRequest.BodyString.Replace(this.CustomInjectionPointStartMarker, "").Replace(this.CustomInjectionPointEndMarker, "");
+            }
+            if (this.LogSource != RequestSource.Scan) this.TestRequest.SetSource(this.LogSource);//For Scanner, the logsource is set when ScanId is assigned to the request
             this.TestResponse = this.TestRequest.Send();
-            if(!DummmyInjection) this.Trace("   " + this.TestResponse.ID.ToString() + " | " + this.RequestTraceMsg);
-            Response InterestingResponse = SessionHandler.GetInterestingResponse(this.TestRequest, this.TestResponse);
-            if (!DummmyInjection && SessionHandler.ShouldReDo(this, this.TestRequest, InterestingResponse))
+            if (this.LogSource.Equals(RequestSource.Scan) && this.RequestTraceMsg.Length > 0)
             {
-                if (SessionHandler.MaxReDoCount > ReDoCount)
-                {
-                    return Inject(Payload, ReDoCount + 1, false, Raw);
-                }
+                this.Trace("   " + this.TestResponse.ID.ToString() + " | " + this.RequestTraceMsg);
+            }
+            //Response InterestingResponse = SessionHandler.GetInterestingResponse(this.TestRequest, this.TestResponse);
+            Response ResponseFromInjection = SessionHandler.DoAfterSending(this.TestResponse, this.TestRequest);
+            //if (!DummmyInjection && SessionHandler.ShouldReDo(this, this.TestRequest, ResponseFromInjection))
+            //{
+            //    if (SessionHandler.MaxReDoCount > ReDoCount)
+            //    {
+            //        return Inject(Payload, ReDoCount + 1, false, Raw);
+            //    }
+            //    else
+            //    {
+            //        throw new Exception("Unable to get valid Response for Injection, ReDoCount exceeded maximum value");
+            //    }
+            //}
+            //else
+            //{
+            //    return ResponseFromInjection;
+            //}
+            if (this.LogSource.Equals(RequestSource.Scan))
+            {
+                if (this.TestResponse.ID == ResponseFromInjection.ID)
+                    this.TraceOverviewEntries.Add(new string[] { Payload, ResponseFromInjection.ID.ToString(), ResponseFromInjection.Code.ToString(), ResponseFromInjection.BodyLength.ToString(), ResponseFromInjection.ContentType, ResponseFromInjection.RoundTrip.ToString(), Tools.MD5(ResponseFromInjection.ToString()) });
                 else
-                {
-                    throw new Exception("Unable to get valid Response for Injection, ReDoCount exceeded maximum value");
-                }
+                    this.TraceOverviewEntries.Add(new string[] { Payload, this.TestResponse.ID.ToString(), this.TestResponse.Code.ToString(), this.TestResponse.BodyLength.ToString(), this.TestResponse.ContentType, this.TestResponse.RoundTrip.ToString(), Tools.MD5(this.TestResponse.ToString()), ResponseFromInjection.ID.ToString(), ResponseFromInjection.Code.ToString(), ResponseFromInjection.BodyLength.ToString(), ResponseFromInjection.ContentType, ResponseFromInjection.RoundTrip.ToString(), Tools.MD5(ResponseFromInjection.ToString()) });
             }
-            else
-            {
-                return InterestingResponse;
-            }
+
+            return ResponseFromInjection;
         }
 
         public Response Inject(Request RequestToInject)
@@ -878,10 +1136,11 @@ namespace IronWASP
             RequestToInject.Source = RequestSource.Scan;
             RequestToInject.ScanID = this.ScanID;
             Response ResponseFromInjection = RequestToInject.Send();
-            return SessionHandler.GetInterestingResponse(RequestToInject, ResponseFromInjection);
+            //return SessionHandler.GetInterestingResponse(RequestToInject, ResponseFromInjection);
+            return SessionHandler.DoAfterSending(ResponseFromInjection, RequestToInject);
         }
 
-        public void AddResult(PluginResult PR)
+        public void AddFinding(Finding PR)
         {
             this.PRs.Add(PR);
             PR.Plugin = this.ActivePluginName;
@@ -944,6 +1203,7 @@ namespace IronWASP
         }
         void CheckWithActivePlugin(string PluginName)
         {
+            Exception E = null;
             ActivePlugin AP = ActivePlugin.Get(PluginName);
             this.ActivePluginName = AP.Name;
             if (!SessionHandler.CanInject(this, this.CurrentRequest))
@@ -952,14 +1212,23 @@ namespace IronWASP
             }
             try
             {
+                this.StartTrace();
+                this.SetTraceTitle("-", 0);
                 AP.Check(this);
             }
             catch (ThreadAbortException)
-            {}
+            { }
             catch (Exception Exp)
             {
+                E = Exp;
                 IronException.Report(string.Format("'{0}' check for Scan ID-{1} crashed with an exception", PluginName, this.ScanID.ToString()), Exp);
             }
+            try
+            {
+                this.LogTrace();
+            }
+            catch { }
+            if (E != null) throw E;
         }
         internal void ReloadRequestFromString(string RequestString)
         {
@@ -996,12 +1265,19 @@ namespace IronWASP
                 BodyFormatParamters BFP = (BodyFormatParamters)BFPObject;
                 Request Request = BFP.Request;
                 FormatPlugin Plugin = BFP.Plugin;
+                Scanner.CurrentScanner.BodyFormat = Plugin;
+                Scanner.CurrentScanner.DeserializeRequestBodyWithFormatPlugin();
+                string XML = Scanner.CurrentScanner.InjectionArrayXML;
+                string[,] InjectionArray = Scanner.CurrentScanner.XmlInjectionArray;
+
                 PluginName = Plugin.Name;
+
                 List<bool> CheckStatus = BFP.CheckStatus;
                 bool CheckAll = BFP.CheckAll;
 
-                string XML = Plugin.ToXmlFromRequest(Request);
-                string[,] InjectionArray = FormatPlugin.XmlToArray(XML);
+                //string XML = Plugin.ToXmlFromRequest(Request);
+                //string[,] InjectionArray = FormatPlugin.XmlToArray(XML);
+                //Scanner.CurrentScanner.BodyFormat = Plugin;
                 IronUI.FillConfigureScanFormatDetails(XML, InjectionArray, CheckStatus, CheckAll, PluginName);
             }
             catch (ThreadAbortException)
@@ -1010,9 +1286,55 @@ namespace IronWASP
             }
             catch(Exception Exp)
             {
-                IronException.Report("Error Deserializing Request using Format Plugin - " + PluginName, Exp.Message, Exp.StackTrace);
-                IronUI.ShowConfigureScanException("Error Deserializing");
+                IronException.Report(string.Format("Error Parsing Body in Selected Format. Format Plugin - {0}", PluginName), Exp.Message, Exp.StackTrace);
+                IronUI.ShowConfigureScanException("Error Parsing Body in Selected Format");
+                Scanner.CurrentScanner.BodyFormat = new FormatPlugin();
+                IronUI.UpdateScanBodyTabWithXmlArray();
             }
+        }
+
+        internal static void LoadScannerFromDDAndFillAutomatedScanningTab(object ScanJobIdObj)
+        {
+            int ScanJobId = (int)ScanJobIdObj;
+            Scanner ScannerFromDb = null;
+            try
+            {
+                ScannerFromDb = IronDB.GetScannerFromDB(ScanJobId);
+            }
+            catch (Exception Exp)
+            {
+                IronException.Report("Unable to load Request from Scan Queue DB", Exp.Message, Exp.StackTrace);
+                IronUI.ShowConfigureScanException("Unable to load Request");
+                return;
+            }
+            SetScannerFromDBToUiAfterProcessing(ScannerFromDb);
+        }
+        internal static void SetScannerFromDBToUiAfterProcessing(Scanner ScannerFromDb)
+        {
+            ScannerFromDb.OriginalRequest.Source = RequestSource.Scan;
+            string[,] XmlInjectionPoints = new string[,] { };
+            string XML = "";
+            //try
+            //{
+            //    if (ScannerFromDb.Status.Equals("Not Started"))
+            //    {
+            //        if (ScannerFromDb.BodyFormat.Name.Length == 0 && ScannerFromDb.CustomInjectionPointStartMarker.Length == 0 && ScannerFromDb.CustomInjectionPointEndMarker.Length == 0 && !FormatPlugin.IsNormal(ScannerFromDb.OriginalRequest))
+            //        {
+            //            List<FormatPlugin> RightList = FormatPlugin.Get(ScannerFromDb.OriginalRequest);
+            //            if (RightList.Count > 0)
+            //            {
+            //                ScannerFromDb.BodyFormat = RightList[0];
+            //                XML = ScannerFromDb.BodyFormat.ToXmlFromRequest(ScannerFromDb.OriginalRequest);
+            //                XmlInjectionPoints = FormatPlugin.XmlToArray(XML);
+            //            }
+            //        }
+            //    }
+            //}
+            //catch (Exception Exp) { IronException.Report("Error guessing Request body type", Exp); }
+            Scanner.CurrentScanner = ScannerFromDb;
+            Scanner.CurrentScanID = ScannerFromDb.ID;
+
+            IronUI.SetAutomatedScanningScanner(ScannerFromDb, XML, XmlInjectionPoints);
         }
 
         internal static void TerminateAllFormatThreads()
@@ -1037,49 +1359,63 @@ namespace IronWASP
             return SelectedScanPlugins;
         }
 
+        #region CreateInjectionString
+        //Old format (till v0.9.1.5)
+        //public string GetInjectionString()
+        //{
+        //    StringBuilder Url = new StringBuilder("Url:"); Url.Append(GetStringFromInjectionList(URLInjections));
+        //    StringBuilder Query = new StringBuilder("Query:"); Query.Append(GetStringFromInjectionParameters(QueryInjections));
+        //    StringBuilder Body = new StringBuilder("Body:");
+        //    if (this.BodyFormat.Name.Length > 0)
+        //    {
+        //        Body.Append(GetStringFromInjectionParameters(BodyXmlInjectionParameters, BodyXmlInjections));
+        //    }
+        //    else
+        //    {
+        //        Body.Append(GetStringFromInjectionParameters(BodyInjections));
+        //    }
+        //    StringBuilder Cookie = new StringBuilder("Cookie:"); Cookie.Append(GetStringFromInjectionParameters(CookieInjections));
+        //    StringBuilder Headers = new StringBuilder("Headers:"); Headers.Append(GetStringFromInjectionParameters(HeadersInjections));
+        //    StringBuilder FullInjectionString = new StringBuilder();
+        //    FullInjectionString.AppendLine(Url.ToString());
+        //    FullInjectionString.AppendLine(Query.ToString());
+        //    FullInjectionString.AppendLine(Body.ToString());
+        //    FullInjectionString.AppendLine(Cookie.ToString());
+        //    FullInjectionString.AppendLine(Headers.ToString());
+        //    return FullInjectionString.ToString();
+        //}
+        
         public string GetInjectionString()
         {
-            StringBuilder Url = new StringBuilder("Url:"); Url.Append(GetStringFromInjectionList(URLInjections));
-            StringBuilder Query = new StringBuilder("Query:"); Query.Append(GetStringFromInjectionParameters(QueryInjections));
-            StringBuilder Body = new StringBuilder("Body:");
-            if (this.BodyFormat.Name.Length > 0)
+            StringBuilder Url = new StringBuilder("Url|"); Url.Append(GetStringFromInjectionList(URLInjections));
+            StringBuilder Query = new StringBuilder("Query|"); Query.Append(GetStringFromInjectionParameters(QueryInjections));
+            StringBuilder Body = new StringBuilder("Body|");
+            if (CustomInjectionPointStartMarker.Length > 0 && CustomInjectionPointEndMarker.Length > 0)
             {
+                Body.Append("CustomMarker|");
+                Body.Append(GetStringFromInjectionMarker(CustomInjectionPointStartMarker, CustomInjectionPointEndMarker));
+            }
+            else if (this.BodyFormat.Name.Length > 0)
+            {
+                Body.Append("FormatPlugin|"); 
                 Body.Append(GetStringFromInjectionParameters(BodyXmlInjectionParameters, BodyXmlInjections));
             }
             else
             {
-                Body.Append(GetStringFromInjectionParameters(BodyInjections));   
+                Body.Append("Normal|");
+                Body.Append(GetStringFromInjectionParameters(BodyInjections)); 
             }
-            StringBuilder Cookie = new StringBuilder("Cookie:"); Cookie.Append(GetStringFromInjectionParameters(CookieInjections));
-            StringBuilder Headers = new StringBuilder("Headers:"); Headers.Append(GetStringFromInjectionParameters(HeadersInjections));
+            StringBuilder Cookie = new StringBuilder("Cookie|"); Cookie.Append(GetStringFromInjectionParameters(CookieInjections));
+            StringBuilder Headers = new StringBuilder("Headers|"); Headers.Append(GetStringFromInjectionParameters(HeadersInjections));
+            StringBuilder Names = new StringBuilder("Names|"); Names.Append(GetStringFromInjectionParameters(ParameterNameInjections));
             StringBuilder FullInjectionString = new StringBuilder();
             FullInjectionString.AppendLine(Url.ToString());
             FullInjectionString.AppendLine(Query.ToString());
             FullInjectionString.AppendLine(Body.ToString());
             FullInjectionString.AppendLine(Cookie.ToString());
             FullInjectionString.AppendLine(Headers.ToString());
+            FullInjectionString.AppendLine(Names.ToString());
             return FullInjectionString.ToString();
-        }
-
-        internal void AbsorbInjectionString(string InjectionString)
-        {
-            string[] InjectionStringsArray = InjectionString.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-            if(InjectionStringsArray.Length != 5) 
-            {
-                throw new Exception("Invalid Injection String");
-            }
-            this.URLInjections = GetListFromInjectionString(InjectionStringsArray[0].Replace("Url:",""));
-            this.QueryInjections = GetParametersFromInjectionString(InjectionStringsArray[1].Replace("Query:", ""));
-            if (this.BodyFormat.Name.Length == 0)
-            {
-                this.BodyInjections = GetParametersFromInjectionString(InjectionStringsArray[2].Replace("Body:", ""));
-            }
-            else
-            {
-                this.AbsorbFormatBodyParametersFromInjectionString(InjectionStringsArray[2].Replace("Body:", ""));
-            }
-            this.CookieInjections = GetParametersFromInjectionString(InjectionStringsArray[3].Replace("Cookie:", ""));
-            this.HeadersInjections = GetParametersFromInjectionString(InjectionStringsArray[4].Replace("Headers:", ""));
         }
 
         static string GetStringFromInjectionList(List<int> InjectionList)
@@ -1100,7 +1436,8 @@ namespace IronWASP
             StringBuilder IS = new StringBuilder();
             foreach (string Name in InjectionParameters.GetAll())
             {
-                IS.Append(Name); IS.Append("=");
+                //IS.Append(Name); IS.Append("="); - old format
+                IS.Append(Tools.Base64Encode(Name)); IS.Append("-");
                 foreach (int i in InjectionParameters.GetAll(Name))
                 {
                     IS.Append(i.ToString()); IS.Append(",");
@@ -1132,6 +1469,79 @@ namespace IronWASP
             return IS.ToString();
         }
 
+        //New format
+        static string GetStringFromInjectionMarker(string StartMarker, string EndMarker)
+        {
+            StringBuilder IS = new StringBuilder();
+            IS.Append(Tools.Base64Encode(StartMarker));
+            IS.Append(":");
+            IS.Append(Tools.Base64Encode(EndMarker));
+            return IS.ToString();
+        }
+        #endregion
+
+        #region ReadInjectionString
+        internal void AbsorbInjectionString(string InjectionString)
+        {
+            if (InjectionString.StartsWith("Url:"))
+                AbsorbOldFormatInjectionString(InjectionString);
+            else
+                AbsorbNewFormatInjectionString(InjectionString);
+        }
+
+        internal void AbsorbNewFormatInjectionString(string InjectionString)
+        {
+            string[] InjectionStringsArray = InjectionString.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            if (InjectionStringsArray.Length != 6)
+            {
+                throw new Exception("Invalid Injection String");
+            }
+            this.URLInjections = GetListFromInjectionString(InjectionStringsArray[0].Substring(4));//Remove 'Url|'
+            this.QueryInjections = GetParametersFromInjectionString(InjectionStringsArray[1].Substring(6));//Remove 'Query|'
+            string BodyInjectionStringPart = InjectionStringsArray[2].Substring(5);
+            if (BodyInjectionStringPart.StartsWith("CustomMarker|"))//Remove 'Body|'
+            {
+                string[] CustomMarkers = GetCustomMarkersFromInjectionString(BodyInjectionStringPart.Substring(13));//Remove 'CustomMarker|'
+                this.CustomInjectionPointStartMarker = CustomMarkers[0];
+                this.CustomInjectionPointEndMarker = CustomMarkers[1];
+            }
+            else if (BodyInjectionStringPart.StartsWith("FormatPlugin|"))
+            {
+                this.AbsorbFormatBodyParametersFromInjectionString(BodyInjectionStringPart.Substring(13));//Remove 'FormatPlugin|'
+            }
+            else
+            {
+                this.BodyInjections = GetParametersFromInjectionString(BodyInjectionStringPart.Substring(7));//Remove 'Normal|'
+            }
+            
+            this.CookieInjections = GetParametersFromInjectionString(InjectionStringsArray[3].Substring(7));//Remove 'Cookie|'
+            this.HeadersInjections = GetParametersFromInjectionString(InjectionStringsArray[4].Substring(8));//Remove 'Headers|'
+            this.ParameterNameInjections = GetParametersFromInjectionString(InjectionStringsArray[5].Substring(6));//Remove 'Names|'
+        }
+
+        internal void AbsorbOldFormatInjectionString(string InjectionString)
+        {
+            string[] InjectionStringsArray = InjectionString.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            if(InjectionStringsArray.Length != 5)
+            {
+                throw new Exception("Invalid Injection String");
+            }
+            this.URLInjections = GetListFromInjectionString(InjectionStringsArray[0].Substring(4));//Remove 'Url:'
+            this.QueryInjections = GetParametersFromOldFormatInjectionString(InjectionStringsArray[1].Substring(6));//Remove 'Query:'
+            if (this.BodyFormat.Name.Length == 0)
+            {
+                this.BodyInjections = GetParametersFromOldFormatInjectionString(InjectionStringsArray[2].Substring(5));//Remove 'Body:'
+            }
+            else
+            {
+                this.AbsorbFormatBodyParametersFromInjectionString(InjectionStringsArray[2].Substring(5));//Remove 'Body:'
+            }
+            this.CookieInjections = GetParametersFromOldFormatInjectionString(InjectionStringsArray[3].Substring(7));//Remove 'Cookie:'
+            this.HeadersInjections = GetParametersFromOldFormatInjectionString(InjectionStringsArray[4].Substring(8));//Remove 'Headers:'
+        }
+
+        
+
         static List<int> GetListFromInjectionString(string InjectionString)
         {
             List<int> InjectionList = new List<int>();
@@ -1156,7 +1566,31 @@ namespace IronWASP
             string[] Parameters = InjectionString.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
             foreach(string Parameter in Parameters)
             {
-                string[] ParameterParts = Parameter.Split(new string[]{"="}, StringSplitOptions.RemoveEmptyEntries);
+                string[] ParameterParts = Parameter.Split(new string[]{"-"}, StringSplitOptions.RemoveEmptyEntries);
+                if (ParameterParts.Length != 2) throw new Exception("Invalid Injection String");
+                string[] SubParameterPositions = ParameterParts[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string SubParameterPosition in SubParameterPositions)
+                {
+                    try
+                    {
+                        InjectionParameters.Add(Tools.Base64Decode(ParameterParts[0]), Int32.Parse(SubParameterPosition));
+                    }
+                    catch
+                    {
+                        throw new Exception("Invalid Injection String");
+                    }
+                }
+            }
+            return InjectionParameters;
+        }
+
+        static InjectionParameters GetParametersFromOldFormatInjectionString(string InjectionString)
+        {
+            InjectionParameters InjectionParameters = new InjectionParameters();
+            string[] Parameters = InjectionString.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string Parameter in Parameters)
+            {
+                string[] ParameterParts = Parameter.Split(new string[] { "=" }, StringSplitOptions.RemoveEmptyEntries);
                 if (ParameterParts.Length != 2) throw new Exception("Invalid Injection String");
                 string[] SubParameterPositions = ParameterParts[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string SubParameterPosition in SubParameterPositions)
@@ -1172,6 +1606,12 @@ namespace IronWASP
                 }
             }
             return InjectionParameters;
+        }
+
+        static string[] GetCustomMarkersFromInjectionString(string InjectionString)
+        {
+            string[] EncodedMarkers = InjectionString.Split(':');
+            return new string[] { Tools.Base64Decode(EncodedMarkers[0]), Tools.Base64Decode(EncodedMarkers[1])};
         }
 
         void AbsorbFormatBodyParametersFromInjectionString(string InjectionString)
@@ -1206,22 +1646,31 @@ namespace IronWASP
                 i++;
             }
         }
+        #endregion
 
+        #region ScanTrace
         public void StartTrace()
         {
             TraceMsg = new StringBuilder();
+            TraceOverviewEntries = new List<string[]>();
             RequestTraceMsg = "";
             TraceTitle = "";
             TraceTitleWeight = 0;
         }
         public void RequestTrace(string Message)
         {
+            if (this.RequestTraceMsg.Length > 0) TraceMsg.Append("<i<br>>");//Probably the ResponseTrace matching the last RequestTrace was not called
             this.RequestTraceMsg = Message;
         }
 
         public void ResponseTrace(string Message)
         {
+            if (RequestTraceMsg.Length == 0 && Message.Length > 0)
+            {
+                TraceMsg.Append("<i<cr>>This request was not traced. You forgot to call the RequestTrace method in your code.<i</cr>> ");
+            }
             TraceMsg.Append(Message);
+            RequestTraceMsg = "";
         }
 
         public void Trace(string Message)
@@ -1257,7 +1706,7 @@ namespace IronWASP
 
         public void LogTrace(string Title)
         {
-            IronTrace IT = new IronTrace(this.ScanID, CurrentPlugin, this.CurrentSection, this.CurrentParameterName, Title, TraceMsg.ToString());
+            IronTrace IT = new IronTrace(this.ScanID, CurrentPlugin, this.CurrentSection, this.CurrentParameterName, Title, TraceMsg.ToString(), this.TraceOverviewEntries);
             IT.Report();
             this.TraceMsg = new StringBuilder();
             this.RequestTraceMsg = "";
@@ -1269,6 +1718,7 @@ namespace IronWASP
         {
             return TraceMsg.ToString();
         }
+        #endregion
 
         public static string GetStatus(int ScanID)
         {
@@ -1309,7 +1759,6 @@ namespace IronWASP
                     ToStop.Add(Scan.ScanID);
                 }
             }
-
             List<int> Running = new List<int>(ActiveScanIDs);
 
             foreach (int ScanID in Running)
@@ -1318,15 +1767,16 @@ namespace IronWASP
                 { Scanner.ScanThreads[ScanID].Abort(); }
                 catch { }
             }
-
             try
             {
                 IronDB.UpdateScanStatus(ToStop, "Stopped");
+            }catch{}
+            try
+            {
                 IronUI.UpdateScanQueueStatuses(ToStop, "Stopped");
             }
             catch
-            { }
-            
+            {}
             NewScansAllowed = true;
         }
 
@@ -1362,7 +1812,7 @@ namespace IronWASP
         }
 
 
-        int GetCustomInjectionPointsCount()
+        internal int GetCustomInjectionPointsCount()
         {
             int FullCount = SplitAtCustomInjectionPoints().Count;
             if (Tools.IsEven(FullCount))
@@ -1388,6 +1838,14 @@ namespace IronWASP
 
         string InjectAtCustomInjectionPoint(int Position, string Payload)
         {
+            foreach (string[] Rule in this.CharacterEscapingRules)
+            {
+                try
+                {
+                    Payload = Payload.Replace(Rule[0], Rule[1]);
+                }
+                catch { }
+            }
             List<string> Parts = new List<string>(SplitAtCustomInjectionPoints());
             if (Position > GetCustomInjectionPointsCount()) return "";
             int Index = ((Position + 1) * 2) - 1;
@@ -1402,6 +1860,7 @@ namespace IronWASP
 
         public static List<string> SplitAtCustomInjectionPoints(string Content, string StartMarker, string EndMarker)
         {
+            if (StartMarker.Length == 0 || EndMarker.Length == 0) return new List<string>();
             List<string> Result = new List<string>();
             bool CheckFurther = true;
             int Pointer = 0;

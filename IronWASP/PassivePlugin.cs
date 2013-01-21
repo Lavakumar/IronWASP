@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -25,11 +25,11 @@ namespace IronWASP
     public class PassivePlugin : Plugin
     {
         public PluginCallingState CallingState = PluginCallingState.Offline;
-        public PluginWorksOn WorksOn = PluginWorksOn.Response;
+        public PluginWorksOn WorksOn = PluginWorksOn.Both;
         internal static List<PassivePlugin> Collection = new List<PassivePlugin>();
         internal static List<string> DeactivatedPlugins = new List<string>();
 
-        public virtual void Check(Session IrSe, PluginResults Results)
+        public virtual void Check(Session IrSe, Findings Results, bool ReportDuplicates)
         {
 
         }
@@ -57,6 +57,34 @@ namespace IronWASP
             foreach (PassivePlugin PP in Collection)
             {
                 if(!DeactivatedPlugins.Contains(PP.Name)) Names.Add(PP.Name);
+            }
+            return Names;
+        }
+
+        public static List<string> GetInLinePluginsForRequest()
+        {
+            List<string> Names = new List<string>();
+            foreach (PassivePlugin PP in Collection)
+            {
+                if (!DeactivatedPlugins.Contains(PP.Name))
+                {
+                    if (PP.WorksOn == PluginWorksOn.Request || PP.WorksOn == PluginWorksOn.Both)
+                        Names.Add(PP.Name);
+                }
+            }
+            return Names;
+        }
+
+        public static List<string> GetInLinePluginsForResponse()
+        {
+            List<string> Names = new List<string>();
+            foreach (PassivePlugin PP in Collection)
+            {
+                if (!DeactivatedPlugins.Contains(PP.Name))
+                {
+                    if (PP.WorksOn == PluginWorksOn.Response || PP.WorksOn == PluginWorksOn.Both)
+                        Names.Add(PP.Name);
+                }
             }
             return Names;
         }

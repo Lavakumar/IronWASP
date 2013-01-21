@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -37,8 +37,8 @@ namespace IronWASP
             InitializeComponent();
         }
 
-        static string SourceText = "";
-        static string DestinationText = "";
+        string SourceText = "";
+        string DestinationText = "";
 
         internal static Thread T; 
 
@@ -59,8 +59,8 @@ namespace IronWASP
             string Status = "Done";
             try
             {
-                SinglePage = DoSinglePageDiff();
-                SideBySideResults = DoSideBySideDiff();
+                SinglePage = DoSinglePageDiff(SourceText, DestinationText);
+                SideBySideResults = DoSideBySideDiff(SourceText, DestinationText);
                 Status = string.Format("Done. Diff Level - {0}% ", SideBySideResults[2]);
             }
             catch(Exception Exp)
@@ -70,7 +70,7 @@ namespace IronWASP
             IronUI.ShowDiffResults(Status, SideBySideResults[0], SideBySideResults[1], SinglePage);
         }
 
-        string[] DoSideBySideDiff()
+        internal static string[] DoSideBySideDiff(string SourceText, string DestinationText)
         {
             string[] Result = new string[3];
             Differ DiffMaker = new Differ();
@@ -83,7 +83,7 @@ namespace IronWASP
             return Result;
         }
 
-        string FullDiff(List<DiffPiece> Lines)
+        internal static string FullDiff(List<DiffPiece> Lines)
         {
             int MaxLineLength = 0;
             string CurrentFillerString = "";
@@ -114,7 +114,7 @@ namespace IronWASP
             return DR.ToString();
         }
 
-        int GetMaxLength(int CurrentMaxLength, string Line)
+        internal static int GetMaxLength(int CurrentMaxLength, string Line)
         {
             if (Line == null) Line = "";
             int Length = 0;
@@ -129,7 +129,7 @@ namespace IronWASP
             return Length;
         }
 
-        string GetFillerLine(int MaxLineLength, string CurrentFillerString)
+        internal static string GetFillerLine(int MaxLineLength, string CurrentFillerString)
         {
             if (MaxLineLength == CurrentFillerString.Length) return CurrentFillerString;
             StringBuilder Line = new StringBuilder();
@@ -140,7 +140,7 @@ namespace IronWASP
             return Line.ToString();
         }
 
-        string LineDiff(DiffPiece Line)
+        internal static string LineDiff(DiffPiece Line)
         {
             StringBuilder DR = new StringBuilder();
             foreach (DiffPiece Word in Line.SubPieces)
@@ -166,7 +166,7 @@ namespace IronWASP
             return DR.ToString();
         }
 
-        string DoSinglePageDiff()
+        internal static string DoSinglePageDiff(string SourceText, string DestinationText)
         {
             DiffResult DResult = Tools.Diff(SourceText, DestinationText);
             int TotalDestLines = DResult.UnChanged.Count + DResult.Inserted.Count;
@@ -196,7 +196,7 @@ namespace IronWASP
             return Result.ToString();
         }
 
-        string GetLineNoString(int LineNo)
+        static string GetLineNoString(int LineNo)
         {
             string LineNoStr = LineNo.ToString();
             int LengthDiff = 6 - LineNoStr.Length;

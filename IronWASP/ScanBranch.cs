@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -32,10 +32,9 @@ namespace IronWASP
 
         internal static string HostName = "";
         internal static string UrlPattern = "";
-        internal static bool HTTP = true;
-        internal static bool HTTPS = true;
+        internal static bool HTTP = false;
+        internal static bool HTTPS = false;
 
-        internal static bool ScanAll = true;
         internal static bool ScanUrl = true;
         internal static bool ScanQuery = true;
         internal static bool ScanBody = true;
@@ -43,7 +42,7 @@ namespace IronWASP
         internal static bool ScanHeaders = true;
 
         internal static string SessionPlugin = "";
-        internal static string FormatPlugin = "";
+        internal static List<string> FormatPlugins = new List<string>();
 
         internal static List<string> ActivePlugins = new List<string>();
 
@@ -73,34 +72,24 @@ namespace IronWASP
         internal static bool SelectCheckFileExtensions = false;
         internal static bool SelectCheckFileExtensionsPlus = false;
         internal static List<string> SelectFileExtensions = new List<string>();
-        internal static bool SelectCheckFileExtensionsMinus = false;
-        internal static List<string> DontSelectFileExtensions = new List<string>();
+        internal static bool SelectCheckFileExtensionsMinus = true;
+        internal static List<string> DontSelectFileExtensions = new List<string>() { "css", "js", "jpg", "jpeg", "png", "gif", "ico", "swf", "doc", "docx", "pdf", "xls", "xlsx", "ppt", "pptx" };
 
-        internal static bool SelectCheckQueryParameters = false;
-        internal static bool SelectCheckQueryParametersPlus = false;
-        internal static List<string> SelectQueryParameters = new List<string>();
-        internal static bool SelectCheckQueryParametersMinus = false;
-        internal static List<string> DontSelectQueryParameters = new List<string>();
+        internal static List<string> QueryWhiteList = new List<string>();
+        internal static List<string> QueryBlackList = new List<string>();
 
-        internal static bool SelectCheckBodyParameters = false;
-        internal static bool SelectCheckBodyParametersPlus = false;
-        internal static List<string> SelectBodyParameters = new List<string>();
-        internal static bool SelectCheckBodyParametersMinus = false;
-        internal static List<string> DontSelectBodyParameters = new List<string>();
+        internal static List<string> BodyWhiteList = new List<string>();
+        internal static List<string> BodyBlackList = new List<string>();
 
-        internal static bool SelectCheckCookieParameters = false;
-        internal static bool SelectCheckCookieParametersPlus = false;
-        internal static List<string> SelectCookieParameters = new List<string>();
-        internal static bool SelectCheckCookieParametersMinus = false;
-        internal static List<string> DontSelectCookieParameters = new List<string>();
+        internal static List<string> CookieWhiteList = new List<string>();
+        internal static List<string> CookieBlackList = new List<string>();
 
-        internal static bool SelectCheckHeadersParameters = false;
-        internal static bool SelectCheckHeadersParametersPlus = false;
-        internal static List<string> SelectHeadersParameters = new List<string>();
-        internal static bool SelectCheckHeadersParametersMinus = false;
-        internal static List<string> DontSelectHeadersParameters = new List<string>();
+        internal static List<string> HeaderWhiteList = new List<string>();
+        internal static List<string> HeaderBlackList = new List<string>();
 
         internal static bool SkipScanned = false;
+
+        internal static bool PromptUser = false;
 
         internal static bool PickFromProxyLog = true;
         internal static bool PickFromProbeLog = false;
@@ -133,7 +122,7 @@ namespace IronWASP
                 ScanDone = 0;
                 TotalScans = ProxyLogIDs.Count;
                 NewRequestSignatures.Clear();
-                ScanItemUniquenessChecker UniqueChecker = new ScanItemUniquenessChecker(true);
+                ScanItemUniquenessChecker UniqueChecker = new ScanItemUniquenessChecker(PromptUser);
                 foreach (int i in ScanBranch.ProxyLogIDs)
                 {
                     ScanItem(UniqueChecker, "Proxy", i);
@@ -202,187 +191,118 @@ namespace IronWASP
             }
         }
 
-        static Scanner SetInjectionPoints(Scanner Scan)
+        static Scanner SetFormatPlugin(Scanner S)
         {
-            if (ScanUrl) Scan.InjectUrl();
-            if (ScanQuery && SelectCheckQueryParameters && (SelectCheckQueryParametersPlus || SelectCheckQueryParametersMinus))
+            Request RequestToScan = S.OriginalRequest;
+            
+            if (!FormatPlugin.IsNormal(RequestToScan))
             {
-                if (SelectCheckQueryParametersPlus)
+                List<FormatPlugin> RightList = FormatPlugin.Get(RequestToScan, FormatPlugins);
+                if (RightList.Count > 0)
                 {
-                    foreach (string Name in Scan.OriginalRequest.Query.GetNames())
+                    S.BodyFormat = FormatPlugin.Get(RightList[0].Name);
+                }
+            }
+            return S;
+        }
+
+        static Scanner SetInjectionPoints(Scanner S)
+        {
+            if (ScanQuery)
+            {
+                if (QueryWhiteList.Count > 0)
+                {
+                    foreach (string Name in S.OriginalRequest.Query.GetNames())
                     {
-                        if (SelectQueryParameters.Contains(Name))
-                        {
-                            for (int i = 0; i < Scan.OriginalRequest.Query.GetAll(Name).Count; i++)
-                            {
-                                Scan.InjectQuery(Name, i);
-                            }
-                        }
+                        if (QueryWhiteList.Contains(Name)) S.InjectQuery(Name);
+                    }
+                }
+                else if (QueryBlackList.Count > 0)
+                {
+                    foreach (string Name in S.OriginalRequest.Query.GetNames())
+                    {
+                        if (!QueryBlackList.Contains(Name)) S.InjectQuery(Name);
                     }
                 }
                 else
                 {
-                    foreach (string Name in Scan.OriginalRequest.Query.GetNames())
-                    {
-                        if (!DontSelectQueryParameters.Contains(Name))
-                        {
-                            for (int i = 0; i < Scan.OriginalRequest.Query.GetAll(Name).Count; i++)
-                            {
-                                Scan.InjectQuery(Name, i);
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (ScanQuery) Scan.InjectQuery();
-            }
-
-            if (Scan.BodyFormat.Name.Length > 0)
-            {
-                string Xml = Scan.BodyFormat.ToXmlFromRequest(Scan.OriginalRequest);
-                string[,] XmlArray = IronWASP.FormatPlugin.XmlToArray(Xml);
-                Scan.BodyXmlInjectionParameters = new Parameters();
-                for (int i = 0; i < XmlArray.GetLength(0); i++)
-                {
-                    Scan.BodyXmlInjectionParameters.Add(XmlArray[i,0], XmlArray[i,1]);
+                    S.InjectQuery();
                 }
             }
 
-            if (ScanBody && SelectCheckBodyParameters && (SelectCheckBodyParametersPlus || SelectCheckBodyParametersMinus))
+            if (ScanBody)
             {
-                if (SelectCheckBodyParametersPlus)
+                if (BodyWhiteList.Count > 0)
                 {
-                    if (Scan.BodyFormat.Name.Length == 0)
+                    foreach (string Name in S.OriginalRequest.Body.GetNames())
                     {
-                        foreach (string Name in Scan.OriginalRequest.Body.GetNames())
-                        {
-                            if (SelectBodyParameters.Contains(Name))
-                            {
-                                for (int i = 0; i < Scan.OriginalRequest.Body.GetAll(Name).Count; i++)
-                                {
-                                    Scan.InjectBody(Name, i);
-                                }
-                            }
-                        }
+                        if (BodyWhiteList.Contains(Name)) S.InjectBody(Name);
                     }
-                    else
+                }
+                else if (BodyBlackList.Count > 0)
+                {
+                    foreach (string Name in S.OriginalRequest.Body.GetNames())
                     {
-                        int i = 0;
-                        foreach (string Name in Scan.BodyXmlInjectionParameters.GetNames())
-                        {
-                            if (SelectBodyParameters.Contains(Name))
-                            {
-                                Scan.InjectBody(i);
-                            }
-                            i++;
-                        }
+                        if (!BodyBlackList.Contains(Name)) S.InjectBody(Name);
                     }
                 }
                 else
                 {
-                    if (Scan.BodyFormat.Name.Length == 0)
-                    {
-                        foreach (string Name in Scan.OriginalRequest.Body.GetNames())
-                        {
-                            if (!DontSelectBodyParameters.Contains(Name))
-                            {
-                                for (int i = 0; i < Scan.OriginalRequest.Body.GetAll(Name).Count; i++)
-                                {
-                                    Scan.InjectBody(Name, i);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        int i = 0;
-                        foreach (string Name in Scan.BodyXmlInjectionParameters.GetNames())
-                        {
-                            if (!DontSelectBodyParameters.Contains(Name))
-                            {
-                                Scan.InjectBody(i);
-                            }
-                            i++;
-                        }
-                    }
+                    S.InjectBody();
                 }
             }
-            else
-            {
-                if (ScanBody) Scan.InjectBody();
-            }
 
-            if (ScanCookie && SelectCheckCookieParameters && (SelectCheckCookieParametersPlus || SelectCheckCookieParametersMinus))
+            if (ScanCookie)
             {
-                if (SelectCheckCookieParametersPlus)
+                if (CookieWhiteList.Count > 0)
                 {
-                    foreach (string Name in Scan.OriginalRequest.Cookie.GetNames())
+                    foreach (string Name in S.OriginalRequest.Cookie.GetNames())
                     {
-                        if (SelectCookieParameters.Contains(Name))
-                        {
-                            for (int i = 0; i < Scan.OriginalRequest.Cookie.GetAll(Name).Count; i++)
-                            {
-                                Scan.InjectCookie(Name, i);
-                            }
-                        }
+                        if (CookieWhiteList.Contains(Name)) S.InjectCookie(Name);
+                    }
+                }
+                else if (CookieBlackList.Count > 0)
+                {
+                    foreach (string Name in S.OriginalRequest.Cookie.GetNames())
+                    {
+                        if (!CookieBlackList.Contains(Name)) S.InjectCookie(Name);
                     }
                 }
                 else
                 {
-                    foreach (string Name in Scan.OriginalRequest.Cookie.GetNames())
-                    {
-                        if (!DontSelectCookieParameters.Contains(Name))
-                        {
-                            for (int i = 0; i < Scan.OriginalRequest.Cookie.GetAll(Name).Count; i++)
-                            {
-                                Scan.InjectCookie(Name, i);
-                            }
-                        }
-                    }
+                    S.InjectCookie();
                 }
             }
-            else
-            {
-                if (ScanCookie) Scan.InjectCookie();
-            }
 
-            if (ScanHeaders && SelectCheckHeadersParameters && (SelectCheckHeadersParametersPlus || SelectCheckHeadersParametersMinus))
+            if (ScanHeaders)
             {
-                if (SelectCheckHeadersParametersPlus)
+                if (HeaderWhiteList.Count > 0)
                 {
-                    foreach (string Name in Scan.OriginalRequest.Headers.GetNames())
+                    foreach (string Name in S.OriginalRequest.Headers.GetNames())
                     {
-                        if (SelectHeadersParameters.Contains(Name))
-                        {
-                            for (int i = 0; i < Scan.OriginalRequest.Headers.GetAll(Name).Count; i++)
-                            {
-                                Scan.InjectHeaders(Name, i);
-                            }
-                        }
+                        if (HeaderWhiteList.Contains(Name)) S.InjectHeaders(Name);
+                    }
+                }
+                else if (HeaderBlackList.Count > 0)
+                {
+                    foreach (string Name in S.OriginalRequest.Headers.GetNames())
+                    {
+                        if (!HeaderBlackList.Contains(Name)) S.InjectHeaders(Name);
                     }
                 }
                 else
                 {
-                    foreach (string Name in Scan.OriginalRequest.Headers.GetNames())
-                    {
-                        if (!DontSelectHeadersParameters.Contains(Name))
-                        {
-                            for (int i = 0; i < Scan.OriginalRequest.Headers.GetAll(Name).Count; i++)
-                            {
-                                Scan.InjectHeaders(Name, i);
-                            }
-                        }
-                    }
+                    S.InjectHeaders();
                 }
             }
-            else
-            {
-                if (ScanHeaders) Scan.InjectHeaders();
-            }
 
-            return Scan;
+            if (ScanUrl)
+            {
+                if (S.OriginalRequest.Query.Count == 0 && S.OriginalRequest.File.Length == 0)
+                    S.InjectUrl();
+            }
+            
+            return S;
         }
 
         static Scanner AddActivePlugins(Scanner Scan)
@@ -407,25 +327,6 @@ namespace IronWASP
             return Scan;
         }
 
-        static Scanner SetFormatPlugin(Scanner Scan)
-        {
-            if (FormatPlugin.Length > 0)
-            {
-                Scan.BodyFormat = IronWASP.FormatPlugin.Get(FormatPlugin);
-            }
-            else
-            {
-                if (!IronWASP.FormatPlugin.IsNormal(Scan.OriginalRequest))
-                {
-                    List<IronWASP.FormatPlugin> RightPlugins = IronWASP.FormatPlugin.Get(Scan.OriginalRequest);
-                    if (RightPlugins.Count > 0)
-                    {
-                        Scan.BodyFormat = RightPlugins[0];
-                    }
-                }
-            }
-            return Scan;
-        }
 
         internal static bool CanScan(DataGridViewRow Row, string Source)
         {

@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -91,10 +91,12 @@ namespace IronWASP
             List<Reflection> CookieReflections = new List<Reflection>();
             List<Reflection> HeaderReflections = new List<Reflection>();
 
+            string ResString = IrSe.Response.ToString();
+
             //Check if the URL is being reflected back
             if (IrSe.Request.Url.Length > 1)
             {
-                Reflection RefResult = GetReflections(IrSe.Request.Url, IrSe.Response);
+                Reflection RefResult = GetReflections(IrSe.Request.Url, ResString);
                 if (RefResult.Count > 0)
                 {
                     RefResult.Name = "URL";
@@ -111,7 +113,7 @@ namespace IronWASP
                 int PathCount = 0;
                 foreach (string UrlPathPart in IrSe.Request.UrlPathParts)
                 {
-                    Reflection RefResult = GetReflections(UrlPathPart, IrSe.Response);
+                    Reflection RefResult = GetReflections(UrlPathPart, ResString);
                     if (RefResult.Count > 0)
                     {
                         RefResult.Name = "UrlPathPart : " + PathCount.ToString();
@@ -130,7 +132,7 @@ namespace IronWASP
                 List<string> ParameterResults = new List<string>();
                 foreach (string Value in SubParametervalues)
                 {
-                    Reflection RefResult = GetReflections(Value, IrSe.Response);
+                    Reflection RefResult = GetReflections(Value, ResString);
                     if (RefResult.Count > 0)
                     {
                         RefResult.Name = Name;
@@ -148,7 +150,7 @@ namespace IronWASP
                 List<string> ParameterResults = new List<string>();
                 foreach (string Value in SubParametervalues)
                 {
-                    Reflection RefResult = GetReflections(Value, IrSe.Response);
+                    Reflection RefResult = GetReflections(Value, ResString);
                     if (RefResult.Count > 0)
                     {
                         RefResult.Name = Name;
@@ -166,7 +168,7 @@ namespace IronWASP
                 List<string> ParameterResults = new List<string>();
                 foreach (string Value in SubParametervalues)
                 {
-                    Reflection RefResult = GetReflections(Value, IrSe.Response);
+                    Reflection RefResult = GetReflections(Value, ResString);
                     if (RefResult.Count > 0)
                     {
                         RefResult.Name = Name;
@@ -184,7 +186,7 @@ namespace IronWASP
                 List<string> ParameterResults = new List<string>();
                 foreach (string Value in SubParametervalues)
                 {
-                    Reflection RefResult = GetReflections(Value, IrSe.Response);
+                    Reflection RefResult = GetReflections(Value, ResString);
                     if (RefResult.Count > 0)
                     {
                         RefResult.Name = Name;
@@ -258,12 +260,12 @@ namespace IronWASP
             return Result.ToString();
         }
 
-        public static Reflection GetReflections(string Input, Response Res)
-        {
-            List<string> Results = new List<string>();
-            string ResString = Res.ToString();
-            return GetReflections(Input, ResString);
-        }
+        //public static Reflection GetReflections(string Input, Response Res)
+        //{
+        //    List<string> Results = new List<string>();
+        //    string ResString = Res.ToString();
+        //    return GetReflections(Input, ResString);
+        //}
 
         public static Reflection GetReflections(string Input, string ResString)
         {

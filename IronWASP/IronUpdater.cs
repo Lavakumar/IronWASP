@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -47,7 +47,7 @@ namespace IronWASP
     public class IronUpdater
     {
         static bool IsOn = true;
-        static Queue<PluginResult> PluginResultQ = new Queue<PluginResult>();
+        static Queue<Finding> PluginResultQ = new Queue<Finding>();
 
         static Queue<Request> ScanRequestQ = new Queue<Request>();
         static Queue<Response> ScanResponseQ = new Queue<Response>();
@@ -67,9 +67,14 @@ namespace IronWASP
         static Queue<Response> ProxyOriginalResponseQ = new Queue<Response>();
         static Queue<Request> ProxyEditedRequestQ = new Queue<Request>();
         static Queue<Response> ProxyEditedResponseQ = new Queue<Response>();
-        
+
+        static Queue<Request> OtherSourceRequestQ = new Queue<Request>();
+        static Queue<Response> OtherSourceResponseQ = new Queue<Response>();
+        internal static Dictionary<int, int> OtherSourceGridMap = new Dictionary<int, int>();
+
         internal static Queue<IronTrace> Traces = new Queue<IronTrace>();
         internal static Queue<IronTrace> ScanTraces = new Queue<IronTrace>();
+        internal static Queue<IronTrace> SessionPluginTraces = new Queue<IronTrace>();
         
         internal static Dictionary<int, int> ProxyGridMap = new Dictionary<int, int>();
 
@@ -115,6 +120,12 @@ namespace IronWASP
                     if (Counter == 5) UpdateScanLogAndGrid(); 
                 }
                 catch (Exception Exp) { IronException.Report("Error Updating Scan Log & Grid", Exp.Message, Exp.StackTrace); }
+                try
+                {
+                    //if (Counter == 2 || Counter == 4) 
+                    UpdateOtherSourceLogAndGrid();
+                }
+                catch (Exception Exp) { IronException.Report("Error Updating Other Source Log & Grid", Exp.Message, Exp.StackTrace); }
                 try 
                 {
                     if (Counter == 5) UpdateSiteMapTree(); 
@@ -129,6 +140,16 @@ namespace IronWASP
                 catch (Exception Exp) { IronException.Report("Error Updating ScanTrace Log & Grid", Exp.Message, Exp.StackTrace); }
                 try
                 {
+                    if (Counter == 2 || Counter == 4) UpdateScanTraceLogAndGrid();
+                }
+                catch (Exception Exp) { IronException.Report("Error Updating ScanTrace Log & Grid", Exp.Message, Exp.StackTrace); }
+                try
+                {
+                    if (Counter == 2 || Counter == 4) UpdateSessionPluginTraceLogAndGrid();
+                }
+                catch (Exception Exp) { IronException.Report("Error Updating SessionPluginTrace Log & Grid", Exp.Message, Exp.StackTrace); }
+                try
+                {
                     if (Counter == 5) ThreadStore.CleanUp(); 
                 }
                 catch (Exception Exp) { IronException.Report("Error cleaning up ThreadStore", Exp.Message, Exp.StackTrace); }
@@ -139,7 +160,7 @@ namespace IronWASP
             IsOn = false;
             T.Abort();
         }
-        internal static void AddPluginResult(PluginResult PR)
+        internal static void AddPluginResult(Finding PR)
         {
             if (PR != null)
             {
@@ -151,7 +172,7 @@ namespace IronWASP
         }
         static void UpdatePluginResult()
         {
-            PluginResult[] DequedPluginResult;
+            Finding[] DequedPluginResult;
             lock (PluginResultQ)
             {
                 DequedPluginResult = PluginResultQ.ToArray();
@@ -159,8 +180,8 @@ namespace IronWASP
             }
             if (DequedPluginResult == null) return;
 
-            List<PluginResult> PRs = new List<PluginResult>();
-            foreach (PluginResult PR in DequedPluginResult)
+            List<Finding> PRs = new List<Finding>();
+            foreach (Finding PR in DequedPluginResult)
             {
                 try
                 {
@@ -810,6 +831,148 @@ namespace IronWASP
             }
         }
 
+        internal static void AddOtherSourceRequest(Request Request)
+        {
+            if (Request != null)
+            {
+                try
+                {
+                    Request ClonedRequest = Request.GetClone(true);
+                    if (ClonedRequest != null)
+                    {
+                        lock (OtherSourceRequestQ)
+                        {
+                            OtherSourceRequestQ.Enqueue(ClonedRequest);
+                        }
+                    }
+                    else
+                    {
+                        Tools.Trace("IronUpdater", "Null Other Source Request");
+                    }
+                }
+                catch (Exception Exp)
+                {
+                    IronException.Report("Error adding Other Source Request for updating", Exp.Message, Exp.StackTrace);
+                }
+            }
+        }
+
+        internal static void AddOtherSourceResponse(Response Response)
+        {
+            if (Response != null)
+            {
+                try
+                {
+                    Response ClonedResponse = Response.GetClone(true);
+                    if (ClonedResponse != null)
+                    {
+                        lock (OtherSourceResponseQ)
+                        {
+                            OtherSourceResponseQ.Enqueue(ClonedResponse);
+                        }
+                    }
+                    else
+                        Tools.Trace("IronUpdater", "Null Other Source Response");
+                }
+                catch (Exception Exp)
+                {
+                    IronException.Report("Error adding Other Source Response for updating", Exp.Message, Exp.StackTrace);
+                }
+            }
+        }
+
+        static void UpdateOtherSourceLogAndGrid()
+        {
+            Response[] DequedResponses;
+            lock (OtherSourceResponseQ)
+            {
+                DequedResponses = OtherSourceResponseQ.ToArray();
+                OtherSourceResponseQ.Clear();
+            }
+            List<Response> Responses = new List<Response>();
+            foreach (Response Res in DequedResponses)
+            {
+                try
+                {
+                    if (Res == null)
+                    {
+                        IronException.Report("Null Response DeQed from Other Source Response Q", "Null Response DeQed from Other Source Response Q");
+                        continue;
+                    }
+                    Res.StoredHeadersString = Res.GetHeadersAsString();
+                    if (Res.IsBinary) Res.StoredBinaryBodyString = Res.BinaryBodyString;
+                    Responses.Add(Res);
+                }
+                catch (Exception Exp)
+                {
+                    IronException.Report("Error preparing Other Source Response for UI & DB Update", Exp.Message, Exp.StackTrace);
+                }
+            }
+
+            Request[] DequedRequests;
+            lock (OtherSourceRequestQ)
+            {
+                DequedRequests = OtherSourceRequestQ.ToArray();
+                OtherSourceRequestQ.Clear();
+            }
+            List<Request> Requests = new List<Request>();
+            foreach (Request Req in DequedRequests)
+            {
+                try
+                {
+                    if (Req == null)
+                    {
+                        IronException.Report("Null Request DeQed from Other Source Request Q", "Null Request DeQed from Other Source Request Q");
+                        continue;
+                    }
+                    Req.StoredFile = Req.File;
+                    Req.StoredParameters = Req.GetParametersString();
+                    Req.StoredHeadersString = Req.GetHeadersAsString();
+                    if (Req.IsBinary) Req.StoredBinaryBodyString = Req.BinaryBodyString;
+                    Requests.Add(Req);
+
+                }
+                catch (Exception Exp)
+                {
+                    IronException.Report("Error preparing Other Source Request for UI & DB Update", Exp.Message, Exp.StackTrace);
+                }
+            }
+
+            List<Session> IronSessions = new List<Session>();
+            Dictionary<string, List<Request>> SourceSpecificRequestList = new Dictionary<string, List<Request>>();
+            Dictionary<string, List<Response>> SourceSpecificResponseList = new Dictionary<string, List<Response>>();
+            if (Requests.Count > 0 || Responses.Count > 0)
+            {
+                foreach (Request Req in Requests)
+                {
+                    if (!SourceSpecificRequestList.ContainsKey(Req.Source)) SourceSpecificRequestList[Req.Source] = new List<Request>();
+                    if (!SourceSpecificResponseList.ContainsKey(Req.Source)) SourceSpecificResponseList[Req.Source] = new List<Response>();
+                    SourceSpecificRequestList[Req.Source].Add(Req);
+                }
+                foreach (Response Res in Responses)
+                {
+                    if (!SourceSpecificResponseList.ContainsKey(Res.Source)) SourceSpecificResponseList[Res.Source] = new List<Response>();
+                    if (!SourceSpecificRequestList.ContainsKey(Res.Source)) SourceSpecificRequestList[Res.Source] = new List<Request>();
+                    SourceSpecificResponseList[Res.Source].Add(Res);
+                }
+
+                foreach (string Source in SourceSpecificRequestList.Keys)
+                {
+                    IronDB.LogOtherSourceMessages(IronSessions, SourceSpecificRequestList[Source], SourceSpecificResponseList[Source], Source);
+                }
+                List<Request> OtherSourceRequests = new List<Request>();
+                List<Response> OtherSourceResponses = new List<Response>();
+                if (SourceSpecificRequestList.ContainsKey(IronLog.SelectedOtherSource))
+                {
+                    OtherSourceRequests = SourceSpecificRequestList[IronLog.SelectedOtherSource];
+                    OtherSourceResponses = SourceSpecificResponseList[IronLog.SelectedOtherSource];
+                }
+
+                IronUI.UpdateOtherSourceLogGrid(OtherSourceRequests, OtherSourceResponses, IronLog.SelectedOtherSource, new List<string>(SourceSpecificRequestList.Keys));
+            }
+        }
+
+
         internal static void AddTrace(IronTrace Trace)
         {
             if (Trace != null)
@@ -864,10 +1027,37 @@ namespace IronWASP
             }
         }
 
+        internal static void AddSessionPluginTrace(IronTrace Trace)
+        {
+            if (Trace != null)
+            {
+                lock (SessionPluginTraces)
+                {
+                    SessionPluginTraces.Enqueue(Trace);
+                }
+            }
+        }
+
+        static void UpdateSessionPluginTraceLogAndGrid()
+        {
+            IronTrace[] DequedTraces;
+            lock (SessionPluginTraces)
+            {
+                DequedTraces = SessionPluginTraces.ToArray();
+                SessionPluginTraces.Clear();
+            }
+            List<IronTrace> TraceList = new List<IronTrace>(DequedTraces);
+            if (TraceList.Count > 0)
+            {
+                IronDB.LogSessionPluginTraces(TraceList);
+                IronUI.UpdateSessionPluginTraceGrid(TraceList);
+            }
+        }
+
         internal static List<string> GetUrlForList(Request Req)
         {
             List<string> UrlParts = new List<string>();
-            UrlParts.Add(Req.Host);
+            UrlParts.Add(Req.BaseUrl);
             UrlParts.AddRange(Req.UrlPathParts);
             UrlParts.Add("");
             if (Req.Query.Count > 0)

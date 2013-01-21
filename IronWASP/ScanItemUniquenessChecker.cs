@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -129,7 +129,7 @@ If the values of some the mis-matched parameters makes Request B unique then sel
                             if (!Req.HasBody)
                             {
                                 DuplicateNamesMatchCounter++;
-                                if (DuplicateNamesMatchCounter > 20)
+                                if (DuplicateNamesMatchCounter > 3)
                                 {
                                     return false;
                                 }
@@ -214,7 +214,7 @@ If the values of some the mis-matched parameters makes Request B unique then sel
                             else
                             {
                                 DuplicateNamesMatchCounter++;
-                                if (DuplicateNamesMatchCounter > 20)
+                                if (DuplicateNamesMatchCounter > 3)
                                 {
                                     return false;
                                 }

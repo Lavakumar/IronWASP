@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -25,7 +25,7 @@ namespace IronWASP
 {
     internal class IronLog
     {
-        internal static RequestSource CurrentSource = RequestSource.Scan;
+        internal static string CurrentSource = RequestSource.Scan;
         internal static Session CurrentSession;
         internal static int CurrentID = 0;
         internal static int CurrentRowID = 0;
@@ -51,6 +51,12 @@ namespace IronWASP
         internal static int SitemapProbeMin = 0;
         internal static int SitemapProbeMax = 0;
 
+        internal static int OtherSourceMin = 0;
+        internal static int OtherSourceMax = 0;
+        internal static string SelectedOtherSource = "";
+
+        internal static string MainLogDefaultMsg = "Right-click on any log below to get a menu that will let you perform scans and other actions on the selected log.";
+
         internal static string CurrentSourceName
         {
             get
@@ -59,7 +65,7 @@ namespace IronWASP
             }
         }
 
-        internal static void ShowLog(RequestSource Source, string ID, int RowID, bool IsSiteMapSelected)
+        internal static void ShowLog(string Source, string ID, int RowID, bool IsSiteMapSelected)
         {
             try
             {
@@ -71,7 +77,7 @@ namespace IronWASP
             catch { return; }
         }
 
-        internal static void ShowLog(RequestSource Source, int ID)
+        internal static void ShowLog(string Source, int ID)
         {
             CurrentSource = Source;
             CurrentID = ID;
@@ -123,7 +129,7 @@ namespace IronWASP
             {
                 Session IrSe = GetLog(CurrentSource, CurrentID);
                 CurrentSession = IrSe;
-                IronUI.FillLogDisplayFields(IrSe, Analyzer.CheckReflections(IrSe));
+                IronUI.FillLogDisplayFields(IrSe);
             }
             catch(Exception Exp)
             {
@@ -139,7 +145,7 @@ namespace IronWASP
             }
         }
 
-        internal static void MarkForTesting(RequestSource Source, string ID, string Group)
+        internal static void MarkForTesting(string Source, string ID, string Group)
         {
             try
             {
@@ -149,7 +155,7 @@ namespace IronWASP
             catch { return; }
         }
 
-        internal static void MarkForTesting(RequestSource Source, int ID, string Group)
+        internal static void MarkForTesting(string Source, int ID, string Group)
         {
             object[] Details = new object[] { Source, ID, Group };
 
@@ -162,7 +168,7 @@ namespace IronWASP
             try
             {
                 object[] DetailsArray = (object[])Details;
-                RequestSource Source = (RequestSource)DetailsArray[0];
+                string Source = DetailsArray[0].ToString();
                 int ID = (int)DetailsArray[1];
                 string Group = DetailsArray[2].ToString();
 
@@ -177,15 +183,19 @@ namespace IronWASP
                     IronUI.ShowLogStatus("Unable to read Request from log", true);
                     return;
                 }
-                int TestID = Interlocked.Increment(ref Config.TestRequestsCount);
-                IrSe.Request.ID = TestID;
-                IronDB.LogMTRequest(IrSe.Request);
-                IronDB.ClearGroup(Group);
-                ManualTesting.CurrentRequestID = TestID;
-                ManualTesting.CurrentGroup = Group;
-                ManualTesting.ClearGroup(Group, TestID);
-                ManualTesting.StoreInGroupList(IrSe.Request);
-                IronUI.SetNewTestRequest(IrSe.Request, Group);
+                NameTestGroupWizard NTGW = new NameTestGroupWizard();
+                NTGW.RequestToTest = IrSe.Request;
+                NTGW.ShowDialog();
+                //ManualTesting.CreateNewGroupWithRequest(IrSe.Request, Group);
+                //int TestID = Interlocked.Increment(ref Config.TestRequestsCount);
+                //IrSe.Request.ID = TestID;
+                //IronDB.LogMTRequest(IrSe.Request);
+                ////IronDB.ClearGroup(Group);
+                //ManualTesting.CurrentRequestID = TestID;
+                //ManualTesting.CurrentGroup = Group;
+                //ManualTesting.ClearGroup(Group, TestID);
+                //ManualTesting.StoreInGroupList(IrSe.Request);
+                //IronUI.SetNewTestRequest(IrSe.Request, Group);
             }
             catch (Exception Exp)
             {
@@ -194,7 +204,7 @@ namespace IronWASP
             }
         }
 
-        internal static void MarkForScanning(RequestSource Source, string ID)
+        internal static void MarkForScanning(string Source, string ID)
         {
             try
             {
@@ -204,7 +214,7 @@ namespace IronWASP
             catch { return; }
         }
 
-        internal static void MarkForScanning(RequestSource Source, int ID)
+        internal static void MarkForScanning(string Source, int ID)
         {
             object[] Details = new object[] { Source, ID};
 
@@ -217,7 +227,7 @@ namespace IronWASP
             try
             {
                 object[] DetailsArray = (object[])Details;
-                RequestSource Source = (RequestSource)DetailsArray[0];
+                string Source = DetailsArray[0].ToString();
                 int ID = (int)DetailsArray[1];
 
                 Session IrSe = GetLog(Source, ID);
@@ -231,10 +241,18 @@ namespace IronWASP
                     IronUI.ShowLogStatus("Unable to read Request from log", true);
                     return;
                 }
-                int ScanID = Interlocked.Increment(ref Config.ScanCount);
-                IronDB.CreateScan(ScanID, IrSe.Request);
-                IronUI.CreateScan(ScanID, "Not Started", IrSe.Request.Method, IrSe.Request.FullUrl);
-                IronUI.ShowScanJobsQueue();
+                //int ScanID = Interlocked.Increment(ref Config.ScanCount);
+                //IronDB.CreateScan(ScanID, IrSe.Request);
+                //IronUI.CreateScan(ScanID, "Not Started", IrSe.Request.Method, IrSe.Request.FullUrl);
+                //Scanner S = new Scanner(IrSe.Request);
+                //S.ScanID = ScanID;
+                //Scanner.ResetChangedStatus();
+                //IronUI.ResetConfigureScanFields();
+                //Scanner.SetScannerFromDBToUiAfterProcessing(S);
+                //IronUI.ShowScanJobsQueue();
+                StartScanJobWizard SSJW = new StartScanJobWizard();
+                SSJW.SetRequest(IrSe.Request);
+                SSJW.ShowDialog();
             }
             catch (Exception Exp)
             {
@@ -243,7 +261,7 @@ namespace IronWASP
             }
         }
 
-        internal static void MarkForJavaScriptTesting(RequestSource Source, string ID)
+        internal static void MarkForJavaScriptTesting(string Source, string ID)
         {
             try
             {
@@ -253,7 +271,7 @@ namespace IronWASP
             catch { return; }
         }
         
-        internal static void MarkForJavaScriptTesting(RequestSource Source, int ID)
+        internal static void MarkForJavaScriptTesting(string Source, int ID)
         {
             object[] Details = new object[] { Source, ID };
 
@@ -266,7 +284,7 @@ namespace IronWASP
             try
             {
                 object[] DetailsArray = (object[])Details;
-                RequestSource Source = (RequestSource)DetailsArray[0];
+                string Source = DetailsArray[0].ToString();
                 int ID = (int)DetailsArray[1];
 
                 Session IrSe = GetLog(Source, ID);
@@ -277,7 +295,7 @@ namespace IronWASP
                 }
                 if (IrSe.Response == null)
                 {
-                    IronUI.ShowLogStatus("Unable to read Response from log", true);
+                    IronUI.ShowLogStatus("Unable to read Response from 4log", true);
                     return;
                 }
                 IronUI.FillAndShowJavaScriptTester(IrSe.Response.BodyString);
@@ -289,7 +307,7 @@ namespace IronWASP
             }
         }
 
-        internal static void CopyRequest(RequestSource Source, string ID)
+        internal static void CopyRequest(string Source, string ID)
         {
             try
             {
@@ -299,7 +317,7 @@ namespace IronWASP
             catch { return; }
         }
 
-        internal static void CopyRequest(RequestSource Source, int ID)
+        internal static void CopyRequest(string Source, int ID)
         {
             object[] Details = new object[] { Source, ID };
 
@@ -312,7 +330,7 @@ namespace IronWASP
             try
             {
                 object[] DetailsArray = (object[])Details;
-                RequestSource Source = (RequestSource)DetailsArray[0];
+                string Source = DetailsArray[0].ToString();
                 int ID = (int)DetailsArray[1];
 
                 Session IrSe = GetLog(Source, ID);
@@ -335,7 +353,7 @@ namespace IronWASP
             }
         }
 
-        internal static void CopyResponse(RequestSource Source, string ID)
+        internal static void CopyResponse(string Source, string ID)
         {
             try
             {
@@ -345,7 +363,7 @@ namespace IronWASP
             catch { return; }
         }
 
-        internal static void CopyResponse(RequestSource Source, int ID)
+        internal static void CopyResponse(string Source, int ID)
         {
             object[] Details = new object[] { Source, ID };
 
@@ -358,7 +376,7 @@ namespace IronWASP
             try
             {
                 object[] DetailsArray = (object[])Details;
-                RequestSource Source = (RequestSource)DetailsArray[0];
+                string Source = DetailsArray[0].ToString();
                 int ID = (int)DetailsArray[1];
 
                 Session IrSe = GetLog(Source, ID);
@@ -381,7 +399,7 @@ namespace IronWASP
             }
         }
 
-        static Session GetLog(RequestSource Source, int ID)
+        static Session GetLog(string Source, int ID)
         {
             Session IrSe = null;
             switch (Source)
@@ -402,7 +420,7 @@ namespace IronWASP
                     IrSe = Session.FromProbeLog(ID);
                     break;
                 case RequestSource.Trigger:
-                    Trigger SelectedTrigger = PluginResult.CurrentPluginResult.Triggers.GetTrigger(ID -1);
+                    Trigger SelectedTrigger = Finding.CurrentPluginResult.Triggers.GetTrigger(ID -1);
                     if (SelectedTrigger.Request != null)
                     {
                         if (SelectedTrigger.Response == null)
@@ -412,16 +430,24 @@ namespace IronWASP
                     }
                     break;
                 case RequestSource.TestGroup:
-                    if (ManualTesting.RedGroupSessions.ContainsKey(ID)) return ManualTesting.RedGroupSessions[ID].GetClone();
-                    if (ManualTesting.BlueGroupSessions.ContainsKey(ID)) return ManualTesting.BlueGroupSessions[ID].GetClone();
-                    if (ManualTesting.GreenGroupSessions.ContainsKey(ID)) return ManualTesting.GreenGroupSessions[ID].GetClone();
-                    if (ManualTesting.GrayGroupSessions.ContainsKey(ID)) return ManualTesting.GrayGroupSessions[ID].GetClone();
-                    if (ManualTesting.BrownGroupSessions.ContainsKey(ID)) return ManualTesting.BrownGroupSessions[ID].GetClone();
+                    //if (ManualTesting.RedGroupSessions.ContainsKey(ID)) return ManualTesting.RedGroupSessions[ID].GetClone();
+                    //if (ManualTesting.BlueGroupSessions.ContainsKey(ID)) return ManualTesting.BlueGroupSessions[ID].GetClone();
+                    //if (ManualTesting.GreenGroupSessions.ContainsKey(ID)) return ManualTesting.GreenGroupSessions[ID].GetClone();
+                    //if (ManualTesting.GrayGroupSessions.ContainsKey(ID)) return ManualTesting.GrayGroupSessions[ID].GetClone();
+                    //if (ManualTesting.BrownGroupSessions.ContainsKey(ID)) return ManualTesting.BrownGroupSessions[ID].GetClone();
+                    foreach (string Group in ManualTesting.GroupSessions.Keys)
+                    {
+                        if(ManualTesting.GroupSessions[Group].ContainsKey(ID))
+                            return ManualTesting.GroupSessions[Group][ID].GetClone();
+                    }
                     break;
                 case RequestSource.SelectedLogEntry:
                     return IronLog.CurrentSession.GetClone();
                 case RequestSource.CurrentProxyInterception:
                     return IronProxy.CurrentSession.GetClone();
+                default:
+                    IrSe = Session.FromLog(ID, Source);
+                    break;
             }
             return IrSe;
         }
@@ -526,6 +552,27 @@ namespace IronWASP
             }
             IronUI.SetShellGridRows(Rows);
         }
+        internal static void MoveOtherLogRecordForward(int JumpLevel)
+        {
+            Thread T = new Thread(MoveOtherLogRecordForward);
+            T.Start(JumpLevel);
+        }
+        internal static void MoveOtherLogRecordForward(object JumpLevelObj)
+        {
+            int JumpLevel = (int)JumpLevelObj;
+            List<LogRow> Records = GetNextOtherLogRecords(JumpLevel);
+            if (Records.Count == 0)
+            {
+                IronUI.ShowLogBottomStatus("Reached end of logs", true);
+                return;
+            }
+            List<object[]> Rows = new List<object[]>();
+            foreach (LogRow Record in Records)
+            {
+                Rows.Add(Record.ToShellGridRowObjectArray());
+            }
+            IronUI.SetOtherSourceGridRows(Rows, IronLog.SelectedOtherSource);
+        }
         internal static void MoveTestLogRecordForward(int JumpLevel)
         {
             Thread T = new Thread(MoveTestLogRecordForward);
@@ -615,6 +662,23 @@ namespace IronWASP
                 Rows.Add(Record.ToShellGridRowObjectArray());
             }
             IronUI.SetShellGridRows(Rows);
+        }
+        internal static void MoveOtherLogRecordBack(int JumpLevel)
+        {
+            Thread T = new Thread(MoveOtherLogRecordBack);
+            T.Start(JumpLevel);
+        }
+        internal static void MoveOtherLogRecordBack(object JumpLevelObj)
+        {
+            int JumpLevel = (int)JumpLevelObj;
+            List<LogRow> Records = GetPreviousOtherLogRecords(JumpLevel);
+            if (Records.Count == 0) return;
+            List<object[]> Rows = new List<object[]>();
+            foreach (LogRow Record in Records)
+            {
+                Rows.Add(Record.ToShellGridRowObjectArray());
+            }
+            IronUI.SetOtherSourceGridRows(Rows, IronLog.SelectedOtherSource);
         }
         internal static void MoveTestLogRecordBack(int JumpLevel)
         {
@@ -710,6 +774,25 @@ namespace IronWASP
             }
             return Records;
         }
+        internal static List<LogRow> GetNextOtherLogRecords(int JumpLevel)
+        {
+            int JumpCount = GetJumpCount(JumpLevel);
+            int StartIndex = IronLog.OtherSourceMax + JumpCount;
+            List<LogRow> Records = IronDB.GetRecordsFromOtherSourceLog(StartIndex, IronLog.MaxRowCount, IronLog.SelectedOtherSource);
+            if (Records.Count == 0)
+            {
+                int NewStartIndex = Config.GetLastLogId(IronLog.SelectedOtherSource) - IronLog.MaxRowCount;
+                if (NewStartIndex > 0)
+                {
+                    Records = IronDB.GetRecordsFromOtherSourceLog(NewStartIndex, IronLog.MaxRowCount, IronLog.SelectedOtherSource);
+                    if (Records.Count > 0)
+                    {
+                        if (Records[Records.Count - 1].ID == IronLog.OtherSourceMax) Records.Clear();
+                    }
+                }
+            }
+            return Records;
+        }
         internal static List<LogRow> GetNextTestLogRecords(int JumpLevel)
         {
             int JumpCount = GetJumpCount(JumpLevel);
@@ -754,6 +837,12 @@ namespace IronWASP
             Records = GetPreviousLogRecords(IronDB.GetRecordsFromShellLog, IronLog.ShellMin, JumpLevel);
             return Records;
         }
+        internal static List<LogRow> GetPreviousOtherLogRecords(int JumpLevel)
+        {
+            List<LogRow> Records = new List<LogRow>();
+            Records = GetPreviousLogRecords(IronDB.GetRecordsFromSelectedOtherSourceLog, IronLog.OtherSourceMin, JumpLevel);
+            return Records;
+        }
         internal static List<LogRow> GetPreviousTestLogRecords(int JumpLevel)
         {
             List<LogRow> Records = new List<LogRow>();
@@ -777,6 +866,19 @@ namespace IronWASP
 
         internal delegate List<LogRow> GetRecordsDelegate(int StartIndex, int Count);
 
+        internal static void ShowOtherSourceRecords()
+        {
+            IronUI.ShowLogBottomStatus("Loading...", false);
+            List<LogRow> Records = IronDB.GetRecordsFromOtherSourceLog(0, IronLog.MaxRowCount, IronLog.SelectedOtherSource);
+            if (Records.Count == 0) return;
+            List<object[]> Rows = new List<object[]>();
+            foreach (LogRow Record in Records)
+            {
+                Rows.Add(Record.ToShellGridRowObjectArray());
+            }
+            IronUI.SetOtherSourceGridRows(Rows, IronLog.SelectedOtherSource);
+        }
+
         static int[] GetMinMaxIds(List<LogRow> Records)
         {
             int[] MinMax = new int[] {0, 0};
@@ -788,7 +890,7 @@ namespace IronWASP
             return MinMax;
         }
 
-        internal static string SourceName(RequestSource Source)
+        internal static string SourceName(string Source)
         {
             string StringSource = "";
             switch (Source)

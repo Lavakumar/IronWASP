@@ -1,4 +1,22 @@
-﻿using System;
+﻿//
+// Copyright 2011-2013 Lavakumar Kuppan
+//
+// This file is part of IronWASP
+//
+// IronWASP is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, version 3 of the License.
+//
+// IronWASP is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with IronWASP.  If not, see http://www.gnu.org/licenses/.
+//
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -91,6 +109,8 @@ namespace IronWASP
                     return (Obj as ModRadioButton).EventHandlers;
                 case ("ModLabel"):
                     return (Obj as ModLabel).EventHandlers;
+                case ("ModDataGridView"):
+                    return (Obj as ModDataGridView).EventHandlers;
                 default:
                     return new Dictionary<string, string>();
             }
@@ -103,7 +123,7 @@ namespace IronWASP
 
         static Dictionary<string, List<string>> AllowedProperties = new Dictionary<string, List<string>>()
         {
-            { "All", new List<string>(){"Name", "Size", "Location", "Anchor", "Enabled", /*"Visible",*/ "BackColor", "ForeColor"}},
+            { "All", new List<string>(){"Name", "Size", "Location", "Anchor", "Dock", "Enabled", /*"Visible",*/ "BackColor", "ForeColor"}},
             { "System.Windows.Forms.Form", new List<string>(){"Icon", "Text"}},
             { "IronWASP.ModTextBox", new List<string>(){"BorderStyle", "ReadOnly", "ScrollBars", "Font", "Multiline", "PasswordChar", "WordWrap", "TextAlign", "Text"}},
             { "IronWASP.ModRichTextBox", new List<string>(){"BorderStyle", "ReadOnly", "ScrollBars", "Font", "Multiline", "WordWrap", "Text", "DetectUrls"}},

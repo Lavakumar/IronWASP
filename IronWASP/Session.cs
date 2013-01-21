@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -37,6 +37,14 @@ namespace IronWASP
         internal Response OriginalResponse;
 
         internal Dictionary<string, object> Flags = new Dictionary<string, object>();
+
+        public int LogId
+        {
+            get
+            {
+                return this.GetId();
+            }
+        }
 
         public Session(Fiddler.Session _FiddlerSession)
         {
@@ -136,7 +144,20 @@ namespace IronWASP
             }
             return ClonedIrSe;
         }
-        
+
+        internal void UpdateFiddlerSessionFromIronSession()
+        {
+            if (this.Response == null)
+            {
+                this.FiddlerSession.oRequest.headers.AssignFromString(this.Request.GetHeadersAsString());
+                this.FiddlerSession.requestBodyBytes = this.Request.BodyArray;
+            }
+            else
+            {
+                this.FiddlerSession.oResponse.headers.AssignFromString(this.Response.GetHeadersAsString());
+                this.FiddlerSession.responseBodyBytes = this.Response.BodyArray;
+            }
+        }
 
         public static Session FromProxyLog(int ID)
         {
@@ -166,6 +187,26 @@ namespace IronWASP
         {
             IronLogRecord ILR = IronDB.GetRecordFromScanLog(ID);
             return Session.GetIronSessionFromIronLogRecord(ILR, ID);
+        }
+
+        public static Session FromLog(int ID, string Source)
+        {
+            switch (Source)
+            {
+                case ("Proxy"):
+                    return FromProxyLog(ID);
+                case ("Probe"):
+                    return FromProbeLog(ID);
+                case ("Test"):
+                    return FromTestLog(ID);
+                case ("Shell"):
+                    return FromShellLog(ID);
+                case ("Scan"):
+                    return FromScanLog(ID);
+                default:
+                    IronLogRecord ILR = IronDB.GetRecordFromOtherSourceLog(ID, Source);
+                    return Session.GetIronSessionFromIronLogRecord(ILR, ID);
+            }
         }
 
         public static List<Session> FromProxyLog()
@@ -236,6 +277,34 @@ namespace IronWASP
                 catch { }
             }
             return Sessions;
+        }
+
+        public static List<Session> FromLog(string Source)
+        {
+            switch (Source)
+            {
+                case ("Proxy"):
+                    return FromProxyLog();
+                case ("Probe"):
+                    return FromProbeLog();
+                case ("Test"):
+                    return FromTestLog();
+                case ("Shell"):
+                    return FromShellLog();
+                case ("Scan"):
+                    return FromScanLog();
+                default:
+                    List<Session> Sessions = new List<Session>();
+                    foreach (IronLogRecord ILR in IronDB.GetRecordsFromOtherSourceLog(Source))
+                    {
+                        try
+                        {
+                            Sessions.Add(Session.GetIronSessionFromIronLogRecord(ILR, ILR.ID));
+                        }
+                        catch { }
+                    }
+                    return Sessions;
+            }
         }
 
         internal static Session GetIronSessionFromIronLogRecord(IronLogRecord ILR, int ID)

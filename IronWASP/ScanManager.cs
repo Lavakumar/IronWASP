@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -42,6 +42,31 @@ namespace IronWASP
         internal static bool PerformDirAndFileGuessing = true;
         internal static bool IncludeSubDomains = false;
         internal static bool CrawlAndScan = true;
+
+        internal static bool InjectUrlPathParts = false;
+        internal static bool InjectQuery = false;
+        internal static bool InjectBody = false;
+        internal static bool InjectCookie = false;
+        internal static bool InjectHeaders = false;
+        internal static bool InjectQueryName = false;
+        internal static bool InjectBodyName = false;
+        internal static bool InjectCookieName = false;
+        internal static bool InjectHeaderName = false;
+
+        internal static List<string> QueryBlackList = new List<string>();
+        internal static List<string> QueryWhiteList = new List<string>();
+        internal static List<string> BodyBlackList = new List<string>();
+        internal static List<string> BodyWhiteList = new List<string>();
+        internal static List<string> CookieBlackList = new List<string>();
+        internal static List<string> CookieWhiteList = new List<string>();
+        internal static List<string> HeaderBlackList = new List<string>();
+        internal static List<string> HeaderWhiteList = new List<string>();
+
+        internal static List<string> Checks = new List<string>();
+
+        internal static bool CanPromptUser = false;
+
+        internal static string[] SpecialHeader = new string[2];
 
         internal static bool CanStop = false;
 
@@ -103,7 +128,7 @@ namespace IronWASP
                 Spider.HTTPS = HTTPS;
                 Spider.UrlsToAvoid = UrlsToAvoid;
                 Spider.HostsToInclude = HostsToInclude;
-
+                Spider.SpecialHeader = SpecialHeader;
 
                 Spider.Start();
             }
@@ -118,7 +143,7 @@ namespace IronWASP
                 return;
             }
 
-            ScanItemUniquenessChecker UniqueChecker = new ScanItemUniquenessChecker(Mode != ScanMode.Default);
+            ScanItemUniquenessChecker UniqueChecker = new ScanItemUniquenessChecker(CanPromptUser);
             
             List<int> ScanIDs = new List<int>();
             bool ScanActive = true;
@@ -149,23 +174,104 @@ namespace IronWASP
                             try
                             {
                                 Scanner S = new Scanner(Req);
-                                S.CheckAll();
-
-                                if (S.OriginalRequest.Query.Count == 0 && S.OriginalRequest.File.Length != 3 && S.OriginalRequest.File.Length != 4)
-                                    S.InjectUrl();
-                                S.InjectQuery();
-                                S.InjectBody();
-                                //S.InjectHeaders();
-                                //S.InjectCookie();
-
-                                if (!FormatPlugin.IsNormal(Req))
+                                foreach (string Check in Checks)
                                 {
-                                    List<FormatPlugin> RightList = FormatPlugin.Get(Req);
-                                    if (RightList.Count > 0)
+                                    S.AddCheck(Check);
+                                }
+                                if (InjectQuery)
+                                {
+                                    if (QueryWhiteList.Count > 0)
                                     {
-                                        S.BodyFormat = RightList[0];
+                                        foreach (string Name in S.OriginalRequest.Query.GetNames())
+                                        {
+                                            if (QueryWhiteList.Contains(Name)) S.InjectQuery(Name);
+                                        }
+                                    }
+                                    else if (QueryBlackList.Count > 0)
+                                    {
+                                        foreach (string Name in S.OriginalRequest.Query.GetNames())
+                                        {
+                                            if (!QueryBlackList.Contains(Name)) S.InjectQuery(Name);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        S.InjectQuery();
                                     }
                                 }
+
+                                if (InjectBody)
+                                {
+                                    if (BodyWhiteList.Count > 0)
+                                    {
+                                        foreach (string Name in S.OriginalRequest.Body.GetNames())
+                                        {
+                                            if (BodyWhiteList.Contains(Name)) S.InjectBody(Name);
+                                        }
+                                    }
+                                    else if (BodyBlackList.Count > 0)
+                                    {
+                                        foreach (string Name in S.OriginalRequest.Body.GetNames())
+                                        {
+                                            if (!BodyBlackList.Contains(Name)) S.InjectBody(Name);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        S.InjectBody();
+                                    }
+                                }
+
+                                if (InjectCookie)
+                                {
+                                    if (CookieWhiteList.Count > 0)
+                                    {
+                                        foreach (string Name in S.OriginalRequest.Cookie.GetNames())
+                                        {
+                                            if (CookieWhiteList.Contains(Name)) S.InjectCookie(Name);
+                                        }
+                                    }
+                                    else if (CookieBlackList.Count > 0)
+                                    {
+                                        foreach (string Name in S.OriginalRequest.Cookie.GetNames())
+                                        {
+                                            if (!CookieBlackList.Contains(Name)) S.InjectCookie(Name);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        S.InjectCookie();
+                                    }
+                                }
+
+                                if (InjectHeaders)
+                                {
+                                    if (HeaderWhiteList.Count > 0)
+                                    {
+                                        foreach (string Name in S.OriginalRequest.Headers.GetNames())
+                                        {
+                                            if (HeaderWhiteList.Contains(Name)) S.InjectHeaders(Name);
+                                        }
+                                    }
+                                    else if (HeaderBlackList.Count > 0)
+                                    {
+                                        foreach (string Name in S.OriginalRequest.Headers.GetNames())
+                                        {
+                                            if (!HeaderBlackList.Contains(Name)) S.InjectHeaders(Name);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        S.InjectHeaders();
+                                    }
+                                }
+
+                                if (InjectUrlPathParts)
+                                {
+                                    if (S.OriginalRequest.Query.Count == 0 && S.OriginalRequest.File.Length == 0)
+                                        S.InjectUrl();
+                                }
+
                                 if (S.InjectionPointsCount == 0) continue;
                                 TotalScanJobsCreated++;
                                 if (Stopped) return;
@@ -257,6 +363,7 @@ namespace IronWASP
 
         internal static void Stop(bool SameThread)
         {
+            Stopped = true;
             if (SameThread)
             {
                 DoStop();
@@ -290,7 +397,10 @@ namespace IronWASP
                     IronUI.UpdateConsoleControlsStatus(false);
                 }
             }
-            catch { }
+            catch(Exception Exp)
+            {
+                IronException.Report("Error stopping the Scan", Exp);
+            }
         }
 
         static void EndAll()

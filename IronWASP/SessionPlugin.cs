@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -27,134 +27,148 @@ namespace IronWASP
     {
         internal static List<SessionPlugin> Collection = new List<SessionPlugin>();
 
-        public bool IsLoggedIn = false;
-        public string Cookie = "";
-        public string Token = "";
-        public int MaxReDoCount = 5;
+        //public bool IsLoggedIn = false;
+        //public string Cookie = "";
+        //public string Token = "";
+        //public int MaxReDoCount = 5;
 
-        Dictionary<string, Queue<int>> SyncWaitQueue = new Dictionary<string, Queue<int>>();
-        Dictionary<string, int[]> SyncManageQueue = new Dictionary<string, int[]>();
-        int SyncID = 0;
+        //Dictionary<string, Queue<int>> SyncWaitQueue = new Dictionary<string, Queue<int>>();
+        //Dictionary<string, int[]> SyncManageQueue = new Dictionary<string, int[]>();
+        //int SyncID = 0;
 
-        virtual public Request Update(Request Request, Response Response)
-        {
-            Request.SetCookie(Response);
-            return Request;
-        }
+        //virtual public Request Update(Request Request, Response Response)
+        //{
+        //    Request.SetCookie(Response);
+        //    return Request;
+        //}
                 
-        virtual public Request Login(Request Request, Response Response)
-        {
-            return Request;
-        }
+        //virtual public Request Login(Request Request, Response Response)
+        //{
+        //    return Request;
+        //}
 
         virtual public Response GetBaseLine(Scanner Scanner, Request Request)
         {
             return Scanner.Inject();
         }
 
-        virtual public Request PrepareForInjection(Request Request)
-        {
-            return Request;
-        }
+        //virtual public Request PrepareForInjection(Request Request)
+        //{
+        //    return Request;
+        //}
 
-        virtual public Response GetInterestingResponse(Request Request, Response Response)
-        {
-            return Response;
-        }
+        //virtual public Response GetInterestingResponse(Request Request, Response Response)
+        //{
+        //    return Response;
+        //}
 
         virtual public bool CanInject(Scanner Scanner, Request Request)
         {
             return true;
         }
 
-        virtual public string ProcessInjection(Scanner Scanner, Request Request, string Payload)
+        virtual public string EncodePayload(string RequestSection, Request Request, string Payload)
         {
             return Payload;
         }
 
-        virtual public bool ShouldReDo(Scanner Scnr, Request Req, Response Res)
+        //virtual public bool ShouldReDo(Scanner Scnr, Request Req, Response Res)
+        //{
+        //    return false;
+        //}
+
+        //protected int StartSync(string Name, int MaxTime)
+        //{
+        //    int ID = Interlocked.Increment(ref SyncID);
+        //    int StartTime = (int)DateTime.Now.TimeOfDay.TotalSeconds;
+        //    lock (SyncWaitQueue)
+        //    {
+        //        if (!SyncWaitQueue.ContainsKey(Name))
+        //        {
+        //            SyncWaitQueue.Add(Name, new Queue<int>());
+        //        }
+        //        SyncWaitQueue[Name].Enqueue(ID);
+        //    }
+        //    while (!CanProceed(Name, ID, StartTime, MaxTime))
+        //    {
+        //        Thread.Sleep(1000);
+        //    }
+        //    return ID;
+        //}
+
+        //protected void StopSync(string Name, int JobID)
+        //{
+        //    lock (SyncManageQueue)
+        //    {
+        //        if (SyncManageQueue.ContainsKey(Name))
+        //        {
+        //            if (SyncManageQueue[Name][0] == JobID) SyncManageQueue[Name][0] = 0;
+        //        }
+        //    }
+        //}
+
+        //bool CanProceed(string Name, int ID, int StartTime, int MaxTime)
+        //{
+        //    bool Result = false;
+        //    int CurrentTime = (int)DateTime.Now.TimeOfDay.TotalSeconds;
+        //    lock (SyncManageQueue)
+        //    {
+        //        if (!SyncManageQueue.ContainsKey(Name))
+        //        {
+        //            SyncManageQueue.Add(Name, new int[] { ID, CurrentTime, MaxTime });
+        //            Result = true;
+        //        }
+        //        else
+        //        {
+        //            int[] CurrentValues = SyncManageQueue[Name];
+        //            if (CurrentValues[0] == 0 || CurrentValues[0] == ID || ((CurrentTime - CurrentValues[1]) > CurrentValues[2]))
+        //            {
+        //                lock (SyncWaitQueue)
+        //                {
+        //                    if (SyncWaitQueue.ContainsKey(Name))
+        //                    {
+        //                        if (SyncWaitQueue[Name].Count > 0)
+        //                        {
+        //                            int FetchedID = SyncWaitQueue[Name].Dequeue();
+        //                            SyncManageQueue[Name] = new int[] { FetchedID, CurrentTime, MaxTime };
+        //                            if (FetchedID == ID) Result = true;
+        //                        }
+        //                        else
+        //                        {
+        //                            Result = true;
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        Result = true;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return Result;
+        //}
+
+        //internal Request DoLogin(Request Req, Response Res)
+        //{
+        //    int LoginSyncID = StartSync(this.Name, 120);
+        //    Request LoggedInReq = Login(Req, Res);
+        //    StopSync(this.Name, LoginSyncID);
+        //    return LoggedInReq;
+        //}
+
+        virtual public Request DoBeforeSending(Request Req, Response Res)
         {
-            return false;
+            return Req;
+        }
+        virtual public Response DoAfterSending(Response Res, Request Req)
+        {
+            return Res;
         }
 
-        protected int StartSync(string Name, int MaxTime)
+        public virtual SessionPlugin GetInstance()
         {
-            int ID = Interlocked.Increment(ref SyncID);
-            int StartTime = (int)DateTime.Now.TimeOfDay.TotalSeconds;
-            lock (SyncWaitQueue)
-            {
-                if (!SyncWaitQueue.ContainsKey(Name))
-                {
-                    SyncWaitQueue.Add(Name, new Queue<int>());
-                }
-                SyncWaitQueue[Name].Enqueue(ID);
-            }
-            while (!CanProceed(Name, ID, StartTime, MaxTime))
-            {
-                Thread.Sleep(1000);
-            }
-            return ID;
-        }
-
-        protected void StopSync(string Name, int JobID)
-        {
-            lock (SyncManageQueue)
-            {
-                if (SyncManageQueue.ContainsKey(Name))
-                {
-                    if (SyncManageQueue[Name][0] == JobID) SyncManageQueue[Name][0] = 0;
-                }
-            }
-        }
-
-        bool CanProceed(string Name, int ID, int StartTime, int MaxTime)
-        {
-            bool Result = false;
-            int CurrentTime = (int)DateTime.Now.TimeOfDay.TotalSeconds;
-            lock (SyncManageQueue)
-            {
-                if (!SyncManageQueue.ContainsKey(Name))
-                {
-                    SyncManageQueue.Add(Name, new int[] { ID, CurrentTime, MaxTime });
-                    Result = true;
-                }
-                else
-                {
-                    int[] CurrentValues = SyncManageQueue[Name];
-                    if (CurrentValues[0] == 0 || CurrentValues[0] == ID || ((CurrentTime - CurrentValues[1]) > CurrentValues[2]))
-                    {
-                        lock (SyncWaitQueue)
-                        {
-                            if (SyncWaitQueue.ContainsKey(Name))
-                            {
-                                if (SyncWaitQueue[Name].Count > 0)
-                                {
-                                    int FetchedID = SyncWaitQueue[Name].Dequeue();
-                                    SyncManageQueue[Name] = new int[] { FetchedID, CurrentTime, MaxTime };
-                                    if (FetchedID == ID) Result = true;
-                                }
-                                else
-                                {
-                                    Result = true;
-                                }
-                            }
-                            else
-                            {
-                                Result = true;
-                            }
-                        }
-                    }
-                }
-            }
-            return Result;
-        }
-
-        internal Request DoLogin(Request Req, Response Res)
-        {
-            int LoginSyncID = StartSync(this.Name, 120);
-            Request LoggedInReq = Login(Req, Res);
-            StopSync(this.Name, LoginSyncID);
-            return LoggedInReq;
+            return new SessionPlugin();
         }
 
         public static void Add(SessionPlugin SP)
@@ -185,7 +199,9 @@ namespace IronWASP
             {
                 if (SP.Name.Equals(Name))
                 {
-                    return SP;
+                    SessionPlugin NewInstance = SP.GetInstance();
+                    NewInstance.FileName = SP.FileName;
+                    return NewInstance;
                 }
             }
             return null;
@@ -203,6 +219,12 @@ namespace IronWASP
                 }
             }
             Collection.RemoveAt(PluginIndex);
+        }
+
+        public void Trace(Request Req, string Action, string Message)
+        {
+            IronTrace IT = new IronTrace(Req, this.Name, Action, Message);
+            IT.Report();
         }
     }
 }

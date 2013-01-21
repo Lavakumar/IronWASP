@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -97,6 +97,17 @@ namespace IronWASP
             else
             {
                 return new object[] { this.ID, this.Host, this.Method, this.Url, this.File, this.SSL, this.Parameters, null, null, "", false };
+            }
+        }
+        internal object[] ToLogAnalyzerGridRowObjectArray()
+        {
+            if (this.Code > -1)
+            {
+                return new object[] { false, this.ID, this.Host, this.Method, this.Url, this.File, this.SSL, this.Parameters, this.Code, this.Length, this.Mime, this.SetCookie, this.Notes };
+            }
+            else
+            {
+                return new object[] { false, this.ID, this.Host, this.Method, this.Url, this.File, this.SSL, this.Parameters, null, null, "", false, "" };
             }
         }
     }

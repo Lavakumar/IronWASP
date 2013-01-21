@@ -605,6 +605,33 @@ namespace IronWASP
             }
         }
 
+        delegate void SetEnabled_d(bool Enable);
+        public void SetEnabled(bool Enable)
+        {
+            if (this.InvokeRequired)
+            {
+                SetEnabled_d SED = new SetEnabled_d(SetEnabled);
+                this.Invoke(SED, new object[] { Enable });
+            }
+            else
+            {
+                this.Enabled = Enable;
+            }
+        }
+
+        delegate void SetVisible_d(bool Visible);
+        public void SetVisible(bool Visible)
+        {
+            if (this.InvokeRequired)
+            {
+                SetVisible_d SVD = new SetVisible_d(SetVisible);
+                this.Invoke(SVD, new object[] { Visible });
+            }
+            else
+            {
+                this.Visible = Visible;
+            }
+        }
     }
 
     public class ModPanel : Panel
@@ -691,4 +718,5 @@ namespace IronWASP
     {
 
     }
+
 }

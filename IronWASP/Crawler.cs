@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -78,6 +78,8 @@ namespace IronWASP
         internal string PrimaryHost = "";
         internal bool PerformDirAndFileGuessing = true;
         internal bool IncludeSubDomains = false;
+
+        internal string[] SpecialHeader = new string[2];
 
         bool Stopped = false;
 
@@ -182,7 +184,10 @@ namespace IronWASP
             Req.Source = RequestSource.Probe;
             Req.SetCookie(Cookies);
             if (UserAgent.Length > 0) Req.Headers.Set("User-Agent", UserAgent);
+            if (SpecialHeader[0] != null) Req.Headers.Set(SpecialHeader[0], SpecialHeader[1]);
+            if (Stopped) return;
             Response Res = Req.Send();
+            if (Stopped) return;
             Cookies.Add(Req, Res);
             bool Is404File = IsA404(Req, Res);
 
@@ -235,7 +240,7 @@ namespace IronWASP
                     AddToCrawlQueue(DirectoryCheck, Depth + 1, false);
                 }
             }
-
+            if (Stopped) return;
             if (Scraped || !Is404File)
             {
                 lock (CrawledRequests)
@@ -258,6 +263,7 @@ namespace IronWASP
                 {
                     while (ActiveThreadCount < MaxCrawlThreads && Continue)
                     {
+                        if (Stopped) return;
                         Continue = false;
                         try
                         {
@@ -368,6 +374,7 @@ namespace IronWASP
                 else
                     NotFoundGetter.Url = NotFoundGetter.UrlDir + "should_not_xist_" + Tools.GetRandomString(10, 15);
                 NotFoundResponse = NotFoundGetter.Send();
+                if (Stopped) return true;
                 NotFoundResponse.BodyString = "";
                 List<string> HeaderNames = NotFoundResponse.Headers.GetNames();
                 foreach (string HeaderName in HeaderNames)
@@ -766,16 +773,16 @@ namespace IronWASP
             Stopped = true;
             lock (CrawlerThreads)
             {
-                List<int> IDs = new List<int>(CrawlerThreads.Keys);
-                foreach (int ID in IDs)
-                {
-                    try
-                    {
-                        CrawlerThreads[ID].Abort();
-                        CrawlerThreads.Remove(ID);
-                    }
-                    catch { }
-                }
+                //List<int> IDs = new List<int>(CrawlerThreads.Keys);
+                //foreach (int ID in IDs)
+                //{
+                //    try
+                //    {
+                //        CrawlerThreads[ID].Abort();
+                //    }
+                //    catch { }
+                //}
+                CrawlerThreads.Clear();
             }
             lock (NotFoundSignatures)
             {

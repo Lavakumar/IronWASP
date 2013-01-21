@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -103,6 +103,8 @@ namespace IronWASP
             Text = Text.Replace("<i</hlb>>", " \\highlight0 ");
             Text = Text.Replace("<i<hlo>>", " \\highlight2 ");
             Text = Text.Replace("<i</hlo>>", " \\highlight0 ");
+            Text = Text.Replace("<i<h1>>", " \\fs30 ");
+            Text = Text.Replace("<i</h1>>", " \\fs20 ");
             return Text;
         }
 
@@ -231,7 +233,12 @@ namespace IronWASP
             Input = Input.Replace("~", "%7e").Replace("/", "%2f");
             string EncodedInput = HttpUtility.UrlEncode(Input);
             EncodedInput = EncodedInput.Replace("+", "%20");//Server treats + in Url Path Part as + instead of space. %20 is the right representation. + is ok for Query.
-            return HttpUtility.UrlEncode(EncodedInput);
+            return EncodedInput;
+        }
+        public static string UrlPathPartDecode(string Input)
+        {
+            Input = Input.Replace("%257e", "%7e").Replace("%252f", "%2f");
+            return Tools.UrlDecode(Input);
         }
         public static string HtmlEncode(string Input)
         {
@@ -282,10 +289,10 @@ namespace IronWASP
 
         public static string HexEncode(string Input)
         {
-            return HexEncode(Tools.ToByteArray(Input));
+            return HexEncodeBytes(Tools.ToByteArray(Input));
         }
 
-        public static string HexEncode(byte[] Input)
+        public static string HexEncodeBytes(byte[] Input)
         {
             string Hex = BitConverter.ToString(Input);
             if (Hex.Length == 0) return "";
@@ -326,6 +333,11 @@ namespace IronWASP
             string XML = XB.ToString();
             int StartPoint = XML.IndexOf("<xml>") + 5;
             return XML.Substring(StartPoint, XML.Length - (StartPoint + 6));
+        }
+
+        public static string EncodeForTrace(string Input)
+        {
+            return Input.Replace("\r", "\\r").Replace("\n", "\\n").Replace("\t", "\\t").Replace("\000", "\\0").Replace("\00", "\\0").Replace("\0", "\\0");
         }
 
         public static byte[] Base64DecodeToByteArray(string Input)
@@ -487,7 +499,7 @@ namespace IronWASP
 
         public static void ScanTrace(int ScanID, string PluginName, string Section, string Parameter, string Title, string Message)
         {
-            IronTrace IT = new IronTrace(ScanID, PluginName, Section, Parameter, Title, Message);
+            IronTrace IT = new IronTrace(ScanID, PluginName, Section, Parameter, Title, Message, new List<string[]>());
             IT.Report();
         }
 
@@ -577,7 +589,7 @@ namespace IronWASP
             {
                 try
                 {
-                    JsonConvert.DeserializeXmlNode(Text);
+                    JsonConvert.DeserializeObject<object>(Text);
                 }
                 catch { return false; }
                 return true;
@@ -617,8 +629,27 @@ namespace IronWASP
                 if (Bytes[0] == 137 && Bytes[1] == 80 && Bytes[2] == 78 && Bytes[3] == 71 && Bytes[4] == 13 && Bytes[5] == 10 && Bytes[6] == 26 && Bytes[7] == 10) return true;//png
                 if (Bytes[0] == 80 && Bytes[1] == 75 && Bytes[2] == 3 && Bytes[3] == 4) return true;//zip
                 if (Bytes[0] == 37 && Bytes[1] == 80 && Bytes[2] == 68 && Bytes[3] == 70) return true;//pdf
+                if (Bytes[0] == 172 && Bytes[1] == 237 && Bytes[2] == 0) return true;//Java Serialized Object
+                if (Bytes[0] == 3 && Bytes[1] ==  0) return true;//Action Message Format
             }
+            if ((new List<byte>(Bytes)).Contains(0))
+                return true;
             return false;
+        }
+
+        public static bool IsBinary(string Text)
+        {
+            try
+            {
+                return IsBinary(Encoding.UTF8.GetBytes(Text));
+            }
+            catch
+            {
+                if (Text.Contains("\0"))
+                    return true;
+                else
+                    return false;
+            }
         }
 
         public static bool IsEven(int Num)
@@ -670,7 +701,26 @@ namespace IronWASP
 
         public static void Run(string Executable)
         {
-            Process.Start(Executable);
+            try
+            {
+                Process.Start(Executable);
+            }
+            catch(Exception Exp)
+            {
+                IronException.Report("Unable to start external application", Exp);
+            }
+        }
+
+        public static void RunWith(string Executable, string Arguments)
+        {
+            try
+            {
+                Process.Start(Executable, Arguments);
+            }
+            catch (Exception Exp)
+            {
+                IronException.Report("Unable to start external application", Exp);
+            }
         }
 
         public static int GetPercent(int One, int Two)

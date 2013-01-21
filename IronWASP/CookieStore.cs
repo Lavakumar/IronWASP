@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -35,6 +35,11 @@ namespace IronWASP
                 CookieStrings.Add(SC.FullString);
             }
             Add(Req.Host, CookieStrings);
+        }
+
+        public void Add(Request Req, SetCookie SC)
+        {
+            Add(Req.Host, SC.FullString);
         }
 
         public void Add(string Host, List<string> Cookies)
@@ -89,7 +94,10 @@ namespace IronWASP
             List<SetCookie> Cookies = new List<SetCookie>();
             foreach (SetCookie SC in AllCookies)
             {
-                if ((Req.Host.Equals(SC.Domain) || Req.Host.EndsWith("." + SC.Domain))
+                string StoreDomain = SC.Domain;
+                if (StoreDomain.StartsWith("*")) StoreDomain = StoreDomain.TrimStart(new char[]{'*'});
+                if (StoreDomain.StartsWith(".")) StoreDomain = StoreDomain.TrimStart(new char[] { '.' });
+                if ((Req.Host.Equals(SC.Domain) || Req.Host.EndsWith("." + StoreDomain))
                                 && (Req.Url.Equals(SC.Path) || Regex.IsMatch(Req.Url, "^" + SC.Path + "\\W+.*") || Req.Url.Length == 0 || SC.Path.Length == 0 || SC.Path.Equals("/")))
                 {
                     if (SC.Secure && !Req.SSL) continue;

@@ -1,5 +1,5 @@
 ﻿//
-// Copyright 2011-2012 Lavakumar Kuppan
+// Copyright 2011-2013 Lavakumar Kuppan
 //
 // This file is part of IronWASP
 //
@@ -125,6 +125,7 @@ namespace IronWASP
             
             StringBuilder OutXml = new StringBuilder();
             List<string> Paths = new List<string>();
+            List<string> PropertyPaths = new List<string>();
             StringReader XMLStringReader = new StringReader(XML.Trim());
             XmlReader Reader = XmlReader.Create(XMLStringReader);
             int ParameterCount = 0;
@@ -138,15 +139,39 @@ namespace IronWASP
                 if (Reader.IsStartElement())
                 {
                     Paths.Add(Reader.Name);
+                    if (Reader.HasAttributes)
+                    {
+                        try
+                        {
+                            string OriginalName = Reader.GetAttribute("oname");
+                            if (OriginalName.Length == 0)
+                            {
+                                PropertyPaths.Add(Reader.Name);
+                            }
+                            else
+                            {
+                                PropertyPaths.Add(OriginalName);
+                            }
+                        }
+                        catch{}
+                    }
+                    if (Paths.Count > PropertyPaths.Count)
+                    {
+                        PropertyPaths.Add("");
+                    }
                     Read = Reader.Read();
                     if (Reader.NodeType == XmlNodeType.EndElement)
                     {
                         ParameterCount++;
                         string Value = "";
-                        ParameterNames.Add(JoinPaths(Paths));
+                        ParameterNames.Add(JoinPaths(Paths, PropertyPaths));
                         ParameterValues.Add(Value);
                         int C = Paths.Count;
-                        if (C > 0) Paths.RemoveAt(C - 1);
+                        if (C > 0)
+                        {
+                            Paths.RemoveAt(C - 1);
+                            PropertyPaths.RemoveAt(C - 1);
+                        }
                     }
                     else
                     {
@@ -158,13 +183,17 @@ namespace IronWASP
                     if (Reader.NodeType == XmlNodeType.EndElement)
                     {
                         int C = Paths.Count;
-                        if (C > 0) Paths.RemoveAt(C - 1);
+                        if (C > 0)
+                        {
+                            Paths.RemoveAt(C - 1);
+                            PropertyPaths.RemoveAt(C - 1);
+                        }
                     }
                     else
                     {
                         ParameterCount++;
                         string Value = Reader.Value.Trim();
-                        ParameterNames.Add(JoinPaths(Paths));
+                        ParameterNames.Add(JoinPaths(Paths, PropertyPaths));
                         ParameterValues.Add(Value);
                     }
                 }
@@ -237,12 +266,15 @@ namespace IronWASP
             return OutXml.ToString();
         }
 
-        private static string JoinPaths(List<string> Paths)
+        private static string JoinPaths(List<string> Paths, List<string> PropertyPaths)
         {
             StringBuilder FullPath = new StringBuilder();
-            foreach (string path in Paths)
+            for (int i=0; i < Paths.Count; i++)
             {
-                FullPath.Append(path); FullPath.Append(">");
+                if (PropertyPaths[i].Length > 0)
+                {                   
+                    FullPath.Append(PropertyPaths[i]); FullPath.Append(">");
+                }
             }
             return FullPath.ToString();
         }
@@ -297,9 +329,15 @@ namespace IronWASP
 
         public static List<FormatPlugin> Get(Request Request)
         {
+            return Get(Request, new List<string>() { "JSON", "MultiPart", "XML" });
+        }
+
+        public static List<FormatPlugin> Get(Request Request, List<string> FormatsToCheckFor)
+        {
             List<FormatPlugin> RightPlugins = new List<FormatPlugin>();
             foreach (string Name in List())
             {
+                if (!FormatsToCheckFor.Contains(Name)) continue;
                 if (Get(Name).Is(Request)) RightPlugins.Add(Get(Name));
             }
             return RightPlugins;
@@ -331,7 +369,7 @@ namespace IronWASP
                     if (KV.Contains("=")) EqualFound = true;
                     string[] kv = KV.Split('=');
                     if (kv.Length == 0) return false;
-                    if (!Regex.IsMatch(kv[0], @"^[A-Za-z0-9]+$")) return false;
+                    if (!Regex.IsMatch(kv[0], @"^[A-Za-z0-9_\-\.]+$")) return false;
                 }
                 if (!EqualFound) return false;
             }
