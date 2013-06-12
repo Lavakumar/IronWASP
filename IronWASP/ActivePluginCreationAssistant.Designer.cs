@@ -107,7 +107,7 @@ namespace IronWASP
             this.BaseTabs.Name = "BaseTabs";
             this.BaseTabs.Padding = new System.Drawing.Point(0, 0);
             this.BaseTabs.SelectedIndex = 0;
-            this.BaseTabs.Size = new System.Drawing.Size(684, 462);
+            this.BaseTabs.Size = new System.Drawing.Size(684, 461);
             this.BaseTabs.TabIndex = 16;
             this.BaseTabs.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.BaseTabs_Selecting);
             // 
@@ -125,7 +125,7 @@ namespace IronWASP
             this.NameTab.Margin = new System.Windows.Forms.Padding(0);
             this.NameTab.Name = "NameTab";
             this.NameTab.Padding = new System.Windows.Forms.Padding(5);
-            this.NameTab.Size = new System.Drawing.Size(676, 433);
+            this.NameTab.Size = new System.Drawing.Size(676, 432);
             this.NameTab.TabIndex = 0;
             this.NameTab.Text = "               Plugin Name               ";
             this.NameTab.UseVisualStyleBackColor = true;
@@ -166,14 +166,14 @@ namespace IronWASP
             // 
             // Step0StatusTB
             // 
-            this.Step0StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Step0StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Step0StatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Step0StatusTB.Location = new System.Drawing.Point(130, 374);
             this.Step0StatusTB.Multiline = true;
             this.Step0StatusTB.Name = "Step0StatusTB";
-            this.Step0StatusTB.Size = new System.Drawing.Size(409, 51);
+            this.Step0StatusTB.Size = new System.Drawing.Size(409, 50);
             this.Step0StatusTB.TabIndex = 6;
             this.Step0StatusTB.TabStop = false;
             this.Step0StatusTB.Visible = false;
@@ -181,7 +181,7 @@ namespace IronWASP
             // CancelBtn
             // 
             this.CancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.CancelBtn.Location = new System.Drawing.Point(8, 402);
+            this.CancelBtn.Location = new System.Drawing.Point(8, 401);
             this.CancelBtn.Name = "CancelBtn";
             this.CancelBtn.Size = new System.Drawing.Size(105, 23);
             this.CancelBtn.TabIndex = 4;
@@ -205,7 +205,7 @@ namespace IronWASP
             // StepOneNextBtn
             // 
             this.StepOneNextBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.StepOneNextBtn.Location = new System.Drawing.Point(561, 402);
+            this.StepOneNextBtn.Location = new System.Drawing.Point(561, 401);
             this.StepOneNextBtn.Name = "StepOneNextBtn";
             this.StepOneNextBtn.Size = new System.Drawing.Size(105, 23);
             this.StepOneNextBtn.TabIndex = 2;
@@ -233,7 +233,7 @@ namespace IronWASP
             this.PayloadsTab.Margin = new System.Windows.Forms.Padding(0);
             this.PayloadsTab.Name = "PayloadsTab";
             this.PayloadsTab.Padding = new System.Windows.Forms.Padding(5);
-            this.PayloadsTab.Size = new System.Drawing.Size(676, 433);
+            this.PayloadsTab.Size = new System.Drawing.Size(676, 432);
             this.PayloadsTab.TabIndex = 1;
             this.PayloadsTab.Text = "               Select Payloads               ";
             this.PayloadsTab.UseVisualStyleBackColor = true;
@@ -247,7 +247,7 @@ namespace IronWASP
             this.label5.Size = new System.Drawing.Size(468, 13);
             this.label5.TabIndex = 26;
             this.label5.Text = "During testing sometimes the parameter\'s original value needs to be added along w" +
-                "ith the payload.";
+    "ith the payload.";
             // 
             // label4
             // 
@@ -303,8 +303,8 @@ namespace IronWASP
             this.textBox7.TabIndex = 16;
             this.textBox7.TabStop = false;
             this.textBox7.Text = "NOTE: \r\nThe payloads must be in Url Encoded form. For example null character must" +
-                " be represented as %00, new line as %0a, space character as +, + character as %2" +
-                "b and so on.";
+    " be represented as %00, new line as %0a, space character as +, + character as %2" +
+    "b and so on.";
             // 
             // PayloadsFileLbl
             // 
@@ -314,7 +314,7 @@ namespace IronWASP
             this.PayloadsFileLbl.Size = new System.Drawing.Size(376, 13);
             this.PayloadsFileLbl.TabIndex = 21;
             this.PayloadsFileLbl.Text = "                                                                                 " +
-                "                                          ";
+    "                                          ";
             // 
             // label3
             // 
@@ -324,12 +324,12 @@ namespace IronWASP
             this.label3.Size = new System.Drawing.Size(501, 13);
             this.label3.TabIndex = 20;
             this.label3.Text = "(If there are more than 5 payloads then they will be saved in a seperate file in " +
-                "the Active Plugins directory)";
+    "the Active Plugins directory)";
             // 
             // PayloadsListTB
             // 
-            this.PayloadsListTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.PayloadsListTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.PayloadsListTB.Location = new System.Drawing.Point(8, 53);
             this.PayloadsListTB.Multiline = true;
             this.PayloadsListTB.Name = "PayloadsListTB";
@@ -351,14 +351,14 @@ namespace IronWASP
             // 
             // Step1StatusTB
             // 
-            this.Step1StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Step1StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Step1StatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Step1StatusTB.Location = new System.Drawing.Point(119, 402);
             this.Step1StatusTB.Multiline = true;
             this.Step1StatusTB.Name = "Step1StatusTB";
-            this.Step1StatusTB.Size = new System.Drawing.Size(438, 23);
+            this.Step1StatusTB.Size = new System.Drawing.Size(438, 22);
             this.Step1StatusTB.TabIndex = 11;
             this.Step1StatusTB.TabStop = false;
             this.Step1StatusTB.Visible = false;
@@ -375,13 +375,13 @@ namespace IronWASP
             this.textBox4.TabIndex = 9;
             this.textBox4.TabStop = false;
             this.textBox4.Text = "\r\nPlease specify the payloads you want to be sent by this Active Plugin. You can " +
-                "either type the payloads one per line or provide a file with the list of payload" +
-                "s.\r\n\r\n";
+    "either type the payloads one per line or provide a file with the list of payload" +
+    "s.\r\n\r\n";
             // 
             // StepTwoPreviousBtn
             // 
             this.StepTwoPreviousBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.StepTwoPreviousBtn.Location = new System.Drawing.Point(8, 402);
+            this.StepTwoPreviousBtn.Location = new System.Drawing.Point(8, 401);
             this.StepTwoPreviousBtn.Name = "StepTwoPreviousBtn";
             this.StepTwoPreviousBtn.Size = new System.Drawing.Size(105, 23);
             this.StepTwoPreviousBtn.TabIndex = 8;
@@ -392,7 +392,7 @@ namespace IronWASP
             // StepTwoNextBtn
             // 
             this.StepTwoNextBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.StepTwoNextBtn.Location = new System.Drawing.Point(563, 402);
+            this.StepTwoNextBtn.Location = new System.Drawing.Point(563, 401);
             this.StepTwoNextBtn.Name = "StepTwoNextBtn";
             this.StepTwoNextBtn.Size = new System.Drawing.Size(105, 23);
             this.StepTwoNextBtn.TabIndex = 7;
@@ -410,7 +410,7 @@ namespace IronWASP
             this.LanguageTab.Location = new System.Drawing.Point(4, 25);
             this.LanguageTab.Name = "LanguageTab";
             this.LanguageTab.Padding = new System.Windows.Forms.Padding(5);
-            this.LanguageTab.Size = new System.Drawing.Size(676, 433);
+            this.LanguageTab.Size = new System.Drawing.Size(676, 432);
             this.LanguageTab.TabIndex = 2;
             this.LanguageTab.Text = "               Select Language               ";
             this.LanguageTab.UseVisualStyleBackColor = true;
@@ -450,22 +450,22 @@ namespace IronWASP
             // 
             // Step2StatusTB
             // 
-            this.Step2StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Step2StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Step2StatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Step2StatusTB.Location = new System.Drawing.Point(132, 385);
             this.Step2StatusTB.Multiline = true;
             this.Step2StatusTB.Name = "Step2StatusTB";
-            this.Step2StatusTB.Size = new System.Drawing.Size(410, 40);
+            this.Step2StatusTB.Size = new System.Drawing.Size(410, 39);
             this.Step2StatusTB.TabIndex = 13;
             this.Step2StatusTB.TabStop = false;
             this.Step2StatusTB.Visible = false;
             // 
             // textBox5
             // 
-            this.textBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox5.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox5.Location = new System.Drawing.Point(5, 5);
             this.textBox5.Multiline = true;
@@ -475,12 +475,12 @@ namespace IronWASP
             this.textBox5.TabIndex = 11;
             this.textBox5.TabStop = false;
             this.textBox5.Text = "\r\nActive Plugins can be written in Python or in Ruby. Choose you language of choi" +
-                "ce and this Active Plugin will be created in that language.";
+    "ce and this Active Plugin will be created in that language.";
             // 
             // StepThreePreviousBtn
             // 
             this.StepThreePreviousBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.StepThreePreviousBtn.Location = new System.Drawing.Point(8, 402);
+            this.StepThreePreviousBtn.Location = new System.Drawing.Point(8, 401);
             this.StepThreePreviousBtn.Name = "StepThreePreviousBtn";
             this.StepThreePreviousBtn.Size = new System.Drawing.Size(105, 23);
             this.StepThreePreviousBtn.TabIndex = 10;
@@ -491,7 +491,7 @@ namespace IronWASP
             // StepThreeNextBtn
             // 
             this.StepThreeNextBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.StepThreeNextBtn.Location = new System.Drawing.Point(563, 402);
+            this.StepThreeNextBtn.Location = new System.Drawing.Point(563, 401);
             this.StepThreeNextBtn.Name = "StepThreeNextBtn";
             this.StepThreeNextBtn.Size = new System.Drawing.Size(105, 23);
             this.StepThreeNextBtn.TabIndex = 9;
@@ -508,7 +508,7 @@ namespace IronWASP
             this.FinalTab.Location = new System.Drawing.Point(4, 25);
             this.FinalTab.Name = "FinalTab";
             this.FinalTab.Padding = new System.Windows.Forms.Padding(5);
-            this.FinalTab.Size = new System.Drawing.Size(676, 433);
+            this.FinalTab.Size = new System.Drawing.Size(676, 432);
             this.FinalTab.TabIndex = 3;
             this.FinalTab.Text = "               Done               ";
             this.FinalTab.UseVisualStyleBackColor = true;
@@ -543,7 +543,7 @@ namespace IronWASP
             // FinalBtn
             // 
             this.FinalBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.FinalBtn.Location = new System.Drawing.Point(491, 390);
+            this.FinalBtn.Location = new System.Drawing.Point(491, 389);
             this.FinalBtn.Name = "FinalBtn";
             this.FinalBtn.Size = new System.Drawing.Size(177, 35);
             this.FinalBtn.TabIndex = 16;
@@ -555,7 +555,7 @@ namespace IronWASP
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(684, 462);
+            this.ClientSize = new System.Drawing.Size(684, 461);
             this.Controls.Add(this.BaseTabs);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(700, 500);

@@ -30,7 +30,19 @@ namespace IronWASP
         public string BodyString;
         public HTTPMessage(string HTTPInput)
         {
-            string[] MessageParts = HTTPInput.Split(new string[] { "\r\n\r\n" }, 2, StringSplitOptions.RemoveEmptyEntries);
+            int EndOfHeaders = HTTPInput.IndexOf("\r\n\r\n");
+            if (EndOfHeaders < 0)
+            {
+                EndOfHeaders = HTTPInput.Length - 1;
+            }
+            string[] MessageParts = new string[] { "", "" };
+            MessageParts[0] = HTTPInput.Substring(0, EndOfHeaders);
+            try
+            {
+                MessageParts[1] = HTTPInput.Substring(EndOfHeaders + 4);
+            }
+            catch { }
+            //string[] MessageParts = HTTPInput.Split(new string[] { "\r\n\r\n" }, 2, StringSplitOptions.RemoveEmptyEntries);
             if (MessageParts.Length == 0) throw new Exception("Invalid HTTP Message Header");            
             MessageParts[0] += "\r\n";
             string[] HeaderArray = MessageParts[0].Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);

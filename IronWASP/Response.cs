@@ -457,7 +457,10 @@ namespace IronWASP
         {
             this.bodyString = "";
             this.bodyArray = new byte[0];
-            this.Headers.Set("Content-Length","0");
+            if (this.Headers.Has("Content-Length"))
+            {
+                this.Headers.Set("Content-Length", "0");
+            }
         }
 
         internal Response()

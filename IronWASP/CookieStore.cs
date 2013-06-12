@@ -25,7 +25,18 @@ namespace IronWASP
 {
     public class CookieStore
     {
+        static CookieStore StaticCookieStore = new CookieStore();
+        
         List<SetCookie> SetCookies = new List<SetCookie>();
+
+        public static void AddToStore(Request Req, Response Res)
+        {
+            StaticCookieStore.Add(Req, Res);
+        }
+        public static void ReadFromStore(Request Req)
+        {
+            Req.SetCookie(StaticCookieStore);
+        }
 
         public void Add(Request Req, Response Res)
         {

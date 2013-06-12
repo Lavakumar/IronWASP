@@ -232,7 +232,6 @@ namespace IronWASP
             try
             {
                 ScriptSource Source = IronScripting.Engine.CreateScriptSourceFromString(CommandBuffer, SourceCodeKind.InteractiveCode);
-                
                 ScriptCodeParseResult Result = Source.GetCodeProperties();
                 if (Result == ScriptCodeParseResult.Complete || Result == ScriptCodeParseResult.Invalid || CanExecute(Command))
                 {
@@ -261,6 +260,14 @@ namespace IronWASP
             InteractiveShellResult ISR = new InteractiveShellResult();
             try
             {
+                if (IronScripting.Engine.Setup.DisplayName.Contains("IronPython"))
+                {
+                    string[] Results = PluginEditor.CheckPythonIndentation(Commands);
+                    if (Results[1].Length > 0)
+                    {
+                        throw new Exception(Results[1]);
+                    }
+                }
                 ScriptSource Source = IronScripting.Engine.CreateScriptSourceFromString(Commands, SourceCodeKind.AutoDetect);
                 Source.Execute(IronScripting.Scope);
                 Reset();

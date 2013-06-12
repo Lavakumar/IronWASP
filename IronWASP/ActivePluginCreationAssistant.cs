@@ -283,7 +283,7 @@ namespace IronWASP
                 {
                     File.WriteAllText(FFN, PluginCode);
                     PluginCreated = true;
-                    PluginStore.LoadNewActivePlugins();
+                    PluginEngine.LoadNewActivePlugins();
                     PluginFileTB.Text = FFN;
                 }
             }
@@ -340,71 +340,71 @@ namespace IronWASP
             Rb.AppendLine(string.Format("class {0} < ActivePlugin", PluginName));
             Rb.AppendLine();
             Rb.AppendLine();
-            Rb.Append("\t"); Rb.AppendLine("attr_accessor :payloads");
+            Rb.Append("  "); Rb.AppendLine("attr_accessor :payloads");
             Rb.AppendLine();
 
 
-            Py.Append("\t"); Py.AppendLine("#Implement the GetInstance method of ActivePlugin class. This method is used to create new instances of this plugin.");
-            Py.Append("\t"); Py.AppendLine("def GetInstance(self):");
-            Py.Append("\t\t"); Py.AppendLine(string.Format("p = {0}()", PluginName));
-            Py.Append("\t\t"); Py.AppendLine(string.Format("p.Name = '{0}'", PluginName));
-            Py.Append("\t\t"); Py.AppendLine(string.Format("p.Description = '{0}'", PluginDescription.Replace("'", "\\'")));
-            Py.Append("\t\t"); Py.AppendLine(string.Format("p.Version = '0.1'", PluginName));
-            Py.Append("\t\t"); Py.AppendLine("p.payloads = []");
+            Py.Append("  "); Py.AppendLine("#Implement the GetInstance method of ActivePlugin class. This method is used to create new instances of this plugin.");
+            Py.Append("  "); Py.AppendLine("def GetInstance(self):");
+            Py.Append("    "); Py.AppendLine(string.Format("p = {0}()", PluginName));
+            Py.Append("    "); Py.AppendLine(string.Format("p.Name = '{0}'", PluginName));
+            Py.Append("    "); Py.AppendLine(string.Format("p.Description = '{0}'", PluginDescription.Replace("'", "\\'")));
+            Py.Append("    "); Py.AppendLine(string.Format("p.Version = '0.1'", PluginName));
+            Py.Append("    "); Py.AppendLine("p.payloads = []");
 
-            Rb.Append("\t"); Rb.AppendLine("#Implement the GetInstance method of ActivePlugin class. This method is used to create new instances of this plugin.");
-            Rb.Append("\t"); Rb.AppendLine("def GetInstance()");
-            Rb.Append("\t\t"); Rb.AppendLine(string.Format("p = {0}.new", PluginName));
-            Rb.Append("\t\t"); Rb.AppendLine(string.Format("p.name = '{0}'", PluginName));
-            Rb.Append("\t\t"); Rb.AppendLine(string.Format("p.description = '{0}'", PluginDescription.Replace("'", "\\'")));
-            Rb.Append("\t\t"); Rb.AppendLine(string.Format("p.version = '0.1'", PluginName));
-            Rb.Append("\t\t"); Rb.AppendLine("p.payloads = []");
+            Rb.Append("  "); Rb.AppendLine("#Implement the GetInstance method of ActivePlugin class. This method is used to create new instances of this plugin.");
+            Rb.Append("  "); Rb.AppendLine("def GetInstance()");
+            Rb.Append("    "); Rb.AppendLine(string.Format("p = {0}.new", PluginName));
+            Rb.Append("    "); Rb.AppendLine(string.Format("p.name = '{0}'", PluginName));
+            Rb.Append("    "); Rb.AppendLine(string.Format("p.description = '{0}'", PluginDescription.Replace("'", "\\'")));
+            Rb.Append("    "); Rb.AppendLine(string.Format("p.version = '0.1'", PluginName));
+            Rb.Append("    "); Rb.AppendLine("p.payloads = []");
 
             if(this.Payloads.Count > this.MaxCountForPayloadsList)
             {
-                Py.Append("\t\t"); Py.AppendLine("#Update this instance with the payloads read from the payloads file");
-                Py.Append("\t\t"); Py.AppendLine("p.payloads.extend(self.payloads)");
+                Py.Append("    "); Py.AppendLine("#Update this instance with the payloads read from the payloads file");
+                Py.Append("    "); Py.AppendLine("p.payloads.extend(self.payloads)");
 
-                Rb.Append("\t\t"); Rb.AppendLine("#Update this instance with the payloads read from the payloads file");
-                Rb.Append("\t\t"); Rb.AppendLine("for payload in @payloads");
-                Rb.Append("\t\t\t"); Rb.AppendLine("p.payloads.push(payload)");
-                Rb.Append("\t\t"); Rb.AppendLine("end");
+                Rb.Append("    "); Rb.AppendLine("#Update this instance with the payloads read from the payloads file");
+                Rb.Append("    "); Rb.AppendLine("for payload in @payloads");
+                Rb.Append("      "); Rb.AppendLine("p.payloads.push(payload)");
+                Rb.Append("    "); Rb.AppendLine("end");
             }
-            Py.Append("\t\t"); Py.AppendLine("return p");
+            Py.Append("    "); Py.AppendLine("return p");
             Py.AppendLine();
             Py.AppendLine();
 
-            Rb.Append("\t\t"); Rb.AppendLine("return p");
-            Rb.Append("\t"); Rb.AppendLine("end");
+            Rb.Append("    "); Rb.AppendLine("return p");
+            Rb.Append("  "); Rb.AppendLine("end");
             Rb.AppendLine();
             Rb.AppendLine();
 
-            Py.Append("\t"); Py.AppendLine("#Implement the Check method of ActivePlugin class. This is the method called by the Scanner and the entry point in to the plugin.");
-            Py.Append("\t"); Py.AppendLine("def Check(self, scnr):");
-            Py.Append("\t\t"); Py.AppendLine("self.scnr = scnr # 'scnr' is the Scanner object calling this plugin");
-            Py.Append("\t\t"); Py.AppendLine("#Print out a message to the Scan trace indicating the start of the check. Check the comments at the bottom to know more about the Trace feature and the formattng inside Scan trace messages.");
-            Py.Append("\t\t"); Py.AppendLine(string.Format(@"self.scnr.Trace(""<i<br>><i<h>>Checking for {0}:<i</h>><i<br>><i<br>>"")", PluginName));
+            Py.Append("  "); Py.AppendLine("#Implement the Check method of ActivePlugin class. This is the method called by the Scanner and the entry point in to the plugin.");
+            Py.Append("  "); Py.AppendLine("def Check(self, scnr):");
+            Py.Append("    "); Py.AppendLine("self.scnr = scnr # 'scnr' is the Scanner object calling this plugin");
+            Py.Append("    "); Py.AppendLine("#Print out a message to the Scan trace indicating the start of the check. Check the comments at the bottom to know more about the Trace feature and the formattng inside Scan trace messages.");
+            Py.Append("    "); Py.AppendLine(string.Format(@"self.scnr.Trace(""<i<br>><i<h>>Checking for {0}:<i</h>><i<br>><i<br>>"")", PluginName));
 
-            Rb.Append("\t"); Rb.AppendLine("#Implement the Check method of ActivePlugin class. This is the method called by the Scanner and the entry point in to the plugin.");
-            Rb.Append("\t"); Rb.AppendLine("def Check(scnr)");
-            Rb.Append("\t\t"); Rb.AppendLine("@scnr = scnr # 'scnr' is the Scanner object calling this plugin");
-            Rb.Append("\t\t"); Rb.AppendLine("#Print out a message to the Scan trace indicating the start of the check. Check the comments at the bottom to know more about the Trace feature and the formattng inside Scan trace messages.");
-            Rb.Append("\t\t"); Rb.AppendLine(string.Format(@"@scnr.trace(""<i<br>><i<h>>Checking for {0}:<i</h>><i<br>><i<br>>"")", PluginName));
+            Rb.Append("  "); Rb.AppendLine("#Implement the Check method of ActivePlugin class. This is the method called by the Scanner and the entry point in to the plugin.");
+            Rb.Append("  "); Rb.AppendLine("def Check(scnr)");
+            Rb.Append("    "); Rb.AppendLine("@scnr = scnr # 'scnr' is the Scanner object calling this plugin");
+            Rb.Append("    "); Rb.AppendLine("#Print out a message to the Scan trace indicating the start of the check. Check the comments at the bottom to know more about the Trace feature and the formattng inside Scan trace messages.");
+            Rb.Append("    "); Rb.AppendLine(string.Format(@"@scnr.trace(""<i<br>><i<h>>Checking for {0}:<i</h>><i<br>><i<br>>"")", PluginName));
 
-            if(this.Payloads.Count < this.MaxCountForPayloadsList)
+            if(this.Payloads.Count <= this.MaxCountForPayloadsList)
             {
-                Py.Append("\t\t"); Py.AppendLine("#Store the payloads in a list");
-                Py.Append("\t\t");Py.Append("self.payloads = [");
+                Py.Append("    "); Py.AppendLine("#Store the payloads in a list");
+                Py.Append("    ");Py.Append("self.payloads = [");
 
-                Rb.Append("\t\t"); Rb.AppendLine("#Store the payloads in a list");
-                Rb.Append("\t\t"); Rb.Append("@payloads = [");
+                Rb.Append("    "); Rb.AppendLine("#Store the payloads in a list");
+                Rb.Append("    "); Rb.Append("@payloads = [");
 
                 for(int i = 0; i < this.Payloads.Count; i++)
                 {
                     string Payload = this.Payloads[i];
 
-                    Py.Append("\"");Py.Append(Payload.Replace("\"", "\\\""));Py.Append("\"");
-                    Rb.Append("\""); Rb.Append(Payload.Replace("\"", "\\\"")); Rb.Append("\"");
+                    Py.Append("\""); Py.Append(Tools.EscapeDoubleQuotes(Payload)); Py.Append("\"");
+                    Rb.Append("\""); Rb.Append(Tools.EscapeDoubleQuotes(Payload)); Rb.Append("\"");
 
                     if (i < (this.Payloads.Count - 1))
                     {
@@ -418,147 +418,147 @@ namespace IronWASP
                 Rb.Append("]");
                 Rb.AppendLine();
             }
-            Py.Append("\t\t"); Py.AppendLine("#Request trace adds information about the request to the Trace. The log id of the Request is automatically added.");
-            Py.Append("\t\t"); Py.AppendLine(@"self.scnr.RequestTrace(""Sending request without payloads to get normal response - "")");
-            Py.Append("\t\t"); Py.AppendLine("#This methods sends the original request without any payloads. If any Session Plugin is selected with this scan job then that Session Plugin is used to update the original request before sending.");
-            Py.Append("\t\t"); Py.AppendLine(@"res = self.scnr.Inject()");
-            Py.Append("\t\t"); Py.AppendLine("#Response trace adds information about the response to the Trace in the same line as the previous RequestTrace message. This and RequestTrace must be called together.");
-            Py.Append("\t\t"); Py.AppendLine(@"self.scnr.ResponseTrace("" ==> Normal Code - "" + str(res.Code) + "" | Normal Length - "" + str(res.BodyLength))");
-            Py.Append("\t\t"); Py.AppendLine(@"self.scnr.Trace(""<i<br>><i<b>>Starting injection of payloads<i</b>><i<br>>"")");
-            Py.Append("\t\t"); Py.AppendLine("for payload in self.payloads:");
-            Py.Append("\t\t\t"); Py.AppendLine("#Since the payloads are stored in url encoded form they are decoded before being used.");
-            Py.Append("\t\t\t"); Py.AppendLine("payload = Tools.UrlDecode(payload)");
+            Py.Append("    "); Py.AppendLine("#Request trace adds information about the request to the Trace. The log id of the Request is automatically added.");
+            Py.Append("    "); Py.AppendLine(@"self.scnr.RequestTrace(""Sending request without payloads to get normal response - "")");
+            Py.Append("    "); Py.AppendLine("#This methods sends the original request without any payloads. If any Session Plugin is selected with this scan job then that Session Plugin is used to update the original request before sending.");
+            Py.Append("    "); Py.AppendLine(@"res = self.scnr.Inject()");
+            Py.Append("    "); Py.AppendLine("#Response trace adds information about the response to the Trace in the same line as the previous RequestTrace message. This and RequestTrace must be called together.");
+            Py.Append("    "); Py.AppendLine(@"self.scnr.ResponseTrace("" ==> Normal Code - "" + str(res.Code) + "" | Normal Length - "" + str(res.BodyLength))");
+            Py.Append("    "); Py.AppendLine(@"self.scnr.Trace(""<i<br>><i<b>>Starting injection of payloads<i</b>><i<br>>"")");
+            Py.Append("    "); Py.AppendLine("for payload in self.payloads:");
+            Py.Append("      "); Py.AppendLine("#Since the payloads are stored in url encoded form they are decoded before being used.");
+            Py.Append("      "); Py.AppendLine("payload = Tools.UrlDecode(payload)");
 
-            Rb.Append("\t\t"); Rb.AppendLine("#Request trace adds information about the request to the Trace. The log id of the Request is automatically added.");
-            Rb.Append("\t\t"); Rb.AppendLine(@"@scnr.request_trace(""Sending request without payloads to get normal response - "")");
-            Rb.Append("\t\t"); Rb.AppendLine("#This methods sends the original request without any payloads. If any Session Plugin is selected with this scan job then that Session Plugin is used to update the original request before sending.");
-            Rb.Append("\t\t"); Rb.AppendLine(@"res = @scnr.inject");
-            Rb.Append("\t\t"); Rb.AppendLine("#Response trace adds information about the response to the Trace in the same line as the previous RequestTrace message. This and RequestTrace must be called together.");
-            Rb.Append("\t\t"); Rb.AppendLine(@"@scnr.response_trace("" ==> Normal Code - "" + res.code.to_s + "" | Normal Length - "" + res.body_length.to_s)");
-            Rb.Append("\t\t"); Rb.AppendLine(@"@scnr.trace(""<i<br>><i<b>>Starting injection of payloads<i</b>><i<br>>"")");
-            Rb.Append("\t\t"); Rb.AppendLine("for payload in @payloads");
-            Rb.Append("\t\t\t"); Rb.AppendLine("#Since the payloads are stored in url encoded form they are decoded before being used.");
-            Rb.Append("\t\t\t"); Rb.AppendLine("payload = Tools.url_decode(payload)");
+            Rb.Append("    "); Rb.AppendLine("#Request trace adds information about the request to the Trace. The log id of the Request is automatically added.");
+            Rb.Append("    "); Rb.AppendLine(@"@scnr.request_trace(""Sending request without payloads to get normal response - "")");
+            Rb.Append("    "); Rb.AppendLine("#This methods sends the original request without any payloads. If any Session Plugin is selected with this scan job then that Session Plugin is used to update the original request before sending.");
+            Rb.Append("    "); Rb.AppendLine(@"res = @scnr.inject");
+            Rb.Append("    "); Rb.AppendLine("#Response trace adds information about the response to the Trace in the same line as the previous RequestTrace message. This and RequestTrace must be called together.");
+            Rb.Append("    "); Rb.AppendLine(@"@scnr.response_trace("" ==> Normal Code - "" + res.code.to_s + "" | Normal Length - "" + res.body_length.to_s)");
+            Rb.Append("    "); Rb.AppendLine(@"@scnr.trace(""<i<br>><i<b>>Starting injection of payloads<i</b>><i<br>>"")");
+            Rb.Append("    "); Rb.AppendLine("for payload in @payloads");
+            Rb.Append("      "); Rb.AppendLine("#Since the payloads are stored in url encoded form they are decoded before being used.");
+            Rb.Append("      "); Rb.AppendLine("payload = Tools.url_decode(payload)");
 
             if (OriginalParameterBeforePayloadRB.Checked)
             {
-                Py.Append("\t\t\t"); Py.AppendLine("#The original value of the currently tested parameter is added before the payload. self.scnr.PreInjectionParameterValue gives this value.");
-                Py.Append("\t\t\t"); Py.AppendLine("payload = self.scnr.PreInjectionParameterValue + payload");
+                Py.Append("      "); Py.AppendLine("#The original value of the currently tested parameter is added before the payload. self.scnr.PreInjectionParameterValue gives this value.");
+                Py.Append("      "); Py.AppendLine("payload = self.scnr.PreInjectionParameterValue + payload");
 
-                Rb.Append("\t\t\t"); Rb.AppendLine("#The original value of the currently tested parameter is added before the payload. @scnr.pre_injection_parameter_value gives this value.");
-                Rb.Append("\t\t\t"); Rb.AppendLine("payload = @scnr.pre_injection_parameter_value + payload");
+                Rb.Append("      "); Rb.AppendLine("#The original value of the currently tested parameter is added before the payload. @scnr.pre_injection_parameter_value gives this value.");
+                Rb.Append("      "); Rb.AppendLine("payload = @scnr.pre_injection_parameter_value + payload");
             }
             else if (OriginalParameterAfterPayloadRB.Checked)
             {
-                Py.Append("\t\t\t"); Py.AppendLine("#The original value of the currently tested parameter is added at the end of the payload. self.scnr.PreInjectionParameterValue gives this value.");
-                Py.Append("\t\t\t"); Py.AppendLine("payload = payload + self.scnr.PreInjectionParameterValue");
+                Py.Append("      "); Py.AppendLine("#The original value of the currently tested parameter is added at the end of the payload. self.scnr.PreInjectionParameterValue gives this value.");
+                Py.Append("      "); Py.AppendLine("payload = payload + self.scnr.PreInjectionParameterValue");
 
-                Rb.Append("\t\t\t"); Rb.AppendLine("#The original value of the currently tested parameter is added at the end of the payload. @scnr.pre_injection_parameter_value gives this value.");
-                Rb.Append("\t\t\t"); Rb.AppendLine("payload = payload + @scnr.pre_injection_parameter_value");
+                Rb.Append("      "); Rb.AppendLine("#The original value of the currently tested parameter is added at the end of the payload. @scnr.pre_injection_parameter_value gives this value.");
+                Rb.Append("      "); Rb.AppendLine("payload = payload + @scnr.pre_injection_parameter_value");
             }
-            Py.Append("\t\t\t"); Py.AppendLine("#Tools.EncodeForTrace converts the input in to a form that is friendly towards being added to the Scan Trace");
-            Py.Append("\t\t\t"); Py.AppendLine(@"self.scnr.RequestTrace(""Injected - "" + Tools.EncodeForTrace(payload))");
-            Py.Append("\t\t\t"); Py.AppendLine("#The payload is injected in the parameter currently being tested and the response is returned. If a Session Plugin was used along with this Scan Job it would have been called now internally.");
-            Py.Append("\t\t\t"); Py.AppendLine(@"res = self.scnr.Inject(payload)");
-            Py.Append("\t\t\t"); Py.AppendLine("if res.Code == 500:");
-            Py.Append("\t\t\t\t"); Py.AppendLine(@"self.scnr.ResponseTrace("" ==> <i<cr>> Got 500 response code. Indicates error on the server.<i</cr>>"")");
-            Py.Append("\t\t\t\t"); Py.AppendLine("#If the response code is 500 then we report a vulnerability");
-            Py.Append("\t\t\t\t"); Py.AppendLine("self.report_vuln(Tools.EncodeForTrace(payload))");
-            Py.Append("\t\t\t"); Py.AppendLine("else:");
-            Py.Append("\t\t\t\t"); Py.AppendLine(@"self.scnr.ResponseTrace("" ==> Code - "" + str(res.Code) + "" | Length - "" + str(res.BodyLength))");
+            Py.Append("      "); Py.AppendLine("#Tools.EncodeForTrace converts the input in to a form that is friendly towards being added to the Scan Trace");
+            Py.Append("      "); Py.AppendLine(@"self.scnr.RequestTrace(""Injected - "" + Tools.EncodeForTrace(payload))");
+            Py.Append("      "); Py.AppendLine("#The payload is injected in the parameter currently being tested and the response is returned. If a Session Plugin was used along with this Scan Job it would have been called now internally.");
+            Py.Append("      "); Py.AppendLine(@"res = self.scnr.Inject(payload)");
+            Py.Append("      "); Py.AppendLine("if res.Code == 500:");
+            Py.Append("        "); Py.AppendLine(@"self.scnr.ResponseTrace("" ==> <i<cr>> Got 500 response code. Indicates error on the server.<i</cr>>"")");
+            Py.Append("        "); Py.AppendLine("#If the response code is 500 then we report a vulnerability");
+            Py.Append("        "); Py.AppendLine("self.report_vuln(Tools.EncodeForTrace(payload))");
+            Py.Append("      "); Py.AppendLine("else:");
+            Py.Append("        "); Py.AppendLine(@"self.scnr.ResponseTrace("" ==> Code - "" + str(res.Code) + "" | Length - "" + str(res.BodyLength))");
             Py.AppendLine();
             Py.AppendLine();
 
-            Rb.Append("\t\t\t"); Rb.AppendLine("#Tools.encode_for_trace converts the input in to a form that is friendly towards being added to the Scan Trace");
-            Rb.Append("\t\t\t"); Rb.AppendLine(@"@scnr.request_trace(""Injected - "" + Tools.encode_for_trace(payload))");
-            Rb.Append("\t\t\t"); Rb.AppendLine("#The payload is injected in the parameter currently being tested and the response is returned. If a Session Plugin was used along with this Scan Job it would have been called now internally.");
-            Rb.Append("\t\t\t"); Rb.AppendLine(@"res = @scnr.inject(payload)");
-            Rb.Append("\t\t\t"); Rb.AppendLine("if res.code == 500");
-            Rb.Append("\t\t\t\t"); Rb.AppendLine(@"@scnr.response_trace("" ==> <i<cr>> Got 500 response code. Indicates error on the server.<i</cr>>"")");
-            Rb.Append("\t\t\t\t"); Rb.AppendLine("#If the response code is 500 then we report a vulnerability");
-            Rb.Append("\t\t\t\t"); Rb.AppendLine("report_vuln(Tools.encode_for_trace(payload))");
-            Rb.Append("\t\t\t"); Rb.AppendLine("else");
-            Rb.Append("\t\t\t\t"); Rb.AppendLine(@"@scnr.response_trace("" ==> Code - "" + res.code.to_s + "" | Length - "" + res.body_length.to_s)");
-            Rb.Append("\t\t\t"); Rb.AppendLine("end");
-            Rb.Append("\t\t"); Rb.AppendLine("end");
-            Rb.Append("\t"); Rb.AppendLine("end");
+            Rb.Append("      "); Rb.AppendLine("#Tools.encode_for_trace converts the input in to a form that is friendly towards being added to the Scan Trace");
+            Rb.Append("      "); Rb.AppendLine(@"@scnr.request_trace(""Injected - "" + Tools.encode_for_trace(payload))");
+            Rb.Append("      "); Rb.AppendLine("#The payload is injected in the parameter currently being tested and the response is returned. If a Session Plugin was used along with this Scan Job it would have been called now internally.");
+            Rb.Append("      "); Rb.AppendLine(@"res = @scnr.inject(payload)");
+            Rb.Append("      "); Rb.AppendLine("if res.code == 500");
+            Rb.Append("        "); Rb.AppendLine(@"@scnr.response_trace("" ==> <i<cr>> Got 500 response code. Indicates error on the server.<i</cr>>"")");
+            Rb.Append("        "); Rb.AppendLine("#If the response code is 500 then we report a vulnerability");
+            Rb.Append("        "); Rb.AppendLine("report_vuln(Tools.encode_for_trace(payload))");
+            Rb.Append("      "); Rb.AppendLine("else");
+            Rb.Append("        "); Rb.AppendLine(@"@scnr.response_trace("" ==> Code - "" + res.code.to_s + "" | Length - "" + res.body_length.to_s)");
+            Rb.Append("      "); Rb.AppendLine("end");
+            Rb.Append("    "); Rb.AppendLine("end");
+            Rb.Append("  "); Rb.AppendLine("end");
             Rb.AppendLine();
             Rb.AppendLine();
 
-            Py.Append("\t"); Py.AppendLine("#This method implements the vulnerability reporting function");
-            Py.Append("\t"); Py.AppendLine("def report_vuln(self, payload):");
-            Py.Append("\t\t"); Py.AppendLine("#Create a new instance of the Finding class, it takes the BaseUrl property of the Request object as constructor argument. The self.scnr.BaseRequest property returns the original request that is being scanned.");
-            Py.Append("\t\t"); Py.AppendLine("f = Finding(self.scnr.BaseRequest.BaseUrl)");
-            Py.Append("\t\t"); Py.AppendLine("#The type of the finding is set as vulnerability. Other possible values are FindingType.Information and FindingType.TestLead");
-            Py.Append("\t\t"); Py.AppendLine("f.Type = FindingType.Vulnerability");
-            Py.Append("\t\t"); Py.AppendLine("#The confidence of the finding is set as Medium. This property only applies to vulnerabilities. TestLeads and Information don't need to set this. Other possible values are FindingConfidence.High and FindingConfidence.Low");
-            Py.Append("\t\t"); Py.AppendLine("f.Confidence = FindingConfidence.Medium");
-            Py.Append("\t\t"); Py.AppendLine("#The severity of the finding is set as High. This property only applies to vulnerabilities. TestLeads and Information don't need to set this. Other possible values are FindingSeverity.Medium and FindingSeverity.Low");
-            Py.Append("\t\t"); Py.AppendLine("f.Severity = FindingSeverity.High");
-            Py.Append("\t\t"); Py.AppendLine("#This vulnerability is given a title");
-            Py.Append("\t\t"); Py.AppendLine(string.Format("f.Title = '{0} vulnerability found'", this.PluginName));
-            Py.Append("\t\t"); Py.AppendLine("#This vulnerability summary and trace are added. self.scnr.InjectedParameter gives the name of the parameter that was tested. self.scnr.InjectedSection gives the section where the parameter is located in the request. self.scnr.GetTrace() returns the scan trace messages collected up to this ponit as a string.");
-            Py.Append("\t\t"); Py.AppendLine(string.Format(@"f.Summary = ""{0} vulnerability has been detected in the '"" + self.scnr.InjectedParameter + ""' parameter of the "" + self.scnr.InjectedSection + "" section of the request. <i<br>><i<br>><i<hh>>Test Trace:<i</hh>> "" + self.scnr.GetTrace()", this.PluginName));
-            Py.Append("\t\t"); Py.AppendLine("#Triggers are a collection of Trigger objects. A Trigger is a set of Request object, corrresponding Response object and some keywords that were found in the Request and Response that triggered the detection of this vulnerability.");
-            Py.Append("\t\t"); Py.AppendLine("#self.scnr.InjectedRequest property returns the request that was sent using the Inject method and self.scnr.InjectionResponse property gives the response to that request. In this case the request trigger is added as the injected payload and the response trigger is the status code 500");
-            Py.Append("\t\t"); Py.AppendLine(@"f.Triggers.Add(payload, self.scnr.InjectedRequest, '500', self.scnr.InjectionResponse)");
-            Py.Append("\t\t"); Py.AppendLine("#After defining the vulnerability it is added to the scanner objects list of findings");
-            Py.Append("\t\t"); Py.AppendLine("self.scnr.AddFinding(f)");
-            Py.Append("\t\t"); Py.AppendLine("#self.scnr.SetTraceTitle sets a title to this scan trace message. A title makes it easy to identify that this particular scan had some interesting finding.");
-            Py.Append("\t\t"); Py.AppendLine("#The second argument to this function is the title importantance value. The SetTraceTitle method can be called multiple times in this plugin. But only the title that was given the highest importance value will be displayed in the scan trace. If there are more than one title with the highest priority value then their all these high importance titles will be shown.");
-            Py.Append("\t\t"); Py.AppendLine(string.Format(@"self.scnr.SetTraceTitle(""{0} Found"",100)", this.PluginName));
+            Py.Append("  "); Py.AppendLine("#This method implements the vulnerability reporting function");
+            Py.Append("  "); Py.AppendLine("def report_vuln(self, payload):");
+            Py.Append("    "); Py.AppendLine("#Create a new instance of the Finding class, it takes the BaseUrl property of the Request object as constructor argument. The self.scnr.BaseRequest property returns the original request that is being scanned.");
+            Py.Append("    "); Py.AppendLine("f = Finding(self.scnr.BaseRequest.BaseUrl)");
+            Py.Append("    "); Py.AppendLine("#The type of the finding is set as vulnerability. Other possible values are FindingType.Information and FindingType.TestLead");
+            Py.Append("    "); Py.AppendLine("f.Type = FindingType.Vulnerability");
+            Py.Append("    "); Py.AppendLine("#The confidence of the finding is set as Medium. This property only applies to vulnerabilities. TestLeads and Information don't need to set this. Other possible values are FindingConfidence.High and FindingConfidence.Low");
+            Py.Append("    "); Py.AppendLine("f.Confidence = FindingConfidence.Medium");
+            Py.Append("    "); Py.AppendLine("#The severity of the finding is set as High. This property only applies to vulnerabilities. TestLeads and Information don't need to set this. Other possible values are FindingSeverity.Medium and FindingSeverity.Low");
+            Py.Append("    "); Py.AppendLine("f.Severity = FindingSeverity.High");
+            Py.Append("    "); Py.AppendLine("#This vulnerability is given a title");
+            Py.Append("    "); Py.AppendLine(string.Format("f.Title = '{0} vulnerability found'", this.PluginName));
+            Py.Append("    "); Py.AppendLine("#This vulnerability summary and trace are added. self.scnr.InjectedParameter gives the name of the parameter that was tested. self.scnr.InjectedSection gives the section where the parameter is located in the request. self.scnr.GetTrace() returns the scan trace messages collected up to this ponit as a string.");
+            Py.Append("    "); Py.AppendLine(string.Format(@"f.Summary = ""{0} vulnerability has been detected in the '"" + self.scnr.InjectedParameter + ""' parameter of the "" + self.scnr.InjectedSection + "" section of the request. <i<br>><i<br>><i<hh>>Test Trace:<i</hh>> "" + self.scnr.GetTrace()", this.PluginName));
+            Py.Append("    "); Py.AppendLine("#Triggers are a collection of Trigger objects. A Trigger is a set of Request object, corrresponding Response object and some keywords that were found in the Request and Response that triggered the detection of this vulnerability.");
+            Py.Append("    "); Py.AppendLine("#self.scnr.InjectedRequest property returns the request that was sent using the Inject method and self.scnr.InjectionResponse property gives the response to that request. In this case the request trigger is added as the injected payload and the response trigger is the status code 500");
+            Py.Append("    "); Py.AppendLine(@"f.Triggers.Add(payload, self.scnr.InjectedRequest, '500', self.scnr.InjectionResponse)");
+            Py.Append("    "); Py.AppendLine("#After defining the vulnerability it is added to the scanner objects list of findings");
+            Py.Append("    "); Py.AppendLine("self.scnr.AddFinding(f)");
+            Py.Append("    "); Py.AppendLine("#self.scnr.SetTraceTitle sets a title to this scan trace message. A title makes it easy to identify that this particular scan had some interesting finding.");
+            Py.Append("    "); Py.AppendLine("#The second argument to this function is the title importantance value. The SetTraceTitle method can be called multiple times in this plugin. But only the title that was given the highest importance value will be displayed in the scan trace. If there are more than one title with the highest priority value then their all these high importance titles will be shown.");
+            Py.Append("    "); Py.AppendLine(string.Format(@"self.scnr.SetTraceTitle(""{0} Found"",100)", this.PluginName));
 
-            Rb.Append("\t"); Rb.AppendLine("#This method implements the vulnerability reporting function");
-            Rb.Append("\t"); Rb.AppendLine("def report_vuln(payload)");
-            Rb.Append("\t\t"); Rb.AppendLine("#Create a new instance of the Finding class, it takes the BaseUrl property of the Request object as constructor argument. The @scnr.base_request.base_url property returns the original request that is being scanned.");
-            Rb.Append("\t\t"); Rb.AppendLine("f = Finding.new(@scnr.base_request.base_url)");
-            Rb.Append("\t\t"); Rb.AppendLine("#The type of the finding is set as vulnerability. Other possible values are FindingType.information and FindingType.test_lead");
-            Rb.Append("\t\t"); Rb.AppendLine("f.type = FindingType.vulnerability");
-            Rb.Append("\t\t"); Rb.AppendLine("#The confidence of the finding is set as Medium. This property only applies to vulnerabilities. TestLeads and Information don't need to set this. Other possible values are FindingConfidence.high and FindingConfidence.low");
-            Rb.Append("\t\t"); Rb.AppendLine("f.confidence = FindingConfidence.medium");
-            Rb.Append("\t\t"); Rb.AppendLine("#The severity of the finding is set as High. This property only applies to vulnerabilities. TestLeads and Information don't need to set this. Other possible values are FindingSeverity.Medium and FindingSeverity.Low");
-            Rb.Append("\t\t"); Rb.AppendLine("f.severity = FindingSeverity.high");
-            Rb.Append("\t\t"); Rb.AppendLine("#This vulnerability is given a title");
-            Rb.Append("\t\t"); Rb.AppendLine(string.Format("f.title = '{0} vulnerability found'", this.PluginName));
-            Rb.Append("\t\t"); Rb.AppendLine("#This vulnerability summary and trace are added. @scnr.injected_parameter gives the name of the parameter that was tested. @scnr.injected_section gives the section where the parameter is located in the request. @scnr.get_trace returns the scan trace messages collected up to this ponit as a string.");
-            Rb.Append("\t\t"); Rb.AppendLine(string.Format(@"f.summary = ""{0} vulnerability has been detected in the '"" + @scnr.injected_parameter + ""' parameter of the "" + @scnr.injected_section + "" section of the request. <i<br>><i<br>><i<hh>>Test Trace:<i</hh>> "" + @scnr.get_trace", this.PluginName));
-            Rb.Append("\t\t"); Rb.AppendLine("#Triggers are a collection of Trigger objects. A Trigger is a set of Request object, corrresponding Response object and some keywords that were found in the Request and Response that triggered the detection of this vulnerability.");
-            Rb.Append("\t\t"); Rb.AppendLine("#@scnr.injected_request property returns the request that was sent using the Inject method and @scnr.injection_response property gives the response to that request. In this case the request trigger is added as the injected payload and the response trigger is the status code 500");
-            Rb.Append("\t\t"); Rb.AppendLine(@"f.triggers.add(payload, @scnr.injected_request, '500', @scnr.injection_response)");
-            Rb.Append("\t\t"); Rb.AppendLine("#After defining the vulnerability it is added to the scanner objects list of findings");
-            Rb.Append("\t\t"); Rb.AppendLine("@scnr.add_finding(f)");
-            Rb.Append("\t\t"); Rb.AppendLine("#@scnr.set_trace_title sets a title to this scan trace message. A title makes it easy to identify that this particular scan had some interesting finding.");
-            Rb.Append("\t\t"); Rb.AppendLine("#The second argument to this function is the title importantance value. The set_trace_title method can be called multiple times in this plugin. But only the title that was given the highest importance value will be displayed in the scan trace. If there are more than one title with the highest priority value then their all these high importance titles will be shown.");
-            Rb.Append("\t\t"); Rb.AppendLine(string.Format(@"@scnr.set_trace_title(""{0} Found"",100)", this.PluginName));
-            Rb.Append("\t"); Rb.AppendLine("end");
+            Rb.Append("  "); Rb.AppendLine("#This method implements the vulnerability reporting function");
+            Rb.Append("  "); Rb.AppendLine("def report_vuln(payload)");
+            Rb.Append("    "); Rb.AppendLine("#Create a new instance of the Finding class, it takes the BaseUrl property of the Request object as constructor argument. The @scnr.base_request.base_url property returns the original request that is being scanned.");
+            Rb.Append("    "); Rb.AppendLine("f = Finding.new(@scnr.base_request.base_url)");
+            Rb.Append("    "); Rb.AppendLine("#The type of the finding is set as vulnerability. Other possible values are FindingType.information and FindingType.test_lead");
+            Rb.Append("    "); Rb.AppendLine("f.type = FindingType.vulnerability");
+            Rb.Append("    "); Rb.AppendLine("#The confidence of the finding is set as Medium. This property only applies to vulnerabilities. TestLeads and Information don't need to set this. Other possible values are FindingConfidence.high and FindingConfidence.low");
+            Rb.Append("    "); Rb.AppendLine("f.confidence = FindingConfidence.medium");
+            Rb.Append("    "); Rb.AppendLine("#The severity of the finding is set as High. This property only applies to vulnerabilities. TestLeads and Information don't need to set this. Other possible values are FindingSeverity.Medium and FindingSeverity.Low");
+            Rb.Append("    "); Rb.AppendLine("f.severity = FindingSeverity.high");
+            Rb.Append("    "); Rb.AppendLine("#This vulnerability is given a title");
+            Rb.Append("    "); Rb.AppendLine(string.Format("f.title = '{0} vulnerability found'", this.PluginName));
+            Rb.Append("    "); Rb.AppendLine("#This vulnerability summary and trace are added. @scnr.injected_parameter gives the name of the parameter that was tested. @scnr.injected_section gives the section where the parameter is located in the request. @scnr.get_trace returns the scan trace messages collected up to this ponit as a string.");
+            Rb.Append("    "); Rb.AppendLine(string.Format(@"f.summary = ""{0} vulnerability has been detected in the '"" + @scnr.injected_parameter + ""' parameter of the "" + @scnr.injected_section + "" section of the request. <i<br>><i<br>><i<hh>>Test Trace:<i</hh>> "" + @scnr.get_trace", this.PluginName));
+            Rb.Append("    "); Rb.AppendLine("#Triggers are a collection of Trigger objects. A Trigger is a set of Request object, corrresponding Response object and some keywords that were found in the Request and Response that triggered the detection of this vulnerability.");
+            Rb.Append("    "); Rb.AppendLine("#@scnr.injected_request property returns the request that was sent using the Inject method and @scnr.injection_response property gives the response to that request. In this case the request trigger is added as the injected payload and the response trigger is the status code 500");
+            Rb.Append("    "); Rb.AppendLine(@"f.triggers.add(payload, @scnr.injected_request, '500', @scnr.injection_response)");
+            Rb.Append("    "); Rb.AppendLine("#After defining the vulnerability it is added to the scanner objects list of findings");
+            Rb.Append("    "); Rb.AppendLine("@scnr.add_finding(f)");
+            Rb.Append("    "); Rb.AppendLine("#@scnr.set_trace_title sets a title to this scan trace message. A title makes it easy to identify that this particular scan had some interesting finding.");
+            Rb.Append("    "); Rb.AppendLine("#The second argument to this function is the title importantance value. The set_trace_title method can be called multiple times in this plugin. But only the title that was given the highest importance value will be displayed in the scan trace. If there are more than one title with the highest priority value then their all these high importance titles will be shown.");
+            Rb.Append("    "); Rb.AppendLine(string.Format(@"@scnr.set_trace_title(""{0} Found"",100)", this.PluginName));
+            Rb.Append("  "); Rb.AppendLine("end");
 
             if (this.Payloads.Count > this.MaxCountForPayloadsList)
             {
                 Py.AppendLine();
                 Py.AppendLine();
-                Py.Append("\t"); Py.AppendLine("#This method reads the payloads from the payloads files and stores it in a variable");
-                Py.Append("\t"); Py.AppendLine("def load_payloads_from_file(self):");
-                Py.Append("\t\t"); Py.AppendLine("#Config.Path gives the full path directory containing IronWASP.exe");
-                Py.Append("\t\t"); Py.AppendLine(string.Format(@"p_file = open(Config.Path + ""\\plugins\\active\\{0}"")", this.PayloadsFileName));
-                Py.Append("\t\t"); Py.AppendLine("self.payloads = []");
-                Py.Append("\t\t"); Py.AppendLine("payloads_with_newline = p_file.readlines()");
-                Py.Append("\t\t"); Py.AppendLine("p_file.close()");
-                Py.Append("\t\t"); Py.AppendLine("for pwnl in payloads_with_newline:");
-                Py.Append("\t\t\t"); Py.AppendLine("self.payloads.append(pwnl.rstrip())");
+                Py.Append("  "); Py.AppendLine("#This method reads the payloads from the payloads files and stores it in a variable");
+                Py.Append("  "); Py.AppendLine("def load_payloads_from_file(self):");
+                Py.Append("    "); Py.AppendLine("#Config.Path gives the full path directory containing IronWASP.exe");
+                Py.Append("    "); Py.AppendLine(string.Format(@"p_file = open(Config.Path + ""\\plugins\\active\\{0}"")", this.PayloadsFileName));
+                Py.Append("    "); Py.AppendLine("self.payloads = []");
+                Py.Append("    "); Py.AppendLine("payloads_with_newline = p_file.readlines()");
+                Py.Append("    "); Py.AppendLine("p_file.close()");
+                Py.Append("    "); Py.AppendLine("for pwnl in payloads_with_newline:");
+                Py.Append("      "); Py.AppendLine("self.payloads.append(pwnl.rstrip())");
 
                 Rb.AppendLine();
                 Rb.AppendLine();
-                Rb.Append("\t"); Rb.AppendLine("#This method reads the payloads from the payloads files and stores it in a variable");
-                Rb.Append("\t"); Rb.AppendLine("def load_payloads_from_file()");
-                Rb.Append("\t\t"); Rb.AppendLine("#Config.path gives the full path directory containing IronWASP.exe");
-                Rb.Append("\t\t"); Rb.AppendLine(string.Format(@"p_file = File.open(Config.path + ""\\plugins\\active\\{0}"")", this.PayloadsFileName));
-                Rb.Append("\t\t"); Rb.AppendLine("@payloads = []");
-                Rb.Append("\t\t"); Rb.AppendLine("payloads_with_newline = p_file.readlines");
-                Rb.Append("\t\t"); Rb.AppendLine("p_file.close");
-                Rb.Append("\t\t"); Rb.AppendLine("for pwnl in payloads_with_newline");
-                Rb.Append("\t\t\t"); Rb.AppendLine("@payloads.push(pwnl.rstrip)");
-                Rb.Append("\t\t"); Rb.AppendLine("end");
-                Rb.Append("\t"); Rb.AppendLine("end");
+                Rb.Append("  "); Rb.AppendLine("#This method reads the payloads from the payloads files and stores it in a variable");
+                Rb.Append("  "); Rb.AppendLine("def load_payloads_from_file()");
+                Rb.Append("    "); Rb.AppendLine("#Config.path gives the full path directory containing IronWASP.exe");
+                Rb.Append("    "); Rb.AppendLine(string.Format(@"p_file = File.open(Config.path + ""\\plugins\\active\\{0}"")", this.PayloadsFileName));
+                Rb.Append("    "); Rb.AppendLine("@payloads = []");
+                Rb.Append("    "); Rb.AppendLine("payloads_with_newline = p_file.readlines");
+                Rb.Append("    "); Rb.AppendLine("p_file.close");
+                Rb.Append("    "); Rb.AppendLine("for pwnl in payloads_with_newline");
+                Rb.Append("      "); Rb.AppendLine("@payloads.push(pwnl.rstrip)");
+                Rb.Append("    "); Rb.AppendLine("end");
+                Rb.Append("  "); Rb.AppendLine("end");
             }
             Py.AppendLine();
             Py.AppendLine();

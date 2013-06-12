@@ -120,6 +120,8 @@ namespace IronWASP
 
         public static string[,] XmlToArray(string XML)
         {
+            bool HasOname = DoesXmlHaveOname(XML);
+            
             List<string> ParameterNames = new List<string>();
             List<string> ParameterValues = new List<string>();
             
@@ -139,21 +141,28 @@ namespace IronWASP
                 if (Reader.IsStartElement())
                 {
                     Paths.Add(Reader.Name);
-                    if (Reader.HasAttributes)
+                    if (HasOname)
                     {
-                        try
+                        if (Reader.HasAttributes)
                         {
-                            string OriginalName = Reader.GetAttribute("oname");
-                            if (OriginalName.Length == 0)
+                            try
                             {
-                                PropertyPaths.Add(Reader.Name);
+                                string OriginalName = Reader.GetAttribute("oname");
+                                if (OriginalName.Length == 0)
+                                {
+                                    PropertyPaths.Add(Reader.Name);
+                                }
+                                else
+                                {
+                                    PropertyPaths.Add(OriginalName);
+                                }
                             }
-                            else
-                            {
-                                PropertyPaths.Add(OriginalName);
-                            }
+                            catch { }
                         }
-                        catch{}
+                    }
+                    else
+                    {
+                        PropertyPaths.Add(Reader.Name);
                     }
                     if (Paths.Count > PropertyPaths.Count)
                     {
@@ -206,6 +215,47 @@ namespace IronWASP
                 InjectionPoints[i, 1] = ParameterValues[i];
             }
             return InjectionPoints;
+        }
+
+        static bool DoesXmlHaveOname(string Xml)
+        {
+            bool HasOname = (Xml.IndexOf("oname", StringComparison.OrdinalIgnoreCase) > -1);
+
+            if (!HasOname) return false;
+
+            
+            StringReader XMLStringReader = new StringReader(Xml.Trim());
+            XmlReader Reader = XmlReader.Create(XMLStringReader);
+            
+            bool Read = true;
+            bool NextRead = false;
+            while (Read)
+            {
+                if (!NextRead) Read = Reader.Read();
+                NextRead = false;
+                if (!Read) continue;
+                if (Reader.IsStartElement())
+                {                    
+                    if (Reader.HasAttributes)
+                    {
+                        try
+                        {
+                            Reader.GetAttribute("oname");
+                            return true;
+                        }
+                        catch { }
+                    }
+                    
+                    Read = Reader.Read();
+                    if (Reader.NodeType != XmlNodeType.EndElement)
+                    {
+                        NextRead = true;
+                    }
+                }
+            }
+            Reader.Close();
+            
+            return false;
         }
 
         public static string InjectInXml(string XML, int InjectionPosition, string Payload)
@@ -273,10 +323,10 @@ namespace IronWASP
             {
                 if (PropertyPaths[i].Length > 0)
                 {                   
-                    FullPath.Append(PropertyPaths[i]); FullPath.Append(">");
+                    FullPath.Append(PropertyPaths[i]); FullPath.Append(" > ");
                 }
             }
-            return FullPath.ToString();
+            return FullPath.ToString().TrimEnd().TrimEnd('>').TrimEnd();
         }
 
         public static void Add(FormatPlugin FP)
@@ -285,7 +335,7 @@ namespace IronWASP
             {
                 if (!List().Contains(FP.Name))
                 {
-                    FP.FileName = PluginStore.FileName;
+                    FP.FileName = PluginEngine.FileName;
                     Collection.Add(FP);
                 }
             }

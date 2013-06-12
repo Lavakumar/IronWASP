@@ -212,7 +212,7 @@ namespace IronWASP
             }
         }
 
-        new public delegate void TextChangedEvent();
+        public delegate void TextChangedEvent();
 
         public event TextChangedEvent TextValueChanged;
     }

@@ -91,6 +91,8 @@ namespace IronWASP
         string DefaultBodyCharset = "ISO-8859-1";
 
 
+        Exception SendWithoutAReturnException = null;//To be used to store the exception from the SendWithReturn method
+
         //getter/setter properties
         public string FullURL
         {
@@ -775,6 +777,7 @@ namespace IronWASP
         }
         public Response Send()
         {
+            this.response = null;
             StringDictionary Flags = new StringDictionary();
             string BuiltBy;
             if(this.Source == RequestSource.Scan)
@@ -854,6 +857,44 @@ namespace IronWASP
                 throw new Exception(this.response.Status.Replace("Fiddler - ",""));
             }
             return this.response;
+        }
+
+        public void SendWithoutAReturn()
+        {
+            try
+            {
+                this.Send();
+            }
+            catch(Exception Exp)
+            {
+                this.SendWithoutAReturnException = Exp;
+            }
+        }
+
+        public Response SendReq(int TimeOut)
+        {
+            return this.Send(TimeOut);
+        }
+
+        public Response Send(int TimeOut)
+        {
+            this.SendWithoutAReturnException = null;
+            Thread T = new Thread(SendWithoutAReturn);
+            long StartTime = DateTime.Now.Ticks;
+            T.Start();
+            while (((DateTime.Now.Ticks - StartTime) / 10000) < TimeOut)
+            {
+                Thread.Sleep(50);
+                if (this.response != null)
+                {
+                    return this.response;
+                }
+                if (this.SendWithoutAReturnException != null)
+                {
+                    throw this.SendWithoutAReturnException;
+                }
+            }
+            throw new Exception("Request timed out");
         }
 
         public Request GetClone()
@@ -1020,7 +1061,7 @@ namespace IronWASP
 
         public string ToTestUi()
         {
-            return ToTestUi();
+            return ToTestUi("");
         }
 
         public string ToTestUi(string Name)
@@ -1356,7 +1397,11 @@ namespace IronWASP
                     this.headers.Remove("Content-Length");
                 }
             }
-            else
+            else if (this.Method.Equals("PUT") || this.Method.Equals("POST"))
+            {
+                this.headers.Set("Content-Length", "0");
+            }
+            else if (this.headers.Has("Content-Length"))
             {
                 this.headers.Set("Content-Length", "0");
             }

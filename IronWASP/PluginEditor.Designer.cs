@@ -97,6 +97,7 @@ namespace IronWASP
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.PluginEditorOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.PluginEditorSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.FixPythonIndentationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PluginEditorBaseSplit.Panel1.SuspendLayout();
             this.PluginEditorBaseSplit.Panel2.SuspendLayout();
             this.PluginEditorBaseSplit.SuspendLayout();
@@ -160,6 +161,7 @@ namespace IronWASP
             // 
             // PluginEditorTE
             // 
+            this.PluginEditorTE.ConvertTabsToSpaces = true;
             this.PluginEditorTE.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PluginEditorTE.IsIconBarVisible = false;
             this.PluginEditorTE.Location = new System.Drawing.Point(0, 0);
@@ -170,6 +172,7 @@ namespace IronWASP
             this.PluginEditorTE.ShowTabs = true;
             this.PluginEditorTE.ShowVRuler = true;
             this.PluginEditorTE.Size = new System.Drawing.Size(674, 421);
+            this.PluginEditorTE.TabIndent = 2;
             this.PluginEditorTE.TabIndex = 3;
             // 
             // SearchMoveNextBtn
@@ -217,8 +220,8 @@ namespace IronWASP
             // 
             // PluginEditorSearchTB
             // 
-            this.PluginEditorSearchTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.PluginEditorSearchTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.PluginEditorSearchTB.Location = new System.Drawing.Point(66, 5);
             this.PluginEditorSearchTB.Margin = new System.Windows.Forms.Padding(0);
             this.PluginEditorSearchTB.Name = "PluginEditorSearchTB";
@@ -228,9 +231,9 @@ namespace IronWASP
             // 
             // PluginEditorErrorTB
             // 
-            this.PluginEditorErrorTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.PluginEditorErrorTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.PluginEditorErrorTB.BackColor = System.Drawing.Color.White;
             this.PluginEditorErrorTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.PluginEditorErrorTB.Location = new System.Drawing.Point(0, 28);
@@ -250,7 +253,8 @@ namespace IronWASP
             this.SaveWorkToolStripMenuItem,
             this.SaveAsStripMenuItem,
             this.LanguageToolStripMenuItem,
-            this.CheckSyntaxF5ToolStripMenuItem});
+            this.CheckSyntaxF5ToolStripMenuItem,
+            this.FixPythonIndentationToolStripMenuItem});
             this.PluginEditorMenu.Location = new System.Drawing.Point(0, 0);
             this.PluginEditorMenu.Name = "PluginEditorMenu";
             this.PluginEditorMenu.Size = new System.Drawing.Size(674, 24);
@@ -606,6 +610,14 @@ namespace IronWASP
             // 
             this.PluginEditorSaveFileDialog.Title = "Save File";
             // 
+            // FixPythonIndentationToolStripMenuItem
+            // 
+            this.FixPythonIndentationToolStripMenuItem.Name = "FixPythonIndentationToolStripMenuItem";
+            this.FixPythonIndentationToolStripMenuItem.Size = new System.Drawing.Size(141, 20);
+            this.FixPythonIndentationToolStripMenuItem.Text = "Fix Python Indentation ";
+            this.FixPythonIndentationToolStripMenuItem.Visible = false;
+            this.FixPythonIndentationToolStripMenuItem.Click += new System.EventHandler(this.FixPythonIndentationToolStripMenuItem_Click);
+            // 
             // PluginEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -690,5 +702,7 @@ namespace IronWASP
         private System.Windows.Forms.Label MatchCountLbl;
         private System.Windows.Forms.Button SearchMovePreviousBtn;
         private System.Windows.Forms.Button SearchMoveNextBtn;
+        private System.Windows.Forms.ToolStripMenuItem FixPythonIndentationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     }
 }

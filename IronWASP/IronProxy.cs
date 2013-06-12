@@ -446,24 +446,25 @@ namespace IronWASP
             {
                 IrSe.FiddlerSession.oFlags.Add("IronFlag-Ticks", IrSe.Request.TimeObject.Ticks.ToString());
             }
-            try
-            {
-                Session ClonedIronSessionWithRequest = IrSe.GetClone();
-                if (ClonedIronSessionWithRequest != null && ClonedIronSessionWithRequest.Request != null)
-                    PassiveChecker.AddToCheckRequest(ClonedIronSessionWithRequest);
-                else
-                    IronException.Report("IronSession Request Couldn't be cloned at ID - " + IrSe.ID.ToString(),"","");
-            }
-            catch(Exception Exp)
-            {
-                IronException.Report("Error Cloning IronSession in BeforeRequest", Exp.Message, Exp.StackTrace);
-            }
 
-            if (PluginStore.ShouldRunRequestBasedPassivePlugins())
+            //try
+            //{
+            //    Session ClonedIronSessionWithRequest = IrSe.GetClone();
+            //    if (ClonedIronSessionWithRequest != null && ClonedIronSessionWithRequest.Request != null)
+            //        PassiveChecker.AddToCheckRequest(ClonedIronSessionWithRequest);
+            //    else
+            //        IronException.Report("IronSession Request Couldn't be cloned at ID - " + IrSe.ID.ToString(),"","");
+            //}
+            //catch(Exception Exp)
+            //{
+            //    IronException.Report("Error Cloning IronSession in BeforeRequest", Exp.Message, Exp.StackTrace);
+            //}
+
+            if (PluginEngine.ShouldRunRequestBasedPassivePlugins())
             {
                 try
                 {
-                    PluginStore.RunAllRequestBasedInlinePassivePlugins(IrSe);
+                    PluginEngine.RunAllRequestBasedInlinePassivePlugins(IrSe);
                     IrSe.UpdateFiddlerSessionFromIronSession();
                 }
                 catch (Exception Exp)
@@ -476,7 +477,8 @@ namespace IronWASP
             if (!IrSe.FiddlerSession.isFlagSet(Fiddler.SessionFlags.RequestGeneratedByFiddler))
             {
                 IrSe.ID = Interlocked.Increment(ref Config.ProxyRequestsCount);
-                IronUpdater.AddProxyRequest(IrSe.Request);
+                IrSe.OriginalRequest = IrSe.Request.GetClone(true);
+                //IronUpdater.AddProxyRequest(IrSe.Request);
                 if(CanInterceptRequest(IrSe))
                 {
                     IrSe.MSR = new ManualResetEvent(false);
@@ -495,6 +497,34 @@ namespace IronWASP
                 else
                 {
                     IrSe.FiddlerSession.state = Fiddler.SessionStates.AutoTamperRequestBefore;
+                }
+
+                if (ScriptedInterceptionEnabled && ScInt.CallAfterInterception)
+                {
+                    try
+                    {
+                        ScInt.AfterInterception = true;
+                        ScInt.ShouldIntercept(IrSe);
+                    }
+                    catch (Exception Exp)
+                    {
+                        IronUI.ShowProxyException("Error in Scripted Interception Script");
+                        IronException.Report("Error in Scripted Interception Script", Exp);
+                    }
+                    ScInt.AfterInterception = false;
+                    IrSe.UpdateFiddlerSessionFromIronSession();
+                }
+
+                if (IronProxy.WasRequestChanged(IrSe))
+                {
+                    Request ClonedRequest = IrSe.Request.GetClone(true);
+                    //IronUpdater.AddProxyRequestsAfterEdit(IrSe.OriginalRequest.GetClone(true), ClonedRequest);
+                    //IronUI.UpdateEditedProxyLogRequestEntry(ClonedRequest);
+                    IronUpdater.AddProxyRequests(new Request[] { IrSe.OriginalRequest, IrSe.Request });
+                }
+                else
+                {
+                    IronUpdater.AddProxyRequests(new Request[] { null, IrSe.Request });
                 }
             }
             else
@@ -603,12 +633,13 @@ namespace IronWASP
 
             if (!IrSe.FiddlerSession.isFlagSet(Fiddler.SessionFlags.RequestGeneratedByFiddler))
             {
-                IronUpdater.AddProxyResponse(IrSe.Response);
+                //IronUpdater.AddProxyResponse(IrSe.Response);
             }
 
             if (!IrSe.FiddlerSession.isFlagSet(Fiddler.SessionFlags.RequestGeneratedByFiddler))
             {
                 IrSe.Response.Host = IrSe.Request.Host;
+                IrSe.OriginalResponse = IrSe.Response.GetClone(true);
                 if(CanInterceptResponse(IrSe))
                 {
                     IrSe.MSR = new ManualResetEvent(false);
@@ -628,13 +659,42 @@ namespace IronWASP
                 {
                     IrSe.FiddlerSession.state = Fiddler.SessionStates.AutoTamperResponseBefore;
                 }
+
+
+                if (ScriptedInterceptionEnabled && ScInt.CallAfterInterception)
+                {
+                    try
+                    {
+                        ScInt.AfterInterception = true;
+                        ScInt.ShouldIntercept(IrSe);
+                    }
+                    catch (Exception Exp)
+                    {
+                        IronUI.ShowProxyException("Error in Scripted Interception Script");
+                        IronException.Report("Error in Scripted Interception Script", Exp);
+                    }
+                    ScInt.AfterInterception = false;
+                    IrSe.UpdateFiddlerSessionFromIronSession();
+                }
+
+                if (IronProxy.WasResponseChanged(IrSe))
+                {
+                    Response ClonedResponse = IrSe.Response.GetClone(true);
+                    //IronUpdater.AddProxyResponsesAfterEdit(IrSe.OriginalResponse.GetClone(true), ClonedResponse);
+                    //IronUI.UpdateEditedProxyLogResponseEntry(ClonedResponse);
+                    IronUpdater.AddProxyResponses(new Response[] { IrSe.OriginalResponse, IrSe.Response });
+                }
+                else
+                {
+                    IronUpdater.AddProxyResponses(new Response[] { null, IrSe.Response });
+                }
             }
 
-            if (PluginStore.ShouldRunResponseBasedPassivePlugins())
+            if (PluginEngine.ShouldRunResponseBasedPassivePlugins())
             {
                 try
                 {
-                    PluginStore.RunAllResponseBasedInlinePassivePlugins(IrSe);
+                    PluginEngine.RunAllResponseBasedInlinePassivePlugins(IrSe);
                     IrSe.UpdateFiddlerSessionFromIronSession();
                 }
                 catch (Exception Exp)
@@ -642,6 +702,32 @@ namespace IronWASP
                     IronException.Report("Error running 'BeforeInterception' Passive plugins on Response", Exp.Message, Exp.StackTrace);
                 }
             }
+        }
+
+        internal static bool WasRequestChanged(Session Sess)
+        {
+            try
+            {
+                return !Sess.Request.ToString().Equals(Sess.OriginalRequest.ToString());
+            }
+            catch { return true; }
+        }
+        internal static bool WasResponseChanged(Session Sess)
+        {
+            try
+            {
+                string ResStr = Sess.Response.ToString();
+                string OriResStr = Sess.OriginalResponse.ToString();
+                if (ResStr.Equals(OriResStr))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            catch { return true; }
         }
 
         //internal static void UpdateCurrentSessionWithNewRequestHeader(string HeaderString)
@@ -732,22 +818,10 @@ namespace IronWASP
             if (IronProxy.CurrentSession.FiddlerSession.state == Fiddler.SessionStates.HandTamperRequest)
             {
                 ID = ID + "-Request";
-                if (IronProxy.RequestChanged)
-                {
-                    Request ClonedRequest = IronProxy.CurrentSession.Request.GetClone(true);
-                    IronUpdater.AddProxyRequestsAfterEdit(IronProxy.CurrentSession.OriginalRequest.GetClone(true), ClonedRequest);
-                    IronUI.UpdateEditedProxyLogEntry(ClonedRequest);
-                }
             }
             else
             {
                 ID = ID + "-Response";
-                if (IronProxy.ResponseChanged)
-                {
-                    Response ClonedResponse = IronProxy.CurrentSession.Response.GetClone(true);
-                    IronUpdater.AddProxyResponsesAfterEdit(IronProxy.CurrentSession.OriginalResponse.GetClone(true), ClonedResponse);
-                    IronUI.UpdateEditedProxyLogEntry(ClonedResponse);
-                }
             }
             IronProxy.InterceptedSessions[ID].MSR.Set();
             IronUI.ResetProxyInterceptionFields();
@@ -1335,14 +1409,14 @@ namespace IronWASP
             FullCode.AppendLine("from IronWASP import *");
             FullCode.AppendLine("import re");
             FullCode.AppendLine("class si(ScriptedInterceptor):");
-            FullCode.AppendLine("\tdef ShouldIntercept(self, sess):");
+            FullCode.AppendLine("  def ShouldIntercept(self, sess):");
             string[] CodeLines = FunctionCode.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string Line in CodeLines)
             {
-                FullCode.Append("\t\t");
+                FullCode.Append("    ");
                 FullCode.AppendLine(Line);
             }
-            FullCode.AppendLine("\t\treturn False");
+            FullCode.AppendLine("    return False");
             FullCode.AppendLine("");
             FullCode.AppendLine("");
             FullCode.AppendLine("s = si();");
@@ -1356,15 +1430,15 @@ namespace IronWASP
             StringBuilder FullCode = new StringBuilder();
             FullCode.AppendLine("include IronWASP");
             FullCode.AppendLine("class SI < ScriptedInterceptor");
-            FullCode.AppendLine("\tdef ShouldIntercept(sess)");
+            FullCode.AppendLine("  def ShouldIntercept(sess)");
             string[] CodeLines = FunctionCode.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string Line in CodeLines)
             {
-                FullCode.Append("\t\t");
+                FullCode.Append("    ");
                 FullCode.AppendLine(Line);
             }
-            FullCode.AppendLine("\t\treturn false");
-            FullCode.AppendLine("\tend");
+            FullCode.AppendLine("    return false");
+            FullCode.AppendLine("  end");
             FullCode.AppendLine("end");
             FullCode.AppendLine("");
             FullCode.AppendLine("s = SI.new");
@@ -1382,6 +1456,16 @@ namespace IronWASP
                 Runtime.LoadAssembly(MainAssembly);
                 Runtime.LoadAssembly(typeof(String).Assembly);
                 Runtime.LoadAssembly(typeof(Uri).Assembly);
+
+                if (Engine.Setup.DisplayName.Contains("IronPython"))
+                {
+                    string[] Results = PluginEditor.CheckPythonIndentation(Code);
+                    if (Results[1].Length > 0)
+                    {
+                        throw new Exception(Results[1]);
+                    }
+                }
+
                 ScriptSource Source = Engine.CreateScriptSourceFromString(Code);
                 Source.ExecuteProgram();
                 return "";

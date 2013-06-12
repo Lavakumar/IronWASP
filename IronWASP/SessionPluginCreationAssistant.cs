@@ -1622,7 +1622,7 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
                                 {
                                     File.WriteAllText(FFN, PluginCode);
                                     PluginCreated = true;
-                                    PluginStore.LoadNewSessionPlugins();
+                                    PluginEngine.LoadNewSessionPlugins();
                                 }
                                 catch (Exception Exp) { ShowError(string.Format("Unable to create plugin file - {0}", Exp.Message)); }
                             }
@@ -1932,38 +1932,38 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
 
             //Declare the update_req method
             PyMiddle.AppendLine();
-            PyMiddle.Append("\t"); PyMiddle.AppendLine("def update_req(self, req):");            
+            PyMiddle.Append("  "); PyMiddle.AppendLine("def update_req(self, req):");            
             if (UpdateToInectRequestMethodPyDeclarations.Count > 0)
             {
-                PyMiddle.Append("\t\t"); PyMiddle.AppendLine("if Tools.MD5(req.ToString()) != self.last_main_request_signature:");
+                PyMiddle.Append("    "); PyMiddle.AppendLine("if Tools.MD5(req.ToString()) != self.last_main_request_signature:");
                 for (int i = 1; i <= UpdateToInectRequestMethodPyDeclarations.Count; i++)
                 {
-                    PyMiddle.Append("\t\t\t"); PyMiddle.AppendLine(string.Format("req = self.update_req_{0}(req)", i));
+                    PyMiddle.Append("      "); PyMiddle.AppendLine(string.Format("req = self.update_req_{0}(req)", i));
                 }
             }
             else
             {
-                PyMiddle.AppendLine("\t\t#no update");
-                PyMiddle.Append("\t\t"); PyMiddle.AppendLine("return req");
+                PyMiddle.AppendLine("    #no update");
+                PyMiddle.Append("    "); PyMiddle.AppendLine("return req");
             }
 
             RbMiddle.AppendLine();
-            RbMiddle.Append("\t"); RbMiddle.AppendLine("def update_req(req)");
+            RbMiddle.Append("  "); RbMiddle.AppendLine("def update_req(req)");
             if (UpdateToInectRequestMethodRbDeclarations.Count > 0)
             {
-                RbMiddle.Append("\t\t"); RbMiddle.AppendLine("if Tools.md5(req.to_string) != @last_main_request_signature");
+                RbMiddle.Append("    "); RbMiddle.AppendLine("if Tools.md5(req.to_string) != @last_main_request_signature");
                 for (int i = 1; i <= UpdateToInectRequestMethodRbDeclarations.Count; i++)
                 {
-                    RbMiddle.Append("\t\t\t"); RbMiddle.AppendLine(string.Format("req = update_req_{0}(req)", i));
+                    RbMiddle.Append("      "); RbMiddle.AppendLine(string.Format("req = update_req_{0}(req)", i));
                 }
-                RbMiddle.Append("\t\t"); RbMiddle.AppendLine("end");
+                RbMiddle.Append("    "); RbMiddle.AppendLine("end");
             }
             else
             {
-                RbMiddle.AppendLine("\t\t#no update");
-                RbMiddle.Append("\t\t"); RbMiddle.AppendLine("return req");
+                RbMiddle.AppendLine("    #no update");
+                RbMiddle.Append("    "); RbMiddle.AppendLine("return req");
             }
-            RbMiddle.Append("\t"); RbMiddle.AppendLine("end");
+            RbMiddle.Append("  "); RbMiddle.AppendLine("end");
 
             //Declare other update_req_ methods
             foreach (string MethodDec in UpdateToInectRequestMethodPyDeclarations.Values)
@@ -1981,13 +1981,13 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
 
             //Declare the get_ask_user_message method
             PyMiddle.AppendLine();            
-            PyMiddle.Append("\t"); PyMiddle.AppendLine("def get_ask_user_message_format(self, param, section, hint):");
-            PyMiddle.Append("\t\t"); PyMiddle.AppendLine("return 'Enter the value of the ' + param + ' parameter in the ' + section + ' section of the Request. \\r\\nHint:\\r\\n' + hint");
+            PyMiddle.Append("  "); PyMiddle.AppendLine("def get_ask_user_message_format(self, param, section, hint):");
+            PyMiddle.Append("    "); PyMiddle.AppendLine("return 'Enter the value of the ' + param + ' parameter in the ' + section + ' section of the Request. \\r\\nHint:\\r\\n' + hint");
             
             RbMiddle.AppendLine();
-            RbMiddle.Append("\t"); RbMiddle.AppendLine("def get_ask_user_message_format(param, section, hint)");
-            RbMiddle.Append("\t\t"); RbMiddle.AppendLine(@"return 'Enter the value of the ' + param + ' parameter in the ' + section + "" section of the Request. \r\nHint:\r\n"" + hint");
-            RbMiddle.Append("\t"); RbMiddle.AppendLine("end");
+            RbMiddle.Append("  "); RbMiddle.AppendLine("def get_ask_user_message_format(param, section, hint)");
+            RbMiddle.Append("    "); RbMiddle.AppendLine(@"return 'Enter the value of the ' + param + ' parameter in the ' + section + "" section of the Request. \r\nHint:\r\n"" + hint");
+            RbMiddle.Append("  "); RbMiddle.AppendLine("end");
 
 
             StringBuilder PyTop = new StringBuilder();
@@ -2010,49 +2010,49 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
             RbTop.AppendLine();
 
             //Declare the GetInstance method
-            PyTop.Append("\t"); PyTop.AppendLine("def GetInstance(self):");
-            PyTop.Append("\t\t"); PyTop.AppendLine(string.Format("p = {0}()", PluginName));
-            PyTop.Append("\t\t"); PyTop.AppendLine(string.Format("p.Name = '{0}'", PluginName));
-            PyTop.Append("\t\t"); PyTop.AppendLine("p.init_instance_variables()");
-            PyTop.Append("\t\t"); PyTop.AppendLine("return p");
+            PyTop.Append("  "); PyTop.AppendLine("def GetInstance(self):");
+            PyTop.Append("    "); PyTop.AppendLine(string.Format("p = {0}()", PluginName));
+            PyTop.Append("    "); PyTop.AppendLine(string.Format("p.Name = '{0}'", PluginName));
+            PyTop.Append("    "); PyTop.AppendLine("p.init_instance_variables()");
+            PyTop.Append("    "); PyTop.AppendLine("return p");
             PyTop.AppendLine();
 
             RbTop.AppendLine();
-            RbTop.Append("\t"); RbTop.AppendLine("def GetInstance()");
-            RbTop.Append("\t\t"); RbTop.AppendLine(string.Format("p = {0}.new", PluginName));
-            RbTop.Append("\t\t"); RbTop.AppendLine(string.Format("p.name = '{0}'", PluginName));
-            RbTop.Append("\t\t"); RbTop.AppendLine("p.init_instance_variables");
-            RbTop.Append("\t\t"); RbTop.AppendLine("return p");
-            RbTop.Append("\t"); RbTop.AppendLine("end");
+            RbTop.Append("  "); RbTop.AppendLine("def GetInstance()");
+            RbTop.Append("    "); RbTop.AppendLine(string.Format("p = {0}.new", PluginName));
+            RbTop.Append("    "); RbTop.AppendLine(string.Format("p.name = '{0}'", PluginName));
+            RbTop.Append("    "); RbTop.AppendLine("p.init_instance_variables");
+            RbTop.Append("    "); RbTop.AppendLine("return p");
+            RbTop.Append("  "); RbTop.AppendLine("end");
             RbTop.AppendLine();
 
             //Declare the init_instance_variables method
-            PyTop.Append("\t"); PyTop.AppendLine("def init_instance_variables(self):");
-            PyTop.Append("\t\t"); PyTop.AppendLine("self.cookie_store = CookieStore()");
-            PyTop.Append("\t\t"); PyTop.AppendLine("self.reqs = {}");
+            PyTop.Append("  "); PyTop.AppendLine("def init_instance_variables(self):");
+            PyTop.Append("    "); PyTop.AppendLine("self.cookie_store = CookieStore()");
+            PyTop.Append("    "); PyTop.AppendLine("self.reqs = {}");
             foreach (string LabelName in RequestDeclarationsInCode.Keys)
             {
                 foreach (string RequestName in RequestDeclarationsInCode[LabelName].Keys)
                 {
-                    PyTop.Append("\t\t"); PyTop.AppendLine(string.Format("self.reqs['{0}'] = {1}", RequestName, RequestDeclarationsInCode[LabelName][RequestName]));
+                    PyTop.Append("    "); PyTop.AppendLine(string.Format("self.reqs['{0}'] = {1}", RequestName, RequestDeclarationsInCode[LabelName][RequestName]));
                 }
             }
-            PyTop.Append("\t\t"); PyTop.AppendLine("self.ress = {}");
-            PyTop.Append("\t\t"); PyTop.AppendLine("self.last_main_request_signature = ''");
+            PyTop.Append("    "); PyTop.AppendLine("self.ress = {}");
+            PyTop.Append("    "); PyTop.AppendLine("self.last_main_request_signature = ''");
             
-            RbTop.Append("\t"); RbTop.AppendLine("def init_instance_variables()");
-            RbTop.Append("\t\t"); RbTop.AppendLine("@cookie_store = CookieStore.new");
-            RbTop.Append("\t\t"); RbTop.AppendLine("@reqs = {}");
+            RbTop.Append("  "); RbTop.AppendLine("def init_instance_variables()");
+            RbTop.Append("    "); RbTop.AppendLine("@cookie_store = CookieStore.new");
+            RbTop.Append("    "); RbTop.AppendLine("@reqs = {}");
             foreach (string LabelName in RequestDeclarationsInCode.Keys)
             {
                 foreach (string RequestName in RequestDeclarationsInCode[LabelName].Keys)
                 {
-                    RbTop.Append("\t\t"); RbTop.AppendLine(string.Format("@reqs['{0}'] = {1}", RequestName, RequestDeclarationsInCode[LabelName][RequestName]));
+                    RbTop.Append("    "); RbTop.AppendLine(string.Format("@reqs['{0}'] = {1}", RequestName, RequestDeclarationsInCode[LabelName][RequestName]));
                 }
             }
-            RbTop.Append("\t\t"); RbTop.AppendLine("@ress = {}");
-            RbTop.Append("\t\t"); RbTop.AppendLine("@last_main_request_signature = ''");
-            RbTop.Append("\t"); RbTop.AppendLine("end");
+            RbTop.Append("    "); RbTop.AppendLine("@ress = {}");
+            RbTop.Append("    "); RbTop.AppendLine("@last_main_request_signature = ''");
+            RbTop.Append("  "); RbTop.AppendLine("end");
 
 
             StringBuilder PyBottom = new StringBuilder();
@@ -2172,45 +2172,45 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
             StringBuilder Rb = new StringBuilder();
 
             Py.AppendLine();
-            Py.Append("\t"); Py.AppendLine("def DoBeforeSending(self, req, res):");
-            Py.Append("\t\t"); Py.AppendLine("self.Trace(req, 'Preparing \\'Main Request\\' before it is sent', 'The following request is the \\'Main Request\\'\\r\\n\\r\\n\\r\\n:' + req.ToString())");
-            Py.Append("\t\t"); Py.AppendLine("req.SetCookie(self.cookie_store)");
-            Py.Append("\t\t"); Py.AppendLine("self.update_req(req)");
+            Py.Append("  "); Py.AppendLine("def DoBeforeSending(self, req, res):");
+            Py.Append("    "); Py.AppendLine("self.Trace(req, 'Preparing \\'Main Request\\' before it is sent', 'The following request is the \\'Main Request\\'\\r\\n\\r\\n\\r\\n:' + req.ToString())");
+            Py.Append("    "); Py.AppendLine("req.SetCookie(self.cookie_store)");
+            Py.Append("    "); Py.AppendLine("self.update_req(req)");
 
             Rb.AppendLine();
-            Rb.Append("\t"); Rb.AppendLine("def DoBeforeSending(req, res)");
-            Rb.Append("\t\t"); Rb.AppendLine(@"Trace(req, ""Preparing 'Main Request' before it is sent"", ""The following request is the 'Main Request' \r\n\r\n\r\n:"" + req.to_string)");
-            Rb.Append("\t\t"); Rb.AppendLine("req.set_cookie(@cookie_store)");
-            Rb.Append("\t\t"); Rb.AppendLine("update_req(req)");
+            Rb.Append("  "); Rb.AppendLine("def DoBeforeSending(req, res)");
+            Rb.Append("    "); Rb.AppendLine(@"Trace(req, ""Preparing 'Main Request' before it is sent"", ""The following request is the 'Main Request' \r\n\r\n\r\n:"" + req.to_string)");
+            Rb.Append("    "); Rb.AppendLine("req.set_cookie(@cookie_store)");
+            Rb.Append("    "); Rb.AppendLine("update_req(req)");
 
             if (LoginActionPseudoCode.Length > 0)
             {
-                Py.Append("\t\t"); Py.AppendLine("if not self.is_logged_in():");
-                Py.Append("\t\t\t"); Py.AppendLine("self.login_user(req)");
+                Py.Append("    "); Py.AppendLine("if not self.is_logged_in():");
+                Py.Append("      "); Py.AppendLine("self.login_user(req)");
 
-                Rb.Append("\t\t"); Rb.AppendLine("if not is_logged_in");
-                Rb.Append("\t\t\t"); Rb.AppendLine("login_user(req)");
-                Rb.Append("\t\t"); Rb.AppendLine("end");
+                Rb.Append("    "); Rb.AppendLine("if not is_logged_in");
+                Rb.Append("      "); Rb.AppendLine("login_user(req)");
+                Rb.Append("    "); Rb.AppendLine("end");
             }
             if (MultiStepActionPseudoCode.Length > 0)
             {
-                Py.Append("\t\t"); Py.AppendLine("req = self.multi_step_before_sending(req)");
+                Py.Append("    "); Py.AppendLine("req = self.multi_step_before_sending(req)");
 
-                Rb.Append("\t\t"); Rb.AppendLine("req = multi_step_before_sending(req)");
+                Rb.Append("    "); Rb.AppendLine("req = multi_step_before_sending(req)");
             }
             if (UpdateCSRFTokensPseudoCode.Length > 0)
             {
-                Py.Append("\t\t"); Py.AppendLine("req = self.update_csrf_tokens(req)");
+                Py.Append("    "); Py.AppendLine("req = self.update_csrf_tokens(req)");
 
-                Rb.Append("\t\t"); Rb.AppendLine("req = update_csrf_tokens(req)");
+                Rb.Append("    "); Rb.AppendLine("req = update_csrf_tokens(req)");
             }
-            Py.Append("\t\t"); Py.AppendLine("self.last_main_request_signature = Tools.MD5(req.ToString())");
-            Py.Append("\t\t"); Py.AppendLine("return req");
+            Py.Append("    "); Py.AppendLine("self.last_main_request_signature = Tools.MD5(req.ToString())");
+            Py.Append("    "); Py.AppendLine("return req");
             Py.AppendLine();
 
-            Rb.Append("\t\t"); Rb.AppendLine("@last_main_request_signature = Tools.md5(req.to_string)");
-            Rb.Append("\t\t"); Rb.AppendLine("return req");
-            Rb.Append("\t"); Rb.AppendLine("end");
+            Rb.Append("    "); Rb.AppendLine("@last_main_request_signature = Tools.md5(req.to_string)");
+            Rb.Append("    "); Rb.AppendLine("return req");
+            Rb.Append("  "); Rb.AppendLine("end");
             Rb.AppendLine();
 
 
@@ -2225,41 +2225,41 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
             StringBuilder Rb = new StringBuilder();
             
             Py.AppendLine();
-            Py.Append("\t"); Py.AppendLine("def DoAfterSending(self, res, req):");
-            Py.Append("\t\t"); Py.AppendLine("self.Trace(req, '\\'Main Request\\' sent successfully and got the response', 'The \\'Main Request\\' has been sent to the server successfully and a response has been recieved. Click on the load request/response button to view the Main Request and its response.')");
+            Py.Append("  "); Py.AppendLine("def DoAfterSending(self, res, req):");
+            Py.Append("    "); Py.AppendLine("self.Trace(req, '\\'Main Request\\' sent successfully and got the response', 'The \\'Main Request\\' has been sent to the server successfully and a response has been recieved. Click on the load request/response button to view the Main Request and its response.')");
 
             Rb.AppendLine();
-            Rb.Append("\t"); Rb.AppendLine("def DoAfterSending(res, req)");
-            Rb.Append("\t\t"); Rb.AppendLine("Trace(req, '\\'Main Request\\' sent successfully and got the response', 'The \\'Main Request\\' has been sent to the server successfully and a response has been recieved. Click on the load request/response button to view the Main Request and its response.')");
+            Rb.Append("  "); Rb.AppendLine("def DoAfterSending(res, req)");
+            Rb.Append("    "); Rb.AppendLine("Trace(req, '\\'Main Request\\' sent successfully and got the response', 'The \\'Main Request\\' has been sent to the server successfully and a response has been recieved. Click on the load request/response button to view the Main Request and its response.')");
 
             string ResponseToReturn = "res";
             if (NamesOfCookieParametersToUpdate.Count > 0)
             {
-                Py.Append("\t\t"); Py.AppendLine("self.read_set_cookies(req, res)");
+                Py.Append("    "); Py.AppendLine("self.read_set_cookies(req, res)");
 
-                Rb.Append("\t\t"); Rb.AppendLine("read_set_cookies(req, res)");
+                Rb.Append("    "); Rb.AppendLine("read_set_cookies(req, res)");
             }
             if (MultiStepActionPseudoCode.Length > 0)
             {
-                Py.Append("\t\t"); Py.AppendLine("res_after_multi_step = self.multi_step_after_sending(res, req)");
+                Py.Append("    "); Py.AppendLine("res_after_multi_step = self.multi_step_after_sending(res, req)");
 
-                Rb.Append("\t\t"); Rb.AppendLine("res_after_multi_step = multi_step_after_sending(res, req)");
+                Rb.Append("    "); Rb.AppendLine("res_after_multi_step = multi_step_after_sending(res, req)");
 
                 ResponseToReturn = "res_after_multi_step";
             }
             if (FollowRedirectPseudoCode.Length > 0)
             {
-                Py.Append("\t\t"); Py.AppendLine(string.Format("res_after_follow_redirect = self.follow_redirect(req, {0})", ResponseToReturn));
+                Py.Append("    "); Py.AppendLine(string.Format("res_after_follow_redirect = self.follow_redirect(req, {0})", ResponseToReturn));
 
-                Rb.Append("\t\t"); Rb.AppendLine(string.Format("res_after_follow_redirect = follow_redirect(req, {0})", ResponseToReturn));
+                Rb.Append("    "); Rb.AppendLine(string.Format("res_after_follow_redirect = follow_redirect(req, {0})", ResponseToReturn));
 
                 ResponseToReturn = "res_after_follow_redirect";
             }
-            Py.Append("\t\t"); Py.AppendLine(string.Format("return {0}", ResponseToReturn));
+            Py.Append("    "); Py.AppendLine(string.Format("return {0}", ResponseToReturn));
             Py.AppendLine();
 
-            Rb.Append("\t\t"); Rb.AppendLine(string.Format("return {0}", ResponseToReturn));
-            Rb.Append("\t"); Rb.AppendLine("end");
+            Rb.Append("    "); Rb.AppendLine(string.Format("return {0}", ResponseToReturn));
+            Rb.Append("  "); Rb.AppendLine("end");
             Rb.AppendLine();
 
             Code[0] = Py.ToString();
@@ -2281,29 +2281,29 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
             StringBuilder Rb = new StringBuilder();
 
             Py.AppendLine();
-            Py.Append("\t"); Py.AppendLine("def read_set_cookies(self, req, res):");
+            Py.Append("  "); Py.AppendLine("def read_set_cookies(self, req, res):");
 
             Rb.AppendLine();
-            Rb.Append("\t"); Rb.AppendLine("def read_set_cookies(req, res)");
+            Rb.Append("  "); Rb.AppendLine("def read_set_cookies(req, res)");
 
             StringBuilder NamesList = new StringBuilder();
             foreach (string CookieName in NamesOfCookieParametersToUpdate)
             {
                 NamesList.Append("'");NamesList.Append(CookieName.Replace("'", "\'"));NamesList.Append("'");NamesList.Append(",");
             }
-            Py.Append("\t\t"); Py.AppendLine(string.Format("cookies_to_update = [{0}]", NamesList.ToString().TrimEnd(new char[]{','})));
-            Py.Append("\t\t"); Py.AppendLine("for sc in res.SetCookies:");
-            Py.Append("\t\t\t"); Py.AppendLine("if cookies_to_update.count(sc.Name) > 0 and len(sc.Value) > 0:");
-            Py.Append("\t\t\t\t"); Py.AppendLine("self.cookie_store.Add(req, sc)");
+            Py.Append("    "); Py.AppendLine(string.Format("cookies_to_update = [{0}]", NamesList.ToString().TrimEnd(new char[]{','})));
+            Py.Append("    "); Py.AppendLine("for sc in res.SetCookies:");
+            Py.Append("      "); Py.AppendLine("if cookies_to_update.count(sc.Name) > 0 and len(sc.Value) > 0:");
+            Py.Append("        "); Py.AppendLine("self.cookie_store.Add(req, sc)");
             Py.AppendLine();
 
-            Rb.Append("\t\t"); Rb.AppendLine(string.Format("cookies_to_update = [{0}]", NamesList.ToString().TrimEnd(new char[] { ',' })));
-            Rb.Append("\t\t"); Rb.AppendLine("for sc in res.set_cookies");
-            Rb.Append("\t\t\t"); Rb.AppendLine("if cookies_to_update.index(sc.name) and sc.value.length > 0");
-            Rb.Append("\t\t\t\t"); Rb.AppendLine("@cookie_store.add(req, sc)");
-            Rb.Append("\t\t\t"); Rb.AppendLine("end");
-            Rb.Append("\t\t"); Rb.AppendLine("end");
-            Rb.Append("\t"); Rb.AppendLine("end");
+            Rb.Append("    "); Rb.AppendLine(string.Format("cookies_to_update = [{0}]", NamesList.ToString().TrimEnd(new char[] { ',' })));
+            Rb.Append("    "); Rb.AppendLine("for sc in res.set_cookies");
+            Rb.Append("      "); Rb.AppendLine("if cookies_to_update.index(sc.name) and sc.value.length > 0");
+            Rb.Append("        "); Rb.AppendLine("@cookie_store.add(req, sc)");
+            Rb.Append("      "); Rb.AppendLine("end");
+            Rb.Append("    "); Rb.AppendLine("end");
+            Rb.Append("  "); Rb.AppendLine("end");
             Rb.AppendLine();
 
             Code[0] = Py.ToString();
@@ -2342,82 +2342,82 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
             }
 
             Py.AppendLine();
-            Py.Append("\t"); Py.AppendLine("def follow_redirect(self, req, res):");
-            Py.Append("\t\t"); Py.AppendLine(string.Format("if res.Headers.Has('Location'):", ResponseCode));
+            Py.Append("  "); Py.AppendLine("def follow_redirect(self, req, res):");
+            Py.Append("    "); Py.AppendLine(string.Format("if res.Headers.Has('Location'):", ResponseCode));
 
             Rb.AppendLine();
-            Rb.Append("\t"); Rb.AppendLine("def follow_redirect(req, res)");
-            Rb.Append("\t\t"); Rb.AppendLine(string.Format("if res.headers.has('Location')", ResponseCode));
+            Rb.Append("  "); Rb.AppendLine("def follow_redirect(req, res)");
+            Rb.Append("    "); Rb.AppendLine(string.Format("if res.headers.has('Location')", ResponseCode));
 
             if (MatchType.Length > 0 && Keyword.Length > 0)
             {
                 switch (MatchType)
                 {
                     case ("StartsWith"):
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("if res.Headers.Get('Location').startswith('{0}'):",Keyword));
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("if res.headers.get('Location').start_with?('{0}')",Keyword));
+                        Py.Append("      "); Py.AppendLine(string.Format("if res.Headers.Get('Location').startswith('{0}'):",Keyword));
+                        Rb.Append("      "); Rb.AppendLine(string.Format("if res.headers.get('Location').start_with?('{0}')",Keyword));
                         break;
                     case ("EndsWith"):
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("if res.Headers.Get('Location').endswith('{0}'):",Keyword));
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("if res.headers.get('Location').end_with?('{0}')",Keyword));
+                        Py.Append("      "); Py.AppendLine(string.Format("if res.Headers.Get('Location').endswith('{0}'):",Keyword));
+                        Rb.Append("      "); Rb.AppendLine(string.Format("if res.headers.get('Location').end_with?('{0}')",Keyword));
                         break;
                     case ("Has"):
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("if res.Headers.Get('Location').count('{0}') > 0:",Keyword));
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("if res.headers.get('Location').index('{0}')",Keyword));
+                        Py.Append("      "); Py.AppendLine(string.Format("if res.Headers.Get('Location').count('{0}') > 0:",Keyword));
+                        Rb.Append("      "); Rb.AppendLine(string.Format("if res.headers.get('Location').index('{0}')",Keyword));
                         break;
                     case ("NotHas"):
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("if res.Headers.Get('Location').count('{0}') == 0:",Keyword));
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("if not res.headers.get('Location').index('{0}')",Keyword));
+                        Py.Append("      "); Py.AppendLine(string.Format("if res.Headers.Get('Location').count('{0}') == 0:",Keyword));
+                        Rb.Append("      "); Rb.AppendLine(string.Format("if not res.headers.get('Location').index('{0}')",Keyword));
                         break;
                     case ("Regex"):
                         if (!(Keyword.StartsWith("/") && Keyword.EndsWith("/"))) throw new Exception("Invalid Pseudo Code");
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("if re.match('{0}', res.Headers.Get('Location')):", Keyword.Trim('/')));
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("if res.headers.get('Location') =~ /{0}/", Keyword.Trim('/')));
+                        Py.Append("      "); Py.AppendLine(string.Format("if re.match('{0}', res.Headers.Get('Location')):", Keyword.Trim('/')));
+                        Rb.Append("      "); Rb.AppendLine(string.Format("if res.headers.get('Location') =~ /{0}/", Keyword.Trim('/')));
                         break;
                 }
-                Py.Append("\t\t\t\t"); Py.AppendLine("try:");
-                Py.Append("\t\t\t\t\t"); Py.AppendLine("redirect_req = req.GetRedirect(res)");
-                Py.Append("\t\t\t\t\t"); Py.AppendLine("if redirect_req:");
-                Py.Append("\t\t\t\t\t\t"); Py.AppendLine("res = redirect_req.Send()");
-                Py.Append("\t\t\t\t\t\t"); Py.AppendLine("self.Trace(redirect_req, 'Followed redirection in the response for Main Request', 'The response for the Main Request had a redirect that matched the signature specified by user, so it was followed. Click on the load request/response button to view the request that was made to follow the redirect and its response.')");
-                Py.Append("\t\t\t\t\t\t"); Py.AppendLine("return res");
-                Py.Append("\t\t\t\t\t"); Py.AppendLine("else:");
-                Py.Append("\t\t\t\t\t\t"); Py.AppendLine("self.Trace(req, 'No redirect in the in the response for Main Request', 'The response for the Main Request did not have a redirect so the follow redirect action is not being performed. Click on the load request/response button to view the Main Request and its response.')");
-                Py.Append("\t\t\t\t\t\t"); Py.AppendLine("return res");
-                Py.Append("\t\t\t\t"); Py.AppendLine("except Exception as e:");
-                Py.Append("\t\t\t\t\t"); Py.AppendLine("self.Trace(req, 'Error following redirection in the response for Main Request', 'The response for the Main Request had a redirect that matched the signature specified by user, so it was followed. But there was an error when following it. Click on the load request/response button to view the Main Request and its response. Exception details - ' + e.Message)");
-                Py.Append("\t\t\t\t\t"); Py.AppendLine("raise e");
+                Py.Append("        "); Py.AppendLine("try:");
+                Py.Append("          "); Py.AppendLine("redirect_req = req.GetRedirect(res)");
+                Py.Append("          "); Py.AppendLine("if redirect_req:");
+                Py.Append("            "); Py.AppendLine("res = redirect_req.Send()");
+                Py.Append("            "); Py.AppendLine("self.Trace(redirect_req, 'Followed redirection in the response for Main Request', 'The response for the Main Request had a redirect that matched the signature specified by user, so it was followed. Click on the load request/response button to view the request that was made to follow the redirect and its response.')");
+                Py.Append("            "); Py.AppendLine("return res");
+                Py.Append("          "); Py.AppendLine("else:");
+                Py.Append("            "); Py.AppendLine("self.Trace(req, 'No redirect in the in the response for Main Request', 'The response for the Main Request did not have a redirect so the follow redirect action is not being performed. Click on the load request/response button to view the Main Request and its response.')");
+                Py.Append("            "); Py.AppendLine("return res");
+                Py.Append("        "); Py.AppendLine("except Exception as e:");
+                Py.Append("          "); Py.AppendLine("self.Trace(req, 'Error following redirection in the response for Main Request', 'The response for the Main Request had a redirect that matched the signature specified by user, so it was followed. But there was an error when following it. Click on the load request/response button to view the Main Request and its response. Exception details - ' + e.Message)");
+                Py.Append("          "); Py.AppendLine("raise e");
 
-                Rb.Append("\t\t\t\t"); Rb.AppendLine("begin");
-                Rb.Append("\t\t\t\t\t"); Rb.AppendLine("redirect_req = req.get_redirect(res)");
-                Rb.Append("\t\t\t\t\t"); Rb.AppendLine("if redirect_req");
-                Rb.Append("\t\t\t\t\t\t"); Rb.AppendLine("res = redirect_req.send_req");
-                Rb.Append("\t\t\t\t\t\t"); Rb.AppendLine("Trace(redirect_req, 'Followed redirection in the response for Main Request', 'The response for the Main Request had a redirect that matched the signature specified by user, so it was followed. Click on the load request/response button to view the request that was made to follow the redirect and its response.')");
-                Rb.Append("\t\t\t\t\t\t"); Rb.AppendLine("return res");
-                Rb.Append("\t\t\t\t\t"); Rb.AppendLine("else");
-                Rb.Append("\t\t\t\t\t\t"); Rb.AppendLine("Trace(req, 'No redirect in the in the response for Main Request', 'The response for the Main Request did not have a redirect so the follow redirect action is not being performed.  Click on the load request/response button to view the Main Request and its response.')");
-                Rb.Append("\t\t\t\t\t\t"); Rb.AppendLine("return res");
-                Rb.Append("\t\t\t\t\t"); Rb.AppendLine("end");
-                Rb.Append("\t\t\t\t"); Rb.AppendLine("rescue => e");
-                Rb.Append("\t\t\t\t\t"); Rb.AppendLine("Trace(req, 'Error following redirection in the response for Main Request', 'The response for the Main Request had a redirect that matched the signature specified by user, so it was followed. But there was an error when following it.  Click on the load request/response button to view the Main Request and its response. Exception details - ' + e.Message)");
-                Rb.Append("\t\t\t\t\t"); Rb.AppendLine("raise e");
-                Rb.Append("\t\t\t\t"); Rb.AppendLine("end");
+                Rb.Append("        "); Rb.AppendLine("begin");
+                Rb.Append("          "); Rb.AppendLine("redirect_req = req.get_redirect(res)");
+                Rb.Append("          "); Rb.AppendLine("if redirect_req");
+                Rb.Append("            "); Rb.AppendLine("res = redirect_req.send_req");
+                Rb.Append("            "); Rb.AppendLine("Trace(redirect_req, 'Followed redirection in the response for Main Request', 'The response for the Main Request had a redirect that matched the signature specified by user, so it was followed. Click on the load request/response button to view the request that was made to follow the redirect and its response.')");
+                Rb.Append("            "); Rb.AppendLine("return res");
+                Rb.Append("          "); Rb.AppendLine("else");
+                Rb.Append("            "); Rb.AppendLine("Trace(req, 'No redirect in the in the response for Main Request', 'The response for the Main Request did not have a redirect so the follow redirect action is not being performed.  Click on the load request/response button to view the Main Request and its response.')");
+                Rb.Append("            "); Rb.AppendLine("return res");
+                Rb.Append("          "); Rb.AppendLine("end");
+                Rb.Append("        "); Rb.AppendLine("rescue => e");
+                Rb.Append("          "); Rb.AppendLine("Trace(req, 'Error following redirection in the response for Main Request', 'The response for the Main Request had a redirect that matched the signature specified by user, so it was followed. But there was an error when following it.  Click on the load request/response button to view the Main Request and its response. Exception details - ' + e.Message)");
+                Rb.Append("          "); Rb.AppendLine("raise e");
+                Rb.Append("        "); Rb.AppendLine("end");
             }
-            Py.Append("\t\t\t"); Py.AppendLine("else:");
-            Py.Append("\t\t\t\t"); Py.AppendLine("self.Trace(req, 'Did not follow redirection in the response for Main Request', 'The response for the Main Request did not match the redirect signature specified by user so it was not followed. Click on the load request/response button to view the Main Request and its response.')");
-            Py.Append("\t\t\t\t"); Py.AppendLine("return res");
-            Py.Append("\t\t"); Py.AppendLine("self.Trace(req, 'Did not follow redirection in the response for Main Request', 'The response for the Main Request did not have a Location header. Click on the load request/response button to view the Main Request and its response.')");
-            Py.Append("\t\t"); Py.AppendLine("return res");
+            Py.Append("      "); Py.AppendLine("else:");
+            Py.Append("        "); Py.AppendLine("self.Trace(req, 'Did not follow redirection in the response for Main Request', 'The response for the Main Request did not match the redirect signature specified by user so it was not followed. Click on the load request/response button to view the Main Request and its response.')");
+            Py.Append("        "); Py.AppendLine("return res");
+            Py.Append("    "); Py.AppendLine("self.Trace(req, 'Did not follow redirection in the response for Main Request', 'The response for the Main Request did not have a Location header. Click on the load request/response button to view the Main Request and its response.')");
+            Py.Append("    "); Py.AppendLine("return res");
             Py.AppendLine();
 
-            Rb.Append("\t\t\t"); Rb.AppendLine("else");
-            Rb.Append("\t\t\t\t"); Rb.AppendLine("Trace(req, 'Did not follow redirection in the response for Main Request', 'The response for the Main Request did not match the redirect signature specified by user so it was not followed. Click on the load request/response button to view the Main Request and its response.')");
-            Rb.Append("\t\t\t\t"); Rb.AppendLine("return res");
-            Rb.Append("\t\t\t"); Rb.AppendLine("end");
-            Rb.Append("\t\t"); Rb.AppendLine("end");
-            Rb.Append("\t\t"); Rb.AppendLine("Trace(req, 'Did not follow redirection in the response for Main Request', 'The response for the Main Request did not have a Location header. Click on the load request/response button to view the Main Request and its response.')");
-            Rb.Append("\t\t"); Rb.AppendLine("return res");
-            Rb.Append("\t"); Rb.AppendLine("end");
+            Rb.Append("      "); Rb.AppendLine("else");
+            Rb.Append("        "); Rb.AppendLine("Trace(req, 'Did not follow redirection in the response for Main Request', 'The response for the Main Request did not match the redirect signature specified by user so it was not followed. Click on the load request/response button to view the Main Request and its response.')");
+            Rb.Append("        "); Rb.AppendLine("return res");
+            Rb.Append("      "); Rb.AppendLine("end");
+            Rb.Append("    "); Rb.AppendLine("end");
+            Rb.Append("    "); Rb.AppendLine("Trace(req, 'Did not follow redirection in the response for Main Request', 'The response for the Main Request did not have a Location header. Click on the load request/response button to view the Main Request and its response.')");
+            Rb.Append("    "); Rb.AppendLine("return res");
+            Rb.Append("  "); Rb.AppendLine("end");
             Rb.AppendLine();
 
             Code[0] = Py.ToString();
@@ -2467,10 +2467,10 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
             }
 
             Py.AppendLine();
-            Py.Append("\t"); Py.AppendLine("def is_logged_in(self):");
+            Py.Append("  "); Py.AppendLine("def is_logged_in(self):");
 
             Rb.AppendLine();
-            Rb.Append("\t"); Rb.AppendLine("def is_logged_in()");
+            Rb.Append("  "); Rb.AppendLine("def is_logged_in()");
 
             string[] LoginCheckCode = RequestSourceAndParametersUpdatePseudoCodeToCode(LoginCheckLabel, LoginCheckRequestSteps);
             Py.Append(LoginCheckCode[0]);
@@ -2480,37 +2480,37 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
             Py.Append(ResponseSignatureCode[0]);
             Py.AppendLine();
             Rb.Append(ResponseSignatureCode[1]);
-            Rb.Append("\t"); Rb.AppendLine("end");
+            Rb.Append("  "); Rb.AppendLine("end");
             Rb.AppendLine();
             
             Py.AppendLine();
-            Py.Append("\t"); Py.AppendLine("def login_user(self, req):");
-            Py.Append("\t\t"); Py.AppendLine("self.Trace(None, 'User is logged out, performing login', 'User is logged out, performing login')");
+            Py.Append("  "); Py.AppendLine("def login_user(self, req):");
+            Py.Append("    "); Py.AppendLine("self.Trace(None, 'User is logged out, performing login', 'User is logged out, performing login')");
 
             Rb.AppendLine();
-            Rb.Append("\t"); Rb.AppendLine("def login_user(req)");
-            Rb.Append("\t\t"); Rb.AppendLine("Trace(nil, 'User is logged out, performing login', 'User is logged out, performing login')");
+            Rb.Append("  "); Rb.AppendLine("def login_user(req)");
+            Rb.Append("    "); Rb.AppendLine("Trace(nil, 'User is logged out, performing login', 'User is logged out, performing login')");
 
             string[] PerformLoginCode = RequestSourceAndParametersUpdatePseudoCodeToCode(PerformLoginLabel, PerformLoginSteps);
             Py.Append(PerformLoginCode[0]);
             Rb.Append(PerformLoginCode[1]);
 
-            Py.Append("\t\t"); Py.AppendLine("if self.is_logged_in():");
-            Py.Append("\t\t\t"); Py.AppendLine("self.Trace(None, 'Login Successful', 'User was successfully logged in.')");
-            Py.Append("\t\t"); Py.AppendLine("else:");
-            Py.Append("\t\t\t"); Py.AppendLine("self.Trace(None, 'Login failed', 'Unable to perform a successful login')");
-            Py.Append("\t\t\t"); Py.AppendLine("raise Exception('Unable to log user in')");
+            Py.Append("    "); Py.AppendLine("if self.is_logged_in():");
+            Py.Append("      "); Py.AppendLine("self.Trace(None, 'Login Successful', 'User was successfully logged in.')");
+            Py.Append("    "); Py.AppendLine("else:");
+            Py.Append("      "); Py.AppendLine("self.Trace(None, 'Login failed', 'Unable to perform a successful login')");
+            Py.Append("      "); Py.AppendLine("raise Exception('Unable to log user in')");
             Py.AppendLine();
 
-            Rb.Append("\t\t"); Rb.AppendLine("if is_logged_in");
-            Rb.Append("\t\t\t"); Rb.AppendLine("Trace(nil, 'Login Successful', 'User was successfully logged in.')");
-            Rb.Append("\t\t"); Rb.AppendLine("else");
-            Rb.Append("\t\t\t"); Rb.AppendLine("Trace(nil, 'Login failed', 'Unable to perform a successful login')");
-            Rb.Append("\t\t\t"); Rb.AppendLine("raise 'Unable to log user in'");
-            Rb.Append("\t\t"); Rb.AppendLine("end");
+            Rb.Append("    "); Rb.AppendLine("if is_logged_in");
+            Rb.Append("      "); Rb.AppendLine("Trace(nil, 'Login Successful', 'User was successfully logged in.')");
+            Rb.Append("    "); Rb.AppendLine("else");
+            Rb.Append("      "); Rb.AppendLine("Trace(nil, 'Login failed', 'Unable to perform a successful login')");
+            Rb.Append("      "); Rb.AppendLine("raise 'Unable to log user in'");
+            Rb.Append("    "); Rb.AppendLine("end");
             Rb.AppendLine();
 
-            Rb.Append("\t"); Rb.AppendLine("end");
+            Rb.Append("  "); Rb.AppendLine("end");
 
             Code[0] = Py.ToString();
             Code[1] = Rb.ToString();
@@ -2553,47 +2553,47 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
                 }
             }
             Py.AppendLine();
-            Py.Append("\t"); Py.AppendLine("def multi_step_before_sending(self, req):");
-            Py.Append("\t\t"); Py.AppendLine("self.Trace(None, 'Going to perform pre-\\'Main Request\\' steps of Multi-Step form submission', 'User selected requests that must be sent as part of multi-step form submission before the \\'Main Request\\' is sent, are going to be sent now.')");
+            Py.Append("  "); Py.AppendLine("def multi_step_before_sending(self, req):");
+            Py.Append("    "); Py.AppendLine("self.Trace(None, 'Going to perform pre-\\'Main Request\\' steps of Multi-Step form submission', 'User selected requests that must be sent as part of multi-step form submission before the \\'Main Request\\' is sent, are going to be sent now.')");
 
             Rb.AppendLine();
-            Rb.Append("\t"); Rb.AppendLine("def multi_step_before_sending(req)");
-            Rb.Append("\t\t"); Rb.AppendLine("Trace(nil, 'Going to perform pre-\\'Main Request\\' steps of Multi-Step form submission', 'User selected requests that must be sent as part of multi-step form submission before the \\'Main Request\\' is sent, are going to be sent now.')");
+            Rb.Append("  "); Rb.AppendLine("def multi_step_before_sending(req)");
+            Rb.Append("    "); Rb.AppendLine("Trace(nil, 'Going to perform pre-\\'Main Request\\' steps of Multi-Step form submission', 'User selected requests that must be sent as part of multi-step form submission before the \\'Main Request\\' is sent, are going to be sent now.')");
 
             string[] PreInjectionCode = RequestSourceAndParametersUpdatePseudoCodeToCode(MultiStepPreLabel, PreInjectionSteps);
             Py.Append(PreInjectionCode[0]);
             Rb.Append(PreInjectionCode[1]);
 
-            Py.Append("\t\t"); Py.AppendLine("return req");
+            Py.Append("    "); Py.AppendLine("return req");
             Py.AppendLine();
 
-            Rb.Append("\t\t"); Rb.AppendLine("return req");
-            Rb.Append("\t"); Rb.AppendLine("end");
+            Rb.Append("    "); Rb.AppendLine("return req");
+            Rb.Append("  "); Rb.AppendLine("end");
             Rb.AppendLine();
 
             Py.AppendLine();
-            Py.Append("\t"); Py.AppendLine("def multi_step_after_sending(self, res, req):");
-            Py.Append("\t\t"); Py.AppendLine("self.Trace(None, 'Going to perform post-\\'Main Request\\' steps of Multi-Step form submission', 'User selected requests that must be sent as part of multi-step form submission after the \\'Main Request\\' is sent, are going to be sent now.')");
+            Py.Append("  "); Py.AppendLine("def multi_step_after_sending(self, res, req):");
+            Py.Append("    "); Py.AppendLine("self.Trace(None, 'Going to perform post-\\'Main Request\\' steps of Multi-Step form submission', 'User selected requests that must be sent as part of multi-step form submission after the \\'Main Request\\' is sent, are going to be sent now.')");
 
             Rb.AppendLine();
-            Rb.Append("\t"); Rb.AppendLine("def multi_step_after_sending(res, req)");
-            Rb.Append("\t\t"); Rb.AppendLine("Trace(nil, 'Going to perform post-\\'Main Request\\' steps of Multi-Step form submission', 'User selected requests that must be sent as part of multi-step form submission after the \\'Main Request\\' is sent, are going to be sent now.')");
+            Rb.Append("  "); Rb.AppendLine("def multi_step_after_sending(res, req)");
+            Rb.Append("    "); Rb.AppendLine("Trace(nil, 'Going to perform post-\\'Main Request\\' steps of Multi-Step form submission', 'User selected requests that must be sent as part of multi-step form submission after the \\'Main Request\\' is sent, are going to be sent now.')");
 
             string[] PostInjectionCode = RequestSourceAndParametersUpdatePseudoCodeToCode(MultiStepPostLabel, PostInjectionSteps);
             Py.Append(PostInjectionCode[0]);
             Rb.Append(PostInjectionCode[1]);
             if (PostInjectionCode[3].Equals("0"))
             {
-                Py.Append("\t\t"); Py.AppendLine("return res");
-                Rb.Append("\t\t"); Rb.AppendLine("return res");
+                Py.Append("    "); Py.AppendLine("return res");
+                Rb.Append("    "); Rb.AppendLine("return res");
             }
             else
             {
-                Py.Append("\t\t"); Py.AppendLine(string.Format("return res_{0}", PostInjectionCode[3]));
-                Rb.Append("\t\t"); Rb.AppendLine(string.Format("return res_{0}", PostInjectionCode[3]));
+                Py.Append("    "); Py.AppendLine(string.Format("return res_{0}", PostInjectionCode[3]));
+                Rb.Append("    "); Rb.AppendLine(string.Format("return res_{0}", PostInjectionCode[3]));
             }
             Py.AppendLine();
-            Rb.Append("\t"); Rb.AppendLine("end");
+            Rb.Append("  "); Rb.AppendLine("end");
             Rb.AppendLine();
 
             Code[0] = Py.ToString();
@@ -2610,22 +2610,22 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
             List<string> TokenUpdateSteps = new List<string>(UpdateCSRFTokensPseudoCode.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries));
 
             Py.AppendLine();
-            Py.Append("\t"); Py.AppendLine("def update_csrf_tokens(self, req):");
-            Py.Append("\t\t"); Py.AppendLine("self.Trace(None, 'Going to update CSRF tokens of the \\'Main Request\\'', 'Any CSRF token in the \\'Main Request\\' that have been selected to be updated before the request is sent are going to be updated now.')");
+            Py.Append("  "); Py.AppendLine("def update_csrf_tokens(self, req):");
+            Py.Append("    "); Py.AppendLine("self.Trace(None, 'Going to update CSRF tokens of the \\'Main Request\\'', 'Any CSRF token in the \\'Main Request\\' that have been selected to be updated before the request is sent are going to be updated now.')");
 
             Rb.AppendLine();
-            Rb.Append("\t"); Rb.AppendLine("def update_csrf_tokens(req)");
-            Rb.Append("\t\t"); Rb.AppendLine("Trace(nil, 'Going to update CSRF tokens of the \\'Main Request\\'', 'Any CSRF token in the \\'Main Request\\' that have been selected to be updated before the request is sent are going to be updated now.')");
+            Rb.Append("  "); Rb.AppendLine("def update_csrf_tokens(req)");
+            Rb.Append("    "); Rb.AppendLine("Trace(nil, 'Going to update CSRF tokens of the \\'Main Request\\'', 'Any CSRF token in the \\'Main Request\\' that have been selected to be updated before the request is sent are going to be updated now.')");
 
             string[] CSRFTokensUpdateCode = RequestSourceAndParametersUpdatePseudoCodeToCode(UpdateCsrfLabel, TokenUpdateSteps);
             Py.Append(CSRFTokensUpdateCode[0]);
             Rb.Append(CSRFTokensUpdateCode[1]);
 
-            Py.Append("\t\t"); Py.AppendLine("return req");
+            Py.Append("    "); Py.AppendLine("return req");
             Py.AppendLine();
 
-            Rb.Append("\t\t"); Rb.AppendLine("return req");
-            Rb.Append("\t"); Rb.AppendLine("end");
+            Rb.Append("    "); Rb.AppendLine("return req");
+            Rb.Append("  "); Rb.AppendLine("end");
             Rb.AppendLine();
 
             Code[0] = Py.ToString();
@@ -2690,24 +2690,24 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
                         RequestDeclarationValue = string.Format("Request.FromBinaryString('{0}')#{1}-{2}", RequestBinaryString, Source, ID);
                         RequestDeclarationsInCode[Label][RequestDeclarationName] = RequestDeclarationValue;
 
-                        Py.Append("\t\t"); Py.AppendLine(string.Format("#Getting request with name '{0}' from the stored values", RequestName));
-                        Py.Append("\t\t"); Py.AppendLine(string.Format("req_{0} = self.reqs['{1}_req_{0}'].GetClone()", ReqCounter, Label));
-                        Py.Append("\t\t"); Py.AppendLine(string.Format("req_{0}.SetSource(self.Name + 'SP')", ReqCounter));
-                        Py.Append("\t\t"); Py.AppendLine(string.Format("req_{0}.SetCookie(self.cookie_store)", ReqCounter));
+                        Py.Append("    "); Py.AppendLine(string.Format("#Getting request with name '{0}' from the stored values", RequestName));
+                        Py.Append("    "); Py.AppendLine(string.Format("req_{0} = self.reqs['{1}_req_{0}'].GetClone()", ReqCounter, Label));
+                        Py.Append("    "); Py.AppendLine(string.Format("req_{0}.SetSource(self.Name + 'SP')", ReqCounter));
+                        Py.Append("    "); Py.AppendLine(string.Format("req_{0}.SetCookie(self.cookie_store)", ReqCounter));
 
-                        Rb.Append("\t\t"); Rb.AppendLine(string.Format("#Getting request with name '{0}' from the stored values", RequestName));
-                        Rb.Append("\t\t"); Rb.AppendLine(string.Format("req_{0} = @reqs['{1}_req_{0}'].get_clone", ReqCounter, Label));
-                        Rb.Append("\t\t"); Rb.AppendLine(string.Format("req_{0}.set_source(name + 'SP')", ReqCounter));
-                        Rb.Append("\t\t"); Rb.AppendLine(string.Format("req_{0}.set_cookie(@cookie_store)", ReqCounter));
+                        Rb.Append("    "); Rb.AppendLine(string.Format("#Getting request with name '{0}' from the stored values", RequestName));
+                        Rb.Append("    "); Rb.AppendLine(string.Format("req_{0} = @reqs['{1}_req_{0}'].get_clone", ReqCounter, Label));
+                        Rb.Append("    "); Rb.AppendLine(string.Format("req_{0}.set_source(name + 'SP')", ReqCounter));
+                        Rb.Append("    "); Rb.AppendLine(string.Format("req_{0}.set_cookie(@cookie_store)", ReqCounter));
                     }
                     else if (PseudoCodeLine.Equals("GetRequest ToInject"))
                     {
                         MaxCounter = ReqCounter;
-                        Py.Append("\t\t"); Py.AppendLine("#Update the cookies of the request from the Cookie store");
-                        Py.Append("\t\t"); Py.AppendLine("req.SetCookie(self.cookie_store)");
+                        Py.Append("    "); Py.AppendLine("#Update the cookies of the request from the Cookie store");
+                        Py.Append("    "); Py.AppendLine("req.SetCookie(self.cookie_store)");
 
-                        Rb.Append("\t\t"); Rb.AppendLine("#Update the cookies of the request from the Cookie store");
-                        Rb.Append("\t\t"); Rb.AppendLine("req.set_cookie(@cookie_store)");
+                        Rb.Append("    "); Rb.AppendLine("#Update the cookies of the request from the Cookie store");
+                        Rb.Append("    "); Rb.AppendLine("req.set_cookie(@cookie_store)");
                     }
                     else
                     {
@@ -2717,24 +2717,24 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
                 else if (PseudoCodeLine.Equals("SendRequest"))
                 {
                     ResCounter++;
-                    Py.Append("\t\t"); Py.AppendLine(string.Format("res_{0} = None", ResCounter));
-                    Py.Append("\t\t"); Py.AppendLine("try:");
-                    Py.Append("\t\t\t"); Py.AppendLine(string.Format("res_{0} = req_{1}.Send()", ResCounter, ReqCounter));
-                    Py.Append("\t\t\t"); Py.AppendLine(string.Format("self.Trace(req_{0}, 'Sent \\'{1}\\'', 'The \\'{2}\\' request has been successfully sent. Click on the load request/response button to view this request and its response.')", ReqCounter, RequestNames[RequestNames.Count - 1], RequestNames[RequestNames.Count - 1]));
-                    Py.Append("\t\t"); Py.AppendLine("except Exception as e:");
-                    Py.Append("\t\t\t"); Py.AppendLine(string.Format("self.Trace(req_{0}, 'Error sending \\'{1}\\'', e.Message)", ReqCounter, RequestNames[RequestNames.Count - 1]));
-                    Py.Append("\t\t\t"); Py.AppendLine("raise e");
-                    Py.Append("\t\t"); Py.AppendLine(string.Format("self.cookie_store.Add(req_{0}, res_{1})", ReqCounter, ResCounter));
+                    Py.Append("    "); Py.AppendLine(string.Format("res_{0} = None", ResCounter));
+                    Py.Append("    "); Py.AppendLine("try:");
+                    Py.Append("      "); Py.AppendLine(string.Format("res_{0} = req_{1}.Send()", ResCounter, ReqCounter));
+                    Py.Append("      "); Py.AppendLine(string.Format("self.Trace(req_{0}, 'Sent \\'{1}\\'', 'The \\'{2}\\' request has been successfully sent. Click on the load request/response button to view this request and its response.')", ReqCounter, RequestNames[RequestNames.Count - 1], RequestNames[RequestNames.Count - 1]));
+                    Py.Append("    "); Py.AppendLine("except Exception as e:");
+                    Py.Append("      "); Py.AppendLine(string.Format("self.Trace(req_{0}, 'Error sending \\'{1}\\'', e.Message)", ReqCounter, RequestNames[RequestNames.Count - 1]));
+                    Py.Append("      "); Py.AppendLine("raise e");
+                    Py.Append("    "); Py.AppendLine(string.Format("self.cookie_store.Add(req_{0}, res_{1})", ReqCounter, ResCounter));
 
-                    Rb.Append("\t\t"); Rb.AppendLine(string.Format("res_{0} = nil", ResCounter));
-                    Rb.Append("\t\t"); Rb.AppendLine("begin");
-                    Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("res_{0} = req_{1}.send_req", ResCounter, ReqCounter));
-                    Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("Trace(req_{0}, 'Sent \\'{1}\\'', 'The \\'{2}\\' request has been successfully sent. Click on the load request/response button to view this request and its response.')", ReqCounter, RequestNames[RequestNames.Count - 1], RequestNames[RequestNames.Count - 1]));
-                    Rb.Append("\t\t"); Rb.AppendLine("rescue => e");
-                    Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("Trace(req_{0}, 'Error sending \\'{1}\\'', e.Message)", ReqCounter, RequestNames[RequestNames.Count - 1]));
-                    Rb.Append("\t\t\t"); Rb.AppendLine("raise e");
-                    Rb.Append("\t\t"); Rb.AppendLine("end");
-                    Rb.Append("\t\t"); Rb.AppendLine(string.Format("@cookie_store.add(req_{0}, res_{1})", ReqCounter, ResCounter));
+                    Rb.Append("    "); Rb.AppendLine(string.Format("res_{0} = nil", ResCounter));
+                    Rb.Append("    "); Rb.AppendLine("begin");
+                    Rb.Append("      "); Rb.AppendLine(string.Format("res_{0} = req_{1}.send_req", ResCounter, ReqCounter));
+                    Rb.Append("      "); Rb.AppendLine(string.Format("Trace(req_{0}, 'Sent \\'{1}\\'', 'The \\'{2}\\' request has been successfully sent. Click on the load request/response button to view this request and its response.')", ReqCounter, RequestNames[RequestNames.Count - 1], RequestNames[RequestNames.Count - 1]));
+                    Rb.Append("    "); Rb.AppendLine("rescue => e");
+                    Rb.Append("      "); Rb.AppendLine(string.Format("Trace(req_{0}, 'Error sending \\'{1}\\'', e.Message)", ReqCounter, RequestNames[RequestNames.Count - 1]));
+                    Rb.Append("      "); Rb.AppendLine("raise e");
+                    Rb.Append("    "); Rb.AppendLine("end");
+                    Rb.Append("    "); Rb.AppendLine(string.Format("@cookie_store.add(req_{0}, res_{1})", ReqCounter, ResCounter));
                 }
                 else if (PseudoCodeLine.StartsWith("UpdateRequest"))
                 {
@@ -2827,231 +2827,231 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
                 {
                     if (UpdateType.Equals("Html"))
                     {
-                        Py.Append("\t\t"); Py.AppendLine(string.Format("{0} = None", CurrentParameterValueVariableName));
-                        Py.Append("\t\t"); Py.AppendLine("try:");
-                        Py.Append("\t\t\t"); Py.AppendLine("#Extract the parameter value from the HTML Form fields by parameter name");
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("{0} = {1}.Html.GetValues('input', 'name', '{2}', 'value')[0]", CurrentParameterValueVariableName, ResponseParameterName, ParameterName));
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("self.Trace({0}, 'Reading parameter value from response of \\'{1}\\'', 'Read the response HTML input field with name {2} and got the value -' + {3} + '\\r\\n\\r\\nClick on the load request/response button to view this response.')", PreviousRequestParameterName, PreviousRequestName, ParameterName, CurrentParameterValueVariableName));
-                        Py.Append("\t\t"); Py.AppendLine("except Exception as e:");
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("self.Trace({0}, 'Error reading parameter value from response of \\'{1}\\'', 'There are no HTML input fields in the response with the name \\'{2}\\' that have a valid value attribute.\\r\\n\\r\\nClick on the load request/response button to view this response.')", PreviousRequestParameterName, PreviousRequestName, ParameterName));
-                        Py.Append("\t\t\t"); Py.AppendLine("raise e");
-                        Py.Append("\t\t\t"); Py.AppendLine("pass");//this is required because self.Trace and raise lines will be removed in the update_req methods
+                        Py.Append("    "); Py.AppendLine(string.Format("{0} = None", CurrentParameterValueVariableName));
+                        Py.Append("    "); Py.AppendLine("try:");
+                        Py.Append("      "); Py.AppendLine("#Extract the parameter value from the HTML Form fields by parameter name");
+                        Py.Append("      "); Py.AppendLine(string.Format("{0} = {1}.Html.GetValues('input', 'name', '{2}', 'value')[0]", CurrentParameterValueVariableName, ResponseParameterName, ParameterName));
+                        Py.Append("      "); Py.AppendLine(string.Format("self.Trace({0}, 'Reading parameter value from response of \\'{1}\\'', 'Read the response HTML input field with name {2} and got the value -' + {3} + '\\r\\n\\r\\nClick on the load request/response button to view this response.')", PreviousRequestParameterName, PreviousRequestName, ParameterName, CurrentParameterValueVariableName));
+                        Py.Append("    "); Py.AppendLine("except Exception as e:");
+                        Py.Append("      "); Py.AppendLine(string.Format("self.Trace({0}, 'Error reading parameter value from response of \\'{1}\\'', 'There are no HTML input fields in the response with the name \\'{2}\\' that have a valid value attribute.\\r\\n\\r\\nClick on the load request/response button to view this response.')", PreviousRequestParameterName, PreviousRequestName, ParameterName));
+                        Py.Append("      "); Py.AppendLine("raise e");
+                        Py.Append("      "); Py.AppendLine("pass");//this is required because self.Trace and raise lines will be removed in the update_req methods
 
-                        Rb.Append("\t\t"); Rb.AppendLine(string.Format("{0} = nil", CurrentParameterValueVariableName));
-                        Rb.Append("\t\t"); Rb.AppendLine("begin");
-                        Rb.Append("\t\t\t"); Rb.AppendLine("#Extract the parameter value from the HTML Form fields by parameter name");
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("{0} = {1}.html.get_values('input', 'name', '{2}', 'value')[0]", CurrentParameterValueVariableName, ResponseParameterName, ParameterName));
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format(@"Trace({0}, 'Reading parameter value from response of \'{1}\'', 'Read the response HTML input field with name {2} and got the value -' + {3} + ""\r\n\r\nClick on the load request/response button to view this response."")", PreviousRequestParameterName, PreviousRequestName, ParameterName, CurrentParameterValueVariableName));
-                        Rb.Append("\t\t"); Rb.AppendLine("rescue => e");
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format(@"Trace({0}, 'Error reading parameter value from response of \'{1}\'', 'There are no HTML input fields in the response with the name \'{2}\' that have a valid value attribute' + ""\r\n\r\nClick on the load request/response button to view this response."")", PreviousRequestParameterName, PreviousRequestName, ParameterName));
-                        Rb.Append("\t\t\t"); Rb.AppendLine("raise e");
-                        Rb.Append("\t\t"); Rb.AppendLine("end");
+                        Rb.Append("    "); Rb.AppendLine(string.Format("{0} = nil", CurrentParameterValueVariableName));
+                        Rb.Append("    "); Rb.AppendLine("begin");
+                        Rb.Append("      "); Rb.AppendLine("#Extract the parameter value from the HTML Form fields by parameter name");
+                        Rb.Append("      "); Rb.AppendLine(string.Format("{0} = {1}.html.get_values('input', 'name', '{2}', 'value')[0]", CurrentParameterValueVariableName, ResponseParameterName, ParameterName));
+                        Rb.Append("      "); Rb.AppendLine(string.Format(@"Trace({0}, 'Reading parameter value from response of \'{1}\'', 'Read the response HTML input field with name {2} and got the value -' + {3} + ""\r\n\r\nClick on the load request/response button to view this response."")", PreviousRequestParameterName, PreviousRequestName, ParameterName, CurrentParameterValueVariableName));
+                        Rb.Append("    "); Rb.AppendLine("rescue => e");
+                        Rb.Append("      "); Rb.AppendLine(string.Format(@"Trace({0}, 'Error reading parameter value from response of \'{1}\'', 'There are no HTML input fields in the response with the name \'{2}\' that have a valid value attribute' + ""\r\n\r\nClick on the load request/response button to view this response."")", PreviousRequestParameterName, PreviousRequestName, ParameterName));
+                        Rb.Append("      "); Rb.AppendLine("raise e");
+                        Rb.Append("    "); Rb.AppendLine("end");
                     }
                     else if (UpdateType.Equals("Regex"))
                     {
                         RegexValueOrHint = RegexValueOrHint.Substring(1, RegexValueOrHint.Length - 2).Replace("'", "\\'");
 
-                        Py.Append("\t\t"); Py.AppendLine(string.Format("{0} = None", CurrentParameterValueVariableName));
-                        Py.Append("\t\t"); Py.AppendLine("try:");
-                        Py.Append("\t\t\t"); Py.AppendLine("#Extract the parameter value from the Response body using Regex");
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("{0} = re.search('{1}', {2}.BodyString).groups()[0]", CurrentParameterValueVariableName, RegexValueOrHint, ResponseParameterName));
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("self.Trace({0}, 'Reading parameter value from response of \\'{1}\\'', 'Parsed the response with the regex \\'{2}\\' and got the value -' + {3} + '.\\r\\n Using this to update the {4} parameter.\\r\\n\\r\\nClick on the load request/response button to view this response.')", PreviousRequestParameterName, PreviousRequestName, RegexValueOrHint, CurrentParameterValueVariableName, ParameterName));
-                        Py.Append("\t\t"); Py.AppendLine("except Exception as e:");
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("self.Trace({0}, 'Error reading parameter value from response of \\'{1}\\'', 'There are no matches for the regex \\'{2}\\' in the response, unable to update the {3} parameter.\\r\\n\\r\\nClick on the load request/response button to view this response.')", PreviousRequestParameterName, PreviousRequestName, RegexValueOrHint, ParameterName));
-                        Py.Append("\t\t\t"); Py.AppendLine("raise e");
-                        Py.Append("\t\t\t"); Py.AppendLine("pass");//this is required because self.Trace and raise lines will be removed in the update_req methods
+                        Py.Append("    "); Py.AppendLine(string.Format("{0} = None", CurrentParameterValueVariableName));
+                        Py.Append("    "); Py.AppendLine("try:");
+                        Py.Append("      "); Py.AppendLine("#Extract the parameter value from the Response body using Regex");
+                        Py.Append("      "); Py.AppendLine(string.Format("{0} = re.search('{1}', {2}.BodyString).groups()[0]", CurrentParameterValueVariableName, RegexValueOrHint, ResponseParameterName));
+                        Py.Append("      "); Py.AppendLine(string.Format("self.Trace({0}, 'Reading parameter value from response of \\'{1}\\'', 'Parsed the response with the regex \\'{2}\\' and got the value -' + {3} + '.\\r\\n Using this to update the {4} parameter.\\r\\n\\r\\nClick on the load request/response button to view this response.')", PreviousRequestParameterName, PreviousRequestName, RegexValueOrHint, CurrentParameterValueVariableName, ParameterName));
+                        Py.Append("    "); Py.AppendLine("except Exception as e:");
+                        Py.Append("      "); Py.AppendLine(string.Format("self.Trace({0}, 'Error reading parameter value from response of \\'{1}\\'', 'There are no matches for the regex \\'{2}\\' in the response, unable to update the {3} parameter.\\r\\n\\r\\nClick on the load request/response button to view this response.')", PreviousRequestParameterName, PreviousRequestName, RegexValueOrHint, ParameterName));
+                        Py.Append("      "); Py.AppendLine("raise e");
+                        Py.Append("      "); Py.AppendLine("pass");//this is required because self.Trace and raise lines will be removed in the update_req methods
 
-                        Rb.Append("\t\t"); Rb.AppendLine(string.Format("{0} = nil", CurrentParameterValueVariableName));
-                        Rb.Append("\t\t"); Rb.AppendLine("begin");
-                        Rb.Append("\t\t\t"); Rb.AppendLine("#Extract the parameter value from the Response body using Regex");
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("{0} = {1}.body_string.scan(/{2}/)[0][0]", CurrentParameterValueVariableName, ResponseParameterName, RegexValueOrHint));
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format(@"Trace({0}, 'Reading parameter value from response of \'{1}\'', 'Parsed the response with the regex \'{2}\' and got the value -' + {3} + ""\r\nUsing this to update the {4} parameter\r\n\r\nClick on the load request/response button to view this response."")", PreviousRequestParameterName, PreviousRequestName, RegexValueOrHint, CurrentParameterValueVariableName, ParameterName));
-                        Rb.Append("\t\t"); Rb.AppendLine("rescue => e");
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format(@"Trace({0}, 'Error reading parameter value from response of \'{1}\'', 'There are no matches for the regex \'{2}\' in the response, unable to update the {3} parameter' + ""\r\n\r\nClick on the load request/response button to view this response."")", PreviousRequestParameterName, PreviousRequestName, RegexValueOrHint, ParameterName));
-                        Rb.Append("\t\t\t"); Rb.AppendLine("raise e");
-                        Rb.Append("\t\t"); Rb.AppendLine("end");
+                        Rb.Append("    "); Rb.AppendLine(string.Format("{0} = nil", CurrentParameterValueVariableName));
+                        Rb.Append("    "); Rb.AppendLine("begin");
+                        Rb.Append("      "); Rb.AppendLine("#Extract the parameter value from the Response body using Regex");
+                        Rb.Append("      "); Rb.AppendLine(string.Format("{0} = {1}.body_string.scan(/{2}/)[0][0]", CurrentParameterValueVariableName, ResponseParameterName, RegexValueOrHint));
+                        Rb.Append("      "); Rb.AppendLine(string.Format(@"Trace({0}, 'Reading parameter value from response of \'{1}\'', 'Parsed the response with the regex \'{2}\' and got the value -' + {3} + ""\r\nUsing this to update the {4} parameter\r\n\r\nClick on the load request/response button to view this response."")", PreviousRequestParameterName, PreviousRequestName, RegexValueOrHint, CurrentParameterValueVariableName, ParameterName));
+                        Rb.Append("    "); Rb.AppendLine("rescue => e");
+                        Rb.Append("      "); Rb.AppendLine(string.Format(@"Trace({0}, 'Error reading parameter value from response of \'{1}\'', 'There are no matches for the regex \'{2}\' in the response, unable to update the {3} parameter' + ""\r\n\r\nClick on the load request/response button to view this response."")", PreviousRequestParameterName, PreviousRequestName, RegexValueOrHint, ParameterName));
+                        Rb.Append("      "); Rb.AppendLine("raise e");
+                        Rb.Append("    "); Rb.AppendLine("end");
                     }
                 }
                 else if (UpdateFrom.Equals("User"))
                 {
-                    Py.Append("\t\t"); Py.AppendLine("#Get the parameter value from the user at runtime");
-                    Py.Append("\t\t"); Py.AppendLine(string.Format("self.Trace(None, 'Asking the user for parameter value', 'A prompt was thrown to the user along with a hint to enter the value of the {0} parameter')", ParameterName));
-                    Py.Append("\t\t"); Py.AppendLine(string.Format("{0} = AskUser.ForString('Enter the parameter value for Session Plugin:', self.get_ask_user_message_format('{1}', '{2}', '{3}'))", CurrentParameterValueVariableName, RequestSection, ParameterName, RegexValueOrHint));
-                    Py.Append("\t\t"); Py.AppendLine(string.Format("self.Trace(None, 'Got parameter value from the user', 'A prompt was thrown to the user and the user entered the value -' + {0} + '.\\r\\n Using this to update the {1} parameter.')", CurrentParameterValueVariableName, ParameterName));
+                    Py.Append("    "); Py.AppendLine("#Get the parameter value from the user at runtime");
+                    Py.Append("    "); Py.AppendLine(string.Format("self.Trace(None, 'Asking the user for parameter value', 'A prompt was thrown to the user along with a hint to enter the value of the {0} parameter')", ParameterName));
+                    Py.Append("    "); Py.AppendLine(string.Format("{0} = AskUser.ForString('Enter the parameter value for Session Plugin:', self.get_ask_user_message_format('{1}', '{2}', '{3}'))", CurrentParameterValueVariableName, RequestSection, ParameterName, RegexValueOrHint));
+                    Py.Append("    "); Py.AppendLine(string.Format("self.Trace(None, 'Got parameter value from the user', 'A prompt was thrown to the user and the user entered the value -' + {0} + '.\\r\\n Using this to update the {1} parameter.')", CurrentParameterValueVariableName, ParameterName));
 
-                    Rb.Append("\t\t"); Rb.AppendLine("#Get the parameter value from the user at runtime");
-                    Rb.Append("\t\t"); Rb.AppendLine(string.Format(@"Trace(nil, 'Asking the user for parameter value', 'A prompt was thrown to the user along with a hint to enter the value of the {0} parameter')", ParameterName));
-                    Rb.Append("\t\t"); Rb.AppendLine(string.Format("{0} = AskUser.for_string('Enter the parameter value for Session Plugin:', get_ask_user_message_format('{1}', '{2}', '{3}'))", CurrentParameterValueVariableName, RequestSection, ParameterName, RegexValueOrHint));
-                    Rb.Append("\t\t"); Rb.AppendLine(string.Format(@"Trace(nil, 'Got parameter value from the user', 'A prompt was thrown to the user and the user entered the value -' + {0} + ""\r\nUsing this to update the {1} parameter."")", CurrentParameterValueVariableName, ParameterName));
+                    Rb.Append("    "); Rb.AppendLine("#Get the parameter value from the user at runtime");
+                    Rb.Append("    "); Rb.AppendLine(string.Format(@"Trace(nil, 'Asking the user for parameter value', 'A prompt was thrown to the user along with a hint to enter the value of the {0} parameter')", ParameterName));
+                    Rb.Append("    "); Rb.AppendLine(string.Format("{0} = AskUser.for_string('Enter the parameter value for Session Plugin:', get_ask_user_message_format('{1}', '{2}', '{3}'))", CurrentParameterValueVariableName, RequestSection, ParameterName, RegexValueOrHint));
+                    Rb.Append("    "); Rb.AppendLine(string.Format(@"Trace(nil, 'Got parameter value from the user', 'A prompt was thrown to the user and the user entered the value -' + {0} + ""\r\nUsing this to update the {1} parameter."")", CurrentParameterValueVariableName, ParameterName));
                 }
                 switch (RequestSection)
                 {
                     case ("UrlPathPart"):
-                        Py.Append("\t\t\t");Py.AppendLine("#Update the Url path part field with new value");
-                        Py.Append("\t\t"); Py.AppendLine(string.Format("upp = {0}.UrlPathParts", RequestParameterName));
-                        Py.Append("\t\t"); Py.AppendLine(string.Format("if {0} < len(upp):", ParameterName));
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("upp[{0}] = {1}", ParameterName, CurrentParameterValueVariableName));
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("{0}.UrlPathParts = upp", RequestParameterName));
-                        Py.Append("\t\t"); Py.AppendLine("else:");
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("self.Trace({0}, 'Error updating {1}', 'The {2} request contains only ' + str(len(upp)) + ' UrlPathParts so could not update at position {3}. (Please note that UrlPathParts positions are zero-based so first position is 0, second is 1 and so on)\\r\\n\\r\\nThe Request is:\\r\\n\\r\\n' + {4}.ToString())", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
-                        Py.Append("\t\t\t"); Py.AppendLine("raise Exception('Error updating request urlpathpart parameter')");
-                        Py.Append("\t\t\t"); Py.AppendLine("pass");//this is required because self.Trace and raise lines will be removed in the update_req methods
+                        Py.Append("      ");Py.AppendLine("#Update the Url path part field with new value");
+                        Py.Append("    "); Py.AppendLine(string.Format("upp = {0}.UrlPathParts", RequestParameterName));
+                        Py.Append("    "); Py.AppendLine(string.Format("if {0} < len(upp):", ParameterName));
+                        Py.Append("      "); Py.AppendLine(string.Format("upp[{0}] = {1}", ParameterName, CurrentParameterValueVariableName));
+                        Py.Append("      "); Py.AppendLine(string.Format("{0}.UrlPathParts = upp", RequestParameterName));
+                        Py.Append("    "); Py.AppendLine("else:");
+                        Py.Append("      "); Py.AppendLine(string.Format("self.Trace({0}, 'Error updating {1}', 'The {2} request contains only ' + str(len(upp)) + ' UrlPathParts so could not update at position {3}. (Please note that UrlPathParts positions are zero-based so first position is 0, second is 1 and so on)\\r\\n\\r\\nThe Request is:\\r\\n\\r\\n' + {4}.ToString())", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
+                        Py.Append("      "); Py.AppendLine("raise Exception('Error updating request urlpathpart parameter')");
+                        Py.Append("      "); Py.AppendLine("pass");//this is required because self.Trace and raise lines will be removed in the update_req methods
                         PySpl.Append(Py.ToString());
 
-                        Rb.Append("\t\t");Rb.AppendLine("#Update the Url path part field with new value");
-                        Rb.Append("\t\t"); Rb.AppendLine(string.Format("upp = {0}.url_path_parts", RequestParameterName));
-                        Rb.Append("\t\t"); Rb.AppendLine(string.Format("if {0} < upp.count", ParameterName));
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("upp[{0}] = {1}", ParameterName, CurrentParameterValueVariableName));
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("{0}.url_path_parts = upp", RequestParameterName));
-                        Rb.Append("\t\t"); Rb.AppendLine("else");
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format(@"Trace({0}, 'Error updating {1}', 'The {2} request contains only ' + upp.count.to_s + ' UrlPathParts so could not update at position {3}. (Please note that UrlPathParts positions are zero-based so first position is 0, second is 1 and so on)' + ""\r\n\r\nThe Request is:\r\n\r\n"" + {4}.to_string)", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
-                        Rb.Append("\t\t\t"); Rb.AppendLine("raise 'Error updating request urlpathpart parameter'");
-                        Rb.Append("\t\t"); Rb.AppendLine("end");
+                        Rb.Append("    ");Rb.AppendLine("#Update the Url path part field with new value");
+                        Rb.Append("    "); Rb.AppendLine(string.Format("upp = {0}.url_path_parts", RequestParameterName));
+                        Rb.Append("    "); Rb.AppendLine(string.Format("if {0} < upp.count", ParameterName));
+                        Rb.Append("      "); Rb.AppendLine(string.Format("upp[{0}] = {1}", ParameterName, CurrentParameterValueVariableName));
+                        Rb.Append("      "); Rb.AppendLine(string.Format("{0}.url_path_parts = upp", RequestParameterName));
+                        Rb.Append("    "); Rb.AppendLine("else");
+                        Rb.Append("      "); Rb.AppendLine(string.Format(@"Trace({0}, 'Error updating {1}', 'The {2} request contains only ' + upp.count.to_s + ' UrlPathParts so could not update at position {3}. (Please note that UrlPathParts positions are zero-based so first position is 0, second is 1 and so on)' + ""\r\n\r\nThe Request is:\r\n\r\n"" + {4}.to_string)", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
+                        Rb.Append("      "); Rb.AppendLine("raise 'Error updating request urlpathpart parameter'");
+                        Rb.Append("    "); Rb.AppendLine("end");
                         RbSpl.Append(Rb.ToString());
                         break;
                     case ("Query"):
                         //Update the query parameter of specified request 
-                        Py.Append("\t\t");Py.AppendLine("#Update the Query parameter with the new value");
-                        Py.Append("\t\t"); Py.AppendLine(string.Format("if {0}.Query.Has('{1}'):", RequestParameterName, ParameterName));
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("{0}.Query.Set('{1}', {2})", RequestParameterName, ParameterName, CurrentParameterValueVariableName));
-                        Py.Append("\t\t"); Py.AppendLine("else:");
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("self.Trace({0}, 'Error updating {1}', 'The {2} request does not contain the query parameter {3}\\r\\n\\r\\nThe Request is:\\r\\n\\r\\n' + {4}.ToString())", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
-                        Py.Append("\t\t\t"); Py.AppendLine("raise Exception('Error updating request query parameter')");
-                        Py.Append("\t\t\t"); Py.AppendLine("pass");//this is required because self.Trace and raise lines will be removed in the update_req methods
+                        Py.Append("    ");Py.AppendLine("#Update the Query parameter with the new value");
+                        Py.Append("    "); Py.AppendLine(string.Format("if {0}.Query.Has('{1}'):", RequestParameterName, ParameterName));
+                        Py.Append("      "); Py.AppendLine(string.Format("{0}.Query.Set('{1}', {2})", RequestParameterName, ParameterName, CurrentParameterValueVariableName));
+                        Py.Append("    "); Py.AppendLine("else:");
+                        Py.Append("      "); Py.AppendLine(string.Format("self.Trace({0}, 'Error updating {1}', 'The {2} request does not contain the query parameter {3}\\r\\n\\r\\nThe Request is:\\r\\n\\r\\n' + {4}.ToString())", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
+                        Py.Append("      "); Py.AppendLine("raise Exception('Error updating request query parameter')");
+                        Py.Append("      "); Py.AppendLine("pass");//this is required because self.Trace and raise lines will be removed in the update_req methods
                         PySpl.Append(Py.ToString());
 
-                        Rb.Append("\t\t");Rb.AppendLine("#Update the Query parameter with the new value");
-                        Rb.Append("\t\t"); Rb.AppendLine(string.Format("if {0}.query.has('{1}')", RequestParameterName, ParameterName));
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("{0}.query.set('{1}', {2})", RequestParameterName, ParameterName, CurrentParameterValueVariableName));
-                        Rb.Append("\t\t"); Rb.AppendLine("else");
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format(@"Trace({0}, 'Error updating {1}', 'The {2} request does not contain the query parameter {3}' + ""\r\n\r\nThe Request is:\r\n\r\n"" + {4}.to_string)", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
-                        Rb.Append("\t\t\t"); Rb.AppendLine("raise 'Error updating request query parameter'");
-                        Rb.Append("\t\t"); Rb.AppendLine("end");
+                        Rb.Append("    ");Rb.AppendLine("#Update the Query parameter with the new value");
+                        Rb.Append("    "); Rb.AppendLine(string.Format("if {0}.query.has('{1}')", RequestParameterName, ParameterName));
+                        Rb.Append("      "); Rb.AppendLine(string.Format("{0}.query.set('{1}', {2})", RequestParameterName, ParameterName, CurrentParameterValueVariableName));
+                        Rb.Append("    "); Rb.AppendLine("else");
+                        Rb.Append("      "); Rb.AppendLine(string.Format(@"Trace({0}, 'Error updating {1}', 'The {2} request does not contain the query parameter {3}' + ""\r\n\r\nThe Request is:\r\n\r\n"" + {4}.to_string)", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
+                        Rb.Append("      "); Rb.AppendLine("raise 'Error updating request query parameter'");
+                        Rb.Append("    "); Rb.AppendLine("end");
                         RbSpl.Append(Rb.ToString());
 
                         if (RequestParameterName.Equals("req"))
                         {
                             //Update the query parameter of all requests that have this parameter
-                            Py.Append("\t\t"); Py.AppendLine("#Update the Query parameter of the other requests that have the same parameter with the new value");
-                            Py.Append("\t\t"); Py.AppendLine("for r_n in self.reqs.keys():");
-                            Py.Append("\t\t\t"); Py.AppendLine(string.Format("if self.reqs[r_n].Query.Has('{0}'):", ParameterName));
-                            Py.Append("\t\t\t\t"); Py.AppendLine(string.Format("self.reqs[r_n].Query.Set('{0}', {1})", ParameterName, CurrentParameterValueVariableName));
+                            Py.Append("    "); Py.AppendLine("#Update the Query parameter of the other requests that have the same parameter with the new value");
+                            Py.Append("    "); Py.AppendLine("for r_n in self.reqs.keys():");
+                            Py.Append("      "); Py.AppendLine(string.Format("if self.reqs[r_n].Query.Has('{0}'):", ParameterName));
+                            Py.Append("        "); Py.AppendLine(string.Format("self.reqs[r_n].Query.Set('{0}', {1})", ParameterName, CurrentParameterValueVariableName));
 
-                            Rb.Append("\t\t"); Rb.AppendLine("#Update the Query parameter of the other requests that have the same parameter with the new value");
-                            Rb.Append("\t\t"); Rb.AppendLine("for r_n in @reqs.keys");
-                            Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("if @reqs[r_n].query.has('{0}')", ParameterName));
-                            Rb.Append("\t\t\t\t"); Rb.AppendLine(string.Format("@reqs[r_n].query.set('{0}', {1})", ParameterName, CurrentParameterValueVariableName));
-                            Rb.Append("\t\t\t"); Rb.AppendLine("end");
-                            Rb.Append("\t\t"); Rb.AppendLine("end");
+                            Rb.Append("    "); Rb.AppendLine("#Update the Query parameter of the other requests that have the same parameter with the new value");
+                            Rb.Append("    "); Rb.AppendLine("for r_n in @reqs.keys");
+                            Rb.Append("      "); Rb.AppendLine(string.Format("if @reqs[r_n].query.has('{0}')", ParameterName));
+                            Rb.Append("        "); Rb.AppendLine(string.Format("@reqs[r_n].query.set('{0}', {1})", ParameterName, CurrentParameterValueVariableName));
+                            Rb.Append("      "); Rb.AppendLine("end");
+                            Rb.Append("    "); Rb.AppendLine("end");
                         }
                         break;
                     case ("Body"):
                         //Update the body parameter of specified request 
-                        Py.Append("\t\t");Py.AppendLine("#Update the Body parameter with the new value");
-                        Py.Append("\t\t"); Py.AppendLine(string.Format("if {0}.Body.Has('{1}'):", RequestParameterName, ParameterName));
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("{0}.Body.Set('{1}', {2})", RequestParameterName, ParameterName, CurrentParameterValueVariableName));
-                        Py.Append("\t\t"); Py.AppendLine("else:");
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("self.Trace({0}, 'Error updating {1}', 'The {2} request does not contain the body parameter {3}\\r\\n\\r\\nThe Request is:\\r\\n\\r\\n' + {4}.ToString())", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
-                        Py.Append("\t\t\t"); Py.AppendLine("raise Exception('Error updating request body parameter')");
-                        Py.Append("\t\t\t"); Py.AppendLine("pass");//this is required because self.Trace and raise lines will be removed in the update_req methods
+                        Py.Append("    ");Py.AppendLine("#Update the Body parameter with the new value");
+                        Py.Append("    "); Py.AppendLine(string.Format("if {0}.Body.Has('{1}'):", RequestParameterName, ParameterName));
+                        Py.Append("      "); Py.AppendLine(string.Format("{0}.Body.Set('{1}', {2})", RequestParameterName, ParameterName, CurrentParameterValueVariableName));
+                        Py.Append("    "); Py.AppendLine("else:");
+                        Py.Append("      "); Py.AppendLine(string.Format("self.Trace({0}, 'Error updating {1}', 'The {2} request does not contain the body parameter {3}\\r\\n\\r\\nThe Request is:\\r\\n\\r\\n' + {4}.ToString())", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
+                        Py.Append("      "); Py.AppendLine("raise Exception('Error updating request body parameter')");
+                        Py.Append("      "); Py.AppendLine("pass");//this is required because self.Trace and raise lines will be removed in the update_req methods
                         PySpl.Append(Py.ToString());
 
-                        Rb.Append("\t\t");Rb.AppendLine("#Update the Body parameter with the new value");
-                        Rb.Append("\t\t"); Rb.AppendLine(string.Format("if {0}.body.has('{1}')", RequestParameterName, ParameterName));
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("{0}.body.set('{1}', {2})", RequestParameterName, ParameterName, CurrentParameterValueVariableName));
-                        Rb.Append("\t\t"); Rb.AppendLine("else");
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format(@"Trace({0}, 'Error updating {1}', 'The {2} request does not contain the body parameter {3}' + ""\r\n\r\nThe Request is:\r\n\r\n"" + {4}.to_string)", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
-                        Rb.Append("\t\t\t"); Rb.AppendLine("raise 'Error updating request body parameter'");
-                        Rb.Append("\t\t"); Rb.AppendLine("end");
+                        Rb.Append("    ");Rb.AppendLine("#Update the Body parameter with the new value");
+                        Rb.Append("    "); Rb.AppendLine(string.Format("if {0}.body.has('{1}')", RequestParameterName, ParameterName));
+                        Rb.Append("      "); Rb.AppendLine(string.Format("{0}.body.set('{1}', {2})", RequestParameterName, ParameterName, CurrentParameterValueVariableName));
+                        Rb.Append("    "); Rb.AppendLine("else");
+                        Rb.Append("      "); Rb.AppendLine(string.Format(@"Trace({0}, 'Error updating {1}', 'The {2} request does not contain the body parameter {3}' + ""\r\n\r\nThe Request is:\r\n\r\n"" + {4}.to_string)", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
+                        Rb.Append("      "); Rb.AppendLine("raise 'Error updating request body parameter'");
+                        Rb.Append("    "); Rb.AppendLine("end");
                         RbSpl.Append(Rb.ToString());
 
                         if (RequestParameterName.Equals("req"))
                         {
                             //Update the body parameter of all requests that have this parameter
-                            Py.Append("\t\t"); Py.AppendLine("#Update the Body parameter of the other requests that have the same parameter with the new value");
-                            Py.Append("\t\t"); Py.AppendLine("for r_n in self.reqs.keys():");
-                            Py.Append("\t\t\t"); Py.AppendLine(string.Format("if self.reqs[r_n].Body.Has('{0}'):", ParameterName));
-                            Py.Append("\t\t\t\t"); Py.AppendLine(string.Format("self.reqs[r_n].Body.Set('{0}', {1})", ParameterName, CurrentParameterValueVariableName));
+                            Py.Append("    "); Py.AppendLine("#Update the Body parameter of the other requests that have the same parameter with the new value");
+                            Py.Append("    "); Py.AppendLine("for r_n in self.reqs.keys():");
+                            Py.Append("      "); Py.AppendLine(string.Format("if self.reqs[r_n].Body.Has('{0}'):", ParameterName));
+                            Py.Append("        "); Py.AppendLine(string.Format("self.reqs[r_n].Body.Set('{0}', {1})", ParameterName, CurrentParameterValueVariableName));
 
-                            Rb.Append("\t\t"); Rb.AppendLine("#Update the Body parameter of the other requests that have the same parameter with the new value");
-                            Rb.Append("\t\t"); Rb.AppendLine("for r_n in @reqs.keys");
-                            Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("if @reqs[r_n].body.has('{0}')", ParameterName));
-                            Rb.Append("\t\t\t\t"); Rb.AppendLine(string.Format("@reqs[r_n].body.set('{0}', {1})", ParameterName, CurrentParameterValueVariableName));
-                            Rb.Append("\t\t\t"); Rb.AppendLine("end");
-                            Rb.Append("\t\t"); Rb.AppendLine("end");
+                            Rb.Append("    "); Rb.AppendLine("#Update the Body parameter of the other requests that have the same parameter with the new value");
+                            Rb.Append("    "); Rb.AppendLine("for r_n in @reqs.keys");
+                            Rb.Append("      "); Rb.AppendLine(string.Format("if @reqs[r_n].body.has('{0}')", ParameterName));
+                            Rb.Append("        "); Rb.AppendLine(string.Format("@reqs[r_n].body.set('{0}', {1})", ParameterName, CurrentParameterValueVariableName));
+                            Rb.Append("      "); Rb.AppendLine("end");
+                            Rb.Append("    "); Rb.AppendLine("end");
 
                         }
                         break;
                     case ("Cookie"):
                         //Update the cookie parameter of specified request 
-                        Py.Append("\t\t");Py.AppendLine("#Update the Cookie parameter with the new value");
-                        Py.Append("\t\t"); Py.AppendLine(string.Format("if {0}.Cookie.Has('{1}'):", RequestParameterName, ParameterName));
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("{0}.Cookie.Set('{1}', {2})", RequestParameterName, ParameterName, CurrentParameterValueVariableName));
-                        Py.Append("\t\t"); Py.AppendLine("else:");
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("self.Trace({0}, 'Error updating {1}', 'The {2} request does not contain the cookie parameter {3}\\r\\n\\r\\nThe Request is:\\r\\n\\r\\n' + {4}.ToString())", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
-                        Py.Append("\t\t\t"); Py.AppendLine("raise Exception('Error updating request cookie parameter')");
-                        Py.Append("\t\t\t"); Py.AppendLine("pass");//this is required because self.Trace and raise lines will be removed in the update_req methods
+                        Py.Append("    ");Py.AppendLine("#Update the Cookie parameter with the new value");
+                        Py.Append("    "); Py.AppendLine(string.Format("if {0}.Cookie.Has('{1}'):", RequestParameterName, ParameterName));
+                        Py.Append("      "); Py.AppendLine(string.Format("{0}.Cookie.Set('{1}', {2})", RequestParameterName, ParameterName, CurrentParameterValueVariableName));
+                        Py.Append("    "); Py.AppendLine("else:");
+                        Py.Append("      "); Py.AppendLine(string.Format("self.Trace({0}, 'Error updating {1}', 'The {2} request does not contain the cookie parameter {3}\\r\\n\\r\\nThe Request is:\\r\\n\\r\\n' + {4}.ToString())", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
+                        Py.Append("      "); Py.AppendLine("raise Exception('Error updating request cookie parameter')");
+                        Py.Append("      "); Py.AppendLine("pass");//this is required because self.Trace and raise lines will be removed in the update_req methods
                         PySpl.Append(Py.ToString());
 
-                        Rb.Append("\t\t");Rb.AppendLine("#Update the Cookie parameter with the new value");
-                        Rb.Append("\t\t"); Rb.AppendLine(string.Format("if {0}.cookie.has('{1}')", RequestParameterName, ParameterName));
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("{0}.cookie.set('{1}', {2})", RequestParameterName, ParameterName, CurrentParameterValueVariableName));
-                        Rb.Append("\t\t"); Rb.AppendLine("else");
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format(@"Trace({0}, 'Error updating {1}', 'The {2} request does not contain the cookie parameter {3}' + ""\r\n\r\nThe Request is:\r\n\r\n"" + {4}.to_string)", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
-                        Rb.Append("\t\t\t"); Rb.AppendLine("raise 'Error updating request cookie parameter'");
-                        Rb.Append("\t\t"); Rb.AppendLine("end");
+                        Rb.Append("    ");Rb.AppendLine("#Update the Cookie parameter with the new value");
+                        Rb.Append("    "); Rb.AppendLine(string.Format("if {0}.cookie.has('{1}')", RequestParameterName, ParameterName));
+                        Rb.Append("      "); Rb.AppendLine(string.Format("{0}.cookie.set('{1}', {2})", RequestParameterName, ParameterName, CurrentParameterValueVariableName));
+                        Rb.Append("    "); Rb.AppendLine("else");
+                        Rb.Append("      "); Rb.AppendLine(string.Format(@"Trace({0}, 'Error updating {1}', 'The {2} request does not contain the cookie parameter {3}' + ""\r\n\r\nThe Request is:\r\n\r\n"" + {4}.to_string)", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
+                        Rb.Append("      "); Rb.AppendLine("raise 'Error updating request cookie parameter'");
+                        Rb.Append("    "); Rb.AppendLine("end");
                         RbSpl.Append(Rb.ToString());
 
                         if (RequestParameterName.Equals("req"))
                         {
                             //Update the cookie parameter of all requests that have this parameter
-                            Py.Append("\t\t"); Py.AppendLine("#Update the Cookie parameter of the other requests that have the same parameter with the new value");
-                            Py.Append("\t\t"); Py.AppendLine("for r_n in self.reqs.keys():");
-                            Py.Append("\t\t\t"); Py.AppendLine(string.Format("if self.reqs[r_n].Cookie.Has('{0}'):", ParameterName));
-                            Py.Append("\t\t\t\t"); Py.AppendLine(string.Format("self.reqs[r_n].Cookie.Set('{0}', {1})", ParameterName, CurrentParameterValueVariableName));
+                            Py.Append("    "); Py.AppendLine("#Update the Cookie parameter of the other requests that have the same parameter with the new value");
+                            Py.Append("    "); Py.AppendLine("for r_n in self.reqs.keys():");
+                            Py.Append("      "); Py.AppendLine(string.Format("if self.reqs[r_n].Cookie.Has('{0}'):", ParameterName));
+                            Py.Append("        "); Py.AppendLine(string.Format("self.reqs[r_n].Cookie.Set('{0}', {1})", ParameterName, CurrentParameterValueVariableName));
 
-                            Rb.Append("\t\t"); Rb.AppendLine("#Update the Cookie parameter of the other requests that have the same parameter with the new value");
-                            Rb.Append("\t\t"); Rb.AppendLine("for r_n in @reqs.keys");
-                            Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("if @reqs[r_n].cookie.has('{0}')", ParameterName));
-                            Rb.Append("\t\t\t\t"); Rb.AppendLine(string.Format("@reqs[r_n].cookie.set('{0}', {1})", ParameterName, CurrentParameterValueVariableName));
-                            Rb.Append("\t\t\t"); Rb.AppendLine("end");
-                            Rb.Append("\t\t"); Rb.AppendLine("end");
+                            Rb.Append("    "); Rb.AppendLine("#Update the Cookie parameter of the other requests that have the same parameter with the new value");
+                            Rb.Append("    "); Rb.AppendLine("for r_n in @reqs.keys");
+                            Rb.Append("      "); Rb.AppendLine(string.Format("if @reqs[r_n].cookie.has('{0}')", ParameterName));
+                            Rb.Append("        "); Rb.AppendLine(string.Format("@reqs[r_n].cookie.set('{0}', {1})", ParameterName, CurrentParameterValueVariableName));
+                            Rb.Append("      "); Rb.AppendLine("end");
+                            Rb.Append("    "); Rb.AppendLine("end");
                         }
                         break;
                     case ("Header"):
                         //Update the header parameter of specified request 
-                        Py.Append("\t\t");Py.AppendLine("#Update the Header parameter with the new value");
-                        Py.Append("\t\t"); Py.AppendLine(string.Format("if {0}.Headers.Has('{1}'):", RequestParameterName, ParameterName));
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("{0}.Headers.Set('{1}', {2})", RequestParameterName, ParameterName, CurrentParameterValueVariableName));
-                        Py.Append("\t\t"); Py.AppendLine("else:");
-                        Py.Append("\t\t\t"); Py.AppendLine(string.Format("self.Trace({0}, 'Error updating {1}', 'The {2} request does not contain the header parameter {3}\\r\\n\\r\\nThe Request is:\\r\\n\\r\\n' + {4}.ToString())", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
-                        Py.Append("\t\t\t"); Py.AppendLine("raise Exception('Error updating request header parameter')");
-                        Py.Append("\t\t\t"); Py.AppendLine("pass");//this is required because self.Trace and raise lines will be removed in the update_req methods
+                        Py.Append("    ");Py.AppendLine("#Update the Header parameter with the new value");
+                        Py.Append("    "); Py.AppendLine(string.Format("if {0}.Headers.Has('{1}'):", RequestParameterName, ParameterName));
+                        Py.Append("      "); Py.AppendLine(string.Format("{0}.Headers.Set('{1}', {2})", RequestParameterName, ParameterName, CurrentParameterValueVariableName));
+                        Py.Append("    "); Py.AppendLine("else:");
+                        Py.Append("      "); Py.AppendLine(string.Format("self.Trace({0}, 'Error updating {1}', 'The {2} request does not contain the header parameter {3}\\r\\n\\r\\nThe Request is:\\r\\n\\r\\n' + {4}.ToString())", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
+                        Py.Append("      "); Py.AppendLine("raise Exception('Error updating request header parameter')");
+                        Py.Append("      "); Py.AppendLine("pass");//this is required because self.Trace and raise lines will be removed in the update_req methods
                         PySpl.Append(Py.ToString());
 
-                        Rb.Append("\t\t");Rb.AppendLine("#Update the Header parameter with the new value");
-                        Rb.Append("\t\t"); Rb.AppendLine(string.Format("if {0}.headers.has('{1}')", RequestParameterName, ParameterName));
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("{0}.headers.set('{1}', {2})", RequestParameterName, ParameterName, CurrentParameterValueVariableName));
-                        Rb.Append("\t\t"); Rb.AppendLine("else");
-                        Rb.Append("\t\t\t"); Rb.AppendLine(string.Format(@"Trace({0}, 'Error updating {1}', 'The {2} request does not contain the header parameter {3}' + ""\r\n\r\nThe Request is:\r\n\r\n"" + {4}.to_string)", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
-                        Rb.Append("\t\t\t"); Rb.AppendLine("raise 'Error updating request header parameter'");
-                        Rb.Append("\t\t"); Rb.AppendLine("end");
+                        Rb.Append("    ");Rb.AppendLine("#Update the Header parameter with the new value");
+                        Rb.Append("    "); Rb.AppendLine(string.Format("if {0}.headers.has('{1}')", RequestParameterName, ParameterName));
+                        Rb.Append("      "); Rb.AppendLine(string.Format("{0}.headers.set('{1}', {2})", RequestParameterName, ParameterName, CurrentParameterValueVariableName));
+                        Rb.Append("    "); Rb.AppendLine("else");
+                        Rb.Append("      "); Rb.AppendLine(string.Format(@"Trace({0}, 'Error updating {1}', 'The {2} request does not contain the header parameter {3}' + ""\r\n\r\nThe Request is:\r\n\r\n"" + {4}.to_string)", RequestParameterName, CurrentRequestName, CurrentRequestName, ParameterName, RequestParameterName));
+                        Rb.Append("      "); Rb.AppendLine("raise 'Error updating request header parameter'");
+                        Rb.Append("    "); Rb.AppendLine("end");
                         RbSpl.Append(Rb.ToString());
 
                         if (RequestParameterName.Equals("req"))
                         {
                             //Update the header parameter of all requests that have this parameter
-                            Py.Append("\t\t"); Py.AppendLine("#Update the Header parameter of the other requests that have the same parameter with the new value");
-                            Py.Append("\t\t"); Py.AppendLine("for r_n in self.reqs.keys():");
-                            Py.Append("\t\t\t"); Py.AppendLine(string.Format("if self.reqs[r_n].Headers.Has('{0}'):", ParameterName));
-                            Py.Append("\t\t\t\t"); Py.AppendLine(string.Format("self.reqs[r_n].Headers.Set('{0}', {1})", ParameterName, CurrentParameterValueVariableName));
+                            Py.Append("    "); Py.AppendLine("#Update the Header parameter of the other requests that have the same parameter with the new value");
+                            Py.Append("    "); Py.AppendLine("for r_n in self.reqs.keys():");
+                            Py.Append("      "); Py.AppendLine(string.Format("if self.reqs[r_n].Headers.Has('{0}'):", ParameterName));
+                            Py.Append("        "); Py.AppendLine(string.Format("self.reqs[r_n].Headers.Set('{0}', {1})", ParameterName, CurrentParameterValueVariableName));
 
-                            Rb.Append("\t\t"); Rb.AppendLine("#Update the Header parameter of the other requests that have the same parameter with the new value");
-                            Rb.Append("\t\t"); Rb.AppendLine("for r_n in @reqs.keys");
-                            Rb.Append("\t\t\t"); Rb.AppendLine(string.Format("if @reqs[r_n].headers.has('{0}')", ParameterName));
-                            Rb.Append("\t\t\t\t"); Rb.AppendLine(string.Format("@reqs[r_n].headers.set('{0}', {1})", ParameterName, CurrentParameterValueVariableName));
-                            Rb.Append("\t\t\t"); Rb.AppendLine("end");
-                            Rb.Append("\t\t"); Rb.AppendLine("end");
+                            Rb.Append("    "); Rb.AppendLine("#Update the Header parameter of the other requests that have the same parameter with the new value");
+                            Rb.Append("    "); Rb.AppendLine("for r_n in @reqs.keys");
+                            Rb.Append("      "); Rb.AppendLine(string.Format("if @reqs[r_n].headers.has('{0}')", ParameterName));
+                            Rb.Append("        "); Rb.AppendLine(string.Format("@reqs[r_n].headers.set('{0}', {1})", ParameterName, CurrentParameterValueVariableName));
+                            Rb.Append("      "); Rb.AppendLine("end");
+                            Rb.Append("    "); Rb.AppendLine("end");
                         }
                         break;
                 }
@@ -3059,19 +3059,19 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
                 if (RequestParameterName.Equals("req") && !UpdateFrom.Equals("User"))
                 {               
                     UpdateToInjectRequestMethodCounter++;
-                    Py.Append("\t\t"); Py.AppendLine("#Store this response to update other primary requests later");
-                    Py.Append("\t\t"); Py.AppendLine(string.Format("self.ress[{0}] = {1}", UpdateToInjectRequestMethodCounter, ResponseParameterName));
+                    Py.Append("    "); Py.AppendLine("#Store this response to update other primary requests later");
+                    Py.Append("    "); Py.AppendLine(string.Format("self.ress[{0}] = {1}", UpdateToInjectRequestMethodCounter, ResponseParameterName));
 
-                    Rb.Append("\t\t"); Rb.AppendLine("#Store this response to update other primary requests later");
-                    Rb.Append("\t\t"); Rb.AppendLine(string.Format("@ress[{0}] = {1}", UpdateToInjectRequestMethodCounter, ResponseParameterName));
+                    Rb.Append("    "); Rb.AppendLine("#Store this response to update other primary requests later");
+                    Rb.Append("    "); Rb.AppendLine(string.Format("@ress[{0}] = {1}", UpdateToInjectRequestMethodCounter, ResponseParameterName));
                 
                     StringBuilder PyMethodDec = new StringBuilder();
                     StringBuilder RbMethodDec = new StringBuilder();
                 
-                    PyMethodDec.Append("\t"); PyMethodDec.AppendLine(string.Format("def update_req_{0}(self, req):", UpdateToInjectRequestMethodCounter));
-                    PyMethodDec.Append("\t\t"); PyMethodDec.AppendLine(string.Format("if not self.ress.has_key({0}):", UpdateToInjectRequestMethodCounter));
-                    PyMethodDec.Append("\t\t\t"); PyMethodDec.AppendLine("return req");
-                    PyMethodDec.Append("\t\t"); PyMethodDec.AppendLine(string.Format("{0} = self.ress[{1}]", ResponseParameterName, UpdateToInjectRequestMethodCounter));
+                    PyMethodDec.Append("  "); PyMethodDec.AppendLine(string.Format("def update_req_{0}(self, req):", UpdateToInjectRequestMethodCounter));
+                    PyMethodDec.Append("    "); PyMethodDec.AppendLine(string.Format("if not self.ress.has_key({0}):", UpdateToInjectRequestMethodCounter));
+                    PyMethodDec.Append("      "); PyMethodDec.AppendLine("return req");
+                    PyMethodDec.Append("    "); PyMethodDec.AppendLine(string.Format("{0} = self.ress[{1}]", ResponseParameterName, UpdateToInjectRequestMethodCounter));
 
                     string RawPySpl = PySpl.ToString();
                     StringBuilder TrimmedPySpl = new StringBuilder();
@@ -3086,13 +3086,13 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
                     }
 
                     PyMethodDec.Append(TrimmedPySpl.ToString());
-                    PyMethodDec.Append("\t\t"); PyMethodDec.AppendLine("return req");
+                    PyMethodDec.Append("    "); PyMethodDec.AppendLine("return req");
 
-                    RbMethodDec.Append("\t"); RbMethodDec.AppendLine(string.Format("def update_req_{0}(req)", UpdateToInjectRequestMethodCounter));
-                    RbMethodDec.Append("\t\t"); RbMethodDec.AppendLine(string.Format("if not @ress.has_key?({0})", UpdateToInjectRequestMethodCounter));
-                    RbMethodDec.Append("\t\t\t"); RbMethodDec.AppendLine("return req");
-                    RbMethodDec.Append("\t\t"); RbMethodDec.AppendLine("end");
-                    RbMethodDec.Append("\t\t"); RbMethodDec.AppendLine(string.Format("{0} = @ress[{1}]", ResponseParameterName, UpdateToInjectRequestMethodCounter));
+                    RbMethodDec.Append("  "); RbMethodDec.AppendLine(string.Format("def update_req_{0}(req)", UpdateToInjectRequestMethodCounter));
+                    RbMethodDec.Append("    "); RbMethodDec.AppendLine(string.Format("if not @ress.has_key?({0})", UpdateToInjectRequestMethodCounter));
+                    RbMethodDec.Append("      "); RbMethodDec.AppendLine("return req");
+                    RbMethodDec.Append("    "); RbMethodDec.AppendLine("end");
+                    RbMethodDec.Append("    "); RbMethodDec.AppendLine(string.Format("{0} = @ress[{1}]", ResponseParameterName, UpdateToInjectRequestMethodCounter));
 
                     string RawRbSpl = RbSpl.ToString();
                     StringBuilder TrimmedRbSpl = new StringBuilder();
@@ -3107,8 +3107,8 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
                     }
 
                     RbMethodDec.Append(TrimmedRbSpl.ToString());
-                    RbMethodDec.Append("\t\t"); RbMethodDec.AppendLine("return req");
-                    RbMethodDec.Append("\t"); RbMethodDec.AppendLine("end");
+                    RbMethodDec.Append("    "); RbMethodDec.AppendLine("return req");
+                    RbMethodDec.Append("  "); RbMethodDec.AppendLine("end");
 
                     UpdateToInectRequestMethodPyDeclarations[UpdateToInjectRequestMethodCounter] = PyMethodDec.ToString();
                     UpdateToInectRequestMethodRbDeclarations[UpdateToInjectRequestMethodCounter] = RbMethodDec.ToString();
@@ -3148,20 +3148,20 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
                     string KeywordOrRegex = M.Groups[4].Value;
                     if (!ResponseCodeChecked)
                     {
-                        Py.Append("\t\t"); Py.AppendLine(string.Format("if {0}.Code != {1}:", ResponseVariableName, ResponseCode));
-                        Rb.Append("\t\t"); Rb.AppendLine(string.Format("if {0}.code != {1}", ResponseVariableName, ResponseCode));
+                        Py.Append("    "); Py.AppendLine(string.Format("if {0}.Code != {1}:", ResponseVariableName, ResponseCode));
+                        Rb.Append("    "); Rb.AppendLine(string.Format("if {0}.code != {1}", ResponseVariableName, ResponseCode));
 
                         if (LoggedInSignature)
                         {
-                            Py.Append("\t\t\t"); Py.AppendLine("return False");
-                            Rb.Append("\t\t\t"); Rb.AppendLine("return false");
+                            Py.Append("      "); Py.AppendLine("return False");
+                            Rb.Append("      "); Rb.AppendLine("return false");
                         }
                         else
                         {
-                            Py.Append("\t\t\t"); Py.AppendLine("return True");
-                            Rb.Append("\t\t\t"); Rb.AppendLine("return true");
+                            Py.Append("      "); Py.AppendLine("return True");
+                            Rb.Append("      "); Rb.AppendLine("return true");
                         }
-                        Rb.Append("\t\t"); Rb.AppendLine("end");
+                        Rb.Append("    "); Rb.AppendLine("end");
                         ResponseCodeChecked = true;
                     }
                     string PropertyValuePyCode = "";
@@ -3207,20 +3207,20 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
                             PropertyValueMatchRbCode = string.Format("({0} =~ /{1}/)",PropertyValueRbCode, KeywordOrRegex);
                             break;
                     }
-                    Py.Append("\t\t"); Py.AppendLine(string.Format("if not {0}", PropertyValueMatchPyCode));
-                    Rb.Append("\t\t"); Rb.AppendLine(string.Format("if not {0}", PropertyValueMatchRbCode));
+                    Py.Append("    "); Py.AppendLine(string.Format("if not {0}", PropertyValueMatchPyCode));
+                    Rb.Append("    "); Rb.AppendLine(string.Format("if not {0}", PropertyValueMatchRbCode));
 
                     if (LoggedInSignature)
                     {
-                        Py.Append("\t\t\t"); Py.AppendLine("return False");
-                        Rb.Append("\t\t\t"); Rb.AppendLine("return false");
+                        Py.Append("      "); Py.AppendLine("return False");
+                        Rb.Append("      "); Rb.AppendLine("return false");
                     }
                     else
                     {
-                        Py.Append("\t\t\t"); Py.AppendLine("return True");
-                        Rb.Append("\t\t\t"); Rb.AppendLine("return true");
+                        Py.Append("      "); Py.AppendLine("return True");
+                        Rb.Append("      "); Rb.AppendLine("return true");
                     }
-                    Rb.Append("\t\t"); Rb.AppendLine("end");
+                    Rb.Append("    "); Rb.AppendLine("end");
                 }
                 else
                 {
@@ -3230,13 +3230,13 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
             
             if (LoggedInSignature)
             {
-                Py.Append("\t\t"); Py.AppendLine("return True");
-                Rb.Append("\t\t"); Rb.AppendLine("return true");
+                Py.Append("    "); Py.AppendLine("return True");
+                Rb.Append("    "); Rb.AppendLine("return true");
             }
             else
             {
-                Py.Append("\t\t"); Py.AppendLine("return False");
-                Rb.Append("\t\t"); Rb.AppendLine("return false");
+                Py.Append("    "); Py.AppendLine("return False");
+                Rb.Append("    "); Rb.AppendLine("return false");
             }
             Code[0] = Py.ToString();
             Code[1] = Rb.ToString();

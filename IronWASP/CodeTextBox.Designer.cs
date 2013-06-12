@@ -51,6 +51,7 @@ namespace IronWASP
             // 
             // Editor
             // 
+            this.Editor.ConvertTabsToSpaces = true;
             this.Editor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Editor.IsIconBarVisible = false;
             this.Editor.Location = new System.Drawing.Point(0, 0);
@@ -61,6 +62,7 @@ namespace IronWASP
             this.Editor.ShowTabs = true;
             this.Editor.ShowVRuler = true;
             this.Editor.Size = new System.Drawing.Size(200, 100);
+            this.Editor.TabIndent = 2;
             this.Editor.TabIndex = 5;
             // 
             // CodeTextBox

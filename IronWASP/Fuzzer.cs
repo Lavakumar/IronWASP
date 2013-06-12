@@ -47,10 +47,10 @@ namespace IronWASP
         public static Fuzzer FromUi(Request Req)
         {
             Fuzzer F = new Fuzzer(Req);
-            return F.FromUi();
+            return F.UpdateFromUi();
         }
 
-        public Fuzzer FromUi()
+        public Fuzzer UpdateFromUi()
         {
             StartScanJobWizard SCJW = new StartScanJobWizard();
             SCJW.SetFuzzer(this);

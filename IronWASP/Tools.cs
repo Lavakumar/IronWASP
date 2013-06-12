@@ -790,5 +790,111 @@ namespace IronWASP
             }
             return SB.ToString();
         }
+
+        public static string EscapeDoubleQuotes(string Input)
+        {
+            StringBuilder Output = new StringBuilder();
+            bool EscapeNext = false;
+            for (int i = 0; i < Input.Length; i++)
+            {
+                char C = Input[i];
+                if (C == '"')
+                {
+                    if (!EscapeNext)
+                    {
+                        Output.Append("\\");
+                    }
+                }
+                Output.Append(C.ToString());
+                
+                if(C == '\\')
+                {
+                    if (EscapeNext)
+                    {
+                        EscapeNext = false;//there is a \ before this escaping this \
+                    }
+                    else
+                    {
+                        EscapeNext = true;
+                    }
+                }
+                else
+                {
+                    EscapeNext = false;
+                }
+            }
+            return Output.ToString();
+        }
+
+        public static bool IsXmlContentSame(string One, string Two)
+        {
+            XmlDocument XmlOne = new XmlDocument();
+            XmlOne.LoadXml(One);
+            XmlDocument XmlTwo = new XmlDocument();
+            XmlTwo.LoadXml(Two);
+
+            if (XmlOne.ChildNodes.Count == XmlTwo.ChildNodes.Count)
+            {
+                if (XmlOne.ChildNodes.Count > 0)
+                {
+                    for (int i = 0; i < XmlOne.ChildNodes.Count; i++)
+                    {
+                        if (!IsXmlNodeSame(XmlOne.ChildNodes[i], XmlTwo.ChildNodes[i]))
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                else
+                {
+                    if (XmlOne.InnerText == XmlTwo.InnerText)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        static bool IsXmlNodeSame(XmlNode One, XmlNode Two)
+        {
+            if (One.ChildNodes.Count == Two.ChildNodes.Count)
+            {
+                if (One.ChildNodes.Count > 0)
+                {
+                    for (int i = 0; i < One.ChildNodes.Count; i++)
+                    {
+                        if (!IsXmlNodeSame(One.ChildNodes[i], Two.ChildNodes[i]))
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+                else
+                {
+                    if (One.InnerText == Two.InnerText)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

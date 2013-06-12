@@ -211,6 +211,7 @@ namespace IronWASP
             this.Fuzz = Fuzz;
             this.SetRequest(Fuzz.OriginalRequest);
             this.ScanJobMode = false;
+            this.ScanThreadLimitCB.Visible = false;
             BaseTabs.TabPages.RemoveAt(1);
             FinalBtn.Text = "Done";
             this.Text = "Configure Scan/Fuzz Settings";
@@ -755,7 +756,8 @@ You can either select all parameters or entire sections for scanning. Or go thro
                 HighlightCustomInjectionPointsRTB.Text = SetCustomInjectionPointsSTB.Text;
                 bool CheckFurther = true;
                 int Pointer = 0;
-                string Content = SetCustomInjectionPointsSTB.Text;
+                //string Content = SetCustomInjectionPointsSTB.Text;
+                string Content = HighlightCustomInjectionPointsRTB.Text;//Using the text from RichTextBox as content instead of the TextBox since \r\n from TB is converted to \r in RTB and so the highlighting of markers is visually offset. This is done only for highlighting.
                 if (Content.Length == 0)
                 {
                     ShowStep2Error("No injection points detected.");
@@ -1384,14 +1386,18 @@ You can either select all parameters or entire sections for scanning. Or go thro
                         }
                     }
 
-
+                    //
+                    //No updates to the NewScanner object must be done before calling this.UpdateScannerFromUi method.
+                    //There is a chance that this method might create a new scanner object and return it (when custom body injection points is selected).
+                    //Any updates to NewScanner made before this method are lost if a new scanner object is returned
+                    //
                     if (ScanJobMode)
                     {
-                        this.UpdateScannerFromUi(NewScanner, SessionPluginName);
+                        NewScanner = this.UpdateScannerFromUi(NewScanner, SessionPluginName);
                     }
                     else
                     {
-                        this.UpdateScannerFromUi(this.Fuzz, SessionPluginName);
+                        this.Fuzz = (Fuzzer) this.UpdateScannerFromUi(this.Fuzz, SessionPluginName);
                     }
 
                     if (ScanJobMode)
@@ -1424,7 +1430,7 @@ You can either select all parameters or entire sections for scanning. Or go thro
             }
         }
 
-        void UpdateScannerFromUi(Scanner NewScanner, string SessionPluginName)
+        Scanner UpdateScannerFromUi(Scanner NewScanner, string SessionPluginName)
         {
             //Body must come above everything else because for a custom injection marker selection a new scanner object is created.
             int SubParameterPosition = 0;
@@ -1639,7 +1645,7 @@ You can either select all parameters or entire sections for scanning. Or go thro
                 }
             }
             #endregion
-
+            return NewScanner;
         }
 
         private void AddToEscapeRuleBtn_Click(object sender, EventArgs e)

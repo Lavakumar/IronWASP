@@ -965,20 +965,25 @@ namespace IronWASP
 
         public Response RawInject(string Payload)
         {
-            return this.Inject(Payload, 0, false, true);
+            return this.Inject(Payload, 0, false, true, -1);
         }
         
         public Response Inject(string Payload)
         {
-            return this.Inject(Payload, 0, false, false);
+            return this.Inject(Payload, 0, false, false, -1);
+        }
+
+        public Response Inject(string Payload, int TimeOut)
+        {
+            return this.Inject(Payload, 0, false, false, TimeOut);
         }
 
         public Response Inject()
         {
-            return this.Inject("", 0, true, false);
+            return this.Inject("", 0, true, false, -1);
         }
         
-        private Response Inject(string RawPayload, int ReDoCount, bool PayloadLessInjection, bool Raw)
+        private Response Inject(string RawPayload, int ReDoCount, bool PayloadLessInjection, bool Raw, int TimeOut)
         {
             //this.CurrentRequest = SessionHandler.Update(this.CurrentRequest, this.TestResponse);
             this.CurrentRequest = SessionHandler.DoBeforeSending(this.CurrentRequest, this.TestResponse);
@@ -1098,7 +1103,14 @@ namespace IronWASP
                 this.TestRequest.BodyString = this.TestRequest.BodyString.Replace(this.CustomInjectionPointStartMarker, "").Replace(this.CustomInjectionPointEndMarker, "");
             }
             if (this.LogSource != RequestSource.Scan) this.TestRequest.SetSource(this.LogSource);//For Scanner, the logsource is set when ScanId is assigned to the request
-            this.TestResponse = this.TestRequest.Send();
+            if (TimeOut > 0)
+            {
+                this.TestResponse = this.TestRequest.Send(TimeOut);
+            }
+            else
+            {
+                this.TestResponse = this.TestRequest.Send();
+            }
             if (this.LogSource.Equals(RequestSource.Scan) && this.RequestTraceMsg.Length > 0)
             {
                 this.Trace("   " + this.TestResponse.ID.ToString() + " | " + this.RequestTraceMsg);
@@ -1123,9 +1135,27 @@ namespace IronWASP
             if (this.LogSource.Equals(RequestSource.Scan))
             {
                 if (this.TestResponse.ID == ResponseFromInjection.ID)
-                    this.TraceOverviewEntries.Add(new string[] { Payload, ResponseFromInjection.ID.ToString(), ResponseFromInjection.Code.ToString(), ResponseFromInjection.BodyLength.ToString(), ResponseFromInjection.ContentType, ResponseFromInjection.RoundTrip.ToString(), Tools.MD5(ResponseFromInjection.ToString()) });
+                {
+                    if (PayloadLessInjection)
+                    {
+                        this.TraceOverviewEntries.Add(new string[] { PreInjectionParameterValue, ResponseFromInjection.ID.ToString(), ResponseFromInjection.Code.ToString(), ResponseFromInjection.BodyLength.ToString(), ResponseFromInjection.ContentType, ResponseFromInjection.RoundTrip.ToString(), Tools.MD5(ResponseFromInjection.ToString()) });
+                    }
+                    else
+                    {
+                        this.TraceOverviewEntries.Add(new string[] { Payload, ResponseFromInjection.ID.ToString(), ResponseFromInjection.Code.ToString(), ResponseFromInjection.BodyLength.ToString(), ResponseFromInjection.ContentType, ResponseFromInjection.RoundTrip.ToString(), Tools.MD5(ResponseFromInjection.ToString()) });
+                    }
+                }
                 else
-                    this.TraceOverviewEntries.Add(new string[] { Payload, this.TestResponse.ID.ToString(), this.TestResponse.Code.ToString(), this.TestResponse.BodyLength.ToString(), this.TestResponse.ContentType, this.TestResponse.RoundTrip.ToString(), Tools.MD5(this.TestResponse.ToString()), ResponseFromInjection.ID.ToString(), ResponseFromInjection.Code.ToString(), ResponseFromInjection.BodyLength.ToString(), ResponseFromInjection.ContentType, ResponseFromInjection.RoundTrip.ToString(), Tools.MD5(ResponseFromInjection.ToString()) });
+                {
+                    if (PayloadLessInjection)
+                    {
+                        this.TraceOverviewEntries.Add(new string[] { PreInjectionParameterValue, this.TestResponse.ID.ToString(), this.TestResponse.Code.ToString(), this.TestResponse.BodyLength.ToString(), this.TestResponse.ContentType, this.TestResponse.RoundTrip.ToString(), Tools.MD5(this.TestResponse.ToString()), ResponseFromInjection.ID.ToString(), ResponseFromInjection.Code.ToString(), ResponseFromInjection.BodyLength.ToString(), ResponseFromInjection.ContentType, ResponseFromInjection.RoundTrip.ToString(), Tools.MD5(ResponseFromInjection.ToString()) });
+                    }
+                    else
+                    {
+                        this.TraceOverviewEntries.Add(new string[] { Payload, this.TestResponse.ID.ToString(), this.TestResponse.Code.ToString(), this.TestResponse.BodyLength.ToString(), this.TestResponse.ContentType, this.TestResponse.RoundTrip.ToString(), Tools.MD5(this.TestResponse.ToString()), ResponseFromInjection.ID.ToString(), ResponseFromInjection.Code.ToString(), ResponseFromInjection.BodyLength.ToString(), ResponseFromInjection.ContentType, ResponseFromInjection.RoundTrip.ToString(), Tools.MD5(ResponseFromInjection.ToString()) });
+                    }
+                }
             }
 
             return ResponseFromInjection;
@@ -1656,6 +1686,7 @@ namespace IronWASP
             RequestTraceMsg = "";
             TraceTitle = "";
             TraceTitleWeight = 0;
+            this.TraceOverviewEntries.Add(new string[] { PreInjectionParameterValue, OriginalResponse.ID.ToString(), OriginalResponse.Code.ToString(), OriginalResponse.BodyLength.ToString(), OriginalResponse.ContentType, OriginalResponse.RoundTrip.ToString(), Tools.MD5(OriginalResponse.ToString()) });
         }
         public void RequestTrace(string Message)
         {
@@ -1771,6 +1802,7 @@ namespace IronWASP
             {
                 IronDB.UpdateScanStatus(ToStop, "Stopped");
             }catch{}
+            if (IronUI.UI.CanShutdown) return;//If user has started shutdown of IronWASP then dont't update UI
             try
             {
                 IronUI.UpdateScanQueueStatuses(ToStop, "Stopped");

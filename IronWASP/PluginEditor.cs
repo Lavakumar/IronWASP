@@ -67,6 +67,8 @@ namespace IronWASP
 
         private void PluginEditor_Load(object sender, EventArgs e)
         {
+            Open = true;
+            
             PluginEditorTE.ShowTabs = false;
             PluginEditorTE.ShowEOLMarkers = false;
             PluginEditorTE.ShowSpaces = false;
@@ -198,18 +200,28 @@ namespace IronWASP
                             EditorText = EditorTextStack.Pop();
                             EditorTextStack.Clear();
                         }
-                        else
-                        {
-                            continue;
-                        }
                     }
                     string ErrorMessage = "";
                     try
                     {
+                        string IndentError = "";
+                        if (CurrentLanguage.Equals("py"))
+                        {
+                            IndentError = CheckPythonIndentation(EditorText)[0];
+                        }
                         ScriptSource Source = Engine.CreateScriptSourceFromString(EditorText);
                         ScriptErrorReporter CompileErrors = new ScriptErrorReporter();
                         Source.Compile(CompileErrors);
                         ErrorMessage = CompileErrors.GetErrors();
+                        if (IndentError.Length > 0)
+                        {
+                            ErrorMessage = string.Format("{0}\r\n{1}", IndentError, ErrorMessage);
+                            ShowHideIndentationFixMenu(true);
+                        }
+                        else
+                        {
+                            ShowHideIndentationFixMenu(false);
+                        }
                         if (ErrorMessage.Length == 0) { ErrorMessage = "0"; }
                     }
                     catch (Exception Exp)
@@ -226,6 +238,89 @@ namespace IronWASP
             {
                 IronException.Report("Error performing Syntax checking", Exp);
             }
+        }
+
+        internal static string[] CheckPythonIndentation(string Code)
+        {
+            string[] Messages = new string[]{"This code uses a mix of Space and Tab characters for indentation. Because of this even if the indentation looks visually correct it could be invalid. This usually happens when you write some part of the code in one editor and some other part of the code in another editor (also happens if some code was written in the Editor of an older version of IronWASP).\r\nTo resolve this issue please click on the 'Fix Python Indentation' menu item, all tabs at the beginning of the line will be replaced by 4 space characters.",
+            "This code uses a mix of Space and Tab characters for indentation. Because of this even if the indentation looks visually correct it could be invalid. This usually happens when you write some part of the code in one editor and some other part of the code in another editor (also happens if some code was written in the Editor of an older version of IronWASP).\r\nTo resolve this issue please open the 'Script/Plugin Editor' from under 'Dev Tools' menu option. Paste this code in to the editor and click on 'Check Syntax'. Once you do this there will be a new menu item called 'Fix Python Indentation', click that to fix the indentation issue, all tabs at the beginning of the line will be replaced by 4 space characters."};
+            
+
+            bool TabUsed = false;
+            bool SpaceUsed = false;
+
+            foreach(string Line in Code.Split(new string[]{Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries))
+            {
+                string TrimmedLine = Line.Trim();
+                if (TrimmedLine.Length > 0 && !TrimmedLine.StartsWith("#"))
+                {
+                    foreach (char C in Line.ToCharArray())
+                    {
+                        if (C == '\t')
+                        {
+                            TabUsed = true;
+                            if (SpaceUsed)
+                            {
+                                return Messages;
+                            }
+                        }
+                        else if  (C == ' ')
+                        {
+                            SpaceUsed = true;
+                            if (TabUsed)
+                            {
+                                return Messages;
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            return new string[]{"", ""};
+        }
+
+        internal static string FixPythonIndentation(string Code)
+        {
+            StringBuilder Result = new StringBuilder();
+            foreach (string Line in Code.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
+            {
+                if (Line.Contains("\t"))
+                {
+                    bool SpacingSectionOver = false;
+                    foreach (char C in Line.ToCharArray())
+                    {
+                        if (SpacingSectionOver)
+                        {
+                            Result.Append(C);
+                        }
+                        else
+                        {
+                            if (C == '\t')
+                            {
+                                Result.Append("  ");
+                            }
+                            else if (C == ' ')
+                            {
+                                Result.Append(C);
+                            }
+                            else
+                            {
+                                Result.Append(C);
+                                SpacingSectionOver = true;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Result.Append(Line);
+                }
+                Result.AppendLine();
+            }
+            return Result.ToString();
         }
 
         private void ActivePluginToolStripMenuItem_Click(object sender, EventArgs e)
@@ -710,6 +805,27 @@ namespace IronWASP
         private void SearchMovePreviousBtn_Click(object sender, EventArgs e)
         {
             FindPrevious();
+        }
+
+        private void FixPythonIndentationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string EditorText = PluginEditorTE.Text;
+            PluginEditorTE.Text = FixPythonIndentation(EditorText);
+            CheckSyntax();
+        }
+
+        delegate void ShowHideIndentationFixMenu_d(bool Show);
+        internal void ShowHideIndentationFixMenu(bool Show)
+        {
+            if (PluginEditorBaseSplit.InvokeRequired)
+            {
+                ShowHideIndentationFixMenu_d SHIFM_d = new ShowHideIndentationFixMenu_d(ShowHideIndentationFixMenu);
+                PluginEditorBaseSplit.Invoke(SHIFM_d, new object[] { Show });
+            }
+            else
+            {
+                FixPythonIndentationToolStripMenuItem.Visible = Show;
+            }
         }
     }
 }

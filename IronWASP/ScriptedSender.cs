@@ -86,9 +86,9 @@ res = req.Send()
 #The updated Request is stored in memory and can be accessed by clicking on the 'Stored Request' button
 #If there are no requests stored in memory then this button is disbled
 if len(res.SetCookies) > 0:
-	new_req = req.GetClone()
-	new_req.SetCookie(res)
-	self.StoreRequest(new_req)
+  new_req = req.GetClone()
+  new_req.SetCookie(res)
+  self.StoreRequest(new_req)
 
 #To debug your script you can make use of the command Tools.Trace(""Scripted Send"", ""Test Message"")
 #This command will add an entry to the 'Debug Trace' section of the 'Dev' section. The two arguments must be strings, they can contain any value.
@@ -117,9 +117,9 @@ res = req.send_req
 #The updated Request is stored in memory and can be accessed by clicking on the 'Stored Request' button
 #If there are no requests stored in memory then this button is disbled
 if res.set_cookies.count > 0
-	new_req = req.get_clone
-	new_req.set_cookie(res)
-	store_request(new_req)
+  new_req = req.get_clone
+  new_req.set_cookie(res)
+  store_request(new_req)
 end
 
 #To debug your script you can make use of the command Tools.trace(""Scripted Send"", ""Test Message"")

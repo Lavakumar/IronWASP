@@ -42,7 +42,7 @@ namespace IronWASP
             {
                 if (!List().Contains(AP.Name))
                 {
-                    AP.FileName = PluginStore.FileName;
+                    AP.FileName = PluginEngine.FileName;
                     Collection.Add(AP);
                 }
             }

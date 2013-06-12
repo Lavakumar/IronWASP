@@ -170,14 +170,14 @@ namespace IronWASP
             IronUI.ShowLoadMessage("Loading All Plugins....");
             try
             {
-                PluginStore.StartUp = true;
-                PluginStore.InitialiseAllPlugins();
-                PluginStore.StartUp = false;
+                PluginEngine.StartUp = true;
+                PluginEngine.InitialiseAllPlugins();
+                PluginEngine.StartUp = false;
                 
             }
             catch (Exception Exp)
             {
-                PluginStore.StartUp = false;
+                PluginEngine.StartUp = false;
                 IronException.Report("Error initialising Plugins", Exp.Message, Exp.StackTrace);
             }
 
@@ -287,7 +287,7 @@ namespace IronWASP
             ScanDisplayPanel.Visible = false;
             ScanJobsBaseSplit.SplitterDistance = 62;
 
-            TestResponseSplit.SplitterDistance = 600;
+            //TestResponseSplit.SplitterDistance = 30;
             ScanJobsTopSplit.SplitterDistance = 470;
             ScanJobsBottomSplit.SplitterDistance = ScanJobsBottomSplit.Height - 52;
 
@@ -367,10 +367,12 @@ namespace IronWASP
             //MessageBox.Show(sender.ToString() + e.ToString());
             Module.StartModule((sender as ToolStripMenuItem).Text);
         }
+
         private void RunModuleOnUrlMenuItem_Click(object sender, EventArgs e)
         {
 
         }
+
         private void RunModuleOnFindingMenuItem_Click(object sender, EventArgs e)
         {
             //MessageBox.Show(sender.ToString() + e.ToString());
@@ -805,7 +807,8 @@ namespace IronWASP
             CanShutdown = true;
             try
             {
-                ScanManager.Stop();
+                //ScanManager.Stop();
+                ScanManager.DoStop();
             }
             catch { }
             try
@@ -833,14 +836,18 @@ namespace IronWASP
                 IronUpdater.Stop();
             }
             catch { }
-            foreach (int ScanID in Scanner.ScanThreads.Keys)
+            try
             {
-                try
+                foreach (int ScanID in Scanner.ScanThreads.Keys)
                 {
-                    Scanner.ScanThreads[ScanID].Abort();
+                    try
+                    {
+                        Scanner.ScanThreads[ScanID].Abort();
+                    }
+                    catch { }
                 }
-                catch { }
             }
+            catch { }
             try
             {
                 CheckUpdate.StopUpdateCheck();
@@ -2459,7 +2466,7 @@ namespace IronWASP
                 }
                 if (Type != PluginType.None && SelectedNode.Name.Length > 0)
                 {
-                    PluginStore.ReloadPlugin(Type, SelectedNode.Name, FileName);
+                    PluginEngine.ReloadPlugin(Type, SelectedNode.Name, FileName);
                 }
             }
         }
@@ -2508,61 +2515,61 @@ namespace IronWASP
 
         private void AllPluginsRAToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread T = new Thread(PluginStore.LoadAllPlugins);
+            Thread T = new Thread(PluginEngine.LoadAllPlugins);
             T.Start();
         }
 
         private void PassivePluginsRAToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread T = new Thread(PluginStore.LoadAllPassivePlugins);
+            Thread T = new Thread(PluginEngine.LoadAllPassivePlugins);
             T.Start();
         }
 
         private void ActivePluginsRAToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread T = new Thread(PluginStore.LoadAllActivePlugins);
+            Thread T = new Thread(PluginEngine.LoadAllActivePlugins);
             T.Start();
         }
 
         private void FormatPluginsRAToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread T = new Thread(PluginStore.LoadAllFormatPlugins);
+            Thread T = new Thread(PluginEngine.LoadAllFormatPlugins);
             T.Start();
         }
 
         private void SessionPluginsRAToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread T = new Thread(PluginStore.LoadAllSessionPlugins);
+            Thread T = new Thread(PluginEngine.LoadAllSessionPlugins);
             T.Start();
         }
 
         private void SessionPluginsANToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread T = new Thread(PluginStore.LoadNewSessionPlugins);
+            Thread T = new Thread(PluginEngine.LoadNewSessionPlugins);
             T.Start();
         }
 
         private void FormatPluginsANToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread T = new Thread(PluginStore.LoadNewFormatPlugins);
+            Thread T = new Thread(PluginEngine.LoadNewFormatPlugins);
             T.Start();
         }
 
         private void ActivePluginsANToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread T = new Thread(PluginStore.LoadNewActivePlugins);
+            Thread T = new Thread(PluginEngine.LoadNewActivePlugins);
             T.Start();
         }
 
         private void PassivePluginsANToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread T = new Thread(PluginStore.LoadNewPassivePlugins);
+            Thread T = new Thread(PluginEngine.LoadNewPassivePlugins);
             T.Start();
         }
 
         private void AllPluginsANToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Thread T = new Thread(PluginStore.LoadAllNewPlugins);
+            Thread T = new Thread(PluginEngine.LoadAllNewPlugins);
             T.Start();
         }
 
@@ -4972,6 +4979,46 @@ namespace IronWASP
             {
                 ScriptedInterceptionBaseSplit.Visible = true;
             }
+        }
+
+        private void moduleCreationAssistantToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ModuleCreationAssistant MCA = new ModuleCreationAssistant();
+            MCA.Show();
+        }
+
+        private void LaunchPayloadEffectAnalyzerBtn_Click(object sender, EventArgs e)
+        {
+            ScanTraceBehaviourAnalysis STBA = new ScanTraceBehaviourAnalysis();
+            STBA.Show();
+        }
+
+        private void TestUpdateCookieStoreLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            ManualTesting.UpdateCookieStoreFromResponse();
+            TestUpdateFromCookieStoreLL.Visible = true;
+            TestUpdateCookieStoreLL.Visible = false;
+        }
+
+        private void TestUpdateFromCookieStoreLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            ManualTesting.UpdateRequestFromCookieStore();
+        }
+
+        private void ViewProxyInterceptionConfigLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            ConfigPanel.Height = 350;
+            ConfigPanel.Visible = true;
+            ConfigViewHideLL.Text = "Hide Config";
+            ConfigPanelTabs.SelectTab("ConfigInterceptRulesTab");
+        }
+
+        private void ViewProxyDisplayFilterLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            ConfigPanel.Height = 350;
+            ConfigPanel.Visible = true;
+            ConfigViewHideLL.Text = "Hide Config";
+            ConfigPanelTabs.SelectTab("ConfigDisplayRulesTab");
         }
     }
 }

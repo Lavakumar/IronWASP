@@ -72,6 +72,19 @@ namespace IronWASP
             }
         }
 
+        public bool ShowSpacesAndTabs
+        {
+            get
+            {
+                return Editor.ShowTabs;
+            }
+            set
+            {
+                Editor.ShowSpaces = value;
+                Editor.ShowTabs = value;
+            }
+        }
+
         public int LangCode
         {
             get
@@ -82,10 +95,17 @@ namespace IronWASP
             {
                 this.langCode = value;
 
-                if (this.LangCode == 1)
-                    Editor.SetHighlighting("Python");
-                else
-                    Editor.SetHighlighting("Ruby");
+                try
+                {
+                    if (this.LangCode == 1)
+                        Editor.SetHighlighting("Python");
+                    else
+                        Editor.SetHighlighting("Ruby");
+                }
+                catch (Exception Exp)
+                {
+                    IronException.Report("Unable to set Syntax Highlighting", Exp);
+                }
             }
         }
 
@@ -100,11 +120,17 @@ namespace IronWASP
             Editor.ShowSpaces = false;
             Editor.ShowInvalidLines = false;
             Editor.TabIndent = 2;
-
-            if(this.LangCode == 1)
-                Editor.SetHighlighting("Python");
-            else
-                Editor.SetHighlighting("Ruby");
+            try
+            {
+                if (this.LangCode == 1)
+                    Editor.SetHighlighting("Python");
+                else
+                    Editor.SetHighlighting("Ruby");
+            }
+            catch(Exception Exp)
+            {
+                IronException.Report("Unable to set Syntax Highlighting", Exp);
+            }
 
             Editor.ActiveTextAreaControl.TextArea.KeyUp += new System.Windows.Forms.KeyEventHandler(Editor_KeyUp);
         }

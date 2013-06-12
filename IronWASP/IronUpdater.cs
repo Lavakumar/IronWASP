@@ -68,6 +68,9 @@ namespace IronWASP
         static Queue<Request> ProxyEditedRequestQ = new Queue<Request>();
         static Queue<Response> ProxyEditedResponseQ = new Queue<Response>();
 
+        static Queue<Request[]> ProxyRequestListQ = new Queue<Request[]>();
+        static Queue<Response[]> ProxyResponseListQ = new Queue<Response[]>();
+
         static Queue<Request> OtherSourceRequestQ = new Queue<Request>();
         static Queue<Response> OtherSourceResponseQ = new Queue<Response>();
         internal static Dictionary<int, int> OtherSourceGridMap = new Dictionary<int, int>();
@@ -298,7 +301,43 @@ namespace IronWASP
                 }
             }
         }
-        
+
+        internal static void AddProxyRequests(Request[] Requests)
+        {
+            if (Requests.Length ==2)
+            {
+                try
+                {
+                    lock (ProxyRequestListQ)
+                    {
+                        ProxyRequestListQ.Enqueue(Requests);
+                    }
+                }
+                catch (Exception Exp)
+                {
+                    IronException.Report("Error adding Proxy Request for updating", Exp.Message, Exp.StackTrace);
+                }
+            }
+        }
+
+        internal static void AddProxyResponses(Response[] Responses)
+        {
+            if (Responses.Length == 2)
+            {
+                try
+                {
+                    lock (ProxyResponseListQ)
+                    {
+                        ProxyResponseListQ.Enqueue(Responses);
+                    }
+                }
+                catch (Exception Exp)
+                {
+                    IronException.Report("Error adding Proxy Response for updating", Exp.Message, Exp.StackTrace);
+                }
+            }
+        }
+
         static void UpdateProxyLogAndGrid()
         {
             Response[] DequedResponses;
@@ -474,6 +513,90 @@ namespace IronWASP
             if (Requests.Count > 0 | Responses.Count > 0)
             {
                 IronUI.UpdateProxyLogGrid(Requests, Responses);
+            }
+
+            Response[][] DequedResponseArrs;
+            lock (ProxyResponseListQ)
+            {
+                DequedResponseArrs = ProxyResponseListQ.ToArray();
+                ProxyResponseListQ.Clear();
+            }
+
+            List<Response[]> ResponseArrs = new List<Response[]>();
+            foreach (Response[] ResArr in DequedResponseArrs)
+            {
+                try
+                {
+                    if (ResArr.Length == 2)
+                    {
+                        if (ResArr[1] == null)
+                        {
+                            IronException.Report("Null Response DeQed from Proxy Response Q", "Null Response DeQed from Proxy Response Q");
+                            continue;
+                        }
+
+                        if (ResArr[0] != null)
+                        {
+                            ResArr[0].StoredHeadersString = ResArr[0].GetHeadersAsString();
+                            if (ResArr[0].IsBinary) ResArr[0].StoredBinaryBodyString = ResArr[0].BinaryBodyString;
+                        }
+                        ResArr[1].StoredHeadersString = ResArr[1].GetHeadersAsString();
+                        if (ResArr[1].IsBinary) ResArr[1].StoredBinaryBodyString = ResArr[1].BinaryBodyString;
+
+                        ResponseArrs.Add(ResArr);
+                    }
+                }
+                catch (Exception Exp)
+                {
+                    IronException.Report("Error preparing Response for UI & DB Update", Exp.Message, Exp.StackTrace);
+                }
+            }
+
+            Request[][] DequedRequestArrs;
+            List<Request[]> RequestArrs = new List<Request[]>();
+            lock (ProxyRequestListQ)
+            {
+                DequedRequestArrs = ProxyRequestListQ.ToArray();
+                ProxyRequestListQ.Clear();
+            }
+            foreach (Request[] ReqArr in DequedRequestArrs)
+            {
+                try
+                {
+                    if (ReqArr.Length == 2)
+                    {
+                        if (ReqArr[1] == null)
+                        {
+                            IronException.Report("Null Request DeQed from Proxy Request Q", "Null Request DeQed from Proxy Request Q");
+                            continue;
+                        }
+                        if (ReqArr[0] != null)
+                        {
+                            ReqArr[0].StoredFile = ReqArr[0].File;
+                            ReqArr[0].StoredParameters = ReqArr[0].GetParametersString();
+                            ReqArr[0].StoredHeadersString = ReqArr[0].GetHeadersAsString();
+                            if (ReqArr[0].IsBinary) ReqArr[0].StoredBinaryBodyString = ReqArr[0].BinaryBodyString;
+                            Urls.Add(GetUrlForList(ReqArr[0]));
+                        }
+                        ReqArr[1].StoredFile = ReqArr[1].File;
+                        ReqArr[1].StoredParameters = ReqArr[1].GetParametersString();
+                        ReqArr[1].StoredHeadersString = ReqArr[1].GetHeadersAsString();
+                        if (ReqArr[1].IsBinary) ReqArr[1].StoredBinaryBodyString = ReqArr[1].BinaryBodyString;
+                        Urls.Add(GetUrlForList(ReqArr[1]));
+
+                        RequestArrs.Add(ReqArr);
+                    }
+                }
+                catch (Exception Exp)
+                {
+                    IronException.Report("Error preparing Proxy Request for UI & DB Update", Exp.Message, Exp.StackTrace);
+                }
+            }
+
+            if (RequestArrs.Count > 0 || ResponseArrs.Count > 0)
+            {
+                IronDB.LogProxyMessages(RequestArrs, ResponseArrs);
+                IronUI.UpdateProxyLogGridWithArrs(RequestArrs, ResponseArrs);
             }
         }
 

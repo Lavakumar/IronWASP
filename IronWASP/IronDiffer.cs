@@ -27,6 +27,13 @@ namespace IronWASP
 {
     public class IronDiffer
     {
+        public static SideBySideDiffModel GetDiff(string Source, string Destination)
+        {
+            Differ DiffMaker = new Differ();
+            SideBySideDiffBuilder SideBySideDiffer = new SideBySideDiffBuilder(DiffMaker);
+            return SideBySideDiffer.BuildDiffModel(Source, Destination);
+        }
+        
         public static int GetLevel(string Source, string Destination)
         {
             Differ DiffMaker = new Differ();
@@ -89,6 +96,76 @@ namespace IronWASP
                 }
             }
             return OverAll;
+        }
+
+        public static List<string> GetInsertedStrings(SideBySideDiffModel SideBySideDiffResult)
+        {
+            List<string> InsertedStrings = new List<string>();
+            foreach (DiffPiece Line in SideBySideDiffResult.NewText.Lines)
+            {
+                switch (Line.Type)
+                {
+                    case ChangeType.Inserted:
+                        InsertedStrings.Add(Line.Text);
+                        break;
+                    case ChangeType.Modified:
+                        foreach (DiffPiece Word in Line.SubPieces)
+                        {
+                            switch (Word.Type)
+                            {
+                                case ChangeType.Inserted:
+                                    InsertedStrings.Add(Word.Text);
+                                    break;
+                                case ChangeType.Deleted:    
+                                case ChangeType.Imaginary:
+                                case ChangeType.Unchanged:
+                                case ChangeType.Modified:
+                                    break;
+                            }
+                        }
+                        break;
+                    case ChangeType.Deleted:    
+                    case ChangeType.Unchanged:
+                    case ChangeType.Imaginary:
+                        break;
+                }
+            }
+            return InsertedStrings;
+        }
+
+        public static List<string> GetDeletedStrings(SideBySideDiffModel SideBySideDiffResult)
+        {
+            List<string> DeletedStrings = new List<string>();
+            foreach (DiffPiece Line in SideBySideDiffResult.OldText.Lines)
+            {
+                switch (Line.Type)
+                {
+                    case ChangeType.Deleted:
+                        DeletedStrings.Add(Line.Text);
+                        break;
+                    case ChangeType.Modified:
+                        foreach (DiffPiece Word in Line.SubPieces)
+                        {
+                            switch (Word.Type)
+                            {
+                                case ChangeType.Deleted:
+                                    DeletedStrings.Add(Word.Text);
+                                    break;
+                                case ChangeType.Inserted:
+                                case ChangeType.Imaginary:
+                                case ChangeType.Unchanged:
+                                case ChangeType.Modified:
+                                    break;
+                            }
+                        }
+                        break;
+                    case ChangeType.Inserted:
+                    case ChangeType.Unchanged:
+                    case ChangeType.Imaginary:
+                        break;
+                }
+            }
+            return DeletedStrings;
         }
 
         public static double GetWeight(int SectionLength, int FullLength)

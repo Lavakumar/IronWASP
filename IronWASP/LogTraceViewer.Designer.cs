@@ -106,8 +106,8 @@ namespace IronWASP
             // 
             this.BaseSplit.Panel2.Controls.Add(this.LoadLogProgressBar);
             this.BaseSplit.Panel2.Controls.Add(this.LogDisplayTabs);
-            this.BaseSplit.Size = new System.Drawing.Size(884, 562);
-            this.BaseSplit.SplitterDistance = 330;
+            this.BaseSplit.Size = new System.Drawing.Size(884, 561);
+            this.BaseSplit.SplitterDistance = 329;
             this.BaseSplit.SplitterWidth = 2;
             this.BaseSplit.TabIndex = 11;
             // 
@@ -121,7 +121,7 @@ namespace IronWASP
             this.ScanTraceTabs.Name = "ScanTraceTabs";
             this.ScanTraceTabs.Padding = new System.Drawing.Point(0, 0);
             this.ScanTraceTabs.SelectedIndex = 0;
-            this.ScanTraceTabs.Size = new System.Drawing.Size(884, 330);
+            this.ScanTraceTabs.Size = new System.Drawing.Size(884, 329);
             this.ScanTraceTabs.TabIndex = 2;
             // 
             // ScanTraceOverviewTab
@@ -134,7 +134,7 @@ namespace IronWASP
             this.ScanTraceOverviewTab.Location = new System.Drawing.Point(4, 22);
             this.ScanTraceOverviewTab.Margin = new System.Windows.Forms.Padding(0);
             this.ScanTraceOverviewTab.Name = "ScanTraceOverviewTab";
-            this.ScanTraceOverviewTab.Size = new System.Drawing.Size(876, 304);
+            this.ScanTraceOverviewTab.Size = new System.Drawing.Size(876, 303);
             this.ScanTraceOverviewTab.TabIndex = 0;
             this.ScanTraceOverviewTab.Text = "    Overview    ";
             this.ScanTraceOverviewTab.UseVisualStyleBackColor = true;
@@ -187,9 +187,9 @@ namespace IronWASP
             this.ScanTraceOverviewGrid.AllowUserToDeleteRows = false;
             this.ScanTraceOverviewGrid.AllowUserToOrderColumns = true;
             this.ScanTraceOverviewGrid.AllowUserToResizeRows = false;
-            this.ScanTraceOverviewGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.ScanTraceOverviewGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ScanTraceOverviewGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ScanTraceOverviewGrid.BackgroundColor = System.Drawing.Color.White;
             this.ScanTraceOverviewGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -222,7 +222,7 @@ namespace IronWASP
             this.ScanTraceOverviewGrid.RowHeadersVisible = false;
             this.ScanTraceOverviewGrid.RowHeadersWidth = 10;
             this.ScanTraceOverviewGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ScanTraceOverviewGrid.Size = new System.Drawing.Size(876, 271);
+            this.ScanTraceOverviewGrid.Size = new System.Drawing.Size(876, 270);
             this.ScanTraceOverviewGrid.TabIndex = 9;
             this.ScanTraceOverviewGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ScanTraceOverviewGrid_CellClick);
             // 
@@ -322,7 +322,7 @@ namespace IronWASP
             this.ScanTraceDetailedInfoTab.Location = new System.Drawing.Point(4, 22);
             this.ScanTraceDetailedInfoTab.Margin = new System.Windows.Forms.Padding(0);
             this.ScanTraceDetailedInfoTab.Name = "ScanTraceDetailedInfoTab";
-            this.ScanTraceDetailedInfoTab.Size = new System.Drawing.Size(876, 304);
+            this.ScanTraceDetailedInfoTab.Size = new System.Drawing.Size(876, 303);
             this.ScanTraceDetailedInfoTab.TabIndex = 1;
             this.ScanTraceDetailedInfoTab.Text = "    Detailed Info    ";
             this.ScanTraceDetailedInfoTab.UseVisualStyleBackColor = true;
@@ -336,14 +336,14 @@ namespace IronWASP
             this.ScanTraceMsgRTB.Location = new System.Drawing.Point(0, 0);
             this.ScanTraceMsgRTB.Name = "ScanTraceMsgRTB";
             this.ScanTraceMsgRTB.ReadOnly = true;
-            this.ScanTraceMsgRTB.Size = new System.Drawing.Size(876, 304);
+            this.ScanTraceMsgRTB.Size = new System.Drawing.Size(876, 303);
             this.ScanTraceMsgRTB.TabIndex = 0;
             this.ScanTraceMsgRTB.Text = "";
             // 
             // LoadLogProgressBar
             // 
-            this.LoadLogProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.LoadLogProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.LoadLogProgressBar.Location = new System.Drawing.Point(303, 45);
             this.LoadLogProgressBar.MarqueeAnimationSpeed = 10;
             this.LoadLogProgressBar.Name = "LoadLogProgressBar";
@@ -414,7 +414,7 @@ namespace IronWASP
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(884, 562);
+            this.ClientSize = new System.Drawing.Size(884, 561);
             this.Controls.Add(this.BaseSplit);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "LogTraceViewer";

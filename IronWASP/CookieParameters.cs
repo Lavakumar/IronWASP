@@ -203,12 +203,12 @@ namespace IronWASP
             this.Request.SetCookieWithoutUpdatingParameters(this.GetCookieStringFromParameters());
         }
         
-        string Encode(string Value)
+        internal static string Encode(string Value)
         {
             return Tools.UrlEncode(Value);
         }
 
-        string Decode(string Value)
+        internal static string Decode(string Value)
         {
             return Tools.UrlDecode(Value);
         }

@@ -621,6 +621,118 @@ namespace IronWASP
             Log.Close();
         }
 
+        internal static void LogProxyMessages(List<Request[]> RequestArrs, List<Response[]> ResponseArrs)
+        {
+            SQLiteConnection Log = new SQLiteConnection("data source=" + ProxyLogFile);
+            Log.Open();
+            try
+            {
+                using (SQLiteTransaction InsertLogs = Log.BeginTransaction())
+                {
+                    using (SQLiteCommand Cmd = new SQLiteCommand(Log))
+                    {
+                        foreach (Request[] ReqArr in RequestArrs)
+                        {
+                            Cmd.CommandText = "INSERT INTO ProxyLog (ID , SSL, HostName, Method, URL, Edited, File, Parameters, OriginalRequestHeaders, OriginalRequestBody, BinaryOriginalRequest, RequestHeaders, RequestBody, BinaryRequest, Edited, Notes) VALUES (@ID , @SSL, @HostName, @Method, @URL, @Edited, @File, @Parameters, @OriginalRequestHeaders, @OriginalRequestBody, @BinaryOriginalRequest, @RequestHeaders, @RequestBody, @BinaryRequest, @Edited, @Notes)";
+                            Cmd.Parameters.AddWithValue("@ID", ReqArr[1].ID);
+                            Cmd.Parameters.AddWithValue("@SSL", AsInt(ReqArr[1].SSL));
+                            Cmd.Parameters.AddWithValue("@HostName", ReqArr[1].Host);
+                            Cmd.Parameters.AddWithValue("@Method", ReqArr[1].Method);
+                            Cmd.Parameters.AddWithValue("@URL", ReqArr[1].URL);
+                            //Cmd.Parameters.AddWithValue("@File", Req.File);
+                            Cmd.Parameters.AddWithValue("@File", ReqArr[1].StoredFile);
+                            Cmd.Parameters.AddWithValue("@Parameters", ReqArr[1].StoredParameters);
+                            //Cmd.Parameters.AddWithValue("@RequestHeaders", Req.GetHeadersAsString());
+                            Cmd.Parameters.AddWithValue("@RequestHeaders", ReqArr[1].StoredHeadersString);
+                            if (ReqArr[1].IsBinary)
+                                Cmd.Parameters.AddWithValue("@RequestBody", ReqArr[1].StoredBinaryBodyString);
+                            else
+                                Cmd.Parameters.AddWithValue("@RequestBody", ReqArr[1].BodyString);
+                            //Cmd.Parameters.AddWithValue("@RequestBody", Req.BodyString);
+                            Cmd.Parameters.AddWithValue("@BinaryRequest", AsInt(ReqArr[1].IsBinary));
+                            Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
+
+                            if (ReqArr[0] == null)
+                            {
+                                Cmd.Parameters.AddWithValue("@OriginalRequestHeaders", "");
+                                Cmd.Parameters.AddWithValue("@OriginalRequestBody", "");
+                                Cmd.Parameters.AddWithValue("@BinaryOriginalRequest", 0);
+                                Cmd.Parameters.AddWithValue("@Edited", 0);
+                            }
+                            else
+                            {
+                                Cmd.Parameters.AddWithValue("@OriginalRequestHeaders", ReqArr[0].StoredHeadersString);
+                                if (ReqArr[0].IsBinary)
+                                    Cmd.Parameters.AddWithValue("@OriginalRequestBody", ReqArr[0].StoredBinaryBodyString);
+                                else
+                                    Cmd.Parameters.AddWithValue("@OriginalRequestBody", ReqArr[0].BodyString);
+                                Cmd.Parameters.AddWithValue("@BinaryOriginalRequest", AsInt(ReqArr[0].IsBinary));
+                                Cmd.Parameters.AddWithValue("@Edited", 1);
+                            }
+
+                            Cmd.ExecuteNonQuery();
+                        }
+
+                        foreach (Response[] ResArr in ResponseArrs)
+                        {
+                            Cmd.CommandText = "UPDATE ProxyLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, OriginalResponseHeaders=@OriginalResponseHeaders, OriginalResponseBody=@OriginalResponseBody, BinaryOriginalResponse=@BinaryOriginalResponse, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, Notes=@Notes WHERE ID=@ID";
+                            Cmd.Parameters.AddWithValue("@Code", ResArr[1].Code);
+                            Cmd.Parameters.AddWithValue("@Length", ResArr[1].BodyLength);
+                            Cmd.Parameters.AddWithValue("@MIME", ResArr[1].ContentType);
+                            Cmd.Parameters.AddWithValue("@Edited", 0);
+                            Cmd.Parameters.AddWithValue("@SetCookie", AsInt((ResArr[1].SetCookies.Count > 0)));
+                            //Cmd.Parameters.AddWithValue("@ResponseHeaders", Res.GetHeadersAsString());
+                            Cmd.Parameters.AddWithValue("@ResponseHeaders", ResArr[1].StoredHeadersString);
+                            if (ResArr[1].IsBinary)
+                                Cmd.Parameters.AddWithValue("@ResponseBody", ResArr[1].StoredBinaryBodyString);
+                            else
+                                Cmd.Parameters.AddWithValue("@ResponseBody", ResArr[1].BodyString);
+                            //Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
+                            Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(ResArr[1].IsBinary));
+                            Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
+                            Cmd.Parameters.AddWithValue("@ID", ResArr[1].ID);
+
+                            if (ResArr[0] == null)
+                            {
+                                Cmd.Parameters.AddWithValue("@OriginalResponseHeaders", "");
+                                Cmd.Parameters.AddWithValue("@OriginalResponseBody", "");
+                                Cmd.Parameters.AddWithValue("@BinaryOriginalResponse", 0);
+                            }
+                            else
+                            {
+                                Cmd.Parameters.AddWithValue("@OriginalResponseHeaders", ResArr[0].StoredHeadersString);
+                                if (ResArr[0].IsBinary)
+                                    Cmd.Parameters.AddWithValue("@OriginalResponseBody", ResArr[0].StoredBinaryBodyString);
+                                else
+                                    Cmd.Parameters.AddWithValue("@OriginalResponseBody", ResArr[0].BodyString);
+                                Cmd.Parameters.AddWithValue("@BinaryOriginalResponse", AsInt(ResArr[0].IsBinary));
+                            }
+
+                            Cmd.ExecuteNonQuery();
+                        }
+
+                        foreach (Response[] ResArr in ResponseArrs)
+                        {
+                            if (ResArr[0] != null)
+                            {
+                                Cmd.CommandText = "UPDATE ProxyLog SET Edited=@Edited WHERE ID=@ID";
+                                Cmd.Parameters.AddWithValue("@Edited", 1);
+                                Cmd.Parameters.AddWithValue("@ID", ResArr[0].ID);
+                                Cmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                    InsertLogs.Commit();
+                }
+            }
+            catch (Exception Exp)
+            {
+                Log.Close();
+                throw Exp;
+            }
+            Log.Close();
+        }
+
         internal static void LogShellMessages(List<Session> IronSessions, List<Request> Requests, List<Response> Responses)
         {
             SQLiteConnection Log = new SQLiteConnection("data source=" + ShellLogFile);
@@ -3716,7 +3828,7 @@ namespace IronWASP
             {
                 SQLiteCommand cmd = DB.CreateCommand();
                 cmd.CommandText = "SELECT ID, ScanID, PluginName, Section, Parameter, Title, Message FROM ScanTrace WHERE ID > @StartID ORDER BY ID LIMIT @LIMIT";
-                cmd.Parameters.AddWithValue("@StartID", StartID);
+                cmd.Parameters.AddWithValue("@StartID", StartID -1);
                 cmd.Parameters.AddWithValue("@LIMIT", Count);
                 SQLiteDataReader result = cmd.ExecuteReader();
                 while (result.Read())

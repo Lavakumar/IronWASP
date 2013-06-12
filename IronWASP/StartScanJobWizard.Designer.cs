@@ -48,10 +48,10 @@ namespace IronWASP
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StartScanJobWizard));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.BaseTabs = new System.Windows.Forms.TabControl();
             this.RequestTab = new System.Windows.Forms.TabPage();
             this.Step0StatusTB = new System.Windows.Forms.TextBox();
@@ -275,7 +275,7 @@ namespace IronWASP
             this.BaseTabs.Name = "BaseTabs";
             this.BaseTabs.Padding = new System.Drawing.Point(0, 0);
             this.BaseTabs.SelectedIndex = 0;
-            this.BaseTabs.Size = new System.Drawing.Size(884, 562);
+            this.BaseTabs.Size = new System.Drawing.Size(884, 561);
             this.BaseTabs.TabIndex = 15;
             this.BaseTabs.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.BaseTabs_Selecting);
             // 
@@ -291,21 +291,21 @@ namespace IronWASP
             this.RequestTab.Margin = new System.Windows.Forms.Padding(0);
             this.RequestTab.Name = "RequestTab";
             this.RequestTab.Padding = new System.Windows.Forms.Padding(5);
-            this.RequestTab.Size = new System.Drawing.Size(876, 533);
+            this.RequestTab.Size = new System.Drawing.Size(876, 532);
             this.RequestTab.TabIndex = 0;
             this.RequestTab.Text = "               Edit Request               ";
             this.RequestTab.UseVisualStyleBackColor = true;
             // 
             // Step0StatusTB
             // 
-            this.Step0StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Step0StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Step0StatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Step0StatusTB.Location = new System.Drawing.Point(131, 476);
             this.Step0StatusTB.Multiline = true;
             this.Step0StatusTB.Name = "Step0StatusTB";
-            this.Step0StatusTB.Size = new System.Drawing.Size(607, 49);
+            this.Step0StatusTB.Size = new System.Drawing.Size(607, 48);
             this.Step0StatusTB.TabIndex = 6;
             this.Step0StatusTB.TabStop = false;
             this.Step0StatusTB.Visible = false;
@@ -324,7 +324,7 @@ namespace IronWASP
             // CancelBtn
             // 
             this.CancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.CancelBtn.Location = new System.Drawing.Point(3, 497);
+            this.CancelBtn.Location = new System.Drawing.Point(3, 496);
             this.CancelBtn.Name = "CancelBtn";
             this.CancelBtn.Size = new System.Drawing.Size(105, 23);
             this.CancelBtn.TabIndex = 4;
@@ -348,7 +348,7 @@ namespace IronWASP
             // StepOneNextBtn
             // 
             this.StepOneNextBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.StepOneNextBtn.Location = new System.Drawing.Point(755, 496);
+            this.StepOneNextBtn.Location = new System.Drawing.Point(755, 495);
             this.StepOneNextBtn.Name = "StepOneNextBtn";
             this.StepOneNextBtn.Size = new System.Drawing.Size(105, 23);
             this.StepOneNextBtn.TabIndex = 2;
@@ -358,9 +358,9 @@ namespace IronWASP
             // 
             // RequestTabs
             // 
-            this.RequestTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.RequestTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.RequestTabs.Controls.Add(this.tabPage20);
             this.RequestTabs.Controls.Add(this.tabPage21);
             this.RequestTabs.Location = new System.Drawing.Point(5, 82);
@@ -369,7 +369,7 @@ namespace IronWASP
             this.RequestTabs.Name = "RequestTabs";
             this.RequestTabs.Padding = new System.Drawing.Point(0, 0);
             this.RequestTabs.SelectedIndex = 0;
-            this.RequestTabs.Size = new System.Drawing.Size(866, 369);
+            this.RequestTabs.Size = new System.Drawing.Size(866, 368);
             this.RequestTabs.TabIndex = 1;
             // 
             // tabPage20
@@ -378,7 +378,7 @@ namespace IronWASP
             this.tabPage20.Location = new System.Drawing.Point(4, 22);
             this.tabPage20.Margin = new System.Windows.Forms.Padding(0);
             this.tabPage20.Name = "tabPage20";
-            this.tabPage20.Size = new System.Drawing.Size(858, 343);
+            this.tabPage20.Size = new System.Drawing.Size(858, 342);
             this.tabPage20.TabIndex = 0;
             this.tabPage20.Text = "Raw Headers";
             this.tabPage20.UseVisualStyleBackColor = true;
@@ -391,7 +391,7 @@ namespace IronWASP
             this.RequestRawHeadersIDV.Margin = new System.Windows.Forms.Padding(0);
             this.RequestRawHeadersIDV.Name = "RequestRawHeadersIDV";
             this.RequestRawHeadersIDV.ReadOnly = false;
-            this.RequestRawHeadersIDV.Size = new System.Drawing.Size(858, 343);
+            this.RequestRawHeadersIDV.Size = new System.Drawing.Size(858, 342);
             this.RequestRawHeadersIDV.TabIndex = 0;
             this.RequestRawHeadersIDV.IDVTextChanged += new IronDataView.IronDataView.TextChanged(this.RequestRawHeadersIDV_IDVTextChanged);
             // 
@@ -401,7 +401,7 @@ namespace IronWASP
             this.tabPage21.Location = new System.Drawing.Point(4, 22);
             this.tabPage21.Margin = new System.Windows.Forms.Padding(0);
             this.tabPage21.Name = "tabPage21";
-            this.tabPage21.Size = new System.Drawing.Size(858, 343);
+            this.tabPage21.Size = new System.Drawing.Size(858, 342);
             this.tabPage21.TabIndex = 1;
             this.tabPage21.Text = "Raw Body";
             this.tabPage21.UseVisualStyleBackColor = true;
@@ -414,7 +414,7 @@ namespace IronWASP
             this.RequestRawBodyIDV.Margin = new System.Windows.Forms.Padding(0);
             this.RequestRawBodyIDV.Name = "RequestRawBodyIDV";
             this.RequestRawBodyIDV.ReadOnly = false;
-            this.RequestRawBodyIDV.Size = new System.Drawing.Size(858, 343);
+            this.RequestRawBodyIDV.Size = new System.Drawing.Size(858, 342);
             this.RequestRawBodyIDV.TabIndex = 1;
             this.RequestRawBodyIDV.IDVTextChanged += new IronDataView.IronDataView.TextChanged(this.RequestRawBodyIDV_IDVTextChanged);
             // 
@@ -430,16 +430,16 @@ namespace IronWASP
             this.ChecksTab.Margin = new System.Windows.Forms.Padding(0);
             this.ChecksTab.Name = "ChecksTab";
             this.ChecksTab.Padding = new System.Windows.Forms.Padding(5);
-            this.ChecksTab.Size = new System.Drawing.Size(876, 533);
+            this.ChecksTab.Size = new System.Drawing.Size(876, 532);
             this.ChecksTab.TabIndex = 1;
             this.ChecksTab.Text = "               Select Checks               ";
             this.ChecksTab.UseVisualStyleBackColor = true;
             // 
             // Step1StatusTB
             // 
-            this.Step1StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Step1StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Step1StatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Step1StatusTB.Location = new System.Drawing.Point(259, 436);
             this.Step1StatusTB.Multiline = true;
@@ -472,8 +472,8 @@ namespace IronWASP
             this.Step1TopMsgTB.TabIndex = 9;
             this.Step1TopMsgTB.TabStop = false;
             this.Step1TopMsgTB.Text = "\r\nThe list below shows the various web application security vulnerabilities that " +
-                "IronWAP can scan for.\r\n\r\nSelect the checks that you want to be performed on this" +
-                " request.\r\n";
+    "IronWAP can scan for.\r\n\r\nSelect the checks that you want to be performed on this" +
+    " request.\r\n";
             // 
             // StepTwoPreviousBtn
             // 
@@ -502,8 +502,8 @@ namespace IronWASP
             this.ScanPluginsGrid.AllowUserToAddRows = false;
             this.ScanPluginsGrid.AllowUserToDeleteRows = false;
             this.ScanPluginsGrid.AllowUserToResizeRows = false;
-            this.ScanPluginsGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.ScanPluginsGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ScanPluginsGrid.BackgroundColor = System.Drawing.Color.White;
             this.ScanPluginsGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.ScanPluginsGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -551,16 +551,16 @@ namespace IronWASP
             this.InjectionTab.Location = new System.Drawing.Point(4, 25);
             this.InjectionTab.Name = "InjectionTab";
             this.InjectionTab.Padding = new System.Windows.Forms.Padding(5);
-            this.InjectionTab.Size = new System.Drawing.Size(876, 533);
+            this.InjectionTab.Size = new System.Drawing.Size(876, 532);
             this.InjectionTab.TabIndex = 2;
             this.InjectionTab.Text = "               Set Injection Points               ";
             this.InjectionTab.UseVisualStyleBackColor = true;
             // 
             // Step2StatusTB
             // 
-            this.Step2StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Step2StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Step2StatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Step2StatusTB.Location = new System.Drawing.Point(124, 509);
             this.Step2StatusTB.Multiline = true;
@@ -581,8 +581,8 @@ namespace IronWASP
             // 
             // Step2TopMsgTB
             // 
-            this.Step2TopMsgTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Step2TopMsgTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Step2TopMsgTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Step2TopMsgTB.Location = new System.Drawing.Point(5, 5);
             this.Step2TopMsgTB.Multiline = true;
@@ -617,9 +617,9 @@ namespace IronWASP
             // 
             // InjectionPointBaseTabs
             // 
-            this.InjectionPointBaseTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.InjectionPointBaseTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.InjectionPointBaseTabs.Controls.Add(this.AllTab);
             this.InjectionPointBaseTabs.Controls.Add(this.URLTab);
             this.InjectionPointBaseTabs.Controls.Add(this.QueryTab);
@@ -905,12 +905,12 @@ namespace IronWASP
             this.BodyInjectionMessageLbl.Size = new System.Drawing.Size(417, 13);
             this.BodyInjectionMessageLbl.TabIndex = 25;
             this.BodyInjectionMessageLbl.Text = "Body type has been discovered as XML and injection points were identified accordi" +
-                "ngly";
+    "ngly";
             // 
             // panel1
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.BackColor = System.Drawing.Color.MistyRose;
             this.panel1.Controls.Add(this.BlacklistItemsCountLbl);
             this.panel1.Controls.Add(this.label19);
@@ -1193,9 +1193,9 @@ namespace IronWASP
             // BodyInjectTypeTabs
             // 
             this.BodyInjectTypeTabs.Alignment = System.Windows.Forms.TabAlignment.Bottom;
-            this.BodyInjectTypeTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.BodyInjectTypeTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.BodyInjectTypeTabs.Controls.Add(this.BodyTypeNormalTab);
             this.BodyInjectTypeTabs.Controls.Add(this.BodyTypeFormatPluginTab);
             this.BodyInjectTypeTabs.Controls.Add(this.BodyTypeCustomTab);
@@ -1525,7 +1525,7 @@ namespace IronWASP
             // CustomEndMarkerTB
             // 
             this.CustomEndMarkerTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.CustomEndMarkerTB.Location = new System.Drawing.Point(396, 65);
+            this.CustomEndMarkerTB.Location = new System.Drawing.Point(401, 65);
             this.CustomEndMarkerTB.Name = "CustomEndMarkerTB";
             this.CustomEndMarkerTB.Size = new System.Drawing.Size(100, 20);
             this.CustomEndMarkerTB.TabIndex = 7;
@@ -1550,7 +1550,7 @@ namespace IronWASP
             // 
             this.ASApplyCustomMarkersLL.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ASApplyCustomMarkersLL.AutoSize = true;
-            this.ASApplyCustomMarkersLL.Location = new System.Drawing.Point(497, 68);
+            this.ASApplyCustomMarkersLL.Location = new System.Drawing.Point(507, 68);
             this.ASApplyCustomMarkersLL.Name = "ASApplyCustomMarkersLL";
             this.ASApplyCustomMarkersLL.Size = new System.Drawing.Size(33, 13);
             this.ASApplyCustomMarkersLL.TabIndex = 2;
@@ -1639,9 +1639,9 @@ namespace IronWASP
             // 
             // CharacterEscapingStatusTB
             // 
-            this.CharacterEscapingStatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.CharacterEscapingStatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.CharacterEscapingStatusTB.BackColor = System.Drawing.Color.Red;
             this.CharacterEscapingStatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.CharacterEscapingStatusTB.ForeColor = System.Drawing.Color.Black;
@@ -1661,7 +1661,7 @@ namespace IronWASP
             this.label9.Size = new System.Drawing.Size(523, 13);
             this.label9.TabIndex = 14;
             this.label9.Text = "You can delete or edit a rule by doing a right-click on the rule and selecting th" +
-                "e required option from the menu.";
+    "e required option from the menu.";
             // 
             // label8
             // 
@@ -1734,14 +1734,14 @@ namespace IronWASP
             this.CharacterEscapingGrid.AllowUserToDeleteRows = false;
             this.CharacterEscapingGrid.AllowUserToResizeRows = false;
             this.CharacterEscapingGrid.BackgroundColor = System.Drawing.Color.White;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.CharacterEscapingGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.CharacterEscapingGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.CharacterEscapingGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.CharacterEscapingGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.EscapingSelectColumn,
@@ -1772,8 +1772,8 @@ namespace IronWASP
             // 
             // RawCharacterColumn
             // 
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.RawCharacterColumn.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.RawCharacterColumn.DefaultCellStyle = dataGridViewCellStyle2;
             this.RawCharacterColumn.FillWeight = 70F;
             this.RawCharacterColumn.HeaderText = "Raw Character";
             this.RawCharacterColumn.Name = "RawCharacterColumn";
@@ -1784,8 +1784,8 @@ namespace IronWASP
             // ArrowColumn
             // 
             this.ArrowColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.ArrowColumn.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.ArrowColumn.DefaultCellStyle = dataGridViewCellStyle3;
             this.ArrowColumn.HeaderText = "";
             this.ArrowColumn.MinimumWidth = 30;
             this.ArrowColumn.Name = "ArrowColumn";
@@ -1793,8 +1793,8 @@ namespace IronWASP
             // 
             // EncodedCharacterColumn
             // 
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.EncodedCharacterColumn.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.EncodedCharacterColumn.DefaultCellStyle = dataGridViewCellStyle4;
             this.EncodedCharacterColumn.FillWeight = 130F;
             this.EncodedCharacterColumn.HeaderText = "Encoded Character";
             this.EncodedCharacterColumn.Name = "EncodedCharacterColumn";
@@ -1974,8 +1974,8 @@ namespace IronWASP
             // 
             // textBox1
             // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox1.BackColor = System.Drawing.Color.White;
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox1.Location = new System.Drawing.Point(7, 7);
@@ -2054,7 +2054,7 @@ namespace IronWASP
             this.textBox8.Size = new System.Drawing.Size(271, 57);
             this.textBox8.TabIndex = 13;
             this.textBox8.Text = "Add one parameter name per line. Blank space at the start and end of parameter na" +
-                "mes are stripped away.\r\n";
+    "mes are stripped away.\r\n";
             // 
             // textBox7
             // 
@@ -2093,15 +2093,15 @@ namespace IronWASP
             this.CustomizeTab.Location = new System.Drawing.Point(4, 25);
             this.CustomizeTab.Name = "CustomizeTab";
             this.CustomizeTab.Padding = new System.Windows.Forms.Padding(5);
-            this.CustomizeTab.Size = new System.Drawing.Size(876, 533);
+            this.CustomizeTab.Size = new System.Drawing.Size(876, 532);
             this.CustomizeTab.TabIndex = 3;
             this.CustomizeTab.Text = "               Customize Scan               ";
             this.CustomizeTab.UseVisualStyleBackColor = true;
             // 
             // SessionPluginsCombo
             // 
-            this.SessionPluginsCombo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.SessionPluginsCombo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.SessionPluginsCombo.FormattingEnabled = true;
             this.SessionPluginsCombo.Location = new System.Drawing.Point(386, 120);
             this.SessionPluginsCombo.Name = "SessionPluginsCombo";
@@ -2118,7 +2118,7 @@ namespace IronWASP
             this.ScanThreadLimitCB.Size = new System.Drawing.Size(489, 17);
             this.ScanThreadLimitCB.TabIndex = 165;
             this.ScanThreadLimitCB.Text = "When a Session Plugin is selected, automatically set the Scan thread limit to one" +
-                ". (Recommended)";
+    ". (Recommended)";
             this.ScanThreadLimitCB.UseVisualStyleBackColor = true;
             // 
             // LaunchSessionPluginCreationAssistantLL
@@ -2166,9 +2166,9 @@ namespace IronWASP
             // 
             // Step3StatusTB
             // 
-            this.Step3StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Step3StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Step3StatusTB.BackColor = System.Drawing.SystemColors.Control;
             this.Step3StatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Step3StatusTB.Font = new System.Drawing.Font("Palatino Linotype", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -2176,14 +2176,14 @@ namespace IronWASP
             this.Step3StatusTB.Location = new System.Drawing.Point(235, 413);
             this.Step3StatusTB.Multiline = true;
             this.Step3StatusTB.Name = "Step3StatusTB";
-            this.Step3StatusTB.Size = new System.Drawing.Size(628, 51);
+            this.Step3StatusTB.Size = new System.Drawing.Size(628, 50);
             this.Step3StatusTB.TabIndex = 20;
             this.Step3StatusTB.TabStop = false;
             // 
             // StepFourPreviousBtn
             // 
             this.StepFourPreviousBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.StepFourPreviousBtn.Location = new System.Drawing.Point(3, 497);
+            this.StepFourPreviousBtn.Location = new System.Drawing.Point(3, 496);
             this.StepFourPreviousBtn.Name = "StepFourPreviousBtn";
             this.StepFourPreviousBtn.Size = new System.Drawing.Size(105, 23);
             this.StepFourPreviousBtn.TabIndex = 19;
@@ -2194,7 +2194,7 @@ namespace IronWASP
             // FinalBtn
             // 
             this.FinalBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.FinalBtn.Location = new System.Drawing.Point(737, 485);
+            this.FinalBtn.Location = new System.Drawing.Point(737, 484);
             this.FinalBtn.Name = "FinalBtn";
             this.FinalBtn.Size = new System.Drawing.Size(126, 35);
             this.FinalBtn.TabIndex = 16;
@@ -2206,7 +2206,7 @@ namespace IronWASP
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(884, 562);
+            this.ClientSize = new System.Drawing.Size(884, 561);
             this.ControlBox = false;
             this.Controls.Add(this.BaseTabs);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

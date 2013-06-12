@@ -212,5 +212,13 @@ namespace IronWASP
                 }
             }
         }
+
+        public static int ThreadId
+        {
+            get
+            {
+                return Thread.CurrentThread.ManagedThreadId;
+            }
+        }
     }
 }

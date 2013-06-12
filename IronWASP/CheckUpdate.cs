@@ -29,7 +29,7 @@ namespace IronWASP
 {
     class CheckUpdate
     {
-        static string CurrentVersion = "0.9.5.0";
+        static string CurrentVersion = "0.9.6.0";
 
         //static string PluginManifestUrl = "https://ironwasp.org/update/plugin.manifest";
         //static string IronWASPManifestUrl = "https://ironwasp.org/update/ironwasp.manifest";
@@ -37,6 +37,7 @@ namespace IronWASP
         static string PluginManifestUrl = "https://ironwasp.org/update/plugin_manifest.xml";
         static string ModuleManifestUrl = "https://ironwasp.org/update/module_manifest.xml";
         static string IronWASPManifestUrl = "https://ironwasp.org/update/ironwasp_manifest.xml";
+        static string ModulesDbUrl = "https://ironwasp.org/update/modules_db.xml";
 
         static string ModuleDownloadBaseUrl = "https://ironwasp.org/update/modules/";
         static string PluginDownloadBaseUrl = "https://ironwasp.org/update/plugins/";
@@ -45,6 +46,7 @@ namespace IronWASP
         static string ModuleManifestFile = "";
         static string PluginManifestFile = "";
         static string IronWASPManifestFile = "";
+        static string ModulesDbFile = "";
 
 
         static List<string[]> PluginManifestInfo = new List<string[]>();
@@ -73,7 +75,19 @@ namespace IronWASP
                     throw new Exception("Invalid SSL Certificate provided by the server");
                 }
                 IronWASPManifestFile = IronWASPManifestRes.BodyString;
-                
+
+                Request ModulesDbReq = new Request(ModulesDbUrl);
+                ModulesDbReq.Source = RequestSource.Stealth;
+                ModulesDbReq.Headers.Set("User-Agent", "IronWASP v" + CurrentVersion);
+                Response ModulesDbRes = ModulesDbReq.Send();
+                if (!ModulesDbRes.IsSslValid)
+                {
+                    throw new Exception("Invalid SSL Certificate provided by the server");
+                }
+                //The ASCII conversion and substring is done to remove the unicode characters introduced at the beginning of the xml. Must find out why this happens.
+                ModulesDbFile = Encoding.ASCII.GetString(ModulesDbRes.BodyArray);
+                ModulesDbFile = ModulesDbFile.Substring(ModulesDbFile.IndexOf('<'));
+
                 Request PluginManifestReq = new Request(PluginManifestUrl);
                 PluginManifestReq.Source = RequestSource.Stealth;
                 PluginManifestReq.Headers.Set("User-Agent","IronWASP v" + CurrentVersion);
@@ -96,6 +110,7 @@ namespace IronWASP
                 
                 SetUpUpdateDirs();
                 GetNewIronWASP();
+                GetNewModulesDb();
                 GetNewPlugins();
                 GetNewModules();
                 if (NewUpdateAvailable)
@@ -445,10 +460,10 @@ namespace IronWASP
                                 switch (SupportFileNode.Name)
                                 {
                                     case ("filename"):
-                                        SupportFileName = PropertyNode.InnerText;
+                                        SupportFileName = SupportFileNode.InnerText;
                                         break;
                                     case ("downloadname"):
-                                        SupportFileDownloadName = PropertyNode.InnerText;
+                                        SupportFileDownloadName = SupportFileNode.InnerText;
                                         break;
                                 }
                             }
@@ -602,6 +617,38 @@ namespace IronWASP
             //        }
             //    }
             //}
+        }
+
+        static void GetNewModulesDb()
+        {
+            string CurrentModulesDbFile = "";
+            try
+            {
+                CurrentModulesDbFile = File.ReadAllText(string.Format("{0}\\ModulesDB.exe", Config.RootDir));
+            }
+            catch (Exception Exp)
+            {
+                throw new Exception("Unable to read the contents of ModulesDB.exe file", Exp);
+            }
+            try
+            {
+                if (!Tools.IsXmlContentSame(CurrentModulesDbFile, ModulesDbFile))
+                {
+                    try
+                    {
+                        File.WriteAllText(Config.Path + "\\updates\\ironwasp\\ModulesDB.exe", ModulesDbFile);
+                        NewUpdateAvailable = true;
+                    }
+                    catch (Exception Exp)
+                    {
+                        throw new Exception("Unable to update the contents of ModulesDB.exe file", Exp);
+                    }
+                }
+            }
+            catch(Exception Exp)
+            {
+                throw new Exception("Invalid ModulesDB.exe file, not a valid XML", Exp);
+            }
         }
 
         static void DownloadModule(string ModuleName, string PseudoName)

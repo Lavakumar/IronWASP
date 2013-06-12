@@ -45,7 +45,7 @@ namespace IronWASP
             {
                 if (!List().Contains(PP.Name))
                 {
-                    PP.FileName = PluginStore.FileName;
+                    PP.FileName = PluginEngine.FileName;
                     Collection.Add(PP);
                 }
             }

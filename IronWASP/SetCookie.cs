@@ -130,10 +130,10 @@ namespace IronWASP
             int NVE = Parts[0].IndexOf("=");
             if(NVE > 0)
             {
-                this.name = Parts[0].Substring(0, NVE).Trim();
+                this.name = CookieParameters.Decode(Parts[0].Substring(0, NVE).Trim());
                 if(Parts[0].Length > (NVE + 1))
                 {
-                    this.value = Parts[0].Substring(NVE + 1).Trim();
+                    this.value = CookieParameters.Decode(Parts[0].Substring(NVE + 1).Trim());
                 }
             }
             for(int i=1; i<Parts.Length; i++)

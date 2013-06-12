@@ -36,7 +36,6 @@ using IronRuby.StandardLibrary;
 using System.Reflection;
 using System.Windows.Forms;
 
-
 namespace IronWASP
 {
     public class Module
@@ -53,11 +52,20 @@ namespace IronWASP
         internal bool WorksOnSession = false;
         internal bool WorksOnFinding = false;
         internal bool WorksOnUrl = false;
+        internal int ThreadId = 0;
 
         public const string FINDING = "Finding";
         public const string URL = "Url";
         public const string SESSION = "Session";
         public const string ALL = "All";
+
+        public int MainThreadId
+        {
+            get
+            {
+                return this.ThreadId;
+            }
+        }
 
         internal static List<Module> Collection = new List<Module>();
 
@@ -122,7 +130,14 @@ namespace IronWASP
 
         }
 
-
+        public void StopModule()
+        {
+            try
+            {
+                IronThread.Stop(this.ThreadId);
+            }
+            catch { }
+        }
 
         public virtual Module GetInstance()
         {
@@ -433,7 +448,11 @@ namespace IronWASP
             List<object> Args = (List<object>)ModuleDisplayNameObj;
             string ModuleDisplayName = Args[0].ToString();
             Module M = GetModuleFromDisplayName(ModuleDisplayName, ALL);
-            if(M != null) M.StartModule();
+            if (M != null)
+            {
+                M.ThreadId = IronThread.ThreadId;
+                M.StartModule();
+            }
         }
         internal static void StartModuleOnSession(string ModuleDisplayName, string Source, int LogId)
         {
@@ -472,7 +491,10 @@ namespace IronWASP
             {
                 Module M = GetModuleFromDisplayName(ModuleDisplayName, SESSION);
                 if (M != null)
+                {
+                    M.ThreadId = IronThread.ThreadId;
                     M.StartModuleOnSession(Sess);
+                }
             }
         }
         internal static void StartModuleOnFinding(string ModuleDisplayName, int FindingId)
@@ -488,7 +510,10 @@ namespace IronWASP
             Finding PR = IronDB.GetPluginResultFromDB(FindingId);
             Module M = GetModuleFromDisplayName(ModuleDisplayName, FINDING);
             if (M != null)
+            {
+                M.ThreadId = IronThread.ThreadId;
                 M.StartModuleOnFinding(PR);
+            }
         }
         internal static void StartModuleOnUrl(string ModuleDisplayName, string Url)
         {
@@ -505,8 +530,23 @@ namespace IronWASP
             }
             catch { return; }
             Module M = GetModuleFromDisplayName(ModuleDisplayName, URL);
-            if(M != null)
+            if (M != null)
+            {
+                M.ThreadId = IronThread.ThreadId;
                 M.StartModuleOnUrl(Url);
+            }
+        }
+
+        internal static bool DoesDisplayNameExist(string DisplayName)
+        {
+            foreach (Module Mod in ModuleListFromXml)
+            {
+                if (Mod.DisplayName.Equals(DisplayName))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         static Module GetModuleFromDisplayName(string ModuleDisplayName, string WorksOn)
@@ -595,7 +635,7 @@ namespace IronWASP
                 }
                 else
                 {
-                    Engine = PluginStore.GetScriptEngine();
+                    Engine = PluginEngine.GetScriptEngine();
 
                     if (M.FileName.EndsWith(".py"))
                         Engine.Runtime.TryGetEngine("py", out Engine);

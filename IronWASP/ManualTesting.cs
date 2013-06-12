@@ -476,14 +476,14 @@ namespace IronWASP
             FullCode.AppendLine("from IronWASP import *");
             FullCode.AppendLine("import re");
             FullCode.AppendLine("class ss(ScriptedSender):");
-            FullCode.AppendLine("\tdef ScriptedSend(self, req):");
+            FullCode.AppendLine("  def ScriptedSend(self, req):");
             string[] CodeLines = FunctionCode.Split(new string[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
             foreach (string Line in CodeLines)
             {
-                FullCode.Append("\t\t");
+                FullCode.Append("    ");
                 FullCode.AppendLine(Line);
             }
-            FullCode.AppendLine("\t\treturn res");
+            FullCode.AppendLine("    return res");
             FullCode.AppendLine("");
             FullCode.AppendLine("");
             FullCode.AppendLine("s = ss();");
@@ -497,15 +497,15 @@ namespace IronWASP
             StringBuilder FullCode = new StringBuilder();
             FullCode.AppendLine("include IronWASP");
             FullCode.AppendLine("class SS < ScriptedSender");
-            FullCode.AppendLine("\tdef scripted_send(req)");
+            FullCode.AppendLine("  def scripted_send(req)");
             string[] CodeLines = FunctionCode.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string Line in CodeLines)
             {
-                FullCode.Append("\t\t");
+                FullCode.Append("    ");
                 FullCode.AppendLine(Line);
             }
-            FullCode.AppendLine("\t\treturn res");
-            FullCode.AppendLine("\tend");
+            FullCode.AppendLine("    return res");
+            FullCode.AppendLine("  end");
             FullCode.AppendLine("end");
             FullCode.AppendLine("");
             FullCode.AppendLine("s = SS.new");
@@ -523,6 +523,16 @@ namespace IronWASP
                 Runtime.LoadAssembly(MainAssembly);
                 Runtime.LoadAssembly(typeof(String).Assembly);
                 Runtime.LoadAssembly(typeof(Uri).Assembly);
+
+                if (Engine.Setup.DisplayName.Contains("IronPython"))
+                {
+                    string[] Results = PluginEditor.CheckPythonIndentation(Code);
+                    if (Results[1].Length > 0)
+                    {
+                        throw new Exception(Results[1]);
+                    }
+                }
+
                 ScriptSource Source = Engine.CreateScriptSourceFromString(Code);
                 Source.ExecuteProgram();
                 return "";
@@ -751,6 +761,49 @@ namespace IronWASP
             {
                 ManualTesting.SendRequest();
                 IronUI.StartMTSend(ManualTesting.CurrentRequestID);
+            }
+        }
+
+        internal static void UpdateCookieStoreFromResponse()
+        {
+            try
+            {
+                Session CurrentSession = GroupSessions[CurrentGroup][CurrentGroupLogId[CurrentGroup]];
+                if (CurrentSession.Response == null)
+                {
+                    IronUI.ShowMTException("No Set-Cookie headers in the Response"); 
+                }
+                else
+                {
+                    CookieStore.AddToStore(CurrentSession.Request, CurrentSession.Response);
+                }
+            }
+            catch(Exception Exp)
+            {
+                IronUI.ShowMTException("Error reading cookies from the Response");
+                IronException.Report("Error reading cookies from the Manual Testing Response", Exp);
+            }
+        }
+
+        internal static void UpdateRequestFromCookieStore()
+        {
+            try
+            {
+                if (ManualTesting.CurrentRequest == null)
+                {
+                    IronUI.ShowMTException("No valid Request found");
+                }
+                else
+                {
+                    Request NewRequest = ManualTesting.CurrentRequest.GetClone();
+                    CookieStore.ReadFromStore(NewRequest);
+                    IronUI.ResetMTDisplayFields();
+                    IronUI.FillMTFields(NewRequest);   
+                }
+            }
+            catch
+            {
+                IronUI.ShowMTException("No valid Request found");
             }
         }
     }

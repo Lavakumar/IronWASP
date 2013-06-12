@@ -458,15 +458,15 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
             {
                 Py.AppendLine("#Check if the response is a redirect");
                 Py.AppendLine("if res.IsRedirect:");
-                Py.Append("\t"); Py.AppendLine("#Get the redirect Request and store it in a variable named 'rd_req'. The redirect is followed by sending 'rd_req'");
-                Py.Append("\t"); Py.AppendLine("rd_req = req.GetRedirect(res)");
-                Py.Append("\t"); Py.AppendLine("final_res = rd_req.Send()");
+                Py.Append("  "); Py.AppendLine("#Get the redirect Request and store it in a variable named 'rd_req'. The redirect is followed by sending 'rd_req'");
+                Py.Append("  "); Py.AppendLine("rd_req = req.GetRedirect(res)");
+                Py.Append("  "); Py.AppendLine("final_res = rd_req.Send()");
 
                 Rb.AppendLine("#Check if the response is a redirect");
                 Rb.AppendLine("if res.is_redirect");
-                Rb.Append("\t"); Rb.AppendLine("#Get the redirect Request and store it in a variable named 'rd_req'. The redirect is followed by sending 'rd_req'");
-                Rb.Append("\t"); Rb.AppendLine("rd_req = req.get_redirect(res)");
-                Rb.Append("\t"); Rb.AppendLine("final_res = rd_req.send_req");
+                Rb.Append("  "); Rb.AppendLine("#Get the redirect Request and store it in a variable named 'rd_req'. The redirect is followed by sending 'rd_req'");
+                Rb.Append("  "); Rb.AppendLine("rd_req = req.get_redirect(res)");
+                Rb.Append("  "); Rb.AppendLine("final_res = rd_req.send_req");
                 Rb.AppendLine("end");
             }
             ShowCode(Py.ToString(), Rb.ToString());
@@ -821,14 +821,14 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
             else if (Action.StartsWith("Contains a"))
             {
                 Py.AppendLine(string.Format(@"if req.{0}.Has(""{1}""):", ParameterType, ParameterName.Replace("\"", "\\\"")));
-                Py.Append("\t"); Py.AppendLine(string.Format(@"print ""{0} contains a parameter named '{1}'""", ParameterType, ParameterName.Replace("'", "\\'")));
+                Py.Append("  "); Py.AppendLine(string.Format(@"print ""{0} contains a parameter named '{1}'""", ParameterType, ParameterName.Replace("'", "\\'")));
                 Py.AppendLine("else:");
-                Py.Append("\t"); Py.AppendLine(string.Format(@"print ""{0} does not contain a parameter named '{1}'""", ParameterType, ParameterName.Replace("'", "\\'")));
+                Py.Append("  "); Py.AppendLine(string.Format(@"print ""{0} does not contain a parameter named '{1}'""", ParameterType, ParameterName.Replace("'", "\\'")));
                 
                 Rb.AppendLine(string.Format(@"if req.{0}.has(""{1}"")", ParameterType.ToLower(), ParameterName));
-                Rb.Append("\t"); Rb.AppendLine(string.Format(@"puts ""{0} contains a parameter named '{1}'""", ParameterType.ToLower(), ParameterName.Replace("'", "\\'")));
+                Rb.Append("  "); Rb.AppendLine(string.Format(@"puts ""{0} contains a parameter named '{1}'""", ParameterType.ToLower(), ParameterName.Replace("'", "\\'")));
                 Rb.AppendLine("else");
-                Rb.Append("\t"); Rb.AppendLine(string.Format(@"puts ""{0} does not contain a parameter named '{1}'""", ParameterType.ToLower(), ParameterName.Replace("'", "\\'")));
+                Rb.Append("  "); Rb.AppendLine(string.Format(@"puts ""{0} does not contain a parameter named '{1}'""", ParameterType.ToLower(), ParameterName.Replace("'", "\\'")));
                 Rb.AppendLine("end");
             }
             else if (Action.StartsWith("Read all"))
@@ -838,12 +838,12 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
                     Py.AppendLine("upp = req.UrlPathParts");
                     Py.AppendLine("#UrlPathParts is a .NET List type but you can iterate over it like Python list.");
                     Py.AppendLine("for v in upp:");
-                    Py.Append("\t"); Py.AppendLine("print v");
+                    Py.Append("  "); Py.AppendLine("print v");
 
                     Rb.AppendLine("upp = req.url_path_parts");
                     Py.AppendLine("#UrlPathParts is a .NET List type but you can iterate over it like Ruby list.");
                     Rb.AppendLine("for v in upp");
-                    Rb.Append("\t"); Rb.AppendLine("puts v");
+                    Rb.Append("  "); Rb.AppendLine("puts v");
                     Rb.AppendLine("end");
                 }
                 else
@@ -851,12 +851,12 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
                     Py.AppendLine(string.Format(@"names = req.{0}.GetNames()", ParameterType));
                     Py.AppendLine("#The names are returned as a .NET List type but you can iterate over it like Python list.");
                     Py.AppendLine("for n in names:");
-                    Py.Append("\t"); Py.AppendLine("print n");
+                    Py.Append("  "); Py.AppendLine("print n");
 
                     Rb.AppendLine(string.Format(@"names = req.{0}.get_names", ParameterType.ToLower()));
                     Rb.AppendLine("#The names are returned as a .NET List type but you can iterate over it like Ruby list.");
                     Rb.AppendLine("for n in names");
-                    Rb.Append("\t"); Rb.AppendLine("puts n");
+                    Rb.Append("  "); Rb.AppendLine("puts n");
                     Rb.AppendLine("end");
                 }
             }
@@ -873,12 +873,12 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
                     Py.AppendLine(string.Format(@"values = req.{0}.GetAll(""{1}"")", ParameterType, ParameterName.Replace("\"", "\\\"")));
                     Py.AppendLine("#The values are returned as a .NET List type but you can iterate over it like Python list.");
                     Py.AppendLine("for v in values:");
-                    Py.Append("\t"); Py.AppendLine("print v");
+                    Py.Append("  "); Py.AppendLine("print v");
 
                     Rb.AppendLine(string.Format(@"values = req.{0}.get_all(""{1}"")", ParameterType.ToLower(), ParameterName.Replace("\"", "\\\"")));
                     Py.AppendLine("#The values are returned as a .NET List type but you can iterate over it like Ruby list.");
                     Rb.AppendLine("for v in values");
-                    Rb.Append("\t"); Rb.AppendLine("puts v");
+                    Rb.Append("  "); Rb.AppendLine("puts v");
                     Rb.AppendLine("end");
                 }
             }
@@ -1087,14 +1087,14 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
                     if (ROPAnswerReadRB.Checked)
                     {
                         Py.AppendLine("if req.SSL:");
-                        Py.Append("\t"); Py.AppendLine("print 'Request uses SSL'");
+                        Py.Append("  "); Py.AppendLine("print 'Request uses SSL'");
                         Py.AppendLine("else:");
-                        Py.Append("\t"); Py.AppendLine("print 'Request does not use SSL'");
+                        Py.Append("  "); Py.AppendLine("print 'Request does not use SSL'");
 
                         Rb.AppendLine("if req.ssl");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Request uses SSL'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Request uses SSL'");
                         Rb.AppendLine("else");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Request does not use SSL'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Request does not use SSL'");
                         Rb.AppendLine("end");
                     }
                     else
@@ -1107,14 +1107,14 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
                     if (ROPAnswerReadRB.Checked)
                     {
                         Py.AppendLine("if req.HasBody:");
-                        Py.Append("\t"); Py.AppendLine("print 'Request has a body'");
+                        Py.Append("  "); Py.AppendLine("print 'Request has a body'");
                         Py.AppendLine("else:");
-                        Py.Append("\t"); Py.AppendLine("print 'Request does not have a body'");
+                        Py.Append("  "); Py.AppendLine("print 'Request does not have a body'");
 
                         Rb.AppendLine("if req.has_body");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Request has a body'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Request has a body'");
                         Rb.AppendLine("else");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Request does not have a body'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Request does not have a body'");
                         Rb.AppendLine("end");
                     }
                     break;
@@ -1122,14 +1122,14 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
                     if (ROPAnswerReadRB.Checked)
                     {
                         Py.AppendLine("if req.IsBinary:");
-                        Py.Append("\t"); Py.AppendLine("print 'Request body is a binary value'");
+                        Py.Append("  "); Py.AppendLine("print 'Request body is a binary value'");
                         Py.AppendLine("else:");
-                        Py.Append("\t"); Py.AppendLine("print 'Request body is not a binary value'");
+                        Py.Append("  "); Py.AppendLine("print 'Request body is not a binary value'");
 
                         Rb.AppendLine("if req.is_binary");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Request body is a binary value'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Request body is a binary value'");
                         Rb.AppendLine("else");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Request body is not a binary value'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Request body is not a binary value'");
                         Rb.AppendLine("end");
                     }
                     break;
@@ -1439,48 +1439,48 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
                     {
                         Py.AppendLine("#SetCookies is list of SetCookie objects. It is a .NET List type but you can check its length and iterate over it like Python list.");
                         Py.AppendLine("if len(res.SetCookies) > 0:");
-                        Py.Append("\t"); Py.AppendLine("for sc in res.SetCookies:");
-                        Py.Append("\t\t"); Py.AppendLine(@"print ""SetCookie Header Value is : "" + sc.FullString");
-                        Py.Append("\t\t"); Py.AppendLine(@"print ""  Name= "" + sc.Name");
-                        Py.Append("\t\t"); Py.AppendLine(@"print ""  Value= "" + sc.Value");
-                        Py.Append("\t\t"); Py.AppendLine(@"print ""  Path= "" + sc.Path");
-                        Py.Append("\t\t"); Py.AppendLine(@"print ""  Domain= "" + sc.Domain");
-                        Py.Append("\t\t"); Py.AppendLine(@"print ""  Expires= "" + sc.Expires");
-                        Py.Append("\t\t"); Py.AppendLine(@"print ""  MaxAge= "" + sc.MaxAge");
-                        Py.Append("\t\t"); Py.AppendLine(@"print ""  Comment= "" + sc.Comment");
-                        Py.Append("\t\t"); Py.AppendLine(@"print ""  Version= "" + sc.Version");
-                        Py.Append("\t\t"); Py.AppendLine(@"if sc.HttpOnly:");
-                        Py.Append("\t\t\t"); Py.AppendLine(@"print ""  HttpOnly flag is set""");
-                        Py.Append("\t\t"); Py.AppendLine(@"else:");
-                        Py.Append("\t\t\t"); Py.AppendLine(@"print ""  HttpOnly flag is not set""");
-                        Py.Append("\t\t"); Py.AppendLine(@"if sc.Secure:");
-                        Py.Append("\t\t\t"); Py.AppendLine(@"print ""  Secure flag is set""");
-                        Py.Append("\t\t"); Py.AppendLine(@"else:");
-                        Py.Append("\t\t\t"); Py.AppendLine(@"print ""  Secure flag is not set""");
+                        Py.Append("  "); Py.AppendLine("for sc in res.SetCookies:");
+                        Py.Append("    "); Py.AppendLine(@"print ""SetCookie Header Value is : "" + sc.FullString");
+                        Py.Append("    "); Py.AppendLine(@"print ""  Name= "" + sc.Name");
+                        Py.Append("    "); Py.AppendLine(@"print ""  Value= "" + sc.Value");
+                        Py.Append("    "); Py.AppendLine(@"print ""  Path= "" + sc.Path");
+                        Py.Append("    "); Py.AppendLine(@"print ""  Domain= "" + sc.Domain");
+                        Py.Append("    "); Py.AppendLine(@"print ""  Expires= "" + sc.Expires");
+                        Py.Append("    "); Py.AppendLine(@"print ""  MaxAge= "" + sc.MaxAge");
+                        Py.Append("    "); Py.AppendLine(@"print ""  Comment= "" + sc.Comment");
+                        Py.Append("    "); Py.AppendLine(@"print ""  Version= "" + sc.Version");
+                        Py.Append("    "); Py.AppendLine(@"if sc.HttpOnly:");
+                        Py.Append("      "); Py.AppendLine(@"print ""  HttpOnly flag is set""");
+                        Py.Append("    "); Py.AppendLine(@"else:");
+                        Py.Append("      "); Py.AppendLine(@"print ""  HttpOnly flag is not set""");
+                        Py.Append("    "); Py.AppendLine(@"if sc.Secure:");
+                        Py.Append("      "); Py.AppendLine(@"print ""  Secure flag is set""");
+                        Py.Append("    "); Py.AppendLine(@"else:");
+                        Py.Append("      "); Py.AppendLine(@"print ""  Secure flag is not set""");
 
                         Rb.AppendLine("#SetCookies is list of SetCookie objects. It is a .NET List type but you can check its length and iterate over it like Ruby list.");
                         Rb.AppendLine("if res.set_cookies.count > 0");
-                        Rb.Append("\t"); Rb.AppendLine("for sc in res.set_cookies");
-                        Rb.Append("\t\t"); Rb.AppendLine(@"puts ""SetCookie Header Value is : "" + sc.full_string");
-                        Rb.Append("\t\t"); Rb.AppendLine(@"puts ""  Name= "" + sc.name");
-                        Rb.Append("\t\t"); Rb.AppendLine(@"puts ""  Value= "" + sc.value");
-                        Rb.Append("\t\t"); Rb.AppendLine(@"puts ""  Path= "" + sc.path");
-                        Rb.Append("\t\t"); Rb.AppendLine(@"puts ""  Domain= "" + sc.domain");
-                        Rb.Append("\t\t"); Rb.AppendLine(@"puts ""  Expires= "" + sc.expires");
-                        Rb.Append("\t\t"); Rb.AppendLine(@"puts ""  MaxAge= "" + sc.max_age");
-                        Rb.Append("\t\t"); Rb.AppendLine(@"puts ""  Comment= "" + sc.comment");
-                        Rb.Append("\t\t"); Rb.AppendLine(@"puts ""  Version= "" + sc.version");
-                        Rb.Append("\t\t"); Rb.AppendLine(@"if sc.http_only");
-                        Rb.Append("\t\t\t"); Rb.AppendLine(@"puts ""  HttpOnly flag is set""");
-                        Rb.Append("\t\t"); Rb.AppendLine(@"else");
-                        Rb.Append("\t\t\t"); Rb.AppendLine(@"puts ""  HttpOnly flag is not set""");
-                        Rb.Append("\t\t"); Rb.AppendLine(@"end");
-                        Rb.Append("\t\t"); Rb.AppendLine(@"if sc.secure");
-                        Rb.Append("\t\t\t"); Rb.AppendLine(@"puts ""  Secure flag is set""");
-                        Rb.Append("\t\t"); Rb.AppendLine(@"else");
-                        Rb.Append("\t\t\t"); Rb.AppendLine(@"puts ""  Secure flag is not set""");
-                        Rb.Append("\t\t"); Rb.AppendLine(@"end");
-                        Rb.Append("\t"); Rb.AppendLine(@"end");
+                        Rb.Append("  "); Rb.AppendLine("for sc in res.set_cookies");
+                        Rb.Append("    "); Rb.AppendLine(@"puts ""SetCookie Header Value is : "" + sc.full_string");
+                        Rb.Append("    "); Rb.AppendLine(@"puts ""  Name= "" + sc.name");
+                        Rb.Append("    "); Rb.AppendLine(@"puts ""  Value= "" + sc.value");
+                        Rb.Append("    "); Rb.AppendLine(@"puts ""  Path= "" + sc.path");
+                        Rb.Append("    "); Rb.AppendLine(@"puts ""  Domain= "" + sc.domain");
+                        Rb.Append("    "); Rb.AppendLine(@"puts ""  Expires= "" + sc.expires");
+                        Rb.Append("    "); Rb.AppendLine(@"puts ""  MaxAge= "" + sc.max_age");
+                        Rb.Append("    "); Rb.AppendLine(@"puts ""  Comment= "" + sc.comment");
+                        Rb.Append("    "); Rb.AppendLine(@"puts ""  Version= "" + sc.version");
+                        Rb.Append("    "); Rb.AppendLine(@"if sc.http_only");
+                        Rb.Append("      "); Rb.AppendLine(@"puts ""  HttpOnly flag is set""");
+                        Rb.Append("    "); Rb.AppendLine(@"else");
+                        Rb.Append("      "); Rb.AppendLine(@"puts ""  HttpOnly flag is not set""");
+                        Rb.Append("    "); Rb.AppendLine(@"end");
+                        Rb.Append("    "); Rb.AppendLine(@"if sc.secure");
+                        Rb.Append("      "); Rb.AppendLine(@"puts ""  Secure flag is set""");
+                        Rb.Append("    "); Rb.AppendLine(@"else");
+                        Rb.Append("      "); Rb.AppendLine(@"puts ""  Secure flag is not set""");
+                        Rb.Append("    "); Rb.AppendLine(@"end");
+                        Rb.Append("  "); Rb.AppendLine(@"end");
                         Rb.AppendLine(@"end");
                     }
                     else
@@ -1519,14 +1519,14 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
                     if (ResAnswerReadRB.Checked)
                     {
                         Py.AppendLine("if res.HasBody:");
-                        Py.Append("\t"); Py.AppendLine("print 'Response has a body'");
+                        Py.Append("  "); Py.AppendLine("print 'Response has a body'");
                         Py.AppendLine("else:");
-                        Py.Append("\t"); Py.AppendLine("print 'Response does not have a body'");
+                        Py.Append("  "); Py.AppendLine("print 'Response does not have a body'");
 
                         Rb.AppendLine("if res.has_body");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Response has a body'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Response has a body'");
                         Rb.AppendLine("else");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Response does not have a body'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Response does not have a body'");
                         Rb.AppendLine("end");
                     }
                     break;
@@ -1534,14 +1534,14 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
                     if (ResAnswerReadRB.Checked)
                     {
                         Py.AppendLine("if res.IsHtml:");
-                        Py.Append("\t"); Py.AppendLine("print 'Response body is HTML'");
+                        Py.Append("  "); Py.AppendLine("print 'Response body is HTML'");
                         Py.AppendLine("else:");
-                        Py.Append("\t"); Py.AppendLine("print 'Response body is not HTML'");
+                        Py.Append("  "); Py.AppendLine("print 'Response body is not HTML'");
 
                         Rb.AppendLine("if res.is_html");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Response body is HTML'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Response body is HTML'");
                         Rb.AppendLine("else");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Response body is not HTML'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Response body is not HTML'");
                         Rb.AppendLine("end");
                     }
                     break;
@@ -1549,14 +1549,14 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
                     if (ResAnswerReadRB.Checked)
                     {
                         Py.AppendLine("if res.IsJson:");
-                        Py.Append("\t"); Py.AppendLine("print 'Response body is JSON'");
+                        Py.Append("  "); Py.AppendLine("print 'Response body is JSON'");
                         Py.AppendLine("else:");
-                        Py.Append("\t"); Py.AppendLine("print 'Response body is not JSON'");
+                        Py.Append("  "); Py.AppendLine("print 'Response body is not JSON'");
 
                         Rb.AppendLine("if res.is_json");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Response body is JSON'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Response body is JSON'");
                         Rb.AppendLine("else");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Response body is not JSON'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Response body is not JSON'");
                         Rb.AppendLine("end");
                     }
                     break;
@@ -1564,14 +1564,14 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
                     if (ResAnswerReadRB.Checked)
                     {
                         Py.AppendLine("if res.IsXml:");
-                        Py.Append("\t"); Py.AppendLine("print 'Response body is XML'");
+                        Py.Append("  "); Py.AppendLine("print 'Response body is XML'");
                         Py.AppendLine("else:");
-                        Py.Append("\t"); Py.AppendLine("print 'Response body is not XML'");
+                        Py.Append("  "); Py.AppendLine("print 'Response body is not XML'");
 
                         Rb.AppendLine("if res.is_xml");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Response body is XML'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Response body is XML'");
                         Rb.AppendLine("else");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Response body is not XML'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Response body is not XML'");
                         Rb.AppendLine("end");
                     }
                     break;
@@ -1579,14 +1579,14 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
                     if (ResAnswerReadRB.Checked)
                     {
                         Py.AppendLine("if res.IsJavaScript:");
-                        Py.Append("\t"); Py.AppendLine("print 'Response body is JavaScript'");
+                        Py.Append("  "); Py.AppendLine("print 'Response body is JavaScript'");
                         Py.AppendLine("else:");
-                        Py.Append("\t"); Py.AppendLine("print 'Response body is not JavaScript'");
+                        Py.Append("  "); Py.AppendLine("print 'Response body is not JavaScript'");
 
                         Rb.AppendLine("if res.is_java_script");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Response body is JavaScript'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Response body is JavaScript'");
                         Rb.AppendLine("else");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Response body is not JavaScript'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Response body is not JavaScript'");
                         Rb.AppendLine("end");
                     }
                     break;
@@ -1594,14 +1594,14 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
                     if (ResAnswerReadRB.Checked)
                     {
                         Py.AppendLine("if res.IsCss:");
-                        Py.Append("\t"); Py.AppendLine("print 'Response body is CSS'");
+                        Py.Append("  "); Py.AppendLine("print 'Response body is CSS'");
                         Py.AppendLine("else:");
-                        Py.Append("\t"); Py.AppendLine("print 'Response body is not CSS'");
+                        Py.Append("  "); Py.AppendLine("print 'Response body is not CSS'");
 
                         Rb.AppendLine("if res.is_css");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Response body is CSS'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Response body is CSS'");
                         Rb.AppendLine("else");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Response body is not CSS'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Response body is not CSS'");
                         Rb.AppendLine("end");
                     }
                     break;
@@ -1609,14 +1609,14 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
                     if (ResAnswerReadRB.Checked)
                     {
                         Py.AppendLine("if res.IsRedirect:");
-                        Py.Append("\t"); Py.AppendLine("print 'Response is a redirect'");
+                        Py.Append("  "); Py.AppendLine("print 'Response is a redirect'");
                         Py.AppendLine("else:");
-                        Py.Append("\t"); Py.AppendLine("print 'Response is not a redirect'");
+                        Py.Append("  "); Py.AppendLine("print 'Response is not a redirect'");
 
                         Rb.AppendLine("if res.is_redirect");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Response is a Redirect'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Response is a Redirect'");
                         Rb.AppendLine("else");
-                        Rb.Append("\t"); Rb.AppendLine("puts 'Response is not a Redirect'");
+                        Rb.Append("  "); Rb.AppendLine("puts 'Response is not a Redirect'");
                         Rb.AppendLine("end");
                     }
                     break;
@@ -1959,24 +1959,24 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                     Py.AppendLine("links = res.Html.Links");
                     Py.AppendLine("#Links are returned as a .NET List type but you can iterate over it like Python list.");
                     Py.AppendLine("for link in links:");
-                    Py.Append("\t"); Py.AppendLine("print link");
+                    Py.Append("  "); Py.AppendLine("print link");
 
                     Rb.AppendLine("links = res.html.links");
                     Rb.AppendLine("#Links are returned as a .NET List type but you can iterate over it like Ruby list.");
                     Rb.AppendLine("for link in links");
-                    Rb.Append("\t"); Rb.AppendLine("puts link");
+                    Rb.Append("  "); Rb.AppendLine("puts link");
                     Rb.AppendLine("end");
                     break;
                 case ("Get Comments from Html"):
                     Py.AppendLine("comments = res.Html.Comments");
                     Py.AppendLine("#Comments are returned as a .NET List type but you can iterate over it like Python list.");
                     Py.AppendLine("for comment in comments:");
-                    Py.Append("\t"); Py.AppendLine("print comment");
+                    Py.Append("  "); Py.AppendLine("print comment");
 
                     Rb.AppendLine("comments = res.html.comments");
                     Rb.AppendLine("#Comments are returned as a .NET List type but you can iterate over it like Ruby list.");
                     Rb.AppendLine("for comment in comments");
-                    Rb.Append("\t"); Rb.AppendLine("puts comment");
+                    Rb.Append("  "); Rb.AppendLine("puts comment");
                     Rb.AppendLine("end");
                     break;
                 case ("Get JavaScript from Html"):
@@ -1986,13 +1986,13 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                         Py.AppendLine("scripts = res.Html.GetJavaScript()");
                         Py.AppendLine("#Scripts are returned as a .NET List type but you can iterate over it like Python list.");
                         Py.AppendLine("for script in scripts:");
-                        Py.Append("\t"); Py.AppendLine("print script");
+                        Py.Append("  "); Py.AppendLine("print script");
 
                         Rb.AppendLine("#Get all JavaScript from script tags and event-handlers in the Html");
                         Rb.AppendLine("scripts = res.html.get_java_script");
                         Rb.AppendLine("#Scripts are returned as a .NET List type but you can iterate over it like Ruby list.");
                         Rb.AppendLine("for script in scripts");
-                        Rb.Append("\t"); Rb.AppendLine("puts script");
+                        Rb.Append("  "); Rb.AppendLine("puts script");
                         Rb.AppendLine("end");
                     }
                     else
@@ -2007,13 +2007,13 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                         Py.AppendLine(string.Format(@"scripts = res.Html.GetJavaScript(""{0}"")", Keyword));
                         Py.AppendLine("#Scripts are returned as a .NET List type but you can iterate over it like Python list.");
                         Py.AppendLine("for script in scripts:");
-                        Py.Append("\t"); Py.AppendLine("print script");
+                        Py.Append("  "); Py.AppendLine("print script");
 
                         Rb.AppendLine(string.Format(@"#Get all JavaScript from script tags and event-handlers that contain the string ""{0}""", Keyword));
                         Rb.AppendLine(string.Format(@"scripts = res.html.get_java_script(""{0}"")", Keyword));
                         Rb.AppendLine("#Scripts are returned as a .NET List type but you can iterate over it like Ruby list.");
                         Rb.AppendLine("for script in scripts");
-                        Rb.Append("\t"); Rb.AppendLine("puts script");
+                        Rb.Append("  "); Rb.AppendLine("puts script");
                         Rb.AppendLine("end");
                     }
                     break;
@@ -2024,13 +2024,13 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                         Py.AppendLine("scripts = res.Html.GetVisualBasic()");
                         Py.AppendLine("#Scripts are returned as a .NET List type but you can iterate over it like Python list.");
                         Py.AppendLine("for script in scripts:");
-                        Py.Append("\t"); Py.AppendLine("print script");
+                        Py.Append("  "); Py.AppendLine("print script");
 
                         Rb.AppendLine("#Get all VB Script from script tags in the Html");
                         Rb.AppendLine("scripts = res.html.get_visual_basic");
                         Rb.AppendLine("#Scripts are returned as a .NET List type but you can iterate over it like Ruby list.");
                         Rb.AppendLine("for script in scripts");
-                        Rb.Append("\t"); Rb.AppendLine("puts script");
+                        Rb.Append("  "); Rb.AppendLine("puts script");
                         Rb.AppendLine("end");
                     }
                     else
@@ -2045,13 +2045,13 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                         Py.AppendLine(string.Format(@"scripts = res.Html.GetVisualBasic(""{0}"")", Keyword));
                         Py.AppendLine("#Scripts are returned as a .NET List type but you can iterate over it like Python list.");
                         Py.AppendLine("for script in scripts:");
-                        Py.Append("\t"); Py.AppendLine("print script");
+                        Py.Append("  "); Py.AppendLine("print script");
 
                         Rb.AppendLine(string.Format(@"#Get all VB Script from script tags that contain the string ""{0}""", Keyword));
                         Rb.AppendLine(string.Format(@"scripts = res.html.get_visual_basic(""{0}"")", Keyword));
                         Rb.AppendLine("#Scripts are returned as a .NET List type but you can iterate over it like Ruby list.");
                         Rb.AppendLine("for script in scripts");
-                        Rb.Append("\t"); Rb.AppendLine("puts script");
+                        Rb.Append("  "); Rb.AppendLine("puts script");
                         Rb.AppendLine("end");
                     }
                     break;
@@ -2062,13 +2062,13 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                         Py.AppendLine("all_css = res.Html.GetCss()");
                         Py.AppendLine("#CSSs are returned as a .NET List type but you can iterate over it like Python list.");
                         Py.AppendLine("for css in all_css:");
-                        Py.Append("\t"); Py.AppendLine("print css");
+                        Py.Append("  "); Py.AppendLine("print css");
 
                         Rb.AppendLine("#Get all CSS from style tags and style attribute of elements in the Html");
                         Rb.AppendLine("all_css = res.html.get_css");
                         Rb.AppendLine("#CSSs are returned as a .NET List type but you can iterate over it like Ruby list.");
                         Rb.AppendLine("for css in all_css");
-                        Rb.Append("\t"); Rb.AppendLine("puts css");
+                        Rb.Append("  "); Rb.AppendLine("puts css");
                         Rb.AppendLine("end");
                     }
                     else
@@ -2083,13 +2083,13 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                         Py.AppendLine(string.Format(@"all_css = res.Html.GetCss(""{0}"")", Keyword));
                         Py.AppendLine("#Scripts are returned as a .NET List type but you can iterate over it like Python list.");
                         Py.AppendLine("for css in all_css:");
-                        Py.Append("\t"); Py.AppendLine("print css");
+                        Py.Append("  "); Py.AppendLine("print css");
 
                         Rb.AppendLine(string.Format(@"#Get all CSS from style tags and style attribute that contain the string ""{0}""", Keyword));
                         Rb.AppendLine(string.Format(@"all_css = res.html.get_css(""{0}"")", Keyword));
                         Rb.AppendLine("#Scripts are returned as a .NET List type but you can iterate over it like Ruby list.");
                         Rb.AppendLine("for css in all_css");
-                        Rb.Append("\t"); Rb.AppendLine("puts css");
+                        Rb.Append("  "); Rb.AppendLine("puts css");
                         Rb.AppendLine("end");
                     }
                     break;
@@ -2126,13 +2126,13 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                         Py.AppendLine(string.Format(@"values = res.Html.GetValues(""{0}"", ""{1}"")", TagName, MainAttributeName));
                         Py.AppendLine("#Values are returned as a .NET List type but you can iterate over it like Python list.");
                         Py.AppendLine("for value in values:");
-                        Py.Append("\t"); Py.AppendLine("print value");
+                        Py.Append("  "); Py.AppendLine("print value");
 
 
                         Rb.AppendLine(string.Format(@"values = res.html.get_values(""{0}"", ""{1}"")", TagName, MainAttributeName));
                         Rb.AppendLine("#Values are returned as a .NET List type but you can iterate over it like Ruby list.");
                         Rb.AppendLine("for value in values");
-                        Rb.Append("\t"); Rb.AppendLine("puts value");
+                        Rb.Append("  "); Rb.AppendLine("puts value");
                         Rb.AppendLine("end");
                     }
                     else
@@ -2153,7 +2153,7 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                         Py.AppendLine(string.Format(@"#res.Html.GetValuesIgnoreValueCase(""{0}"", ""{1}"", ""{2}"", ""{3}"")", TagName, HelperAttributeName, HelperAttributeValue, MainAttributeName));
                         Py.AppendLine("#Values are returned as a .NET List type but you can iterate over it like Python list.");
                         Py.AppendLine("for value in values:");
-                        Py.Append("\t"); Py.AppendLine("print value");
+                        Py.Append("  "); Py.AppendLine("print value");
 
 
                         Rb.AppendLine(string.Format(@"values = res.html.get_values(""{0}"", ""{1}"", ""{2}"", ""{3}"")", TagName, HelperAttributeName, HelperAttributeValue, MainAttributeName));
@@ -2161,7 +2161,7 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                         Py.AppendLine(string.Format(@"#res.html.get_values_ignore_value_case(""{0}"", ""{1}"", ""{2}"", ""{3}"")", TagName, HelperAttributeName, HelperAttributeValue, MainAttributeName));
                         Rb.AppendLine("#Values are returned as a .NET List type but you can iterate over it like Ruby list.");
                         Rb.AppendLine("for value in values");
-                        Rb.Append("\t"); Rb.AppendLine("puts value");
+                        Rb.Append("  "); Rb.AppendLine("puts value");
                         Rb.AppendLine("end");
                     }
                     break;
@@ -2201,11 +2201,11 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                     {
                         PyEA.AppendLine("#Elements are returned as a .NET List type but you can iterate over it like Python list.");
                         PyEA.AppendLine("for element in elements:");
-                        PyEA.Append("\t"); PyEA.AppendLine("print element");
+                        PyEA.Append("  "); PyEA.AppendLine("print element");
 
                         RbEA.AppendLine("#Elements are returned as a .NET List type but you can iterate over it like Ruby list.");
                         RbEA.AppendLine("for element in elements");
-                        RbEA.Append("\t"); RbEA.AppendLine("puts element");
+                        RbEA.Append("  "); RbEA.AppendLine("puts element");
                         RbEA.AppendLine("end");
                     }
                     else
@@ -2213,46 +2213,46 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                         PyEA.AppendLine("#The elements are returned as HtmlNodeCollection object");
                         PyEA.AppendLine("#If there are no matches then None is returned, so first check if there are results");
                         PyEA.AppendLine("if elements:");
-                        PyEA.Append("\t"); PyEA.AppendLine("#We can look through the collection to access each individual element.");
-                        PyEA.Append("\t"); PyEA.AppendLine("for element in elements:");
-                        PyEA.Append("\t\t"); PyEA.AppendLine("#Each individual element is represented as HtmlNode object. We can get the required details from the object.");
-                        PyEA.Append("\t\t"); PyEA.AppendLine("print 'Element name: ' + element.Name");
-                        PyEA.Append("\t\t"); PyEA.AppendLine("print 'Element id: ' + element.Id");
-                        PyEA.Append("\t\t"); PyEA.AppendLine("print 'Element attributes:'");
-                        PyEA.Append("\t\t"); PyEA.AppendLine("for attr in element.Attributes:");
-                        PyEA.Append("\t\t\t"); PyEA.AppendLine("print attr.Name + '=' + attr.Value");
-                        PyEA.Append("\t\t"); PyEA.AppendLine("print 'Element innertext: ' + element.InnerText");
-                        PyEA.Append("\t\t"); PyEA.AppendLine("print 'Element innerhtml: ' + element.InnerHtml");
-                        PyEA.Append("\t\t"); PyEA.AppendLine("print 'Element outerhtml: ' + element.OuterHtml");
-                        PyEA.Append("\t\t"); PyEA.AppendLine("if element.HasChildNodes:");
-                        PyEA.Append("\t\t\t"); PyEA.AppendLine("print 'this element has child nodes.'");
-                        PyEA.Append("\t\t\t"); PyEA.AppendLine("#Child nodes can be accessed by element.ChildNodes property. This property returns a HtmlNodeCollection object.");
-                        PyEA.Append("\t\t"); PyEA.AppendLine("else:");
-                        PyEA.Append("\t\t\t"); PyEA.AppendLine("print 'this element does not have child nodes'");
+                        PyEA.Append("  "); PyEA.AppendLine("#We can look through the collection to access each individual element.");
+                        PyEA.Append("  "); PyEA.AppendLine("for element in elements:");
+                        PyEA.Append("    "); PyEA.AppendLine("#Each individual element is represented as HtmlNode object. We can get the required details from the object.");
+                        PyEA.Append("    "); PyEA.AppendLine("print 'Element name: ' + element.Name");
+                        PyEA.Append("    "); PyEA.AppendLine("print 'Element id: ' + element.Id");
+                        PyEA.Append("    "); PyEA.AppendLine("print 'Element attributes:'");
+                        PyEA.Append("    "); PyEA.AppendLine("for attr in element.Attributes:");
+                        PyEA.Append("      "); PyEA.AppendLine("print attr.Name + '=' + attr.Value");
+                        PyEA.Append("    "); PyEA.AppendLine("print 'Element innertext: ' + element.InnerText");
+                        PyEA.Append("    "); PyEA.AppendLine("print 'Element innerhtml: ' + element.InnerHtml");
+                        PyEA.Append("    "); PyEA.AppendLine("print 'Element outerhtml: ' + element.OuterHtml");
+                        PyEA.Append("    "); PyEA.AppendLine("if element.HasChildNodes:");
+                        PyEA.Append("      "); PyEA.AppendLine("print 'this element has child nodes.'");
+                        PyEA.Append("      "); PyEA.AppendLine("#Child nodes can be accessed by element.ChildNodes property. This property returns a HtmlNodeCollection object.");
+                        PyEA.Append("    "); PyEA.AppendLine("else:");
+                        PyEA.Append("      "); PyEA.AppendLine("print 'this element does not have child nodes'");
                         
 
                         RbEA.AppendLine("#The elements are returned as HtmlNodeCollection object");
                         RbEA.AppendLine("#If there are no matches then nil is returned, so first check if there are results");
                         RbEA.AppendLine("if elements");
-                        RbEA.Append("\t"); RbEA.AppendLine("#We can look through the collection to access each individual element.");
-                        RbEA.Append("\t"); RbEA.AppendLine("for element in elements");
-                        RbEA.Append("\t\t"); RbEA.AppendLine("#Each individual element is represented as HtmlNode object. We can get the required details from the object.");
-                        RbEA.Append("\t\t"); RbEA.AppendLine("puts 'Element name: ' + element.name");
-                        RbEA.Append("\t\t"); RbEA.AppendLine("puts 'Element id: ' + element.id");
-                        RbEA.Append("\t\t"); RbEA.AppendLine("puts 'Element attributes:'");
-                        RbEA.Append("\t\t"); RbEA.AppendLine("for attr in element.attributes");
-                        RbEA.Append("\t\t\t"); RbEA.AppendLine("print attr.name + '=' + attr.value");
-                        RbEA.Append("\t\t"); RbEA.AppendLine("end");
-                        RbEA.Append("\t\t"); RbEA.AppendLine("puts 'Element innertext: ' + element.inner_text");
-                        RbEA.Append("\t\t"); RbEA.AppendLine("puts 'Element innerhtml: ' + element.inner_html");
-                        RbEA.Append("\t\t"); RbEA.AppendLine("puts 'Element outerhtml: ' + element.outer_html");
-                        RbEA.Append("\t\t"); RbEA.AppendLine("if element.has_child_nodes");
-                        RbEA.Append("\t\t\t"); RbEA.AppendLine("puts 'this element has child nodes.'");
-                        RbEA.Append("\t\t\t"); RbEA.AppendLine("#Child nodes can be accessed by element.ChildNodes property. This property returns a HtmlNodeCollection object.");
-                        RbEA.Append("\t\t"); RbEA.AppendLine("else");
-                        RbEA.Append("\t\t\t"); RbEA.AppendLine("puts 'this element does not have child nodes'");
-                        RbEA.Append("\t\t"); RbEA.AppendLine("end");
-                        RbEA.Append("\t"); RbEA.AppendLine("end");
+                        RbEA.Append("  "); RbEA.AppendLine("#We can look through the collection to access each individual element.");
+                        RbEA.Append("  "); RbEA.AppendLine("for element in elements");
+                        RbEA.Append("    "); RbEA.AppendLine("#Each individual element is represented as HtmlNode object. We can get the required details from the object.");
+                        RbEA.Append("    "); RbEA.AppendLine("puts 'Element name: ' + element.name");
+                        RbEA.Append("    "); RbEA.AppendLine("puts 'Element id: ' + element.id");
+                        RbEA.Append("    "); RbEA.AppendLine("puts 'Element attributes:'");
+                        RbEA.Append("    "); RbEA.AppendLine("for attr in element.attributes");
+                        RbEA.Append("      "); RbEA.AppendLine("print attr.name + '=' + attr.value");
+                        RbEA.Append("    "); RbEA.AppendLine("end");
+                        RbEA.Append("    "); RbEA.AppendLine("puts 'Element innertext: ' + element.inner_text");
+                        RbEA.Append("    "); RbEA.AppendLine("puts 'Element innerhtml: ' + element.inner_html");
+                        RbEA.Append("    "); RbEA.AppendLine("puts 'Element outerhtml: ' + element.outer_html");
+                        RbEA.Append("    "); RbEA.AppendLine("if element.has_child_nodes");
+                        RbEA.Append("      "); RbEA.AppendLine("puts 'this element has child nodes.'");
+                        RbEA.Append("      "); RbEA.AppendLine("#Child nodes can be accessed by element.ChildNodes property. This property returns a HtmlNodeCollection object.");
+                        RbEA.Append("    "); RbEA.AppendLine("else");
+                        RbEA.Append("      "); RbEA.AppendLine("puts 'this element does not have child nodes'");
+                        RbEA.Append("    "); RbEA.AppendLine("end");
+                        RbEA.Append("  "); RbEA.AppendLine("end");
                         RbEA.AppendLine("end");
                     }
 
@@ -2333,14 +2333,14 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                     Py.AppendLine("#Contexts are returned as a .NET List type but you can iterate over it like Python list.");
                     Py.AppendLine(string.Format(@"print ""The string \""{0}\"" appears in the following sections of the HTML:"" ", Keyword));
                     Py.AppendLine("for context in contexts:");
-                    Py.Append("\t"); Py.AppendLine("print context");
+                    Py.Append("  "); Py.AppendLine("print context");
 
 
                     Rb.AppendLine(string.Format(@"contexts = res.html.get_context(""{0}"")", Keyword));
                     Rb.AppendLine("#Contexts are returned as a .NET List type but you can iterate over it like Ruby list.");
                     Rb.AppendLine(string.Format(@"puts ""The string \""{0}\"" appears in the following sections of the HTML:"" ", Keyword));
                     Rb.AppendLine("for context in contexts");
-                    Rb.Append("\t"); Rb.AppendLine("puts context");
+                    Rb.Append("  "); Rb.AppendLine("puts context");
                     Rb.AppendLine("end");
                     break;
                 case ("Get Forms from Html"):
@@ -2348,41 +2348,41 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                     Py.AppendLine("#The elements are returned as list of HtmlNode objects");
                     Py.AppendLine("#We can look through the collection to access each individual element.");
                     Py.AppendLine("for element in forms:");
-                    Py.Append("\t"); Py.AppendLine("#Each individual element is represented as HtmlNode object. We can get the required details from the object.");
-                    Py.Append("\t"); Py.AppendLine("print 'Element name: ' + element.Name");
-                    Py.Append("\t"); Py.AppendLine("print 'Element id: ' + element.Id");
-                    Py.Append("\t"); Py.AppendLine("print 'Element attributes:'");
-                    Py.Append("\t"); Py.AppendLine("for attr in element.Attributes:");
-                    Py.Append("\t\t"); Py.AppendLine("print attr.Name + '=' + attr.Value");
-                    Py.Append("\t"); Py.AppendLine("print 'Element innertext: ' + element.InnerText");
-                    Py.Append("\t"); Py.AppendLine("print 'Element innerhtml: ' + element.InnerHtml");
-                    Py.Append("\t"); Py.AppendLine("print 'Element outerhtml: ' + element.OuterHtml");
-                    Py.Append("\t"); Py.AppendLine("if element.HasChildNodes:");
-                    Py.Append("\t\t"); Py.AppendLine("print 'this element has child nodes.'");
-                    Py.Append("\t\t"); Py.AppendLine("#Child nodes can be accessed by element.ChildNodes property. This property returns a HtmlNodeCollection object.");
-                    Py.Append("\t"); Py.AppendLine("else:");
-                    Py.Append("\t\t"); Py.AppendLine("print 'this element does not have child nodes'");
+                    Py.Append("  "); Py.AppendLine("#Each individual element is represented as HtmlNode object. We can get the required details from the object.");
+                    Py.Append("  "); Py.AppendLine("print 'Element name: ' + element.Name");
+                    Py.Append("  "); Py.AppendLine("print 'Element id: ' + element.Id");
+                    Py.Append("  "); Py.AppendLine("print 'Element attributes:'");
+                    Py.Append("  "); Py.AppendLine("for attr in element.Attributes:");
+                    Py.Append("    "); Py.AppendLine("print attr.Name + '=' + attr.Value");
+                    Py.Append("  "); Py.AppendLine("print 'Element innertext: ' + element.InnerText");
+                    Py.Append("  "); Py.AppendLine("print 'Element innerhtml: ' + element.InnerHtml");
+                    Py.Append("  "); Py.AppendLine("print 'Element outerhtml: ' + element.OuterHtml");
+                    Py.Append("  "); Py.AppendLine("if element.HasChildNodes:");
+                    Py.Append("    "); Py.AppendLine("print 'this element has child nodes.'");
+                    Py.Append("    "); Py.AppendLine("#Child nodes can be accessed by element.ChildNodes property. This property returns a HtmlNodeCollection object.");
+                    Py.Append("  "); Py.AppendLine("else:");
+                    Py.Append("    "); Py.AppendLine("print 'this element does not have child nodes'");
 
                     Rb.AppendLine("forms = res.html.get_forms");
                     Rb.AppendLine("#The elements are returned as list of HtmlNode objects");
                     Rb.AppendLine("#We can look through the collection to access each individual element.");
                     Rb.AppendLine("for element in forms");
-                    Rb.Append("\t"); Rb.AppendLine("#Each individual element is represented as HtmlNode object. We can get the required details from the object.");
-                    Rb.Append("\t"); Rb.AppendLine("puts 'Element name: ' + element.name");
-                    Rb.Append("\t"); Rb.AppendLine("puts 'Element id: ' + element.id");
-                    Rb.Append("\t"); Rb.AppendLine("puts 'Element attributes:'");
-                    Rb.Append("\t"); Rb.AppendLine("for attr in element.attributes");
-                    Rb.Append("\t\t"); Rb.AppendLine("print attr.name + '=' + attr.value");
-                    Rb.Append("\t"); Rb.AppendLine("end");
-                    Rb.Append("\t"); Rb.AppendLine("puts 'Element innertext: ' + element.inner_text");
-                    Rb.Append("\t"); Rb.AppendLine("puts 'Element innerhtml: ' + element.inner_html");
-                    Rb.Append("\t"); Rb.AppendLine("puts 'Element outerhtml: ' + element.outer_html");
-                    Rb.Append("\t"); Rb.AppendLine("if element.has_child_nodes");
-                    Rb.Append("\t\t"); Rb.AppendLine("puts 'this element has child nodes.'");
-                    Rb.Append("\t\t"); Rb.AppendLine("#Child nodes can be accessed by element.ChildNodes property. This property returns a HtmlNodeCollection object.");
-                    Rb.Append("\t"); Rb.AppendLine("else");
-                    Rb.Append("\t\t"); Rb.AppendLine("puts 'this element does not have child nodes'");
-                    Rb.Append("\t"); Rb.AppendLine("end");
+                    Rb.Append("  "); Rb.AppendLine("#Each individual element is represented as HtmlNode object. We can get the required details from the object.");
+                    Rb.Append("  "); Rb.AppendLine("puts 'Element name: ' + element.name");
+                    Rb.Append("  "); Rb.AppendLine("puts 'Element id: ' + element.id");
+                    Rb.Append("  "); Rb.AppendLine("puts 'Element attributes:'");
+                    Rb.Append("  "); Rb.AppendLine("for attr in element.attributes");
+                    Rb.Append("    "); Rb.AppendLine("print attr.name + '=' + attr.value");
+                    Rb.Append("  "); Rb.AppendLine("end");
+                    Rb.Append("  "); Rb.AppendLine("puts 'Element innertext: ' + element.inner_text");
+                    Rb.Append("  "); Rb.AppendLine("puts 'Element innerhtml: ' + element.inner_html");
+                    Rb.Append("  "); Rb.AppendLine("puts 'Element outerhtml: ' + element.outer_html");
+                    Rb.Append("  "); Rb.AppendLine("if element.has_child_nodes");
+                    Rb.Append("    "); Rb.AppendLine("puts 'this element has child nodes.'");
+                    Rb.Append("    "); Rb.AppendLine("#Child nodes can be accessed by element.ChildNodes property. This property returns a HtmlNodeCollection object.");
+                    Rb.Append("  "); Rb.AppendLine("else");
+                    Rb.Append("    "); Rb.AppendLine("puts 'this element does not have child nodes'");
+                    Rb.Append("  "); Rb.AppendLine("end");
                     Rb.AppendLine("end");
                     break;
             }
@@ -2420,69 +2420,69 @@ Gets all elements that have the 'onclick' event handlers in the HTML
             {
                 case ("Proxy"):
                     Py.AppendLine("for i in range(1, Config.LastProxyLogId):");
-                    Py.Append("\t"); Py.AppendLine("sess = Session.FromProxyLog(i)");
+                    Py.Append("  "); Py.AppendLine("sess = Session.FromProxyLog(i)");
 
                     Rb.AppendLine("for i in (1..Config.last_proxy_log_id)");
-                    Rb.Append("\t"); Rb.AppendLine("sess = Session.from_proxy_log(i)");
+                    Rb.Append("  "); Rb.AppendLine("sess = Session.from_proxy_log(i)");
                     break;
                 case ("Probe"):
                     Py.AppendLine("for i in range(1, Config.LastProbeLogId):");
-                    Py.Append("\t"); Py.AppendLine("sess = Session.FromProbeLog(i)");
+                    Py.Append("  "); Py.AppendLine("sess = Session.FromProbeLog(i)");
 
                     Rb.AppendLine("for i in (1..Config.last_probe_log_id)");
-                    Rb.Append("\t"); Rb.AppendLine("sess = Session.from_probe_log(i)");
+                    Rb.Append("  "); Rb.AppendLine("sess = Session.from_probe_log(i)");
                     break;
                 case ("Shell"):
                     Py.AppendLine("for i in range(1, Config.LastShellLogId):");
-                    Py.Append("\t"); Py.AppendLine("sess = Session.FromShellLog(i)");
+                    Py.Append("  "); Py.AppendLine("sess = Session.FromShellLog(i)");
 
                     Rb.AppendLine("for i in (1..Config.last_shell_log_id)");
-                    Rb.Append("\t"); Rb.AppendLine("sess = Session.from_shell_log(i)");
+                    Rb.Append("  "); Rb.AppendLine("sess = Session.from_shell_log(i)");
                     break;
                 case ("Scan"):
                     Py.AppendLine("for i in range(1, Config.LastScanLogId):");
-                    Py.Append("\t"); Py.AppendLine("sess = Session.FromScanLog(i)");
+                    Py.Append("  "); Py.AppendLine("sess = Session.FromScanLog(i)");
 
                     Rb.AppendLine("for i in (1..Config.last_scan_log_id)");
-                    Rb.Append("\t"); Rb.AppendLine("sess = Session.from_scan_log(i)");
+                    Rb.Append("  "); Rb.AppendLine("sess = Session.from_scan_log(i)");
                     break;
                 case ("Test"):
                     Py.AppendLine("for i in range(1, Config.LastTestLogId):");
-                    Py.Append("\t"); Py.AppendLine("sess = Session.FromTestLog(i)");
+                    Py.Append("  "); Py.AppendLine("sess = Session.FromTestLog(i)");
 
                     Rb.AppendLine("for i in (1..Config.last_test_log_id)");
-                    Rb.Append("\t"); Rb.AppendLine("sess = Session.from_test_log(i)");
+                    Rb.Append("  "); Rb.AppendLine("sess = Session.from_test_log(i)");
                     break;
                 default:
                     Py.AppendLine(string.Format(@"for i in range(1, Config.GetLastLogId(""{0}"")):", LogSource));
-                    Py.Append("\t"); Py.AppendLine(string.Format(@"sess = Session.FromLog(i, ""{0}"")", LogSource));
+                    Py.Append("  "); Py.AppendLine(string.Format(@"sess = Session.FromLog(i, ""{0}"")", LogSource));
 
                     Rb.AppendLine(string.Format(@"for i in (1..Config.get_last_log_id(""{0}""))", LogSource));
-                    Rb.Append("\t"); Rb.AppendLine(string.Format(@"sess = Session.from_log(i, ""{0}"")", LogSource));
+                    Rb.Append("  "); Rb.AppendLine(string.Format(@"sess = Session.from_log(i, ""{0}"")", LogSource));
                     break;
             }
 
-            Py.Append("\t"); Py.AppendLine("#Session object represents a request and its corresponding response.");
-            Py.Append("\t"); Py.AppendLine("#Sometimes the log might not have a response for a request, for example when the server was not reachable.");
-            Py.Append("\t"); Py.AppendLine("#So we check and ensure the response object of the sess object is not null");
-            Py.Append("\t"); Py.AppendLine("if sess.Response:");
-            Py.Append("\t"); Py.AppendLine("#If response code is 500 we print a message");
-            Py.Append("\t\t"); Py.AppendLine("if sess.Response.Code == 500:");
-            Py.Append("\t\t\t"); Py.AppendLine("print 'Response code 500 was found in log id - ' + str(sess.Request.LogId)");
-            Py.Append("\t\t"); Py.AppendLine("else:");
-            Py.Append("\t\t\t"); Py.AppendLine("print 'No error in log id - ' + str(sess.Request.LogId)");
+            Py.Append("  "); Py.AppendLine("#Session object represents a request and its corresponding response.");
+            Py.Append("  "); Py.AppendLine("#Sometimes the log might not have a response for a request, for example when the server was not reachable.");
+            Py.Append("  "); Py.AppendLine("#So we check and ensure the response object of the sess object is not null");
+            Py.Append("  "); Py.AppendLine("if sess.Response:");
+            Py.Append("  "); Py.AppendLine("#If response code is 500 we print a message");
+            Py.Append("    "); Py.AppendLine("if sess.Response.Code == 500:");
+            Py.Append("      "); Py.AppendLine("print 'Response code 500 was found in log id - ' + str(sess.Request.LogId)");
+            Py.Append("    "); Py.AppendLine("else:");
+            Py.Append("      "); Py.AppendLine("print 'No error in log id - ' + str(sess.Request.LogId)");
 
-            Rb.Append("\t"); Rb.AppendLine("#Session object represents a request and its corresponding response.");
-            Rb.Append("\t"); Rb.AppendLine("#Sometimes the log might not have a response for a request, for example when the server was not reachable.");
-            Rb.Append("\t"); Rb.AppendLine("#So we check and ensure the response object of the sess object is not null");
-            Rb.Append("\t"); Rb.AppendLine("if sess.response");
-            Rb.Append("\t"); Rb.AppendLine("#If response code is 500 we print a message");
-            Rb.Append("\t\t"); Rb.AppendLine("if sess.response.code == 500");
-            Rb.Append("\t\t\t"); Rb.AppendLine("puts 'Response code 500 was found in log id - ' + sess.request.log_id.to_s");
-            Rb.Append("\t\t"); Rb.AppendLine("else");
-            Rb.Append("\t\t\t"); Rb.AppendLine("puts 'No error in log id - ' + sess.request.log_id.to_s");
-            Rb.Append("\t\t"); Rb.AppendLine("end");
-            Rb.Append("\t"); Rb.AppendLine("end");
+            Rb.Append("  "); Rb.AppendLine("#Session object represents a request and its corresponding response.");
+            Rb.Append("  "); Rb.AppendLine("#Sometimes the log might not have a response for a request, for example when the server was not reachable.");
+            Rb.Append("  "); Rb.AppendLine("#So we check and ensure the response object of the sess object is not null");
+            Rb.Append("  "); Rb.AppendLine("if sess.response");
+            Rb.Append("  "); Rb.AppendLine("#If response code is 500 we print a message");
+            Rb.Append("    "); Rb.AppendLine("if sess.response.code == 500");
+            Rb.Append("      "); Rb.AppendLine("puts 'Response code 500 was found in log id - ' + sess.request.log_id.to_s");
+            Rb.Append("    "); Rb.AppendLine("else");
+            Rb.Append("      "); Rb.AppendLine("puts 'No error in log id - ' + sess.request.log_id.to_s");
+            Rb.Append("    "); Rb.AppendLine("end");
+            Rb.Append("  "); Rb.AppendLine("end");
             Rb.AppendLine("end");
 
             ShowCode(Py.ToString(), Rb.ToString());
@@ -2547,16 +2547,16 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                 Py.AppendLine("#'link_requests' contains a list of Request objects. Each request object in the list is the equivalent of the request created by the browser when someone clicks on one of the links in the HTML");
                 Py.AppendLine("#You can loop through this list and send each request. You can also update the parameters of the request before sending it.");
                 Py.AppendLine("for link_req in link_requests:");
-                Py.Append("\t"); Py.AppendLine("print 'Sending request to - ' + link_req.FullUrl");
-                Py.Append("\t"); Py.AppendLine("link_res = link_req.Send()");
+                Py.Append("  "); Py.AppendLine("print 'Sending request to - ' + link_req.FullUrl");
+                Py.Append("  "); Py.AppendLine("link_res = link_req.Send()");
 
                 Rb.AppendLine("#'cs' is the variable that is assumed to contain a CookieStore object that is handling cookies for these requests.");
                 Rb.AppendLine("link_requests = Crawler.get_link_clicks(req, res, cs)");
                 Rb.AppendLine("#'link_requests' contains a list of Request objects. Each request object in the list is the equivalent of the request created by the browser when someone clicks on one of the links in the HTML");
                 Rb.AppendLine("#You can loop through this list and send each request. You can also update the parameters of the request before sending it.");
                 Rb.AppendLine("for link_req in link_requests");
-                Rb.Append("\t"); Rb.AppendLine("puts 'Sending request to - ' + link_req.full_url");
-                Rb.Append("\t"); Rb.AppendLine("link_res = link_req.send_req");
+                Rb.Append("  "); Rb.AppendLine("puts 'Sending request to - ' + link_req.full_url");
+                Rb.Append("  "); Rb.AppendLine("link_res = link_req.send_req");
                 Rb.AppendLine("end");
             }
             else if (CrawlFormsRB.Checked)
@@ -2566,16 +2566,16 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                 Py.AppendLine("#'form_requests' contains a list of Request objects. Each request object in the list is the equivalent of the request created by the browser when someone submits one of the forms in the HTML");
                 Py.AppendLine("#You can loop through this list and send each request. You can also update the parameters of the request before sending it.");
                 Py.AppendLine("for form_req in form_requests:");
-                Py.Append("\t"); Py.AppendLine("print 'Submitting form to - ' + form_req.FullUrl");
-                Py.Append("\t"); Py.AppendLine("form_res = form_req.Send()");
+                Py.Append("  "); Py.AppendLine("print 'Submitting form to - ' + form_req.FullUrl");
+                Py.Append("  "); Py.AppendLine("form_res = form_req.Send()");
 
                 Rb.AppendLine("#'cs' is the variable that is assumed to contain a CookieStore object that is handling cookies for these requests.");
                 Rb.AppendLine("form_requests = Crawler.get_form_submissions(req, res, cs)");
                 Rb.AppendLine("#'form_requests' contains a list of Request objects. Each request object in the list is the equivalent of the request created by the browser when someone submits one of the forms in the HTML");
                 Rb.AppendLine("#You can loop through this list and send each request. You can also update the parameters of the request before sending it.");
                 Rb.AppendLine("for form_req in form_requests");
-                Rb.Append("\t"); Rb.AppendLine("puts 'Submitting form to - ' + form_req.full_url");
-                Rb.Append("\t"); Rb.AppendLine("form_res = form_req.send_req");
+                Rb.Append("  "); Rb.AppendLine("puts 'Submitting form to - ' + form_req.full_url");
+                Rb.Append("  "); Rb.AppendLine("form_res = form_req.send_req");
                 Rb.AppendLine("end");
             }
             else
@@ -2875,14 +2875,14 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                     break;
                 case ("exec"):
                     Py.AppendLine("#Run an external executable named test.exe located inside c:\\ drive");
-                    Py.AppendLine(@"Tools.Run(""c:\\text.exe"")");
+                    Py.AppendLine(@"Tools.Run(""c:\  ext.exe"")");
                     Py.AppendLine("#Run an external executable named test.exe located inside c:\\ drive and pass it some arguments");
-                    Py.AppendLine(@"Tools.RunWith(""c:\\text.exe"", ""-h 127.0.0.1"")");
+                    Py.AppendLine(@"Tools.RunWith(""c:\  ext.exe"", ""-h 127.0.0.1"")");
 
                     Rb.AppendLine("#Run an external executable named test.exe located inside c:\\ drive");
-                    Rb.AppendLine(@"Tools.run(""c:\\text.exe"")");
+                    Rb.AppendLine(@"Tools.run(""c:\  ext.exe"")");
                     Rb.AppendLine("#Run an external executable named test.exe located inside c:\\ drive and pass it some arguments");
-                    Rb.AppendLine(@"Tools.run_with(""c:\\text.exe"", ""-h 127.0.0.1"")");
+                    Rb.AppendLine(@"Tools.run_with(""c:\  ext.exe"", ""-h 127.0.0.1"")");
                     break;
                 case ("debug"):
                     Py.AppendLine("#Debug plugins and scripts by printing trace messages. This similar to using the print command for debugging");
@@ -3544,7 +3544,7 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                 Py.AppendLine("f = Fuzzer.FromUi(req)");
 
                 Rb.AppendLine("#We display a GUI based wizard to user and get the Fuzzer setting from user.");
-                Rb.AppendLine("f = Fuzzer.from_ui(req)");
+                Rb.AppendLine("f = Fuzzer.FromUi(req)");
             }
             else
             {
@@ -3739,9 +3739,9 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                 for (int i = 0; i < this.FuzzPayloads.Length; i++)
                 {
                     string Payload = this.FuzzPayloads[i];
-
-                    Py.Append("\""); Py.Append(Payload.Replace("\"", "\\\"")); Py.Append("\"");
-                    Rb.Append("\""); Rb.Append(Payload.Replace("\"", "\\\"")); Rb.Append("\"");
+                    
+                    Py.Append("\""); Py.Append(Tools.EscapeDoubleQuotes(Payload)); Py.Append("\"");
+                    Rb.Append("\""); Rb.Append(Tools.EscapeDoubleQuotes(Payload)); Rb.Append("\"");
 
                     if (i < (this.FuzzPayloads.Length - 1))
                     {
@@ -3764,7 +3764,7 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                 Py.AppendLine("payloads_with_newline = p_file.readlines()");
                 Py.AppendLine("p_file.close()");
                 Py.AppendLine("for pwnl in payloads_with_newline:");
-                Py.Append("\t"); Py.AppendLine("payloads.append(pwnl.rstrip())");
+                Py.Append("  "); Py.AppendLine("payloads.append(pwnl.rstrip())");
                 Py.AppendLine();
 
                 Rb.AppendLine();
@@ -3774,7 +3774,7 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                 Rb.AppendLine("payloads_with_newline = p_file.readlines");
                 Rb.AppendLine("p_file.close");
                 Rb.AppendLine("for pwnl in payloads_with_newline");
-                Rb.Append("\t"); Rb.AppendLine("payloads.push(pwnl.rstrip)");
+                Rb.Append("  "); Rb.AppendLine("payloads.push(pwnl.rstrip)");
                 Rb.AppendLine("end");
                 Rb.AppendLine();
             }
@@ -3785,7 +3785,7 @@ Gets all elements that have the 'onclick' event handlers in the HTML
             Py.AppendLine("#We go through a while loop till there are Fuzz or Injection points");
             Py.AppendLine("while f.HasMore():");
             Py.AppendLine("#We make the fuzzer go to the next injection point. On first run this command makes it point to the first injection point.");
-            Py.Append("\t"); Py.AppendLine("f.Next()");
+            Py.Append("  "); Py.AppendLine("f.Next()");
 
             Rb.AppendLine("#Resets the fuzzer so that it is ready to start.");
             Rb.AppendLine("f.reset");
@@ -3793,64 +3793,64 @@ Gets all elements that have the 'onclick' event handlers in the HTML
             Rb.AppendLine("#We go through a while loop till there are Fuzz or Injection points");
             Rb.AppendLine("while f.has_more");
             Rb.AppendLine("#We make the fuzzer go to the next injection point. On first run this command makes it point to the first injection point.");
-            Rb.Append("\t"); Rb.AppendLine("f.next");
+            Rb.Append("  "); Rb.AppendLine("f.next");
 
 
-            Py.Append("\t"); Py.AppendLine("for payload in payloads:");
-            Rb.Append("\t"); Rb.AppendLine("for payload in payloads");
+            Py.Append("  "); Py.AppendLine("for payload in payloads:");
+            Rb.Append("  "); Rb.AppendLine("for payload in payloads");
             if (FuzzPayloadEncodedYesRB.Checked)
             {
                 Py.AppendLine();
                 Py.AppendLine("#The payload is in Url encoded form so we decode it before injecting");
-                Py.Append("\t\t"); Py.AppendLine("payload = Tools.UrlDecode(payload)");
+                Py.Append("    "); Py.AppendLine("payload = Tools.UrlDecode(payload)");
 
                 Rb.AppendLine();
                 Rb.AppendLine("#The payload is in Url encoded form so we decode it before injecting");
-                Rb.Append("\t\t"); Rb.AppendLine("payload = Tools.url_decode(payload)");
+                Rb.Append("    "); Rb.AppendLine("payload = Tools.url_decode(payload)");
             }
             if (FuzzOriginalParameterAfterPayloadRB.Checked)
             {
                 Py.AppendLine();
                 Py.AppendLine("#The injected parameter's original value is added before the payload");
-                Py.Append("\t\t"); Py.AppendLine("payload = payload + f.PreInjectionParameterValue");
+                Py.Append("    "); Py.AppendLine("payload = payload + f.PreInjectionParameterValue");
 
                 Rb.AppendLine();
                 Rb.AppendLine("#The injected parameter's original value is added before the payload");
-                Rb.Append("\t\t"); Rb.AppendLine("payload = payload + f.pre_injection_parameter_value");
+                Rb.Append("    "); Rb.AppendLine("payload = payload + f.pre_injection_parameter_value");
             }
             else if (FuzzOriginalParameterBeforePayloadRB.Checked)
             {
                 Py.AppendLine();
                 Py.AppendLine("#The injected parameter's original value is added before the payload");
-                Py.Append("\t\t"); Py.AppendLine("payload = f.PreInjectionParameterValue + payload");
+                Py.Append("    "); Py.AppendLine("payload = f.PreInjectionParameterValue + payload");
 
                 Rb.AppendLine();
                 Rb.AppendLine("#The injected parameter's original value is added before the payload");
-                Rb.Append("\t\t"); Rb.AppendLine("payload = f.pre_injection_parameter_value + payload");
+                Rb.Append("    "); Rb.AppendLine("payload = f.pre_injection_parameter_value + payload");
             }
             Py.AppendLine();
             Py.AppendLine("#Inject the payload in the Request at the current injection point, send it to the server and get the response");
-            Py.Append("\t\t"); Py.AppendLine("res = f.Inject(payload)");
-            Py.Append("\t\t"); Py.AppendLine("if res.Code == 500:");
-            Py.Append("\t\t\t"); Py.AppendLine("#If the response code is 500 then inform the user");
-            Py.Append("\t\t\t"); Py.AppendLine(@"print ""Injecting - "" + payload + "" made the server return a 500 response""");
-            Py.Append("\t\t"); Py.AppendLine("if res.BodyString.count('error') > 0:");
-            Py.Append("\t\t\t"); Py.AppendLine("#If the response body contains the string 'error' then inform the user");
-            Py.Append("\t\t\t"); Py.AppendLine(@"print ""Injecting - "" + payload + "" made the server return an error message in the response""");
+            Py.Append("    "); Py.AppendLine("res = f.Inject(payload)");
+            Py.Append("    "); Py.AppendLine("if res.Code == 500:");
+            Py.Append("      "); Py.AppendLine("#If the response code is 500 then inform the user");
+            Py.Append("      "); Py.AppendLine(@"print ""Injecting - "" + payload + "" made the server return a 500 response""");
+            Py.Append("    "); Py.AppendLine("if res.BodyString.count('error') > 0:");
+            Py.Append("      "); Py.AppendLine("#If the response body contains the string 'error' then inform the user");
+            Py.Append("      "); Py.AppendLine(@"print ""Injecting - "" + payload + "" made the server return an error message in the response""");
 
             Rb.AppendLine();
             Rb.AppendLine("#Inject the payload in the Request at the current injection point, send it to the server and get the response");
-            Rb.Append("\t\t"); Rb.AppendLine("res = f.inject(payload)");
-            Rb.Append("\t\t"); Rb.AppendLine("if res.code == 500");
-            Rb.Append("\t\t\t"); Rb.AppendLine("#If the response code is 500 then inform the user");
-            Rb.Append("\t\t\t"); Rb.AppendLine(@"puts ""Injecting - "" + payload + "" made the server return a 500 response""");
-            Rb.Append("\t\t"); Rb.AppendLine("end");
-            Rb.Append("\t\t"); Rb.AppendLine("if res.body_string.index('error')");
-            Rb.Append("\t\t\t"); Rb.AppendLine("#If the response body contains the string 'error' then inform the user");
-            Rb.Append("\t\t\t"); Rb.AppendLine(@"puts ""Injecting - "" + payload + "" made the server return an error message in the response""");
-            Rb.Append("\t\t"); Rb.AppendLine("end");
+            Rb.Append("    "); Rb.AppendLine("res = f.inject(payload)");
+            Rb.Append("    "); Rb.AppendLine("if res.code == 500");
+            Rb.Append("      "); Rb.AppendLine("#If the response code is 500 then inform the user");
+            Rb.Append("      "); Rb.AppendLine(@"puts ""Injecting - "" + payload + "" made the server return a 500 response""");
+            Rb.Append("    "); Rb.AppendLine("end");
+            Rb.Append("    "); Rb.AppendLine("if res.body_string.index('error')");
+            Rb.Append("      "); Rb.AppendLine("#If the response body contains the string 'error' then inform the user");
+            Rb.Append("      "); Rb.AppendLine(@"puts ""Injecting - "" + payload + "" made the server return an error message in the response""");
+            Rb.Append("    "); Rb.AppendLine("end");
             
-            Rb.Append("\t"); Rb.AppendLine("end");
+            Rb.Append("  "); Rb.AppendLine("end");
             Rb.AppendLine("end");
 
             ShowCode(Py.ToString(), Rb.ToString());
@@ -4619,6 +4619,43 @@ Gets all elements that have the 'onclick' event handlers in the HTML
             Rb.AppendLine();
 
             ShowCode(Py.ToString(), Rb.ToString());
+        }
+
+        private void CopyScriptLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            try
+            {
+                if(CodeTabs.SelectedIndex == 0)
+                {
+                    if (FullPyCode.Length > 0)
+                    {
+                        Clipboard.SetText(FullPyCode);
+                    }
+                }
+                else
+                {
+                    if (FullRbCode.Length > 0)
+                    {
+                        Clipboard.SetText(FullRbCode);
+                    }
+                }
+            }
+            catch(Exception Exp)
+            {
+                IronException.Report("Unable to copy code from Script Creation Assistant", Exp);
+            }
+        }
+
+        private void CodeTabs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (CodeTabs.SelectedIndex == 0)
+            {
+                CopyScriptLL.Text = "Copy Python Script to Clipboard";
+            }
+            else
+            {
+                CopyScriptLL.Text = "Copy Ruby Script to Clipboard";
+            }
         }
     }
 }

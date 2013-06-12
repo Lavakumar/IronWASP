@@ -272,7 +272,7 @@ namespace IronWASP
             this.BaseTabs.Name = "BaseTabs";
             this.BaseTabs.Padding = new System.Drawing.Point(0, 0);
             this.BaseTabs.SelectedIndex = 0;
-            this.BaseTabs.Size = new System.Drawing.Size(834, 362);
+            this.BaseTabs.Size = new System.Drawing.Size(834, 361);
             this.BaseTabs.TabIndex = 104;
             this.BaseTabs.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.BaseTabs_Selecting);
             // 
@@ -295,7 +295,7 @@ namespace IronWASP
             this.Zero.Location = new System.Drawing.Point(4, 25);
             this.Zero.Margin = new System.Windows.Forms.Padding(0);
             this.Zero.Name = "Zero";
-            this.Zero.Size = new System.Drawing.Size(826, 333);
+            this.Zero.Size = new System.Drawing.Size(826, 332);
             this.Zero.TabIndex = 0;
             this.Zero.Text = "            Start            ";
             this.Zero.UseVisualStyleBackColor = true;
@@ -311,16 +311,16 @@ namespace IronWASP
             // 
             // Step0StatusTB
             // 
-            this.Step0StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Step0StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Step0StatusTB.BackColor = System.Drawing.Color.White;
             this.Step0StatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Step0StatusTB.ForeColor = System.Drawing.Color.Red;
             this.Step0StatusTB.Location = new System.Drawing.Point(127, 289);
             this.Step0StatusTB.Multiline = true;
             this.Step0StatusTB.Name = "Step0StatusTB";
-            this.Step0StatusTB.Size = new System.Drawing.Size(577, 36);
+            this.Step0StatusTB.Size = new System.Drawing.Size(577, 35);
             this.Step0StatusTB.TabIndex = 136;
             this.Step0StatusTB.TabStop = false;
             this.Step0StatusTB.Visible = false;
@@ -357,7 +357,7 @@ namespace IronWASP
             // CancelBtn
             // 
             this.CancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.CancelBtn.Location = new System.Drawing.Point(11, 301);
+            this.CancelBtn.Location = new System.Drawing.Point(11, 300);
             this.CancelBtn.Name = "CancelBtn";
             this.CancelBtn.Size = new System.Drawing.Size(105, 23);
             this.CancelBtn.TabIndex = 6;
@@ -368,7 +368,7 @@ namespace IronWASP
             // StepZeroNextBtn
             // 
             this.StepZeroNextBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.StepZeroNextBtn.Location = new System.Drawing.Point(713, 300);
+            this.StepZeroNextBtn.Location = new System.Drawing.Point(713, 299);
             this.StepZeroNextBtn.Name = "StepZeroNextBtn";
             this.StepZeroNextBtn.Size = new System.Drawing.Size(105, 23);
             this.StepZeroNextBtn.TabIndex = 5;
@@ -393,16 +393,16 @@ namespace IronWASP
             this.One.Controls.Add(this.InjectUrlPathPartsCB);
             this.One.Location = new System.Drawing.Point(4, 25);
             this.One.Name = "One";
-            this.One.Size = new System.Drawing.Size(826, 333);
+            this.One.Size = new System.Drawing.Size(826, 332);
             this.One.TabIndex = 2;
             this.One.Text = "            Scan Settings            ";
             this.One.UseVisualStyleBackColor = true;
             // 
             // Step1StatusTB
             // 
-            this.Step1StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Step1StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Step1StatusTB.BackColor = System.Drawing.Color.White;
             this.Step1StatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Step1StatusTB.ForeColor = System.Drawing.Color.Red;
@@ -441,7 +441,7 @@ namespace IronWASP
             // StepOneNextBtn
             // 
             this.StepOneNextBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.StepOneNextBtn.Location = new System.Drawing.Point(713, 302);
+            this.StepOneNextBtn.Location = new System.Drawing.Point(713, 301);
             this.StepOneNextBtn.Name = "StepOneNextBtn";
             this.StepOneNextBtn.Size = new System.Drawing.Size(105, 23);
             this.StepOneNextBtn.TabIndex = 142;
@@ -590,23 +590,23 @@ namespace IronWASP
             this.Two.Controls.Add(this.groupBox9);
             this.Two.Location = new System.Drawing.Point(4, 25);
             this.Two.Name = "Two";
-            this.Two.Size = new System.Drawing.Size(826, 333);
+            this.Two.Size = new System.Drawing.Size(826, 332);
             this.Two.TabIndex = 5;
             this.Two.Text = "            Scan Filter            ";
             this.Two.UseVisualStyleBackColor = true;
             // 
             // Step2StatusTB
             // 
-            this.Step2StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Step2StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Step2StatusTB.BackColor = System.Drawing.Color.White;
             this.Step2StatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Step2StatusTB.ForeColor = System.Drawing.Color.Red;
             this.Step2StatusTB.Location = new System.Drawing.Point(131, 302);
             this.Step2StatusTB.Multiline = true;
             this.Step2StatusTB.Name = "Step2StatusTB";
-            this.Step2StatusTB.Size = new System.Drawing.Size(577, 23);
+            this.Step2StatusTB.Size = new System.Drawing.Size(577, 22);
             this.Step2StatusTB.TabIndex = 148;
             this.Step2StatusTB.TabStop = false;
             this.Step2StatusTB.Visible = false;
@@ -619,7 +619,7 @@ namespace IronWASP
             this.label25.Size = new System.Drawing.Size(561, 13);
             this.label25.TabIndex = 147;
             this.label25.Text = "Check the box at the beginning to enable the list. Use + and - options to toggle " +
-                "between white-list and black-list mode.";
+    "between white-list and black-list mode.";
             // 
             // label26
             // 
@@ -629,12 +629,12 @@ namespace IronWASP
             this.label26.Size = new System.Drawing.Size(436, 13);
             this.label26.TabIndex = 146;
             this.label26.Text = "You can set a black-list or white-list to include or exclude request parameters f" +
-                "rom the scan.";
+    "rom the scan.";
             // 
             // StepTwoPreviousBtn
             // 
             this.StepTwoPreviousBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.StepTwoPreviousBtn.Location = new System.Drawing.Point(8, 302);
+            this.StepTwoPreviousBtn.Location = new System.Drawing.Point(8, 301);
             this.StepTwoPreviousBtn.Name = "StepTwoPreviousBtn";
             this.StepTwoPreviousBtn.Size = new System.Drawing.Size(105, 23);
             this.StepTwoPreviousBtn.TabIndex = 145;
@@ -645,7 +645,7 @@ namespace IronWASP
             // StepTwoNextBtn
             // 
             this.StepTwoNextBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.StepTwoNextBtn.Location = new System.Drawing.Point(714, 302);
+            this.StepTwoNextBtn.Location = new System.Drawing.Point(714, 301);
             this.StepTwoNextBtn.Name = "StepTwoNextBtn";
             this.StepTwoNextBtn.Size = new System.Drawing.Size(105, 23);
             this.StepTwoNextBtn.TabIndex = 144;
@@ -655,8 +655,8 @@ namespace IronWASP
             // 
             // groupBox6
             // 
-            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox6.Controls.Add(this.HeadersParametersFilterCB);
             this.groupBox6.Controls.Add(this.HeadersParametersPlusTB);
             this.groupBox6.Controls.Add(this.HeadersParametersMinusTB);
@@ -684,8 +684,8 @@ namespace IronWASP
             // 
             // HeadersParametersPlusTB
             // 
-            this.HeadersParametersPlusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.HeadersParametersPlusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.HeadersParametersPlusTB.Enabled = false;
             this.HeadersParametersPlusTB.Location = new System.Drawing.Point(255, 8);
             this.HeadersParametersPlusTB.Name = "HeadersParametersPlusTB";
@@ -694,15 +694,15 @@ namespace IronWASP
             // 
             // HeadersParametersMinusTB
             // 
-            this.HeadersParametersMinusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.HeadersParametersMinusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.HeadersParametersMinusTB.Enabled = false;
             this.HeadersParametersMinusTB.Location = new System.Drawing.Point(255, 29);
             this.HeadersParametersMinusTB.Name = "HeadersParametersMinusTB";
             this.HeadersParametersMinusTB.Size = new System.Drawing.Size(539, 20);
             this.HeadersParametersMinusTB.TabIndex = 52;
             this.HeadersParametersMinusTB.Text = "Proxy-Connection, User-Agent, Accept, Referer, Accept-Encoding, Accept-Language, " +
-                "Accept-Charset, Content-Type, Content-Length, If-Modified-Since, Pragma";
+    "Accept-Charset, Content-Type, Content-Length, If-Modified-Since, Pragma";
             // 
             // HeadersParametersPlusRB
             // 
@@ -734,8 +734,8 @@ namespace IronWASP
             // 
             // groupBox7
             // 
-            this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox7.Controls.Add(this.QueryParametersFilterCB);
             this.groupBox7.Controls.Add(this.QueryParametersPlusTB);
             this.groupBox7.Controls.Add(this.QueryParametersMinusTB);
@@ -763,8 +763,8 @@ namespace IronWASP
             // 
             // QueryParametersPlusTB
             // 
-            this.QueryParametersPlusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.QueryParametersPlusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.QueryParametersPlusTB.Enabled = false;
             this.QueryParametersPlusTB.Location = new System.Drawing.Point(255, 8);
             this.QueryParametersPlusTB.Name = "QueryParametersPlusTB";
@@ -773,8 +773,8 @@ namespace IronWASP
             // 
             // QueryParametersMinusTB
             // 
-            this.QueryParametersMinusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.QueryParametersMinusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.QueryParametersMinusTB.Enabled = false;
             this.QueryParametersMinusTB.Location = new System.Drawing.Point(255, 29);
             this.QueryParametersMinusTB.Name = "QueryParametersMinusTB";
@@ -811,8 +811,8 @@ namespace IronWASP
             // 
             // groupBox8
             // 
-            this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox8.Controls.Add(this.BodyParametersFilterCB);
             this.groupBox8.Controls.Add(this.BodyParametersPlusTB);
             this.groupBox8.Controls.Add(this.BodyParametersMinusTB);
@@ -840,8 +840,8 @@ namespace IronWASP
             // 
             // BodyParametersPlusTB
             // 
-            this.BodyParametersPlusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.BodyParametersPlusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.BodyParametersPlusTB.Enabled = false;
             this.BodyParametersPlusTB.Location = new System.Drawing.Point(255, 8);
             this.BodyParametersPlusTB.Name = "BodyParametersPlusTB";
@@ -850,8 +850,8 @@ namespace IronWASP
             // 
             // BodyParametersMinusTB
             // 
-            this.BodyParametersMinusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.BodyParametersMinusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.BodyParametersMinusTB.Enabled = false;
             this.BodyParametersMinusTB.Location = new System.Drawing.Point(255, 29);
             this.BodyParametersMinusTB.Name = "BodyParametersMinusTB";
@@ -889,8 +889,8 @@ namespace IronWASP
             // 
             // groupBox9
             // 
-            this.groupBox9.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox9.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox9.Controls.Add(this.CookieParametersFilterCB);
             this.groupBox9.Controls.Add(this.CookieParametersPlusTB);
             this.groupBox9.Controls.Add(this.CookieParametersMinusTB);
@@ -918,8 +918,8 @@ namespace IronWASP
             // 
             // CookieParametersPlusTB
             // 
-            this.CookieParametersPlusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.CookieParametersPlusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.CookieParametersPlusTB.Enabled = false;
             this.CookieParametersPlusTB.Location = new System.Drawing.Point(255, 8);
             this.CookieParametersPlusTB.Name = "CookieParametersPlusTB";
@@ -928,8 +928,8 @@ namespace IronWASP
             // 
             // CookieParametersMinusTB
             // 
-            this.CookieParametersMinusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.CookieParametersMinusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.CookieParametersMinusTB.Enabled = false;
             this.CookieParametersMinusTB.Location = new System.Drawing.Point(255, 29);
             this.CookieParametersMinusTB.Name = "CookieParametersMinusTB";
@@ -987,8 +987,8 @@ namespace IronWASP
             // 
             // ScanBranchSessionPluginsCombo
             // 
-            this.ScanBranchSessionPluginsCombo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.ScanBranchSessionPluginsCombo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ScanBranchSessionPluginsCombo.FormattingEnabled = true;
             this.ScanBranchSessionPluginsCombo.Location = new System.Drawing.Point(380, 90);
             this.ScanBranchSessionPluginsCombo.Name = "ScanBranchSessionPluginsCombo";
@@ -1005,7 +1005,7 @@ namespace IronWASP
             this.ScanThreadLimitCB.Size = new System.Drawing.Size(489, 17);
             this.ScanThreadLimitCB.TabIndex = 160;
             this.ScanThreadLimitCB.Text = "When a Session Plugin is selected, automatically set the Scan thread limit to one" +
-                ". (Recommended)";
+    ". (Recommended)";
             this.ScanThreadLimitCB.UseVisualStyleBackColor = true;
             // 
             // textBox4
@@ -1072,9 +1072,9 @@ namespace IronWASP
             // 
             // Step3StatusTB
             // 
-            this.Step3StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Step3StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Step3StatusTB.BackColor = System.Drawing.Color.White;
             this.Step3StatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Step3StatusTB.ForeColor = System.Drawing.Color.Red;
@@ -1179,7 +1179,7 @@ namespace IronWASP
             this.label27.Size = new System.Drawing.Size(535, 13);
             this.label27.TabIndex = 152;
             this.label27.Text = "You can opt to be prompted for assistance by IronWASP and your input ensure optim" +
-                "al coverage and efficiency.";
+    "al coverage and efficiency.";
             // 
             // label28
             // 
@@ -1189,7 +1189,7 @@ namespace IronWASP
             this.label28.Size = new System.Drawing.Size(615, 13);
             this.label28.TabIndex = 151;
             this.label28.Text = "If there are requests in the logs that look similar then IronWASP will try to aut" +
-                "omatically avoid duplicates but can help this process.";
+    "omatically avoid duplicates but can help this process.";
             // 
             // textBox3
             // 
@@ -1201,8 +1201,8 @@ namespace IronWASP
             this.textBox3.Size = new System.Drawing.Size(801, 25);
             this.textBox3.TabIndex = 150;
             this.textBox3.Text = "You can now start this scan. All scan jobs created would be available under the \'" +
-                "Automated Scanning\' section. You can stop or restart any of the scans from there" +
-                ".\r\n";
+    "Automated Scanning\' section. You can stop or restart any of the scans from there" +
+    ".\r\n";
             // 
             // SaveTemplateLL
             // 
@@ -1223,7 +1223,7 @@ namespace IronWASP
             this.label29.Size = new System.Drawing.Size(556, 13);
             this.label29.TabIndex = 148;
             this.label29.Text = "If you wish to save to the generic settings you entered so far then you can save " +
-                "it to a scan template file and reuse it.";
+    "it to a scan template file and reuse it.";
             // 
             // StepFourPreviousBtn
             // 
@@ -1262,7 +1262,7 @@ namespace IronWASP
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(834, 362);
+            this.ClientSize = new System.Drawing.Size(834, 361);
             this.ControlBox = false;
             this.Controls.Add(this.BaseTabs);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

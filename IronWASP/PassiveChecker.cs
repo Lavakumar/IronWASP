@@ -146,7 +146,7 @@ namespace IronWASP
                     {
                         IrSe = CheckRequest.Dequeue();
                     }
-                    if(IrSe != null) PluginStore.RunAllRequestBasedOfflinePassivePlugins(IrSe);
+                    if(IrSe != null) PluginEngine.RunAllRequestBasedOfflinePassivePlugins(IrSe);
                 }
                 catch (InvalidOperationException)
                 { }
@@ -162,7 +162,7 @@ namespace IronWASP
                     {
                         IrSe = CheckResponse.Dequeue();
                     }
-                    if (IrSe != null) PluginStore.RunAllResponseBasedOfflinePassivePlugins(IrSe);
+                    if (IrSe != null) PluginEngine.RunAllResponseBasedOfflinePassivePlugins(IrSe);
                 }
                 catch (InvalidOperationException)
                 {

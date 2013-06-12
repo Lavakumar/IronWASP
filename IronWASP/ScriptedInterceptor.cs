@@ -24,6 +24,9 @@ namespace IronWASP
 {
     public class ScriptedInterceptor
     {
+        public bool CallAfterInterception = false;
+        public bool AfterInterception = false;
+        
         public ScriptedInterceptor()
         {
 
@@ -79,19 +82,19 @@ namespace IronWASP
 #The rules in the config can be accessed by clicking on 'Show Config' on the top right corner of IronWASP
 #Doing this helps filter out things you had already blocked in the config
 if not self.DoesMatchRules(sess):
-	return False
+  return False
 
 #We check if the session object has a valid Response, if it does then currently a Response is passing through the proxy
 if sess.Response:
-	#We check if the Response has SetCookie headers and if the corresponding request Url is equal to '/login'
-	#If that is the case we return True and this Response will be intercepted and displayed to the user
-	if len(sess.Response.SetCookies) > 0 and sess.Request.Url == ""/login"":
-		return True
+  #We check if the Response has SetCookie headers and if the corresponding request Url is equal to '/login'
+  #If that is the case we return True and this Response will be intercepted and displayed to the user
+  if len(sess.Response.SetCookies) > 0 and sess.Request.Url == ""/login"":
+    return True
 #If the session object does not have valid Response then currently a Request is passing through the proxy
 else:
-	#We check if the Request has a body parameter named 'c_token' if it does then we change it to some other value
-	if sess.Request.Body.Has(""c_token""):
-		sess.Request.Body.Set(""c_token"", ""xxxxxxxxx"")
+  #We check if the Request has a body parameter named 'c_token' if it does then we change it to some other value
+  if sess.Request.Body.Has(""c_token""):
+    sess.Request.Body.Set(""c_token"", ""xxxxxxxxx"")
 
 #To debug your script you can make use of the command Tools.Trace(""Scripted Interception"", ""Test Message"")
 #This command will add an entry to the 'Debug Trace' section of the 'Dev' section. The two arguments must be strings, they can contain any value.
@@ -117,22 +120,22 @@ else:
 #The rules in the config can be accessed by clicking on 'Show Config' on the top right corner of IronWASP
 #Doing this helps filter out things you had already blocked in the config
 if not does_match_rules(sess)
-	return false
+  return false
 end
 
 #We check if the session object has a valid Response, if it does then currently a Response is passing through the proxy
 if sess.response
-	#We check if the Response has SetCookie headers and if the corresponding request Url is equal to '/login'
-	#If that is the case we return true and this Response will be intercepted and displayed to the user
-	if sess.response.set_cookies.count > 0 and sess.request.url == ""/login""
-		return true
-	end
+  #We check if the Response has SetCookie headers and if the corresponding request Url is equal to '/login'
+  #If that is the case we return true and this Response will be intercepted and displayed to the user
+  if sess.response.set_cookies.count > 0 and sess.request.url == ""/login""
+    return true
+  end
 #If the session object does not have valid Response then currently a Request is passing through the proxy
 else
-	#We check if the Request has a body parameter named 'c_token' if it does then we change it to some other value
-	if sess.request.body.has(""c_token""):
-		sess.request.body.set(""c_token"", ""xxxxxxx"")
-	end
+  #We check if the Request has a body parameter named 'c_token' if it does then we change it to some other value
+  if sess.request.body.has(""c_token""):
+    sess.request.body.set(""c_token"", ""xxxxxxx"")
+  end
 end
 
 #To debug your script you can make use of the command Tools.trace(""Scripted Interception"", ""Test Message"")

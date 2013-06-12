@@ -461,7 +461,7 @@ namespace IronWASP
             else
             {
                 ResetMTDisplayFields();
-
+                //UI.TestResponseSplit.SplitterDistance = 30;
                 //switch (Group)
                 //{
                 //    case ("Red"):
@@ -1060,87 +1060,194 @@ namespace IronWASP
             }
         }
 
-        internal static void UpdateEditedProxyLogEntry(Request Req)
+        delegate void UpdateProxyLogGridWithArrs_d(List<Request[]> RequestArrs, List<Response[]> ResponseArrs);
+        internal static void UpdateProxyLogGridWithArrs(List<Request[]> RequestArrs, List<Response[]> ResponseArrs)
         {
-            try
+            if (UI.ProxyLogGrid.InvokeRequired)
             {
-                int GridID = 0;
-                if (IronUpdater.ProxyGridMap.ContainsKey(Req.ID))
+                UpdateProxyLogGridWithArrs_d UPLGWA_d = new UpdateProxyLogGridWithArrs_d(UpdateProxyLogGridWithArrs);
+                UI.Invoke(UPLGWA_d, new object[] { RequestArrs, ResponseArrs });
+            }
+            else
+            {
+                foreach (Request[] ReqArr in RequestArrs)
                 {
-                    GridID = IronUpdater.ProxyGridMap[Req.ID];
-                }
-                if (!((int)UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForID"].Value == Req.ID))
-                {
-                    foreach (DataGridViewRow Row in UI.ProxyLogGrid.Rows)
+                    if (UI.ProxyLogGrid.Rows.Count >= IronLog.MaxRowCount) break;
+                    try
                     {
-                        if ((int)Row.Cells["ProxyLogGridColumnForID"].Value == Req.ID)
-                        {
-                            GridID = Row.Index;
-                            break;
-                        }
+                        int GridID = UI.ProxyLogGrid.Rows.Add(new object[] { ReqArr[1].ID, ReqArr[1].Host, ReqArr[1].Method, ReqArr[1].URL, ReqArr[1].StoredFile, ReqArr[1].SSL, ReqArr[1].StoredParameters });
+                        UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForEdited"].Value = ReqArr[0] != null;
+                        IronUpdater.ProxyGridMap.Add(ReqArr[1].ID, GridID);
+                        if (ReqArr[1].ID > IronLog.ProxyMax) IronLog.ProxyMax = ReqArr[1].ID;
+                        if (ReqArr[1].ID < IronLog.ProxyMin || IronLog.ProxyMin < 1) IronLog.ProxyMin = ReqArr[1].ID;
+                        UI.ProxyLogGrid.Rows[GridID].Visible = IronProxy.CanDisplayRowInLogDisplay(ReqArr[1].Method, ReqArr[1].Host, ReqArr[1].StoredFile, 0, null, false);
+                    }
+                    catch (Exception exp)
+                    {
+                        IronException.Report("Error Updating Proxy LogGrid", exp.Message, exp.StackTrace);
                     }
                 }
 
-                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForMethod"].Value = Req.Method;
-                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForURL"].Value = Req.URL;
-                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForFile"].Value = Req.File;
-                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForParameters"].Value = Req.GetParametersString();
-                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForEdited"].Value = true;
-                UI.ProxyLogGrid.Rows[GridID].Visible = IronProxy.CanDisplayRowInLogDisplay(Req.Method, Req.Host, Req.StoredFile, 0, null, false);
-            }
-            catch(Exception Exp)
-            {
-                IronException.Report("Error updating Edited Proxy Request in UI", Exp.Message, Exp.StackTrace);
+                foreach (Response[] ResArr in ResponseArrs)
+                {
+                    if (IronUpdater.ProxyGridMap.ContainsKey(ResArr[1].ID))
+                    {
+                        bool MatchFound = true;
+                        try
+                        {
+                            int GridID = IronUpdater.ProxyGridMap[ResArr[1].ID];
+                            if (!((int)UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForID"].Value == ResArr[1].ID))
+                            {
+                                MatchFound = false;
+                                foreach (DataGridViewRow Row in UI.ProxyLogGrid.Rows)
+                                {
+                                    if ((int)Row.Cells["ProxyLogGridColumnForID"].Value == ResArr[1].ID)
+                                    {
+                                        GridID = Row.Index;
+                                        MatchFound = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (MatchFound)
+                            {
+                                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForCode"].Value = ResArr[1].Code;
+                                if (ResArr[1].BodyArray != null)
+                                {
+                                    UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForLength"].Value = ResArr[1].BodyArray.Length;
+                                }
+                                else
+                                {
+                                    UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForLength"].Value = 0;
+                                }
+                                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForMIME"].Value = ResArr[1].ContentType;
+                                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForSetCookie"].Value = (ResArr[1].SetCookies.Count > 0);
+                                if (ResArr[0] != null)
+                                {
+                                    UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForEdited"].Value = true;
+                                }
+                                if (UI.ProxyLogGrid.Rows[GridID].Visible)
+                                {
+                                    UI.ProxyLogGrid.Rows[GridID].Visible = IronProxy.CanDisplayRowInLogDisplay(null, null, null, ResArr[1].Code, ResArr[1].ContentType, ResArr[1].BodyLength == 0);
+                                }
+                            }
+                            IronUpdater.ProxyGridMap.Remove(ResArr[1].ID);
+                        }
+                        catch (Exception exp)
+                        {
+                            IronException.Report("Error Updating Proxy LogGrid", exp.Message, exp.StackTrace);
+                        }
+                    }
+                    else
+                    {
+                        //IronException.Report("Matching Request missing in Proxy LogGrid", string.Format("Request ID - {0} is missing from the Proxy LogGrid", new object[]{ Res.ID.ToString()}), Res.ToString());
+                    }
+                }
+                ShowCurrentLogStat();
             }
         }
 
-        internal static void UpdateEditedProxyLogEntry(Response Res)
+
+        delegate void UpdateEditedProxyLogRequestEntry_d(Request Req);
+        internal static void UpdateEditedProxyLogRequestEntry(Request Req)
         {
-            try
+            if (UI.ProxyLogGrid.InvokeRequired)
             {
-                int GridID = 0;
-                if (IronUpdater.ProxyGridMap.ContainsKey(Res.ID))
+                UpdateEditedProxyLogRequestEntry_d UEPLRE_d = new UpdateEditedProxyLogRequestEntry_d(UpdateEditedProxyLogRequestEntry);
+                UI.Invoke(UEPLRE_d, new object[] { Req });
+            }
+            else
+            {
+                try
                 {
-                    GridID = IronUpdater.ProxyGridMap[Res.ID];
-                }
-                if (!((int)UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForID"].Value == Res.ID))
-                {
-                    foreach (DataGridViewRow Row in UI.ProxyLogGrid.Rows)
+                    int GridID = 0;
+                    if (IronUpdater.ProxyGridMap.ContainsKey(Req.ID))
                     {
-                        if ((int)Row.Cells["ProxyLogGridColumnForID"].Value == Res.ID)
+                        GridID = IronUpdater.ProxyGridMap[Req.ID];
+                    }
+                    if (!((int)UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForID"].Value == Req.ID))
+                    {
+                        foreach (DataGridViewRow Row in UI.ProxyLogGrid.Rows)
                         {
-                            GridID = Row.Index;
-                            break;
+                            if ((int)Row.Cells["ProxyLogGridColumnForID"].Value == Req.ID)
+                            {
+                                GridID = Row.Index;
+                                break;
+                            }
                         }
                     }
-                }
 
-                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForCode"].Value = Res.Code;
-                if (Res.BodyArray != null)
-                {
-                    UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForLength"].Value = Res.BodyArray.Length;
+                    UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForMethod"].Value = Req.Method;
+                    UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForURL"].Value = Req.URL;
+                    UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForFile"].Value = Req.File;
+                    UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForParameters"].Value = Req.GetParametersString();
+                    UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForEdited"].Value = true;
+                    UI.ProxyLogGrid.Rows[GridID].Visible = IronProxy.CanDisplayRowInLogDisplay(Req.Method, Req.Host, Req.StoredFile, 0, null, false);
                 }
-                else
+                catch (Exception Exp)
                 {
-                    UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForLength"].Value = 0;
-                }
-                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForMIME"].Value = Res.ContentType;
-                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForSetCookie"].Value = (Res.SetCookies.Count > 0);
-                UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForEdited"].Value = true;
-                if (UI.ProxyLogGrid.Rows[GridID].Visible)
-                {
-                    UI.ProxyLogGrid.Rows[GridID].Visible = IronProxy.CanDisplayRowInLogDisplay(null, null, null, Res.Code, Res.ContentType, Res.BodyLength == 0);
+                    IronException.Report("Error updating Edited Proxy Request in UI", Exp.Message, Exp.StackTrace);
                 }
             }
-            catch (Exception Exp)
+        }
+
+        delegate void UpdateEditedProxyLogResponseEntry_d(Response Res);
+        internal static void UpdateEditedProxyLogResponseEntry(Response Res)
+        {
+            if (UI.ProxyLogGrid.InvokeRequired)
             {
-                IronException.Report("Error updating Edited Proxy Response in UI", Exp.Message, Exp.StackTrace);
+                UpdateEditedProxyLogResponseEntry_d UEPLRE_d = new UpdateEditedProxyLogResponseEntry_d(UpdateEditedProxyLogResponseEntry);
+                UI.Invoke(UEPLRE_d, new object[] { Res });
+            }
+            else
+            {
+                try
+                {
+                    int GridID = 0;
+                    if (IronUpdater.ProxyGridMap.ContainsKey(Res.ID))
+                    {
+                        GridID = IronUpdater.ProxyGridMap[Res.ID];
+                    }
+                    if (!((int)UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForID"].Value == Res.ID))
+                    {
+                        foreach (DataGridViewRow Row in UI.ProxyLogGrid.Rows)
+                        {
+                            if ((int)Row.Cells["ProxyLogGridColumnForID"].Value == Res.ID)
+                            {
+                                GridID = Row.Index;
+                                break;
+                            }
+                        }
+                    }
+
+                    UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForCode"].Value = Res.Code;
+                    if (Res.BodyArray != null)
+                    {
+                        UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForLength"].Value = Res.BodyArray.Length;
+                    }
+                    else
+                    {
+                        UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForLength"].Value = 0;
+                    }
+                    UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForMIME"].Value = Res.ContentType;
+                    UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForSetCookie"].Value = (Res.SetCookies.Count > 0);
+                    UI.ProxyLogGrid.Rows[GridID].Cells["ProxyLogGridColumnForEdited"].Value = true;
+                    if (UI.ProxyLogGrid.Rows[GridID].Visible)
+                    {
+                        UI.ProxyLogGrid.Rows[GridID].Visible = IronProxy.CanDisplayRowInLogDisplay(null, null, null, Res.Code, Res.ContentType, Res.BodyLength == 0);
+                    }
+                }
+                catch (Exception Exp)
+                {
+                    IronException.Report("Error updating Edited Proxy Response in UI", Exp.Message, Exp.StackTrace);
+                }
             }
         }
 
         delegate void UpdateScanQueueStatuses_d(List<int> ScanIDs, string Status);
         internal static void UpdateScanQueueStatuses(List<int> ScanIDs, string Status)
         {
+            if (UI.CanShutdown) return;
             if (UI.ASQueueGrid.InvokeRequired)
             {
                 UpdateScanQueueStatuses_d USQS_d = new UpdateScanQueueStatuses_d(UpdateScanQueueStatuses);
@@ -1158,6 +1265,7 @@ namespace IronWASP
         delegate void UpdateScanQueueStatus_d(int ScanID, string Status);
         internal static void UpdateScanQueueStatus(int ScanID, string Status)
         {
+            if (UI.CanShutdown) return;
             if (UI.ASQueueGrid.InvokeRequired)
             {
                 UpdateScanQueueStatus_d USQS_d = new UpdateScanQueueStatus_d(UpdateScanQueueStatus);
@@ -2406,6 +2514,14 @@ namespace IronWASP
                 }
             }
             catch { }
+            if (Res.SetCookies.Count > 0)
+            {
+                UI.TestUpdateCookieStoreLL.Visible = true;
+            }
+            else
+            {
+                UI.TestUpdateCookieStoreLL.Visible = false;
+            }
         }
 
         
