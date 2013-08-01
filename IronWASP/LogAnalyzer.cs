@@ -81,7 +81,7 @@ namespace IronWASP
         {
             if (LogGrid.SelectedRows == null) return;
             if (LogGrid.SelectedRows.Count == 0) return;
-            if (ClickActionSelectLogRB.Checked)
+            if (e.ColumnIndex == 0)// ClickActionSelectLogRB.Checked)
             {
                 LogGrid.SelectedRows[0].Cells[0].Value = !((bool)LogGrid.SelectedRows[0].Cells[0].Value);
                 if ((bool)LogGrid.SelectedRows[0].Cells[0].Value)
@@ -879,18 +879,6 @@ namespace IronWASP
         {
             if (!MatchKeywordInResponseBodySectionCB.Checked)
                 MatchKeywordInAllSectionsCB.Checked = false;
-        }
-
-        private void ClickActionSelectLogRB_CheckedChanged(object sender, EventArgs e)
-        {
-            if (ClickActionSelectLogRB.Checked)
-                SelectAllCB.Enabled = true;
-        }
-
-        private void ClickActionDisplayLogRB_CheckedChanged(object sender, EventArgs e)
-        {
-            //if(ClickActionDisplayLogRB.Checked)
-            //    SelectAllCB.Enabled = false;
         }
 
         private void LogGrid_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)

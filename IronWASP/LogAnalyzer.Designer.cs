@@ -117,23 +117,21 @@ namespace IronWASP
             this.MatchRequestMethodsCB = new System.Windows.Forms.CheckBox();
             this.BaseSplit = new System.Windows.Forms.SplitContainer();
             this.DoDiffBtn = new System.Windows.Forms.Button();
-            this.ClickActionDisplayLogRB = new System.Windows.Forms.RadioButton();
-            this.ClickActionSelectLogRB = new System.Windows.Forms.RadioButton();
-            this.label7 = new System.Windows.Forms.Label();
             this.SearchResultsCountLbl = new System.Windows.Forms.Label();
             this.SearchProgressBar = new System.Windows.Forms.ProgressBar();
             this.LoadLogProgressBar = new System.Windows.Forms.ProgressBar();
             this.LogDisplayTabs = new System.Windows.Forms.TabControl();
             this.tabPage12 = new System.Windows.Forms.TabPage();
+            this.RequestView = new IronWASP.RequestView();
             this.tabPage29 = new System.Windows.Forms.TabPage();
+            this.ResponseView = new IronWASP.ResponseView();
             this.BaseTabs = new System.Windows.Forms.TabControl();
             this.SearchFilterTab = new System.Windows.Forms.TabPage();
             this.SearchFilterPanel = new System.Windows.Forms.Panel();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.Step0StatusTB = new System.Windows.Forms.TextBox();
             this.SearchResultsTab = new System.Windows.Forms.TabPage();
-            this.RequestView = new IronWASP.RequestView();
-            this.ResponseView = new IronWASP.ResponseView();
+            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.LogGrid)).BeginInit();
             this.panel8.SuspendLayout();
             this.panel7.SuspendLayout();
@@ -161,9 +159,9 @@ namespace IronWASP
             this.LogGrid.AllowUserToDeleteRows = false;
             this.LogGrid.AllowUserToOrderColumns = true;
             this.LogGrid.AllowUserToResizeRows = false;
-            this.LogGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.LogGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.LogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.LogGrid.BackgroundColor = System.Drawing.Color.White;
             this.LogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -352,7 +350,7 @@ namespace IronWASP
             // SelectAllCB
             // 
             this.SelectAllCB.AutoSize = true;
-            this.SelectAllCB.Location = new System.Drawing.Point(8, 42);
+            this.SelectAllCB.Location = new System.Drawing.Point(8, 45);
             this.SelectAllCB.Name = "SelectAllCB";
             this.SelectAllCB.Size = new System.Drawing.Size(94, 17);
             this.SelectAllCB.TabIndex = 8;
@@ -362,8 +360,8 @@ namespace IronWASP
             // 
             // panel8
             // 
-            this.panel8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel8.BackColor = System.Drawing.Color.White;
             this.panel8.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel8.Controls.Add(this.label5);
@@ -470,8 +468,8 @@ namespace IronWASP
             // 
             // MatchKeywordTB
             // 
-            this.MatchKeywordTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.MatchKeywordTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.MatchKeywordTB.Enabled = false;
             this.MatchKeywordTB.Location = new System.Drawing.Point(114, 3);
             this.MatchKeywordTB.Name = "MatchKeywordTB";
@@ -492,8 +490,8 @@ namespace IronWASP
             // 
             // panel7
             // 
-            this.panel7.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel7.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel7.BackColor = System.Drawing.Color.White;
             this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel7.Controls.Add(this.MatchRequestUrlTypeCombo);
@@ -524,8 +522,8 @@ namespace IronWASP
             // 
             // MatchRequestUrlKeywordTB
             // 
-            this.MatchRequestUrlKeywordTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.MatchRequestUrlKeywordTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.MatchRequestUrlKeywordTB.Enabled = false;
             this.MatchRequestUrlKeywordTB.Location = new System.Drawing.Point(319, 3);
             this.MatchRequestUrlKeywordTB.Name = "MatchRequestUrlKeywordTB";
@@ -546,8 +544,8 @@ namespace IronWASP
             // 
             // panel6
             // 
-            this.panel6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel6.Controls.Add(this.SearchBtn);
             this.panel6.Controls.Add(this.label3);
             this.panel6.Controls.Add(this.SearchTypeNewRB);
@@ -714,8 +712,8 @@ namespace IronWASP
             // 
             // panel4
             // 
-            this.panel4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel4.BackColor = System.Drawing.Color.White;
             this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel4.Controls.Add(this.MatchFileExtensionsMinusRB);
@@ -755,15 +753,15 @@ namespace IronWASP
             // 
             // MatchFileExtensionsTB
             // 
-            this.MatchFileExtensionsTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.MatchFileExtensionsTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.MatchFileExtensionsTB.Enabled = false;
             this.MatchFileExtensionsTB.Location = new System.Drawing.Point(319, 3);
             this.MatchFileExtensionsTB.Name = "MatchFileExtensionsTB";
             this.MatchFileExtensionsTB.Size = new System.Drawing.Size(528, 20);
             this.MatchFileExtensionsTB.TabIndex = 11;
             this.MatchFileExtensionsTB.Text = "jpg, jpeg, png, gif, ico, pdf, doc, docx, ppt, pptx, xls, xlsx, zip, tar, 7z, exe" +
-                ", swf, jar, css, js, html";
+    ", swf, jar, css, js, html";
             this.MatchFileExtensionsTB.TextChanged += new System.EventHandler(this.MatchFileExtensionsTB_TextChanged);
             // 
             // MatchFileExtensionsCB
@@ -779,8 +777,8 @@ namespace IronWASP
             // 
             // panel3
             // 
-            this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel3.BackColor = System.Drawing.Color.White;
             this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel3.Controls.Add(this.MatchHostNamesMinusRB);
@@ -820,8 +818,8 @@ namespace IronWASP
             // 
             // MatchHostNamesTB
             // 
-            this.MatchHostNamesTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.MatchHostNamesTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.MatchHostNamesTB.Enabled = false;
             this.MatchHostNamesTB.Location = new System.Drawing.Point(265, 3);
             this.MatchHostNamesTB.Name = "MatchHostNamesTB";
@@ -843,8 +841,8 @@ namespace IronWASP
             // 
             // panel2
             // 
-            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel2.BackColor = System.Drawing.Color.White;
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel2.Controls.Add(this.MatchResponseCodesMinusRB);
@@ -884,8 +882,8 @@ namespace IronWASP
             // 
             // MatchResponseCodesTB
             // 
-            this.MatchResponseCodesTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.MatchResponseCodesTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.MatchResponseCodesTB.Enabled = false;
             this.MatchResponseCodesTB.Location = new System.Drawing.Point(265, 3);
             this.MatchResponseCodesTB.Name = "MatchResponseCodesTB";
@@ -907,8 +905,8 @@ namespace IronWASP
             // 
             // panel1
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.BackColor = System.Drawing.Color.White;
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel1.Controls.Add(this.MatchRequestMethodsMinusRB);
@@ -948,8 +946,8 @@ namespace IronWASP
             // 
             // MatchRequestMethodsTB
             // 
-            this.MatchRequestMethodsTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.MatchRequestMethodsTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.MatchRequestMethodsTB.Enabled = false;
             this.MatchRequestMethodsTB.Location = new System.Drawing.Point(265, 3);
             this.MatchRequestMethodsTB.Name = "MatchRequestMethodsTB";
@@ -979,10 +977,8 @@ namespace IronWASP
             // 
             // BaseSplit.Panel1
             // 
+            this.BaseSplit.Panel1.Controls.Add(this.label6);
             this.BaseSplit.Panel1.Controls.Add(this.DoDiffBtn);
-            this.BaseSplit.Panel1.Controls.Add(this.ClickActionDisplayLogRB);
-            this.BaseSplit.Panel1.Controls.Add(this.ClickActionSelectLogRB);
-            this.BaseSplit.Panel1.Controls.Add(this.label7);
             this.BaseSplit.Panel1.Controls.Add(this.SearchResultsCountLbl);
             this.BaseSplit.Panel1.Controls.Add(this.SearchProgressBar);
             this.BaseSplit.Panel1.Controls.Add(this.LogGrid);
@@ -1012,39 +1008,6 @@ namespace IronWASP
             this.DoDiffBtn.UseVisualStyleBackColor = true;
             this.DoDiffBtn.Click += new System.EventHandler(this.DoDiffBtn_Click);
             // 
-            // ClickActionDisplayLogRB
-            // 
-            this.ClickActionDisplayLogRB.AutoSize = true;
-            this.ClickActionDisplayLogRB.Checked = true;
-            this.ClickActionDisplayLogRB.Location = new System.Drawing.Point(183, 41);
-            this.ClickActionDisplayLogRB.Name = "ClickActionDisplayLogRB";
-            this.ClickActionDisplayLogRB.Size = new System.Drawing.Size(80, 17);
-            this.ClickActionDisplayLogRB.TabIndex = 38;
-            this.ClickActionDisplayLogRB.TabStop = true;
-            this.ClickActionDisplayLogRB.Text = "Display Log";
-            this.ClickActionDisplayLogRB.UseVisualStyleBackColor = true;
-            this.ClickActionDisplayLogRB.CheckedChanged += new System.EventHandler(this.ClickActionDisplayLogRB_CheckedChanged);
-            // 
-            // ClickActionSelectLogRB
-            // 
-            this.ClickActionSelectLogRB.AutoSize = true;
-            this.ClickActionSelectLogRB.Location = new System.Drawing.Point(269, 41);
-            this.ClickActionSelectLogRB.Name = "ClickActionSelectLogRB";
-            this.ClickActionSelectLogRB.Size = new System.Drawing.Size(76, 17);
-            this.ClickActionSelectLogRB.TabIndex = 37;
-            this.ClickActionSelectLogRB.Text = "Select Log";
-            this.ClickActionSelectLogRB.UseVisualStyleBackColor = true;
-            this.ClickActionSelectLogRB.CheckedChanged += new System.EventHandler(this.ClickActionSelectLogRB_CheckedChanged);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(108, 43);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(69, 13);
-            this.label7.TabIndex = 36;
-            this.label7.Text = "Click Action: ";
-            // 
             // SearchResultsCountLbl
             // 
             this.SearchResultsCountLbl.AutoSize = true;
@@ -1056,8 +1019,8 @@ namespace IronWASP
             // 
             // SearchProgressBar
             // 
-            this.SearchProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.SearchProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.SearchProgressBar.Location = new System.Drawing.Point(189, 8);
             this.SearchProgressBar.MarqueeAnimationSpeed = 10;
             this.SearchProgressBar.Name = "SearchProgressBar";
@@ -1068,8 +1031,8 @@ namespace IronWASP
             // 
             // LoadLogProgressBar
             // 
-            this.LoadLogProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.LoadLogProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.LoadLogProgressBar.Location = new System.Drawing.Point(303, 45);
             this.LoadLogProgressBar.MarqueeAnimationSpeed = 10;
             this.LoadLogProgressBar.Name = "LoadLogProgressBar";
@@ -1102,6 +1065,17 @@ namespace IronWASP
             this.tabPage12.Text = "  Request  ";
             this.tabPage12.UseVisualStyleBackColor = true;
             // 
+            // RequestView
+            // 
+            this.RequestView.BackColor = System.Drawing.Color.White;
+            this.RequestView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.RequestView.Location = new System.Drawing.Point(0, 0);
+            this.RequestView.Margin = new System.Windows.Forms.Padding(0);
+            this.RequestView.Name = "RequestView";
+            this.RequestView.ReadOnly = true;
+            this.RequestView.Size = new System.Drawing.Size(868, 193);
+            this.RequestView.TabIndex = 0;
+            // 
             // tabPage29
             // 
             this.tabPage29.Controls.Add(this.ResponseView);
@@ -1112,6 +1086,18 @@ namespace IronWASP
             this.tabPage29.TabIndex = 1;
             this.tabPage29.Text = "  Response  ";
             this.tabPage29.UseVisualStyleBackColor = true;
+            // 
+            // ResponseView
+            // 
+            this.ResponseView.BackColor = System.Drawing.Color.White;
+            this.ResponseView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ResponseView.IncludeReflectionTab = true;
+            this.ResponseView.Location = new System.Drawing.Point(0, 0);
+            this.ResponseView.Margin = new System.Windows.Forms.Padding(0);
+            this.ResponseView.Name = "ResponseView";
+            this.ResponseView.ReadOnly = true;
+            this.ResponseView.Size = new System.Drawing.Size(868, 193);
+            this.ResponseView.TabIndex = 0;
             // 
             // BaseTabs
             // 
@@ -1158,8 +1144,8 @@ namespace IronWASP
             // 
             // textBox2
             // 
-            this.textBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox2.BackColor = System.Drawing.Color.White;
             this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox2.Location = new System.Drawing.Point(14, 9);
@@ -1173,8 +1159,8 @@ namespace IronWASP
             // 
             // Step0StatusTB
             // 
-            this.Step0StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Step0StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Step0StatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Step0StatusTB.Location = new System.Drawing.Point(23, 115);
             this.Step0StatusTB.Multiline = true;
@@ -1195,28 +1181,14 @@ namespace IronWASP
             this.SearchResultsTab.Text = "   Search Results   ";
             this.SearchResultsTab.UseVisualStyleBackColor = true;
             // 
-            // RequestView
+            // label6
             // 
-            this.RequestView.BackColor = System.Drawing.Color.White;
-            this.RequestView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.RequestView.Location = new System.Drawing.Point(0, 0);
-            this.RequestView.Margin = new System.Windows.Forms.Padding(0);
-            this.RequestView.Name = "RequestView";
-            this.RequestView.ReadOnly = true;
-            this.RequestView.Size = new System.Drawing.Size(868, 193);
-            this.RequestView.TabIndex = 0;
-            // 
-            // ResponseView
-            // 
-            this.ResponseView.BackColor = System.Drawing.Color.White;
-            this.ResponseView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ResponseView.IncludeReflectionTab = true;
-            this.ResponseView.Location = new System.Drawing.Point(0, 0);
-            this.ResponseView.Margin = new System.Windows.Forms.Padding(0);
-            this.ResponseView.Name = "ResponseView";
-            this.ResponseView.ReadOnly = true;
-            this.ResponseView.Size = new System.Drawing.Size(868, 193);
-            this.ResponseView.TabIndex = 0;
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(8, 29);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(313, 13);
+            this.label6.TabIndex = 40;
+            this.label6.Text = "Click on Checkbox to select log. Click anywhere else to view log.";
             // 
             // LogAnalyzer
             // 
@@ -1344,11 +1316,9 @@ namespace IronWASP
         private System.Windows.Forms.ProgressBar SearchProgressBar;
         private System.Windows.Forms.Panel SearchFilterPanel;
         internal System.Windows.Forms.TextBox Step0StatusTB;
-        private System.Windows.Forms.RadioButton ClickActionDisplayLogRB;
-        private System.Windows.Forms.RadioButton ClickActionSelectLogRB;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label SearchResultsCountLbl;
         private System.Windows.Forms.Button DoDiffBtn;
         private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label6;
     }
 }

@@ -49,10 +49,10 @@ namespace IronWASP
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SessionsDiffer));
             this.BaseTabs = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.DiffProgressBar = new System.Windows.Forms.ProgressBar();
             this.RequestDRV = new IronWASP.DiffResultView();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.ResponseDRV = new IronWASP.DiffResultView();
+            this.DiffProgressBar = new System.Windows.Forms.ProgressBar();
             this.BaseTabs.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -82,6 +82,15 @@ namespace IronWASP
             this.tabPage1.Text = "   Request Diff   ";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // RequestDRV
+            // 
+            this.RequestDRV.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.RequestDRV.Location = new System.Drawing.Point(0, 0);
+            this.RequestDRV.Margin = new System.Windows.Forms.Padding(0);
+            this.RequestDRV.Name = "RequestDRV";
+            this.RequestDRV.Size = new System.Drawing.Size(776, 436);
+            this.RequestDRV.TabIndex = 0;
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.ResponseDRV);
@@ -93,27 +102,6 @@ namespace IronWASP
             this.tabPage2.Text = "   Response Diff   ";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // DiffProgressBar
-            // 
-            this.DiffProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.DiffProgressBar.Location = new System.Drawing.Point(264, 24);
-            this.DiffProgressBar.MarqueeAnimationSpeed = 10;
-            this.DiffProgressBar.Name = "DiffProgressBar";
-            this.DiffProgressBar.Size = new System.Drawing.Size(242, 23);
-            this.DiffProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
-            this.DiffProgressBar.TabIndex = 33;
-            this.DiffProgressBar.Visible = false;
-            // 
-            // RequestDRV
-            // 
-            this.RequestDRV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.RequestDRV.Location = new System.Drawing.Point(0, 0);
-            this.RequestDRV.Margin = new System.Windows.Forms.Padding(0);
-            this.RequestDRV.Name = "RequestDRV";
-            this.RequestDRV.Size = new System.Drawing.Size(776, 436);
-            this.RequestDRV.TabIndex = 0;
-            // 
             // ResponseDRV
             // 
             this.ResponseDRV.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -122,6 +110,18 @@ namespace IronWASP
             this.ResponseDRV.Name = "ResponseDRV";
             this.ResponseDRV.Size = new System.Drawing.Size(776, 436);
             this.ResponseDRV.TabIndex = 1;
+            // 
+            // DiffProgressBar
+            // 
+            this.DiffProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.DiffProgressBar.Location = new System.Drawing.Point(242, 24);
+            this.DiffProgressBar.MarqueeAnimationSpeed = 10;
+            this.DiffProgressBar.Name = "DiffProgressBar";
+            this.DiffProgressBar.Size = new System.Drawing.Size(242, 23);
+            this.DiffProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this.DiffProgressBar.TabIndex = 33;
+            this.DiffProgressBar.Visible = false;
             // 
             // SessionsDiffer
             // 

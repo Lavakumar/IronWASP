@@ -321,6 +321,7 @@ namespace IronWASP
             if (ILR.ResponseHeaders.Length > 0)
             {
                 Response Res = GetResponse(ILR.ResponseHeaders, ILR.ResponseBody, ILR.IsResponseBinary);
+                Res.TTL = ILR.RoundTrip;
                 IrSe = new Session(Req, Res);
                 IrSe.Request.ID = ID;
             }
@@ -343,6 +344,7 @@ namespace IronWASP
                 if (ILR.OriginalResponseHeaders.Length > 0)
                 {
                     IrSe.OriginalResponse = GetResponse(ILR.OriginalResponseHeaders, ILR.OriginalResponseBody, ILR.IsOriginalResponseBinary);
+                    IrSe.OriginalResponse.TTL = ILR.RoundTrip;
                     IrSe.OriginalResponse.ID = ID;
                 }
                 else

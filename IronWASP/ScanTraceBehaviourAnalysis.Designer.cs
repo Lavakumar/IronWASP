@@ -47,13 +47,21 @@ namespace IronWASP
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScanTraceBehaviourAnalysis));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle61 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle62 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle63 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle64 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle65 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle66 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle67 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle68 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle69 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle70 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle71 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle72 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle73 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle74 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle75 = new System.Windows.Forms.DataGridViewCellStyle();
             this.BaseTabs = new System.Windows.Forms.TabControl();
             this.SearchFilterTab = new System.Windows.Forms.TabPage();
             this.SearchFilterPanel = new System.Windows.Forms.Panel();
@@ -91,6 +99,20 @@ namespace IronWASP
             this.AnalysisStatusLbl = new System.Windows.Forms.Label();
             this.AnalysisProgressBar = new System.Windows.Forms.ProgressBar();
             this.TraceGrid = new System.Windows.Forms.DataGridView();
+            this.IDClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SectionClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CheckClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CodeClmn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.KeywordsClmn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.BodyClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SetCookieClmn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.HeadersClmn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.RoundtripClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.BaselineLogIdClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.BaselinePayloadClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.BaselineRoundtripClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.BaselineCodeClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.XmlClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LoadTraceViewerBtn = new System.Windows.Forms.Button();
             this.BottomTabs = new System.Windows.Forms.TabControl();
             this.SummaryTab = new System.Windows.Forms.TabPage();
@@ -114,31 +136,19 @@ namespace IronWASP
             this.SetCookieGrid = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn15 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.HeadersTab = new System.Windows.Forms.TabPage();
             this.HeadersGrid = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn16 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn18 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.TimeTab = new System.Windows.Forms.TabPage();
             this.RoundtripGrid = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn17 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.IDClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SectionClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CheckClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CodeClmn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.KeywordsClmn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.BodyClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SetCookieClmn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.HeadersClmn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.RoundtripClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.BaselineLogIdClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.BaselinePayloadClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.BaselineRoundtripClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.BaselineCodeClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.XmlClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.BaseTabs.SuspendLayout();
             this.SearchFilterTab.SuspendLayout();
             this.SearchFilterPanel.SuspendLayout();
@@ -560,20 +570,19 @@ namespace IronWASP
             this.BaseSplit.Panel1.Controls.Add(this.AnalysisStatusLbl);
             this.BaseSplit.Panel1.Controls.Add(this.AnalysisProgressBar);
             this.BaseSplit.Panel1.Controls.Add(this.TraceGrid);
-            this.BaseSplit.Panel1.Controls.Add(this.LoadTraceViewerBtn);
             // 
             // BaseSplit.Panel2
             // 
             this.BaseSplit.Panel2.Controls.Add(this.BottomTabs);
+            this.BaseSplit.Panel2.Controls.Add(this.LoadTraceViewerBtn);
             this.BaseSplit.Size = new System.Drawing.Size(876, 535);
-            this.BaseSplit.SplitterDistance = 314;
-            this.BaseSplit.SplitterWidth = 2;
+            this.BaseSplit.SplitterDistance = 258;
             this.BaseSplit.TabIndex = 10;
             // 
             // AnalysisStatusLbl
             // 
             this.AnalysisStatusLbl.AutoSize = true;
-            this.AnalysisStatusLbl.Location = new System.Drawing.Point(8, 43);
+            this.AnalysisStatusLbl.Location = new System.Drawing.Point(437, 12);
             this.AnalysisStatusLbl.Name = "AnalysisStatusLbl";
             this.AnalysisStatusLbl.Size = new System.Drawing.Size(133, 13);
             this.AnalysisStatusLbl.TabIndex = 35;
@@ -581,12 +590,10 @@ namespace IronWASP
             // 
             // AnalysisProgressBar
             // 
-            this.AnalysisProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.AnalysisProgressBar.Location = new System.Drawing.Point(11, 9);
             this.AnalysisProgressBar.MarqueeAnimationSpeed = 10;
             this.AnalysisProgressBar.Name = "AnalysisProgressBar";
-            this.AnalysisProgressBar.Size = new System.Drawing.Size(211, 20);
+            this.AnalysisProgressBar.Size = new System.Drawing.Size(405, 20);
             this.AnalysisProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.AnalysisProgressBar.TabIndex = 34;
             this.AnalysisProgressBar.Visible = false;
@@ -603,14 +610,14 @@ namespace IronWASP
             this.TraceGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.TraceGrid.BackgroundColor = System.Drawing.Color.White;
             this.TraceGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.TraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle61.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle61.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle61.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle61.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle61.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle61.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle61.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.TraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle61;
             this.TraceGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.TraceGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.IDClmn,
@@ -629,7 +636,7 @@ namespace IronWASP
             this.XmlClmn});
             this.TraceGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.TraceGrid.GridColor = System.Drawing.Color.White;
-            this.TraceGrid.Location = new System.Drawing.Point(0, 66);
+            this.TraceGrid.Location = new System.Drawing.Point(0, 36);
             this.TraceGrid.Margin = new System.Windows.Forms.Padding(0);
             this.TraceGrid.MultiSelect = false;
             this.TraceGrid.Name = "TraceGrid";
@@ -637,485 +644,9 @@ namespace IronWASP
             this.TraceGrid.RowHeadersVisible = false;
             this.TraceGrid.RowHeadersWidth = 10;
             this.TraceGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.TraceGrid.Size = new System.Drawing.Size(876, 248);
+            this.TraceGrid.Size = new System.Drawing.Size(876, 222);
             this.TraceGrid.TabIndex = 3;
             this.TraceGrid.SelectionChanged += new System.EventHandler(this.TraceGrid_SelectionChanged);
-            // 
-            // LoadTraceViewerBtn
-            // 
-            this.LoadTraceViewerBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.LoadTraceViewerBtn.Enabled = false;
-            this.LoadTraceViewerBtn.Location = new System.Drawing.Point(634, 5);
-            this.LoadTraceViewerBtn.Name = "LoadTraceViewerBtn";
-            this.LoadTraceViewerBtn.Size = new System.Drawing.Size(237, 28);
-            this.LoadTraceViewerBtn.TabIndex = 6;
-            this.LoadTraceViewerBtn.Text = "Load Selected Trace Entry in Trace Viewer";
-            this.LoadTraceViewerBtn.UseVisualStyleBackColor = true;
-            this.LoadTraceViewerBtn.Click += new System.EventHandler(this.LoadTraceViewerBtn_Click);
-            // 
-            // BottomTabs
-            // 
-            this.BottomTabs.Controls.Add(this.SummaryTab);
-            this.BottomTabs.Controls.Add(this.CodeTab);
-            this.BottomTabs.Controls.Add(this.KeywordsTab);
-            this.BottomTabs.Controls.Add(this.BodyTab);
-            this.BottomTabs.Controls.Add(this.SetCookieTab);
-            this.BottomTabs.Controls.Add(this.HeadersTab);
-            this.BottomTabs.Controls.Add(this.TimeTab);
-            this.BottomTabs.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.BottomTabs.Location = new System.Drawing.Point(0, 0);
-            this.BottomTabs.Margin = new System.Windows.Forms.Padding(0);
-            this.BottomTabs.Name = "BottomTabs";
-            this.BottomTabs.Padding = new System.Drawing.Point(0, 0);
-            this.BottomTabs.SelectedIndex = 0;
-            this.BottomTabs.Size = new System.Drawing.Size(876, 219);
-            this.BottomTabs.TabIndex = 4;
-            // 
-            // SummaryTab
-            // 
-            this.SummaryTab.Controls.Add(this.SummaryRTB);
-            this.SummaryTab.Location = new System.Drawing.Point(4, 22);
-            this.SummaryTab.Name = "SummaryTab";
-            this.SummaryTab.Size = new System.Drawing.Size(868, 193);
-            this.SummaryTab.TabIndex = 6;
-            this.SummaryTab.Text = "  Summary  ";
-            this.SummaryTab.UseVisualStyleBackColor = true;
-            // 
-            // SummaryRTB
-            // 
-            this.SummaryRTB.BackColor = System.Drawing.Color.White;
-            this.SummaryRTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.SummaryRTB.DetectUrls = false;
-            this.SummaryRTB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SummaryRTB.Location = new System.Drawing.Point(0, 0);
-            this.SummaryRTB.Name = "SummaryRTB";
-            this.SummaryRTB.ReadOnly = true;
-            this.SummaryRTB.Size = new System.Drawing.Size(868, 193);
-            this.SummaryRTB.TabIndex = 1;
-            this.SummaryRTB.Text = "";
-            // 
-            // CodeTab
-            // 
-            this.CodeTab.Controls.Add(this.CodeGrid);
-            this.CodeTab.Location = new System.Drawing.Point(4, 22);
-            this.CodeTab.Margin = new System.Windows.Forms.Padding(0);
-            this.CodeTab.Name = "CodeTab";
-            this.CodeTab.Size = new System.Drawing.Size(868, 193);
-            this.CodeTab.TabIndex = 0;
-            this.CodeTab.Text = "  Code Variation  ";
-            this.CodeTab.UseVisualStyleBackColor = true;
-            // 
-            // CodeGrid
-            // 
-            this.CodeGrid.AllowUserToAddRows = false;
-            this.CodeGrid.AllowUserToDeleteRows = false;
-            this.CodeGrid.AllowUserToOrderColumns = true;
-            this.CodeGrid.AllowUserToResizeRows = false;
-            this.CodeGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.CodeGrid.BackgroundColor = System.Drawing.Color.White;
-            this.CodeGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.CodeGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
-            this.CodeGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.CodeGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Column2,
-            this.Column1,
-            this.dataGridViewTextBoxColumn3});
-            this.CodeGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CodeGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.CodeGrid.GridColor = System.Drawing.Color.White;
-            this.CodeGrid.Location = new System.Drawing.Point(0, 0);
-            this.CodeGrid.Margin = new System.Windows.Forms.Padding(0);
-            this.CodeGrid.MultiSelect = false;
-            this.CodeGrid.Name = "CodeGrid";
-            this.CodeGrid.ReadOnly = true;
-            this.CodeGrid.RowHeadersVisible = false;
-            this.CodeGrid.RowHeadersWidth = 10;
-            this.CodeGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.CodeGrid.Size = new System.Drawing.Size(868, 193);
-            this.CodeGrid.TabIndex = 4;
-            // 
-            // Column2
-            // 
-            this.Column2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.Column2.HeaderText = "Log ID";
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            this.Column2.Width = 60;
-            // 
-            // Column1
-            // 
-            this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.Column1.FillWeight = 101.5228F;
-            this.Column1.HeaderText = "Response Code";
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
-            // 
-            // dataGridViewTextBoxColumn3
-            // 
-            this.dataGridViewTextBoxColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dataGridViewTextBoxColumn3.FillWeight = 98.47716F;
-            this.dataGridViewTextBoxColumn3.HeaderText = "Payload";
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
-            this.dataGridViewTextBoxColumn3.ReadOnly = true;
-            // 
-            // KeywordsTab
-            // 
-            this.KeywordsTab.BackColor = System.Drawing.Color.Black;
-            this.KeywordsTab.Controls.Add(this.KeywordsGrid);
-            this.KeywordsTab.Location = new System.Drawing.Point(4, 22);
-            this.KeywordsTab.Margin = new System.Windows.Forms.Padding(0);
-            this.KeywordsTab.Name = "KeywordsTab";
-            this.KeywordsTab.Size = new System.Drawing.Size(868, 193);
-            this.KeywordsTab.TabIndex = 1;
-            this.KeywordsTab.Text = "  Keywords Inserted  ";
-            // 
-            // KeywordsGrid
-            // 
-            this.KeywordsGrid.AllowUserToAddRows = false;
-            this.KeywordsGrid.AllowUserToDeleteRows = false;
-            this.KeywordsGrid.AllowUserToOrderColumns = true;
-            this.KeywordsGrid.AllowUserToResizeRows = false;
-            this.KeywordsGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.KeywordsGrid.BackgroundColor = System.Drawing.Color.White;
-            this.KeywordsGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.KeywordsGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
-            this.KeywordsGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.KeywordsGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dataGridViewTextBoxColumn2,
-            this.dataGridViewTextBoxColumn4,
-            this.dataGridViewTextBoxColumn13});
-            this.KeywordsGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.KeywordsGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.KeywordsGrid.GridColor = System.Drawing.Color.White;
-            this.KeywordsGrid.Location = new System.Drawing.Point(0, 0);
-            this.KeywordsGrid.Margin = new System.Windows.Forms.Padding(0);
-            this.KeywordsGrid.MultiSelect = false;
-            this.KeywordsGrid.Name = "KeywordsGrid";
-            this.KeywordsGrid.ReadOnly = true;
-            this.KeywordsGrid.RowHeadersVisible = false;
-            this.KeywordsGrid.RowHeadersWidth = 10;
-            this.KeywordsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.KeywordsGrid.Size = new System.Drawing.Size(868, 193);
-            this.KeywordsGrid.TabIndex = 5;
-            // 
-            // dataGridViewTextBoxColumn2
-            // 
-            this.dataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.dataGridViewTextBoxColumn2.HeaderText = "Log ID";
-            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            this.dataGridViewTextBoxColumn2.ReadOnly = true;
-            this.dataGridViewTextBoxColumn2.Width = 60;
-            // 
-            // dataGridViewTextBoxColumn4
-            // 
-            this.dataGridViewTextBoxColumn4.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dataGridViewTextBoxColumn4.FillWeight = 101.5228F;
-            this.dataGridViewTextBoxColumn4.HeaderText = "Keywords Inserted";
-            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
-            this.dataGridViewTextBoxColumn4.ReadOnly = true;
-            // 
-            // dataGridViewTextBoxColumn13
-            // 
-            this.dataGridViewTextBoxColumn13.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dataGridViewTextBoxColumn13.FillWeight = 98.47716F;
-            this.dataGridViewTextBoxColumn13.HeaderText = "Payload";
-            this.dataGridViewTextBoxColumn13.Name = "dataGridViewTextBoxColumn13";
-            this.dataGridViewTextBoxColumn13.ReadOnly = true;
-            // 
-            // BodyTab
-            // 
-            this.BodyTab.Controls.Add(this.BodyGrid);
-            this.BodyTab.Location = new System.Drawing.Point(4, 22);
-            this.BodyTab.Name = "BodyTab";
-            this.BodyTab.Size = new System.Drawing.Size(868, 193);
-            this.BodyTab.TabIndex = 2;
-            this.BodyTab.Text = "  Body Variation  ";
-            this.BodyTab.UseVisualStyleBackColor = true;
-            // 
-            // BodyGrid
-            // 
-            this.BodyGrid.AllowUserToAddRows = false;
-            this.BodyGrid.AllowUserToDeleteRows = false;
-            this.BodyGrid.AllowUserToOrderColumns = true;
-            this.BodyGrid.AllowUserToResizeRows = false;
-            this.BodyGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.BodyGrid.BackgroundColor = System.Drawing.Color.White;
-            this.BodyGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.BodyGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
-            this.BodyGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.BodyGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dataGridViewTextBoxColumn5,
-            this.dataGridViewTextBoxColumn6,
-            this.dataGridViewTextBoxColumn14});
-            this.BodyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.BodyGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.BodyGrid.GridColor = System.Drawing.Color.White;
-            this.BodyGrid.Location = new System.Drawing.Point(0, 0);
-            this.BodyGrid.Margin = new System.Windows.Forms.Padding(0);
-            this.BodyGrid.MultiSelect = false;
-            this.BodyGrid.Name = "BodyGrid";
-            this.BodyGrid.ReadOnly = true;
-            this.BodyGrid.RowHeadersVisible = false;
-            this.BodyGrid.RowHeadersWidth = 10;
-            this.BodyGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.BodyGrid.Size = new System.Drawing.Size(868, 193);
-            this.BodyGrid.TabIndex = 5;
-            // 
-            // dataGridViewTextBoxColumn5
-            // 
-            this.dataGridViewTextBoxColumn5.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.dataGridViewTextBoxColumn5.HeaderText = "Log ID";
-            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
-            this.dataGridViewTextBoxColumn5.ReadOnly = true;
-            this.dataGridViewTextBoxColumn5.Width = 60;
-            // 
-            // dataGridViewTextBoxColumn6
-            // 
-            this.dataGridViewTextBoxColumn6.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dataGridViewTextBoxColumn6.FillWeight = 101.5228F;
-            this.dataGridViewTextBoxColumn6.HeaderText = "Response Body Variation (No. of New Characters Inserted due to Payload)";
-            this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
-            this.dataGridViewTextBoxColumn6.ReadOnly = true;
-            // 
-            // dataGridViewTextBoxColumn14
-            // 
-            this.dataGridViewTextBoxColumn14.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dataGridViewTextBoxColumn14.FillWeight = 98.47716F;
-            this.dataGridViewTextBoxColumn14.HeaderText = "Payload";
-            this.dataGridViewTextBoxColumn14.Name = "dataGridViewTextBoxColumn14";
-            this.dataGridViewTextBoxColumn14.ReadOnly = true;
-            // 
-            // SetCookieTab
-            // 
-            this.SetCookieTab.Controls.Add(this.SetCookieGrid);
-            this.SetCookieTab.Location = new System.Drawing.Point(4, 22);
-            this.SetCookieTab.Name = "SetCookieTab";
-            this.SetCookieTab.Size = new System.Drawing.Size(868, 193);
-            this.SetCookieTab.TabIndex = 3;
-            this.SetCookieTab.Text = "  Set-Cookie Variations";
-            this.SetCookieTab.UseVisualStyleBackColor = true;
-            // 
-            // SetCookieGrid
-            // 
-            this.SetCookieGrid.AllowUserToAddRows = false;
-            this.SetCookieGrid.AllowUserToDeleteRows = false;
-            this.SetCookieGrid.AllowUserToOrderColumns = true;
-            this.SetCookieGrid.AllowUserToResizeRows = false;
-            this.SetCookieGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.SetCookieGrid.BackgroundColor = System.Drawing.Color.White;
-            this.SetCookieGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.SetCookieGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
-            this.SetCookieGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.SetCookieGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dataGridViewTextBoxColumn7,
-            this.dataGridViewTextBoxColumn8,
-            this.dataGridViewTextBoxColumn15});
-            this.SetCookieGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SetCookieGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.SetCookieGrid.GridColor = System.Drawing.Color.White;
-            this.SetCookieGrid.Location = new System.Drawing.Point(0, 0);
-            this.SetCookieGrid.Margin = new System.Windows.Forms.Padding(0);
-            this.SetCookieGrid.MultiSelect = false;
-            this.SetCookieGrid.Name = "SetCookieGrid";
-            this.SetCookieGrid.ReadOnly = true;
-            this.SetCookieGrid.RowHeadersVisible = false;
-            this.SetCookieGrid.RowHeadersWidth = 10;
-            this.SetCookieGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.SetCookieGrid.Size = new System.Drawing.Size(868, 193);
-            this.SetCookieGrid.TabIndex = 5;
-            // 
-            // dataGridViewTextBoxColumn7
-            // 
-            this.dataGridViewTextBoxColumn7.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.dataGridViewTextBoxColumn7.HeaderText = "Log ID";
-            this.dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
-            this.dataGridViewTextBoxColumn7.ReadOnly = true;
-            this.dataGridViewTextBoxColumn7.Width = 60;
-            // 
-            // dataGridViewTextBoxColumn8
-            // 
-            this.dataGridViewTextBoxColumn8.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dataGridViewTextBoxColumn8.FillWeight = 101.5228F;
-            this.dataGridViewTextBoxColumn8.HeaderText = "Set-Cookie Variations";
-            this.dataGridViewTextBoxColumn8.Name = "dataGridViewTextBoxColumn8";
-            this.dataGridViewTextBoxColumn8.ReadOnly = true;
-            // 
-            // dataGridViewTextBoxColumn15
-            // 
-            this.dataGridViewTextBoxColumn15.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dataGridViewTextBoxColumn15.FillWeight = 98.47716F;
-            this.dataGridViewTextBoxColumn15.HeaderText = "Payload";
-            this.dataGridViewTextBoxColumn15.Name = "dataGridViewTextBoxColumn15";
-            this.dataGridViewTextBoxColumn15.ReadOnly = true;
-            // 
-            // HeadersTab
-            // 
-            this.HeadersTab.Controls.Add(this.HeadersGrid);
-            this.HeadersTab.Location = new System.Drawing.Point(4, 22);
-            this.HeadersTab.Name = "HeadersTab";
-            this.HeadersTab.Size = new System.Drawing.Size(868, 193);
-            this.HeadersTab.TabIndex = 4;
-            this.HeadersTab.Text = "  Headers Variation  ";
-            this.HeadersTab.UseVisualStyleBackColor = true;
-            // 
-            // HeadersGrid
-            // 
-            this.HeadersGrid.AllowUserToAddRows = false;
-            this.HeadersGrid.AllowUserToDeleteRows = false;
-            this.HeadersGrid.AllowUserToOrderColumns = true;
-            this.HeadersGrid.AllowUserToResizeRows = false;
-            this.HeadersGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.HeadersGrid.BackgroundColor = System.Drawing.Color.White;
-            this.HeadersGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.HeadersGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle6;
-            this.HeadersGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.HeadersGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dataGridViewTextBoxColumn9,
-            this.dataGridViewTextBoxColumn10,
-            this.dataGridViewTextBoxColumn16});
-            this.HeadersGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.HeadersGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.HeadersGrid.GridColor = System.Drawing.Color.White;
-            this.HeadersGrid.Location = new System.Drawing.Point(0, 0);
-            this.HeadersGrid.Margin = new System.Windows.Forms.Padding(0);
-            this.HeadersGrid.MultiSelect = false;
-            this.HeadersGrid.Name = "HeadersGrid";
-            this.HeadersGrid.ReadOnly = true;
-            this.HeadersGrid.RowHeadersVisible = false;
-            this.HeadersGrid.RowHeadersWidth = 10;
-            this.HeadersGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.HeadersGrid.Size = new System.Drawing.Size(868, 193);
-            this.HeadersGrid.TabIndex = 5;
-            // 
-            // dataGridViewTextBoxColumn9
-            // 
-            this.dataGridViewTextBoxColumn9.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.dataGridViewTextBoxColumn9.HeaderText = "Log ID";
-            this.dataGridViewTextBoxColumn9.Name = "dataGridViewTextBoxColumn9";
-            this.dataGridViewTextBoxColumn9.ReadOnly = true;
-            this.dataGridViewTextBoxColumn9.Width = 60;
-            // 
-            // dataGridViewTextBoxColumn10
-            // 
-            this.dataGridViewTextBoxColumn10.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dataGridViewTextBoxColumn10.FillWeight = 101.5228F;
-            this.dataGridViewTextBoxColumn10.HeaderText = "Response Header Variations";
-            this.dataGridViewTextBoxColumn10.Name = "dataGridViewTextBoxColumn10";
-            this.dataGridViewTextBoxColumn10.ReadOnly = true;
-            // 
-            // dataGridViewTextBoxColumn16
-            // 
-            this.dataGridViewTextBoxColumn16.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dataGridViewTextBoxColumn16.FillWeight = 98.47716F;
-            this.dataGridViewTextBoxColumn16.HeaderText = "Payload";
-            this.dataGridViewTextBoxColumn16.Name = "dataGridViewTextBoxColumn16";
-            this.dataGridViewTextBoxColumn16.ReadOnly = true;
-            // 
-            // TimeTab
-            // 
-            this.TimeTab.Controls.Add(this.RoundtripGrid);
-            this.TimeTab.Location = new System.Drawing.Point(4, 22);
-            this.TimeTab.Name = "TimeTab";
-            this.TimeTab.Size = new System.Drawing.Size(868, 193);
-            this.TimeTab.TabIndex = 5;
-            this.TimeTab.Text = "  Time Variation  ";
-            this.TimeTab.UseVisualStyleBackColor = true;
-            // 
-            // RoundtripGrid
-            // 
-            this.RoundtripGrid.AllowUserToAddRows = false;
-            this.RoundtripGrid.AllowUserToDeleteRows = false;
-            this.RoundtripGrid.AllowUserToOrderColumns = true;
-            this.RoundtripGrid.AllowUserToResizeRows = false;
-            this.RoundtripGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.RoundtripGrid.BackgroundColor = System.Drawing.Color.White;
-            this.RoundtripGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.RoundtripGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
-            this.RoundtripGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.RoundtripGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dataGridViewTextBoxColumn11,
-            this.dataGridViewTextBoxColumn12,
-            this.dataGridViewTextBoxColumn17});
-            this.RoundtripGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.RoundtripGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.RoundtripGrid.GridColor = System.Drawing.Color.White;
-            this.RoundtripGrid.Location = new System.Drawing.Point(0, 0);
-            this.RoundtripGrid.Margin = new System.Windows.Forms.Padding(0);
-            this.RoundtripGrid.MultiSelect = false;
-            this.RoundtripGrid.Name = "RoundtripGrid";
-            this.RoundtripGrid.ReadOnly = true;
-            this.RoundtripGrid.RowHeadersVisible = false;
-            this.RoundtripGrid.RowHeadersWidth = 10;
-            this.RoundtripGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.RoundtripGrid.Size = new System.Drawing.Size(868, 193);
-            this.RoundtripGrid.TabIndex = 5;
-            // 
-            // dataGridViewTextBoxColumn11
-            // 
-            this.dataGridViewTextBoxColumn11.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.dataGridViewTextBoxColumn11.HeaderText = "Log ID";
-            this.dataGridViewTextBoxColumn11.Name = "dataGridViewTextBoxColumn11";
-            this.dataGridViewTextBoxColumn11.ReadOnly = true;
-            this.dataGridViewTextBoxColumn11.Width = 60;
-            // 
-            // dataGridViewTextBoxColumn12
-            // 
-            this.dataGridViewTextBoxColumn12.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.dataGridViewTextBoxColumn12.FillWeight = 101.5228F;
-            this.dataGridViewTextBoxColumn12.HeaderText = "Response Roundtrip Time Variation";
-            this.dataGridViewTextBoxColumn12.Name = "dataGridViewTextBoxColumn12";
-            this.dataGridViewTextBoxColumn12.ReadOnly = true;
-            this.dataGridViewTextBoxColumn12.Width = 200;
-            // 
-            // dataGridViewTextBoxColumn17
-            // 
-            this.dataGridViewTextBoxColumn17.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dataGridViewTextBoxColumn17.FillWeight = 98.47716F;
-            this.dataGridViewTextBoxColumn17.HeaderText = "Payload";
-            this.dataGridViewTextBoxColumn17.Name = "dataGridViewTextBoxColumn17";
-            this.dataGridViewTextBoxColumn17.ReadOnly = true;
             // 
             // IDClmn
             // 
@@ -1228,6 +759,521 @@ namespace IronWASP
             this.XmlClmn.ReadOnly = true;
             this.XmlClmn.Visible = false;
             // 
+            // LoadTraceViewerBtn
+            // 
+            this.LoadTraceViewerBtn.Enabled = false;
+            this.LoadTraceViewerBtn.Location = new System.Drawing.Point(6, 6);
+            this.LoadTraceViewerBtn.Name = "LoadTraceViewerBtn";
+            this.LoadTraceViewerBtn.Size = new System.Drawing.Size(237, 24);
+            this.LoadTraceViewerBtn.TabIndex = 6;
+            this.LoadTraceViewerBtn.Text = "Load the Logs associated with this entry";
+            this.LoadTraceViewerBtn.UseVisualStyleBackColor = true;
+            this.LoadTraceViewerBtn.Click += new System.EventHandler(this.LoadTraceViewerBtn_Click);
+            // 
+            // BottomTabs
+            // 
+            this.BottomTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.BottomTabs.Controls.Add(this.SummaryTab);
+            this.BottomTabs.Controls.Add(this.CodeTab);
+            this.BottomTabs.Controls.Add(this.KeywordsTab);
+            this.BottomTabs.Controls.Add(this.BodyTab);
+            this.BottomTabs.Controls.Add(this.SetCookieTab);
+            this.BottomTabs.Controls.Add(this.HeadersTab);
+            this.BottomTabs.Controls.Add(this.TimeTab);
+            this.BottomTabs.Location = new System.Drawing.Point(0, 33);
+            this.BottomTabs.Margin = new System.Windows.Forms.Padding(0);
+            this.BottomTabs.Name = "BottomTabs";
+            this.BottomTabs.Padding = new System.Drawing.Point(0, 0);
+            this.BottomTabs.SelectedIndex = 0;
+            this.BottomTabs.Size = new System.Drawing.Size(876, 238);
+            this.BottomTabs.TabIndex = 4;
+            // 
+            // SummaryTab
+            // 
+            this.SummaryTab.Controls.Add(this.SummaryRTB);
+            this.SummaryTab.Location = new System.Drawing.Point(4, 22);
+            this.SummaryTab.Name = "SummaryTab";
+            this.SummaryTab.Size = new System.Drawing.Size(868, 212);
+            this.SummaryTab.TabIndex = 6;
+            this.SummaryTab.Text = "  Summary  ";
+            this.SummaryTab.UseVisualStyleBackColor = true;
+            // 
+            // SummaryRTB
+            // 
+            this.SummaryRTB.BackColor = System.Drawing.Color.White;
+            this.SummaryRTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.SummaryRTB.DetectUrls = false;
+            this.SummaryRTB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SummaryRTB.Location = new System.Drawing.Point(0, 0);
+            this.SummaryRTB.Name = "SummaryRTB";
+            this.SummaryRTB.ReadOnly = true;
+            this.SummaryRTB.Size = new System.Drawing.Size(868, 212);
+            this.SummaryRTB.TabIndex = 1;
+            this.SummaryRTB.Text = "";
+            // 
+            // CodeTab
+            // 
+            this.CodeTab.Controls.Add(this.CodeGrid);
+            this.CodeTab.Location = new System.Drawing.Point(4, 22);
+            this.CodeTab.Margin = new System.Windows.Forms.Padding(0);
+            this.CodeTab.Name = "CodeTab";
+            this.CodeTab.Size = new System.Drawing.Size(868, 193);
+            this.CodeTab.TabIndex = 0;
+            this.CodeTab.Text = "  Code Variation  ";
+            this.CodeTab.UseVisualStyleBackColor = true;
+            // 
+            // CodeGrid
+            // 
+            this.CodeGrid.AllowUserToAddRows = false;
+            this.CodeGrid.AllowUserToDeleteRows = false;
+            this.CodeGrid.AllowUserToOrderColumns = true;
+            this.CodeGrid.AllowUserToResizeRows = false;
+            this.CodeGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.CodeGrid.BackgroundColor = System.Drawing.Color.White;
+            this.CodeGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dataGridViewCellStyle62.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle62.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle62.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle62.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle62.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle62.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle62.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.CodeGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle62;
+            this.CodeGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.CodeGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column2,
+            this.Column1,
+            this.dataGridViewTextBoxColumn3});
+            this.CodeGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.CodeGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.CodeGrid.GridColor = System.Drawing.Color.White;
+            this.CodeGrid.Location = new System.Drawing.Point(0, 0);
+            this.CodeGrid.Margin = new System.Windows.Forms.Padding(0);
+            this.CodeGrid.MultiSelect = false;
+            this.CodeGrid.Name = "CodeGrid";
+            this.CodeGrid.ReadOnly = true;
+            this.CodeGrid.RowHeadersVisible = false;
+            this.CodeGrid.RowHeadersWidth = 10;
+            this.CodeGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.CodeGrid.Size = new System.Drawing.Size(868, 193);
+            this.CodeGrid.TabIndex = 4;
+            // 
+            // Column2
+            // 
+            this.Column2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.Column2.HeaderText = "Log ID";
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            this.Column2.Width = 60;
+            // 
+            // Column1
+            // 
+            this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle63.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Column1.DefaultCellStyle = dataGridViewCellStyle63;
+            this.Column1.FillWeight = 101.5228F;
+            this.Column1.HeaderText = "Response Code";
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dataGridViewTextBoxColumn3.FillWeight = 98.47716F;
+            this.dataGridViewTextBoxColumn3.HeaderText = "Payload";
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            this.dataGridViewTextBoxColumn3.ReadOnly = true;
+            // 
+            // KeywordsTab
+            // 
+            this.KeywordsTab.BackColor = System.Drawing.Color.Black;
+            this.KeywordsTab.Controls.Add(this.KeywordsGrid);
+            this.KeywordsTab.Location = new System.Drawing.Point(4, 22);
+            this.KeywordsTab.Margin = new System.Windows.Forms.Padding(0);
+            this.KeywordsTab.Name = "KeywordsTab";
+            this.KeywordsTab.Size = new System.Drawing.Size(868, 193);
+            this.KeywordsTab.TabIndex = 1;
+            this.KeywordsTab.Text = "  Keywords Inserted  ";
+            // 
+            // KeywordsGrid
+            // 
+            this.KeywordsGrid.AllowUserToAddRows = false;
+            this.KeywordsGrid.AllowUserToDeleteRows = false;
+            this.KeywordsGrid.AllowUserToOrderColumns = true;
+            this.KeywordsGrid.AllowUserToResizeRows = false;
+            this.KeywordsGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.KeywordsGrid.BackgroundColor = System.Drawing.Color.White;
+            this.KeywordsGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dataGridViewCellStyle64.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle64.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle64.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle64.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle64.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle64.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle64.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.KeywordsGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle64;
+            this.KeywordsGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.KeywordsGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn2,
+            this.dataGridViewTextBoxColumn4,
+            this.dataGridViewTextBoxColumn13});
+            this.KeywordsGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.KeywordsGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.KeywordsGrid.GridColor = System.Drawing.Color.White;
+            this.KeywordsGrid.Location = new System.Drawing.Point(0, 0);
+            this.KeywordsGrid.Margin = new System.Windows.Forms.Padding(0);
+            this.KeywordsGrid.MultiSelect = false;
+            this.KeywordsGrid.Name = "KeywordsGrid";
+            this.KeywordsGrid.ReadOnly = true;
+            this.KeywordsGrid.RowHeadersVisible = false;
+            this.KeywordsGrid.RowHeadersWidth = 10;
+            this.KeywordsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.KeywordsGrid.Size = new System.Drawing.Size(868, 193);
+            this.KeywordsGrid.TabIndex = 5;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            this.dataGridViewTextBoxColumn2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.dataGridViewTextBoxColumn2.HeaderText = "Log ID";
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.ReadOnly = true;
+            this.dataGridViewTextBoxColumn2.Width = 60;
+            // 
+            // dataGridViewTextBoxColumn4
+            // 
+            this.dataGridViewTextBoxColumn4.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle65.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn4.DefaultCellStyle = dataGridViewCellStyle65;
+            this.dataGridViewTextBoxColumn4.FillWeight = 101.5228F;
+            this.dataGridViewTextBoxColumn4.HeaderText = "Keywords Inserted";
+            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+            this.dataGridViewTextBoxColumn4.ReadOnly = true;
+            // 
+            // dataGridViewTextBoxColumn13
+            // 
+            this.dataGridViewTextBoxColumn13.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dataGridViewTextBoxColumn13.FillWeight = 98.47716F;
+            this.dataGridViewTextBoxColumn13.HeaderText = "Payload";
+            this.dataGridViewTextBoxColumn13.Name = "dataGridViewTextBoxColumn13";
+            this.dataGridViewTextBoxColumn13.ReadOnly = true;
+            // 
+            // BodyTab
+            // 
+            this.BodyTab.Controls.Add(this.BodyGrid);
+            this.BodyTab.Location = new System.Drawing.Point(4, 22);
+            this.BodyTab.Name = "BodyTab";
+            this.BodyTab.Size = new System.Drawing.Size(868, 193);
+            this.BodyTab.TabIndex = 2;
+            this.BodyTab.Text = "  Body Variation  ";
+            this.BodyTab.UseVisualStyleBackColor = true;
+            // 
+            // BodyGrid
+            // 
+            this.BodyGrid.AllowUserToAddRows = false;
+            this.BodyGrid.AllowUserToDeleteRows = false;
+            this.BodyGrid.AllowUserToOrderColumns = true;
+            this.BodyGrid.AllowUserToResizeRows = false;
+            this.BodyGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.BodyGrid.BackgroundColor = System.Drawing.Color.White;
+            this.BodyGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dataGridViewCellStyle66.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle66.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle66.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle66.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle66.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle66.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle66.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.BodyGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle66;
+            this.BodyGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.BodyGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn5,
+            this.dataGridViewTextBoxColumn6,
+            this.dataGridViewTextBoxColumn14});
+            this.BodyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BodyGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.BodyGrid.GridColor = System.Drawing.Color.White;
+            this.BodyGrid.Location = new System.Drawing.Point(0, 0);
+            this.BodyGrid.Margin = new System.Windows.Forms.Padding(0);
+            this.BodyGrid.MultiSelect = false;
+            this.BodyGrid.Name = "BodyGrid";
+            this.BodyGrid.ReadOnly = true;
+            this.BodyGrid.RowHeadersVisible = false;
+            this.BodyGrid.RowHeadersWidth = 10;
+            this.BodyGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.BodyGrid.Size = new System.Drawing.Size(868, 193);
+            this.BodyGrid.TabIndex = 5;
+            // 
+            // dataGridViewTextBoxColumn5
+            // 
+            this.dataGridViewTextBoxColumn5.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.dataGridViewTextBoxColumn5.HeaderText = "Log ID";
+            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
+            this.dataGridViewTextBoxColumn5.ReadOnly = true;
+            this.dataGridViewTextBoxColumn5.Width = 60;
+            // 
+            // dataGridViewTextBoxColumn6
+            // 
+            this.dataGridViewTextBoxColumn6.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle67.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn6.DefaultCellStyle = dataGridViewCellStyle67;
+            this.dataGridViewTextBoxColumn6.FillWeight = 101.5228F;
+            this.dataGridViewTextBoxColumn6.HeaderText = "Response Body Variation (No. of New Characters Inserted due to Payload)";
+            this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
+            this.dataGridViewTextBoxColumn6.ReadOnly = true;
+            // 
+            // dataGridViewTextBoxColumn14
+            // 
+            this.dataGridViewTextBoxColumn14.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dataGridViewTextBoxColumn14.FillWeight = 98.47716F;
+            this.dataGridViewTextBoxColumn14.HeaderText = "Payload";
+            this.dataGridViewTextBoxColumn14.Name = "dataGridViewTextBoxColumn14";
+            this.dataGridViewTextBoxColumn14.ReadOnly = true;
+            // 
+            // SetCookieTab
+            // 
+            this.SetCookieTab.Controls.Add(this.SetCookieGrid);
+            this.SetCookieTab.Location = new System.Drawing.Point(4, 22);
+            this.SetCookieTab.Name = "SetCookieTab";
+            this.SetCookieTab.Size = new System.Drawing.Size(868, 193);
+            this.SetCookieTab.TabIndex = 3;
+            this.SetCookieTab.Text = "  Set-Cookie Variations";
+            this.SetCookieTab.UseVisualStyleBackColor = true;
+            // 
+            // SetCookieGrid
+            // 
+            this.SetCookieGrid.AllowUserToAddRows = false;
+            this.SetCookieGrid.AllowUserToDeleteRows = false;
+            this.SetCookieGrid.AllowUserToOrderColumns = true;
+            this.SetCookieGrid.AllowUserToResizeRows = false;
+            this.SetCookieGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.SetCookieGrid.BackgroundColor = System.Drawing.Color.White;
+            this.SetCookieGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dataGridViewCellStyle68.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle68.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle68.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle68.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle68.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle68.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle68.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.SetCookieGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle68;
+            this.SetCookieGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.SetCookieGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn7,
+            this.dataGridViewTextBoxColumn8,
+            this.Column3,
+            this.dataGridViewTextBoxColumn15});
+            this.SetCookieGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SetCookieGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.SetCookieGrid.GridColor = System.Drawing.Color.White;
+            this.SetCookieGrid.Location = new System.Drawing.Point(0, 0);
+            this.SetCookieGrid.Margin = new System.Windows.Forms.Padding(0);
+            this.SetCookieGrid.MultiSelect = false;
+            this.SetCookieGrid.Name = "SetCookieGrid";
+            this.SetCookieGrid.ReadOnly = true;
+            this.SetCookieGrid.RowHeadersVisible = false;
+            this.SetCookieGrid.RowHeadersWidth = 10;
+            this.SetCookieGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.SetCookieGrid.Size = new System.Drawing.Size(868, 193);
+            this.SetCookieGrid.TabIndex = 5;
+            // 
+            // dataGridViewTextBoxColumn7
+            // 
+            this.dataGridViewTextBoxColumn7.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.dataGridViewTextBoxColumn7.HeaderText = "Log ID";
+            this.dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
+            this.dataGridViewTextBoxColumn7.ReadOnly = true;
+            this.dataGridViewTextBoxColumn7.Width = 60;
+            // 
+            // dataGridViewTextBoxColumn8
+            // 
+            this.dataGridViewTextBoxColumn8.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridViewCellStyle69.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn8.DefaultCellStyle = dataGridViewCellStyle69;
+            this.dataGridViewTextBoxColumn8.FillWeight = 101.5228F;
+            this.dataGridViewTextBoxColumn8.HeaderText = "Cookie Name";
+            this.dataGridViewTextBoxColumn8.Name = "dataGridViewTextBoxColumn8";
+            this.dataGridViewTextBoxColumn8.ReadOnly = true;
+            this.dataGridViewTextBoxColumn8.Width = 96;
+            // 
+            // Column3
+            // 
+            this.Column3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle70.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Column3.DefaultCellStyle = dataGridViewCellStyle70;
+            this.Column3.FillWeight = 1F;
+            this.Column3.HeaderText = "Variation";
+            this.Column3.Name = "Column3";
+            this.Column3.ReadOnly = true;
+            this.Column3.Width = 400;
+            // 
+            // dataGridViewTextBoxColumn15
+            // 
+            this.dataGridViewTextBoxColumn15.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dataGridViewTextBoxColumn15.FillWeight = 98.47716F;
+            this.dataGridViewTextBoxColumn15.HeaderText = "Payload";
+            this.dataGridViewTextBoxColumn15.Name = "dataGridViewTextBoxColumn15";
+            this.dataGridViewTextBoxColumn15.ReadOnly = true;
+            // 
+            // HeadersTab
+            // 
+            this.HeadersTab.Controls.Add(this.HeadersGrid);
+            this.HeadersTab.Location = new System.Drawing.Point(4, 22);
+            this.HeadersTab.Name = "HeadersTab";
+            this.HeadersTab.Size = new System.Drawing.Size(868, 193);
+            this.HeadersTab.TabIndex = 4;
+            this.HeadersTab.Text = "  Headers Variation  ";
+            this.HeadersTab.UseVisualStyleBackColor = true;
+            // 
+            // HeadersGrid
+            // 
+            this.HeadersGrid.AllowUserToAddRows = false;
+            this.HeadersGrid.AllowUserToDeleteRows = false;
+            this.HeadersGrid.AllowUserToOrderColumns = true;
+            this.HeadersGrid.AllowUserToResizeRows = false;
+            this.HeadersGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.HeadersGrid.BackgroundColor = System.Drawing.Color.White;
+            this.HeadersGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dataGridViewCellStyle71.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle71.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle71.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle71.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle71.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle71.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle71.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.HeadersGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle71;
+            this.HeadersGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.HeadersGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn9,
+            this.dataGridViewTextBoxColumn10,
+            this.dataGridViewTextBoxColumn16,
+            this.dataGridViewTextBoxColumn18});
+            this.HeadersGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.HeadersGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.HeadersGrid.GridColor = System.Drawing.Color.White;
+            this.HeadersGrid.Location = new System.Drawing.Point(0, 0);
+            this.HeadersGrid.Margin = new System.Windows.Forms.Padding(0);
+            this.HeadersGrid.MultiSelect = false;
+            this.HeadersGrid.Name = "HeadersGrid";
+            this.HeadersGrid.ReadOnly = true;
+            this.HeadersGrid.RowHeadersVisible = false;
+            this.HeadersGrid.RowHeadersWidth = 10;
+            this.HeadersGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.HeadersGrid.Size = new System.Drawing.Size(868, 193);
+            this.HeadersGrid.TabIndex = 5;
+            // 
+            // dataGridViewTextBoxColumn9
+            // 
+            this.dataGridViewTextBoxColumn9.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.dataGridViewTextBoxColumn9.HeaderText = "Log ID";
+            this.dataGridViewTextBoxColumn9.Name = "dataGridViewTextBoxColumn9";
+            this.dataGridViewTextBoxColumn9.ReadOnly = true;
+            this.dataGridViewTextBoxColumn9.Width = 60;
+            // 
+            // dataGridViewTextBoxColumn10
+            // 
+            this.dataGridViewTextBoxColumn10.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridViewCellStyle72.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn10.DefaultCellStyle = dataGridViewCellStyle72;
+            this.dataGridViewTextBoxColumn10.FillWeight = 101.5228F;
+            this.dataGridViewTextBoxColumn10.HeaderText = "Response Header Name";
+            this.dataGridViewTextBoxColumn10.Name = "dataGridViewTextBoxColumn10";
+            this.dataGridViewTextBoxColumn10.ReadOnly = true;
+            this.dataGridViewTextBoxColumn10.Width = 149;
+            // 
+            // dataGridViewTextBoxColumn16
+            // 
+            this.dataGridViewTextBoxColumn16.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle73.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn16.DefaultCellStyle = dataGridViewCellStyle73;
+            this.dataGridViewTextBoxColumn16.FillWeight = 1F;
+            this.dataGridViewTextBoxColumn16.HeaderText = "Variation";
+            this.dataGridViewTextBoxColumn16.Name = "dataGridViewTextBoxColumn16";
+            this.dataGridViewTextBoxColumn16.ReadOnly = true;
+            this.dataGridViewTextBoxColumn16.Width = 400;
+            // 
+            // dataGridViewTextBoxColumn18
+            // 
+            this.dataGridViewTextBoxColumn18.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dataGridViewTextBoxColumn18.FillWeight = 98.47716F;
+            this.dataGridViewTextBoxColumn18.HeaderText = "Payload";
+            this.dataGridViewTextBoxColumn18.Name = "dataGridViewTextBoxColumn18";
+            this.dataGridViewTextBoxColumn18.ReadOnly = true;
+            // 
+            // TimeTab
+            // 
+            this.TimeTab.Controls.Add(this.RoundtripGrid);
+            this.TimeTab.Location = new System.Drawing.Point(4, 22);
+            this.TimeTab.Name = "TimeTab";
+            this.TimeTab.Size = new System.Drawing.Size(868, 193);
+            this.TimeTab.TabIndex = 5;
+            this.TimeTab.Text = "  Time Variation  ";
+            this.TimeTab.UseVisualStyleBackColor = true;
+            // 
+            // RoundtripGrid
+            // 
+            this.RoundtripGrid.AllowUserToAddRows = false;
+            this.RoundtripGrid.AllowUserToDeleteRows = false;
+            this.RoundtripGrid.AllowUserToOrderColumns = true;
+            this.RoundtripGrid.AllowUserToResizeRows = false;
+            this.RoundtripGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.RoundtripGrid.BackgroundColor = System.Drawing.Color.White;
+            this.RoundtripGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            dataGridViewCellStyle74.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle74.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle74.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle74.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle74.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle74.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle74.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.RoundtripGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle74;
+            this.RoundtripGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.RoundtripGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn11,
+            this.dataGridViewTextBoxColumn12,
+            this.dataGridViewTextBoxColumn17});
+            this.RoundtripGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.RoundtripGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.RoundtripGrid.GridColor = System.Drawing.Color.White;
+            this.RoundtripGrid.Location = new System.Drawing.Point(0, 0);
+            this.RoundtripGrid.Margin = new System.Windows.Forms.Padding(0);
+            this.RoundtripGrid.MultiSelect = false;
+            this.RoundtripGrid.Name = "RoundtripGrid";
+            this.RoundtripGrid.ReadOnly = true;
+            this.RoundtripGrid.RowHeadersVisible = false;
+            this.RoundtripGrid.RowHeadersWidth = 10;
+            this.RoundtripGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.RoundtripGrid.Size = new System.Drawing.Size(868, 193);
+            this.RoundtripGrid.TabIndex = 5;
+            // 
+            // dataGridViewTextBoxColumn11
+            // 
+            this.dataGridViewTextBoxColumn11.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.dataGridViewTextBoxColumn11.HeaderText = "Log ID";
+            this.dataGridViewTextBoxColumn11.Name = "dataGridViewTextBoxColumn11";
+            this.dataGridViewTextBoxColumn11.ReadOnly = true;
+            this.dataGridViewTextBoxColumn11.Width = 60;
+            // 
+            // dataGridViewTextBoxColumn12
+            // 
+            this.dataGridViewTextBoxColumn12.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle75.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn12.DefaultCellStyle = dataGridViewCellStyle75;
+            this.dataGridViewTextBoxColumn12.FillWeight = 101.5228F;
+            this.dataGridViewTextBoxColumn12.HeaderText = "Response Roundtrip Time Variation";
+            this.dataGridViewTextBoxColumn12.Name = "dataGridViewTextBoxColumn12";
+            this.dataGridViewTextBoxColumn12.ReadOnly = true;
+            this.dataGridViewTextBoxColumn12.Width = 200;
+            // 
+            // dataGridViewTextBoxColumn17
+            // 
+            this.dataGridViewTextBoxColumn17.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dataGridViewTextBoxColumn17.FillWeight = 98.47716F;
+            this.dataGridViewTextBoxColumn17.HeaderText = "Payload";
+            this.dataGridViewTextBoxColumn17.Name = "dataGridViewTextBoxColumn17";
+            this.dataGridViewTextBoxColumn17.ReadOnly = true;
+            // 
             // ScanTraceBehaviourAnalysis
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1324,24 +1370,6 @@ namespace IronWASP
         internal System.Windows.Forms.DataGridView SetCookieGrid;
         internal System.Windows.Forms.DataGridView HeadersGrid;
         internal System.Windows.Forms.DataGridView RoundtripGrid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn13;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn14;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn8;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn15;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn16;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn12;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn17;
         private System.Windows.Forms.DataGridViewTextBoxColumn IDClmn;
         private System.Windows.Forms.DataGridViewTextBoxColumn SectionClmn;
         private System.Windows.Forms.DataGridViewTextBoxColumn CheckClmn;
@@ -1356,6 +1384,26 @@ namespace IronWASP
         private System.Windows.Forms.DataGridViewTextBoxColumn BaselineRoundtripClmn;
         private System.Windows.Forms.DataGridViewTextBoxColumn BaselineCodeClmn;
         private System.Windows.Forms.DataGridViewTextBoxColumn XmlClmn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn13;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn14;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn12;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn17;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn8;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn15;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn16;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn18;
 
     }
 }

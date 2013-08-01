@@ -26,11 +26,32 @@ namespace IronWASP
     {
         public string Key;
         public Response Res;
+        public string Payload;
+        bool isPayloadSet = false;
+        public string ProcessedBodyString = "";
+
+        public bool IsPayloadSet
+        {
+            get
+            {
+                return isPayloadSet;
+            }
+        }
 
         internal SimilarityCheckerItem(string Key, Response Res)
         {
             this.Key = Key;
             this.Res = Res;
+            this.ProcessedBodyString = this.Res.BodyString;
+        }
+
+        internal SimilarityCheckerItem(string Key, Response Res, string Payload)
+        {
+            this.Key = Key;
+            this.Res = Res;
+            this.Payload = Payload;
+            this.isPayloadSet = true;
+            this.ProcessedBodyString = this.Res.BodyString.Replace(Payload, "").Replace(Tools.UrlEncode(Payload), "").Replace(Tools.HtmlEncode(Payload), "");
         }
     }
 }

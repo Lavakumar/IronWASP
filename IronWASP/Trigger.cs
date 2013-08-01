@@ -25,9 +25,35 @@ namespace IronWASP
     public class Trigger
     {
         public string RequestTrigger = "";
+        public string RawRequestTriggerDescription = "";
         public Request Request;
         public string ResponseTrigger = "";
+        public string RawResponseTriggerDescription = "";
         public Response Response;
+
+        public string RequestTriggerDescription
+        {
+            get
+            {
+                return Tools.EncodeForTrace(this.RawRequestTriggerDescription);
+            }
+            set
+            {
+                this.RawRequestTriggerDescription = value;
+            }
+        }
+        public string ResponseTriggerDescription
+        {
+            get
+            {
+                return Tools.EncodeForTrace(this.RawResponseTriggerDescription);
+            }
+            set
+            {
+                this.RawResponseTriggerDescription = value;
+            }
+        }
+
         public Trigger(string RequestTrigger, Request Req, string ResponseTrigger, Response Res)
         {
             this.RequestTrigger = RequestTrigger;
@@ -35,9 +61,24 @@ namespace IronWASP
             this.ResponseTrigger = ResponseTrigger;
             this.Response = Res.GetClone();
         }
+        public Trigger(string RequestTrigger, string RequestTriggerDescription, Request Req, string ResponseTrigger, string ResponseTriggerDescription, Response Res)
+        {
+            this.RequestTrigger = RequestTrigger;
+            this.RequestTriggerDescription = RequestTriggerDescription;
+            this.Request = Req.GetClone();
+            this.ResponseTrigger = ResponseTrigger;
+            this.RawResponseTriggerDescription = ResponseTriggerDescription;
+            this.Response = Res.GetClone();
+        }
         public Trigger(string RequestTrigger, Request Req)
         {
             this.RequestTrigger = RequestTrigger;
+            this.Request = Req.GetClone();
+        }
+        public Trigger(string RequestTrigger, string RequestTriggerDescription, Request Req)
+        {
+            this.RequestTrigger = RequestTrigger;
+            this.RequestTriggerDescription = RequestTriggerDescription;
             this.Request = Req.GetClone();
         }
     }

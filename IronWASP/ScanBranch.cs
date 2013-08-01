@@ -197,10 +197,10 @@ namespace IronWASP
             
             if (!FormatPlugin.IsNormal(RequestToScan))
             {
-                List<FormatPlugin> RightList = FormatPlugin.Get(RequestToScan, FormatPlugins);
-                if (RightList.Count > 0)
+                string FPName = FormatPlugin.Get(RequestToScan, FormatPlugins);
+                if (FPName.Length > 0 && FPName != "Normal")
                 {
-                    S.BodyFormat = FormatPlugin.Get(RightList[0].Name);
+                    S.BodyFormat = FormatPlugin.Get(FPName);
                 }
             }
             return S;

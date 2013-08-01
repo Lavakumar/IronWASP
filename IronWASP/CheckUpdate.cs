@@ -29,7 +29,7 @@ namespace IronWASP
 {
     class CheckUpdate
     {
-        static string CurrentVersion = "0.9.6.0";
+        static string CurrentVersion = "0.9.6.5";
 
         //static string PluginManifestUrl = "https://ironwasp.org/update/plugin.manifest";
         //static string IronWASPManifestUrl = "https://ironwasp.org/update/ironwasp.manifest";
@@ -168,6 +168,7 @@ namespace IronWASP
             XW.WriteStartElement("manifest");
 
             XmlDocument XmlDoc = new XmlDocument();
+            XmlDoc.XmlResolver = null;
             try
             {
                 MemoryStream MS = new MemoryStream(Encoding.UTF8.GetBytes(ModuleManifestFile));
@@ -283,6 +284,7 @@ namespace IronWASP
             XW.WriteStartElement("manifest");
 
             XmlDocument XmlDoc = new XmlDocument();
+            XmlDoc.XmlResolver = null;
             try
             {
                 MemoryStream MS = new MemoryStream(Encoding.UTF8.GetBytes(PluginManifestFile));
@@ -525,6 +527,7 @@ namespace IronWASP
             XW.WriteStartElement("manifest");
 
             XmlDocument XmlDoc = new XmlDocument();
+            XmlDoc.XmlResolver = null;
             try
             {
                 MemoryStream MS = new MemoryStream(Encoding.UTF8.GetBytes(IronWASPManifestFile));

@@ -64,6 +64,27 @@ namespace IronWASP
             this.BodyDiffMinInterestingInsertedChars = InsertedCharsCount;
         }
 
+        internal void Analyze(string TraceOverviewMessage, string ScannedSection)
+        {
+            List<Dictionary<string, string>> OverviewEntries = IronTrace.GetOverviewEntriesFromXml(TraceOverviewMessage);
+            List<string> Payloads = new List<string>();
+            List<int> RoundTrips = new List<int>();
+            List<int> LogIds = new List<int>();
+            foreach (Dictionary<string, string> Entry in OverviewEntries)
+            {
+                try
+                {
+                    int LogId = Int32.Parse(Entry["log_id"]);
+                    int Time = Int32.Parse(Entry["time"]);
+                    Payloads.Add(Entry["payload"]);
+                    LogIds.Add(LogId);
+                    RoundTrips.Add(Time);
+                }
+                catch { }
+            }
+            Analyze(Payloads, LogIds, RoundTrips, ScannedSection);
+        }
+
         internal void Analyze(List<string> Payloads, List<int> LogIds, List<int> RoundtripTimes, string ScannedSection)
         {
             if (Payloads.Count == 0 || LogIds.Count == 0 || Payloads.Count != LogIds.Count) return;
@@ -210,13 +231,13 @@ namespace IronWASP
                         Found = true;
                         if (BSC.Value.Length > 0 && CSC.Value.Length == 0)
                         {
-                            Result.SetCookieHeaderResult.Add(string.Format("'{0}' deleted", BSC.Name));
+                            Result.SetCookieHeaderResult.Add(string.Format("<{0}", BSC.Name));//value deleted
                         }
                     }
                 }
                 if (!Found)
                 {
-                    Result.SetCookieHeaderResult.Add(string.Format("'{0}' missing", BSC.Name));
+                    Result.SetCookieHeaderResult.Add(string.Format("-{0}", BSC.Name));//cookie deleted
                 }
             }
 
@@ -231,13 +252,13 @@ namespace IronWASP
                         Found = true;
                         if (CSC.Value.Length > 0 && BSC.Value.Length == 0)
                         {
-                            Result.SetCookieHeaderResult.Add(string.Format("'{0}' not deleted", BSC.Name));
+                            Result.SetCookieHeaderResult.Add(string.Format(">{0}", BSC.Name));//value added
                         }
                     }
                 }
                 if (!Found)
                 {
-                    Result.SetCookieHeaderResult.Add(string.Format("'{0}' added", CSC.Name));
+                    Result.SetCookieHeaderResult.Add(string.Format("+{0}", CSC.Name));//cookie added
                 }
             }
         }
@@ -248,14 +269,14 @@ namespace IronWASP
             {
                 if (!this.Logs[Index].Response.Headers.GetNames().Contains(BaseName))
                 {
-                    Result.ResponseHeadersResult.Add(string.Format("'{0}' missing", BaseName));
+                    Result.ResponseHeadersResult.Add(string.Format("-{0}", BaseName));//header deleted
                 }
             }
             foreach (string CurrentName in this.Logs[Index].Response.Headers.GetNames())
             {
                 if (!this.BaseLineSession.Response.Headers.GetNames().Contains(CurrentName))
                 {
-                    Result.ResponseHeadersResult.Add(string.Format("'{0}' added", CurrentName));
+                    Result.ResponseHeadersResult.Add(string.Format("+{0}", CurrentName));//header added
                 }
             }
         }
@@ -483,28 +504,6 @@ namespace IronWASP
                 }
             }
             return Results;
-        }
-
-        public static void Test()
-        {
-            BehaviourAnalysisResult Result = new BehaviourAnalysisResult();
-            Result.Payload = "lolz";
-            Result.ResponseCodeResult = 123;
-            Result.ResponseContentResult = 321;
-            Result.RoundtripTimeResult = "000";
-            Result.ResponseHeadersResult.Add("xxx");
-            Result.ResponseHeadersResult.Add("xxx1");
-            Result.ResponseHeadersResult.Add("xxx2");
-            Result.ResponseKeywordsResult.Add("yyy");
-            Result.ResponseKeywordsResult.Add("yyy1");
-            Result.ResponseKeywordsResult.Add("yyy2");
-            Result.SetCookieHeaderResult.Add("zzz");
-            Result.SetCookieHeaderResult.Add("zzz1");
-            Result.SetCookieHeaderResult.Add("zzz2");
-
-            string XML = ToXml(Result);
-            BehaviourAnalysisResult R = ToObject(XML);
-
         }
     }
 }

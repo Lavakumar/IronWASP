@@ -751,6 +751,11 @@ namespace IronWASP
                 IronUI.ShowMTException("Invalid Request");
                 return;
             }
+            if (!IronProxy.ProxyRunning)
+            {
+                IronUI.ShowMTException("Unable to send Request because IronWASP Proxy is not running. Start the proxy to fix this problem.");
+                return;
+            }
             try
             {
                 IronUI.ResetMTExceptionFields();
@@ -1133,7 +1138,15 @@ namespace IronWASP
                 case ("SiteMapLogGrid"):
                     return SiteMapLogGrid.SelectedCells[0].Value.ToString();
                 case ("ResultsTriggersGrid"):
-                    return ResultsTriggersGrid.SelectedCells[0].Value.ToString();
+                    string TrimmedTriggerVal = ResultsTriggersGrid.SelectedCells[0].Value.ToString();
+                    if (TrimmedTriggerVal.Equals("Normal"))
+                    {
+                        return "0";
+                    }
+                    else
+                    {
+                        return TrimmedTriggerVal.Replace("Trigger", "").Trim();
+                    }
                 case ("TestGroupLogGrid"):
                     return TestGroupLogGrid.SelectedCells[1].Value.ToString();
                 case ("OtherLogGrid"):
@@ -1944,19 +1957,6 @@ namespace IronWASP
             for (int i = 0; i < InjectionPoints.GetLength(0); i++)
             {
                 ConfigureScanRequestBodyTypeFormatPluginGrid.Rows.Add(new object[] { CheckStatus, InjectionPoints[i, 0], InjectionPoints[i, 1] });
-            }
-        }
-
-        private void ResultsTriggersGrid_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (ResultsTriggersGrid.SelectedCells.Count < 1 || ResultsTriggersGrid.SelectedCells[0].Value == null)
-            {
-                return;
-            }
-            if (Finding.CurrentPluginResult != null)
-            {
-                int TriggerNumber = Int32.Parse(ResultsTriggersGrid.SelectedCells[0].Value.ToString()) - 1;
-                IronUI.DisplayPluginResultsTrigger(TriggerNumber);
             }
         }
 
@@ -3296,9 +3296,10 @@ namespace IronWASP
             try
             {
                 int ID = Int32.Parse(ScanTraceGrid.SelectedCells[0].Value.ToString());
-                string[] OverviewAndMessage  = IronDB.GetScanTraceOverviewAndMessage(ID);
-                string OverviewXml = OverviewAndMessage[0];
-                string Message = OverviewAndMessage[1];
+                IronUI.MainViewSelectedScanTraceId = ID;
+                IronTrace Trace = IronDB.GetScanTrace(ID);
+                string OverviewXml = Trace.OverviewXml;
+                string Message = Trace.GetScanTracePrettyMessage();
                 
                 
                 //string Message = IronDB.GetScanTraceMessage(ID);
@@ -3543,7 +3544,7 @@ namespace IronWASP
             
             try
             {
-                if (TestGroupHistoryClickActionSelectLogRB.Checked)
+                if (e.ColumnIndex == 0)// TestGroupHistoryClickActionSelectLogRB.Checked)
                 {
                     TestGroupLogGrid.SelectedRows[0].Cells[0].Value = !((bool)TestGroupLogGrid.SelectedRows[0].Cells[0].Value);
                 }
@@ -4660,18 +4661,19 @@ namespace IronWASP
 
         private void LoadSelectedTraceBtn_Click(object sender, EventArgs e)
         {
-            LogTraceViewer TraceViewer = new LogTraceViewer();
-            TraceViewer.ScanTraceMsgRTB.Rtf = ScanTraceMsgRTB.Rtf;
-            foreach (DataGridViewRow Row in ScanTraceOverviewGrid.Rows)
-            {
-                object[] RowValues = new object[Row.Cells.Count + 1];
-                RowValues[0] = false;
-                foreach (DataGridViewCell Cell in Row.Cells)
-                {
-                    RowValues[Cell.ColumnIndex + 1] = Cell.Value;
-                }
-                TraceViewer.ScanTraceOverviewGrid.Rows.Add(RowValues);
-            }
+            //IronTrace Trace = IronDB.GetScanTrace(IronUI.MainViewSelectedScanTraceId);
+            LogTraceViewer TraceViewer = new LogTraceViewer(IronUI.MainViewSelectedScanTraceId);
+            //TraceViewer.ScanTraceMsgRTB.Rtf = ScanTraceMsgRTB.Rtf;
+            //foreach (DataGridViewRow Row in ScanTraceOverviewGrid.Rows)
+            //{
+            //    object[] RowValues = new object[Row.Cells.Count + 1];
+            //    RowValues[0] = false;
+            //    foreach (DataGridViewCell Cell in Row.Cells)
+            //    {
+            //        RowValues[Cell.ColumnIndex + 1] = Cell.Value;
+            //    }
+            //    TraceViewer.ScanTraceOverviewGrid.Rows.Add(RowValues);
+            //}
             TraceViewer.Show();
         }
 
@@ -5019,6 +5021,214 @@ namespace IronWASP
             ConfigPanel.Visible = true;
             ConfigViewHideLL.Text = "Hide Config";
             ConfigPanelTabs.SelectTab("ConfigDisplayRulesTab");
+        }
+
+        private void ResultsShowTriggersMenuLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            LogMenu.Show(ResultsTriggersGrid, 10, 10);
+        }
+
+        private void DoDiffBtn_Click(object sender, EventArgs e)
+        {
+            List<int> TriggerIds = new List<int>();
+            TriggerIds = new List<int>(Finding.TriggersSelectedForDiff);
+
+            if (TriggerIds.Count == 2)
+            {
+                SessionsDiffer SD = new SessionsDiffer();
+                Trigger A;
+                Trigger B;
+                if (TriggerIds[0] == 0)
+                {
+                    A = new Trigger("", Finding.CurrentPluginResult.BaseRequest, "", Finding.CurrentPluginResult.BaseResponse);
+                }
+                else
+                {
+                    A = Finding.CurrentPluginResult.Triggers.GetTrigger(TriggerIds[0] - 1);
+                }
+                if (TriggerIds[1] == 0)
+                {
+                    B = new Trigger("", Finding.CurrentPluginResult.BaseRequest, "", Finding.CurrentPluginResult.BaseResponse);
+                }
+                else
+                {
+                    B = Finding.CurrentPluginResult.Triggers.GetTrigger(TriggerIds[1] - 1);
+                }
+                
+                Session First = null;
+                Session Second = null;
+                if (A.Response == null)
+                {
+                    First = new Session(A.Request);
+                }
+                else
+                {
+                    First = new Session(A.Request, A.Response);
+                }
+                if (B.Response == null)
+                {
+                    Second = new Session(B.Request);
+                }
+                else
+                {
+                    Second = new Session(B.Request, B.Response);
+                }
+                SD.SetSessions(First, Second);
+                SD.Show();
+            }
+            else
+            {
+                if (TriggerIds.Count == 0)
+                {
+                    MessageBox.Show("Select two items before doing a Diff. You have NOT selected any items currently");
+                }
+                else if (TriggerIds.Count == 1)
+                {
+                    MessageBox.Show("Select two items before doing a Diff. You have selected only one item currently");
+                }
+                else if (TriggerIds.Count > 2)
+                {
+                    MessageBox.Show("Select two items before doing a Diff. You have selected more than two items currently");
+                }
+            }
+        }
+
+        private void SelectForDiffTriggersGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (SelectForDiffTriggersGrid.SelectedRows == null) return;
+            if (SelectForDiffTriggersGrid.SelectedRows.Count == 0) return;
+
+
+            SelectForDiffTriggersGrid.SelectedRows[0].Cells[0].Value = !((bool)SelectForDiffTriggersGrid.SelectedRows[0].Cells[0].Value);
+
+            if ((bool)SelectForDiffTriggersGrid.SelectedRows[0].Cells[0].Value)
+            {
+                if (SelectForDiffTriggersGrid.SelectedRows[0].Cells[1].Value.ToString().Equals("Normal"))
+                {
+                    Finding.TriggersSelectedForDiff.Add(0);
+                }
+                else
+                {
+                    try
+                    {
+                        Finding.TriggersSelectedForDiff.Add(Int32.Parse(SelectForDiffTriggersGrid.SelectedRows[0].Cells[1].Value.ToString().Replace("Trigger", "").Trim()));
+                    }
+                    catch { }
+                }
+                if (Finding.TriggersSelectedForDiff.Count > 2)
+                {
+                    int i = Finding.TriggersSelectedForDiff[0];
+                    Finding.TriggersSelectedForDiff.RemoveAt(0);
+
+                    foreach (DataGridViewRow Row in SelectForDiffTriggersGrid.Rows)
+                    {
+                        if (i == 0 && Row.Cells[1].Value.ToString().Trim().Equals("Normal"))
+                        {
+                            Row.Cells[0].Value = false;
+                        }
+                        else
+                        {
+                            try
+                            {
+                                if (i == Int32.Parse(Row.Cells[1].Value.ToString().Replace("Trigger", "").Trim()))
+                                {
+                                    Row.Cells[0].Value = false;
+                                }
+                            }
+                            catch { }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (SelectForDiffTriggersGrid.SelectedRows[0].Cells[1].Value.ToString().Equals("Normal"))
+                {
+                    Finding.TriggersSelectedForDiff.Remove(0);
+                }
+                else
+                {
+                    try
+                    {
+                        Finding.TriggersSelectedForDiff.Remove(Int32.Parse(SelectForDiffTriggersGrid.SelectedRows[0].Cells[1].Value.ToString().Replace("Trigger", "").Trim()));
+                    }
+                    catch { }
+                }
+            }           
+        }
+
+        private void ResultsTriggersGrid_SelectionChanged(object sender, EventArgs e)
+        {
+            if (ResultsTriggersGrid.SelectedCells.Count < 1 || ResultsTriggersGrid.SelectedCells[0].Value == null)
+            {
+                return;
+            }
+            if (Finding.CurrentPluginResult != null)
+            {
+                if (ResultsTriggersGrid.SelectedCells[0].Value.ToString().Trim().Equals("Normal"))
+                {
+                    IronUI.DisplayPluginResultsTrigger(-1);
+                }
+                else
+                {
+                    int TriggerNumber = Int32.Parse(ResultsTriggersGrid.SelectedCells[0].Value.ToString().Replace("Trigger", "").Trim()) - 1;
+                    IronUI.DisplayPluginResultsTrigger(TriggerNumber);
+                } 
+            }
+        }
+
+        private void ResultsShowScanTraceBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                List<IronTrace> Traces = IronDB.GetScanTraces(Finding.CurrentPluginResult);
+                List<LogTraceViewer> Viewers = new List<LogTraceViewer>();
+
+                foreach (IronTrace Trace in Traces)
+                {
+                    LogTraceViewer TraceViewer = new LogTraceViewer(Trace);
+                    Viewers.Add(TraceViewer);
+                    //StringBuilder SB = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;}");
+                    //SB.Append(Tools.RtfSafe(Trace.Message));
+                    //TraceViewer.ScanTraceMsgRTB.Rtf = SB.ToString();
+
+                    //try
+                    //{
+                    //    List<Dictionary<string, string>> OverviewEntries = IronTrace.GetOverviewEntriesFromXml(Trace.OverviewXml);
+                    //    //ScanTraceOverviewGrid.Rows.Clear();
+                    //    foreach (Dictionary<string, string> Entry in OverviewEntries)
+                    //    {
+                    //        TraceViewer.ScanTraceOverviewGrid.Rows.Add(new object[] { false, Entry["id"], Entry["log_id"], Entry["payload"], Entry["code"], Entry["length"], Entry["mime"], Entry["time"], Entry["signature"] });
+                    //    }
+                    //    Viewers.Add(TraceViewer);
+                    //}
+                    //catch
+                    //{
+                    //    //Probaly an entry from the log of an older version
+                    //}
+                }
+                foreach (LogTraceViewer Viewer in Viewers)
+                {
+                    Viewer.Show();
+                }
+                if (Viewers.Count > 1)
+                {
+                    MessageBox.Show(string.Format("{0} traces entries matched this finding, so {0} windows have been opened", Viewers.Count));
+                }
+                else if (Viewers.Count == 0)
+                {
+                    MessageBox.Show("No trace entries matching this finding could be find. Please look for the associated trace manually in the 'Scan Trace' section of the 'Automated Scanning' section.");
+                }
+            }
+            catch (Exception Exp)
+            {
+                IronException.Report("Unable to load logs associated with Finding", Exp);
+            }
+        }
+
+        private void TraceMsgRTB_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            MessageBox.Show(e.LinkText);
         }
     }
 }

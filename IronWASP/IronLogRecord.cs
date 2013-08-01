@@ -40,5 +40,7 @@ namespace IronWASP
         internal string OriginalResponseHeaders = "";
         internal string OriginalResponseBody = "";
         internal bool IsOriginalResponseBinary = false;
+
+        internal int RoundTrip = 0;
     }
 }

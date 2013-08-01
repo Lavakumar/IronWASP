@@ -503,6 +503,7 @@ namespace IronWASP
             try
             {
                 XmlDocument UAL = new XmlDocument();
+                UAL.XmlResolver = null;
                 UAL.Load(string.Format("{0}//useragentswitcher.xml", Config.Path));
                 Config.UserAgentsList = new Dictionary<string, Dictionary<string, string>>();
                 foreach (XmlNode CategoryNode in UAL.SelectNodes("useragentswitcher")[0].SelectNodes("folder"))

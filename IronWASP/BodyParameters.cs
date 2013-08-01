@@ -232,17 +232,17 @@ namespace IronWASP
             this.Request.SetBodyWithoutUpdatingParameters(this.GetBodyStringFromParameters());
         }
 
-        string Encode(string Value)
+        internal static string Encode(string Value)
         {
             return Tools.UrlEncode(Value);
         }
 
-        string Decode(string Value)
+        internal static string Decode(string Value)
         {
             return Tools.UrlDecode(Value);
         }
 
-        string SafeRaw(string Value)
+        internal static string SafeRaw(string Value)
         {
             return Tools.RelaxedUrlEncode(Value);
         }

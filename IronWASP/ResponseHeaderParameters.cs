@@ -140,12 +140,12 @@ namespace IronWASP
             return Name;
         }
 
-        string SafeRaw(string Value)
+        new string SafeRaw(string Value)
         {
             return Tools.HeaderEncode(Value);
         }
 
-        string Encode(string Value)
+        new string Encode(string Value)
         {
             return Tools.HeaderEncode(Value);
         }

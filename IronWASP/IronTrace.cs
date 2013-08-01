@@ -40,6 +40,7 @@ namespace IronWASP
         internal string Parameter = "";
         internal string Title = "";
         internal string OverviewXml = "";
+        string messageXml = "";
 
         internal int LogId = 0;
         internal string LogSource = "";
@@ -56,6 +57,28 @@ namespace IronWASP
 
         static Thread SessionLogLoadThread;
 
+        internal string MessageXml
+        {
+            set
+            {
+                try
+                {
+                    XmlDocument Xdoc = new XmlDocument();
+                    Xdoc.XmlResolver = null;
+                    Xdoc.LoadXml(value);
+                }
+                catch
+                {
+                    throw new Exception("Invalid Message Xml");
+                }
+                this.messageXml = value;
+            }
+            get
+            {
+                return this.messageXml;
+            }
+        }
+        
         internal IronTrace()
         {
 
@@ -72,7 +95,7 @@ namespace IronWASP
             this.Type = "Normal";
         }
 
-        internal IronTrace(int ScanID, string PluginName, string Section, string Parameter, string Title, string Message, List<string[]> OverviewEntries)
+        internal IronTrace(int ScanID, string PluginName, string Section, string Parameter, string Title, string MessageXml, List<string[]> OverviewEntries)
         {
             this.ID = Interlocked.Increment(ref Config.ScanTraceCount);
             this.ScanID = ScanID;
@@ -80,7 +103,14 @@ namespace IronWASP
             this.Section = Section;
             this.Parameter = Parameter;
             this.Title = Title;
-            this.Message = Message;
+            try
+            {
+                this.MessageXml = MessageXml;
+            }
+            catch 
+            { 
+                this.Message = MessageXml; 
+            }
             this.OverviewXml = GetXmlFromOverviewEntries(OverviewEntries);
             this.Type = "Scan";
         }
@@ -120,6 +150,51 @@ namespace IronWASP
             }
         }
 
+        internal string GetScanTracePrettyMessage()
+        {
+            if (this.MessageXml.Length == 0)
+            {
+                return this.Message;
+            }
+
+            StringBuilder SB = new StringBuilder();
+
+            XmlDocument XDoc = new XmlDocument();
+            XDoc.XmlResolver = null;
+            XDoc.LoadXml(this.MessageXml);
+            foreach (XmlElement Node in XDoc.DocumentElement.ChildNodes)
+            {
+                if (Node.Name.Equals("type_a"))
+                {
+                    SB.Append(string.Format("<i<br>>{0}", Node.InnerText));
+                }
+                else if (Node.Name.Equals("type_b"))
+                {
+                    int LogId = 0;
+                    string RequestTrace = "";
+                    string ResponseTrace = "";
+                    foreach (XmlElement InnerNode in Node.ChildNodes)
+                    {
+                        switch (InnerNode.Name)
+                        {
+                            case ("log_id"):
+                                LogId = Int32.Parse(InnerNode.InnerText);
+                                break;
+                            case ("req"):
+                                RequestTrace = InnerNode.InnerText;
+                                break;
+                            case ("res"):
+                                ResponseTrace = InnerNode.InnerText;
+                                break;
+                        }
+                    }
+                    SB.Append(string.Format("<i<br>>{0} | {1} {2}", LogId, RequestTrace, ResponseTrace));
+                }
+            }
+            SB.Append("<i<br>>");
+            return SB.ToString();
+        }
+
         internal static void MoveScanTraceRecordForward(int JumpLevel)
         {
             IronUI.ShowScanTraceStatus("Loading please wait....", false);
@@ -141,13 +216,13 @@ namespace IronWASP
         {
             int JumpCount = IronLog.GetJumpCount(JumpLevel);
             int StartIndex = IronTrace.ScanTraceMax + JumpCount;
-            List<IronTrace> Records = IronDB.GetScanTraceRecords(StartIndex, IronLog.MaxRowCount);
+            List<IronTrace> Records = IronDB.GetScanTraces(StartIndex, IronLog.MaxRowCount);
             if (Records.Count == 0)
             {
                 int NewStartIndex = Config.LastScanTraceId - IronLog.MaxRowCount;
                 if (NewStartIndex > 0)
                 {
-                    Records = IronDB.GetScanTraceRecords(NewStartIndex, IronLog.MaxRowCount);
+                    Records = IronDB.GetScanTraces(NewStartIndex, IronLog.MaxRowCount);
                     if (Records.Count > 0)
                     {
                         if (Records[Records.Count - 1].ID == IronTrace.ScanTraceMax) Records.Clear();
@@ -183,7 +258,7 @@ namespace IronWASP
                 return Records;
             }
             int StartIndex = CurrentMin - IronLog.MaxRowCount - JumpCount - 1;
-            Records = IronDB.GetScanTraceRecords(StartIndex, IronLog.MaxRowCount);
+            Records = IronDB.GetScanTraces(StartIndex, IronLog.MaxRowCount);
             return Records;
         }
 
@@ -253,6 +328,7 @@ namespace IronWASP
         {
             List<Dictionary<string, string>> OverviewEntries = new List<Dictionary<string, string>>();
             XmlDocument XDoc = new XmlDocument();
+            XDoc.XmlResolver = null;
             try
             {
                 XDoc.LoadXml(OverviewXml);
@@ -313,6 +389,193 @@ namespace IronWASP
             finally
             {
                 IronUI.ShowHideSessionPluginTraceProgressBar(false);
+            }
+        }
+
+        internal static List<object[]> GetGridRowsFromTraceAndOverviewXml(string OverviewXml, string TraceXml)
+        {
+            List<object[]> Rows = new List<object[]>();
+            Dictionary<string, string> Signatures = new Dictionary<string, string>();
+
+            List<Dictionary<string, string>> ODict = GetOverviewEntriesFromXml(OverviewXml);
+            List<string[]> TArr = GetTraceXmlEntries(TraceXml);
+
+            int TArrPointer = -1;
+            int TArrLogId = 0;
+
+            for (int odi = 0; odi < ODict.Count ; odi++)
+            {
+                Dictionary<string, string> ODR = ODict[odi];
+                int ODictLogId = Int32.Parse(ODR["log_id"]);
+
+                string Sign = "";
+                if (Signatures.ContainsKey(ODR["signature"]))
+                {
+                    Sign = Signatures[ODR["signature"]];
+                }
+                else
+                {
+                    Sign = GetShortResponseSignature(Signatures.Count);
+                    Signatures.Add(ODR["signature"], Sign);
+                }
+
+                if (odi == 0)
+                {
+                    Rows.Add(new object[] { false, Rows.Count + 1, ODR["log_id"], ODR["payload"], ODR["code"], ODR["length"], ODR["mime"], ODR["time"], Sign, "<i<cg>>This is the baseline response<i</cg>>" });
+                    continue;
+                }
+                
+                
+                while (ODictLogId > TArrLogId && TArrPointer+1 < TArr.Count)
+                {
+                    TArrPointer++;
+                    try
+                    {
+                        TArrLogId = Int32.Parse(TArr[TArrPointer][0]);
+                    }
+                    catch
+                    {
+                        if (TArr[TArrPointer][1].Length > 0)
+                            Rows.Add(new object[] { false, Rows.Count + 1, null, null, null, null, null, null, null, TArr[TArrPointer][1] });
+                    }
+                }
+
+                
+
+
+                if (ODictLogId == TArrLogId)
+                {
+                    Rows.Add(new object[] { false, Rows.Count + 1, ODR["log_id"], ODR["payload"], ODR["code"], ODR["length"], ODR["mime"], ODR["time"], Sign, TArr[TArrPointer][1] });
+                }
+                else
+                {
+                    Rows.Add(new object[] { false, Rows.Count + 1, ODR["log_id"], ODR["payload"], ODR["code"], ODR["length"], ODR["mime"], ODR["time"], Sign, "" });
+                }
+            }
+
+            return Rows;
+        }
+
+        static List<string[]> GetTraceXmlEntries(string TraceXml)
+        {
+            List<string[]> Result = new List<string[]>();
+            XmlDocument XDoc = new XmlDocument();
+            XDoc.XmlResolver = null;
+            try
+            {
+                XDoc.LoadXml(TraceXml);
+                foreach (XmlElement Node in XDoc.DocumentElement.ChildNodes)
+                {
+                    if (Node.Name.Equals("type_a"))
+                    {
+                        foreach (string Line in SplitMessage(Node.InnerText))
+                        {
+                            Result.Add(new string[]{"", Line});
+                            //Rows.Add(new object[] { false, null, null, null, null, null, null, null, null, Line });
+                        }
+                    }
+                    else if (Node.Name.Equals("type_b"))
+                    {
+                        int LogId = 0;
+                        string RequestTrace = "";
+                        string ResponseTrace = "";
+                        foreach (XmlElement InnerNode in Node.ChildNodes)
+                        {
+                            switch (InnerNode.Name)
+                            {
+                                case ("log_id"):
+                                    try
+                                    {
+                                        LogId = Int32.Parse(InnerNode.InnerText);
+                                    }
+                                    catch { }
+                                    break;
+                                case ("req"):
+                                    RequestTrace = InnerNode.InnerText;
+                                    break;
+                                case ("res"):
+                                    ResponseTrace = InnerNode.InnerText;
+                                    break;
+                            }
+                        }
+
+                        List<string> MessageLines = SplitMessage(string.Format("{0} {1}", RequestTrace, ResponseTrace));
+
+                        for (int i = 0; i < MessageLines.Count; i++)
+                        {
+                            if (i == 0 && LogId > 0)
+                            {
+                                Result.Add(new string[] { LogId.ToString(), MessageLines[i] });
+                            }
+                            else
+                            {
+                                Result.Add(new string[] { "", MessageLines[i] });
+                            }
+                        }
+                    }
+                }
+            }
+            catch{}
+            return Result;
+        }
+
+        static List<string> SplitMessage(string Message)
+        {
+            List<string> Lines = new List<string>();
+            string OpenColorTag = "";
+            foreach (string Line in Message.Split(new string[] { "<i<br>>" }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                string LineToAdd = "";
+                if (OpenColorTag.Length > 0)
+                {
+                    string OT = string.Format("<i<{0}>>", OpenColorTag);
+                    string CT = string.Format("<i</{0}>>", OpenColorTag);
+                    if (Line.Contains(CT))
+                    {
+                        LineToAdd = string.Format("{0}{1}", OT, Line);
+                        OpenColorTag = "";
+                    }
+                    else
+                    {
+                        LineToAdd = string.Format("{0}{1}{2}", OT, Line, CT);
+                    }
+                }
+                else
+                {
+                    foreach (string Color in new List<string> { "cr", "co", "h", "hh", "cb", "cg", "b" })
+                    {
+                        string OT = string.Format("<i<{0}>>", Color);
+                        string CT = string.Format("<i</{0}>>", Color);
+
+                        if (Line.Contains(OT) && !Line.Contains(CT))
+                        {
+                            LineToAdd = string.Format("{0} {1}", Line, CT);
+                            OpenColorTag = Color;
+                        }
+                    }
+                }
+                if (LineToAdd.Length == 0)
+                {
+                    LineToAdd = Line;
+                }
+                Lines.Add(LineToAdd);
+            }
+            if (Lines.Count == 0)
+            {
+                Lines.Add("");
+            }
+            return Lines;
+        }
+
+        public static string GetShortResponseSignature(int Count)
+        {
+            if (Count < 26)
+            {
+                return "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Count].ToString();
+            }
+            else
+            {
+                return GetShortResponseSignature(Count / 26) + GetShortResponseSignature(Count % 26);
             }
         }
     }

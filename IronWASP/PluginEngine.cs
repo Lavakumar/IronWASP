@@ -231,6 +231,14 @@ namespace IronWASP
             }
         }
 
+        internal static void LoadAllInternalFormatPlugins()
+        {
+            FormatPlugin.Add(new XmlFormatPlugin());
+            FormatPlugin.Add(new JsonFormatPlugin());
+            FormatPlugin.Add(new SoapFormatPlugin());
+            FormatPlugin.Add(new MultipartFormatPlugin());
+        }
+
         internal static void LoadAllFormatPlugins()
         {
             ScriptEngine Engine = GetScriptEngine();
@@ -246,6 +254,7 @@ namespace IronWASP
             lock (FormatPlugin.Collection)
             {
                 FormatPlugin.Collection.Clear();
+                LoadAllInternalFormatPlugins();
                 string[] FormatPluginFiles = Directory.GetFiles(FormatPluginPath);
                 foreach (string FormatPluginFile in FormatPluginFiles)
                 {
@@ -367,6 +376,8 @@ namespace IronWASP
             {
                 ScriptSource PluginSource;
                 CompiledCode CompiledPlugin;
+                ScriptErrorReporter CompileErrors = new ScriptErrorReporter();
+                string ErrorMessage = "";
 
                 fileName = PluginFile.Substring(PluginFile.LastIndexOf('\\') + 1);
                 if(StartUp) IronUI.ShowLoadMessage("Loading Plugin - " + fileName);
@@ -374,15 +385,32 @@ namespace IronWASP
                 {
                     Engine.Runtime.TryGetEngine("py", out Engine);
                     PluginSource = Engine.CreateScriptSourceFromFile(PluginFile);
-                    CompiledPlugin = PluginSource.Compile();
-                    PluginSource.ExecuteProgram();
+                    string IndentError = PluginEditor.CheckPythonIndentation(PluginSource.GetCode())[1];
+                    CompiledPlugin = PluginSource.Compile(CompileErrors);
+                    ErrorMessage = CompileErrors.GetErrors();
+                    if (IndentError.Length > 0)
+                    {
+                        ErrorMessage = string.Format("{0}\r\n{1}", IndentError, ErrorMessage);
+                    }
+                    if (ErrorMessage.Length == 0)
+                    {
+                        PluginSource.ExecuteProgram();
+                    }
                 }
                 else if (PluginFile.EndsWith(".rb", StringComparison.CurrentCultureIgnoreCase))
                 {
                     Engine.Runtime.TryGetEngine("rb", out Engine);
                     PluginSource = Engine.CreateScriptSourceFromFile(PluginFile);
-                    CompiledPlugin = PluginSource.Compile();
-                    PluginSource.ExecuteProgram();
+                    CompiledPlugin = PluginSource.Compile(CompileErrors);
+                    ErrorMessage = CompileErrors.GetErrors();
+                    if (ErrorMessage.Length == 0)
+                    {
+                        PluginSource.ExecuteProgram();
+                    }
+                }
+                if (ErrorMessage.Length > 0)
+                {
+                    IronException.Report("Syntax error in Plugin - " + PluginFile, ErrorMessage);
                 }
             }
             catch (Exception Exp)
@@ -443,10 +471,12 @@ namespace IronWASP
         {
             Findings Results = new Findings();
             P.Check(Irse, Results, false);
-            foreach (Finding PR in Results.GetAll())
+            foreach (Finding F in Results.GetAll())
             {
-                PR.Plugin = P.Name;
-                PR.Report();
+                F.FinderName = P.Name;
+                F.FinderType = "PassivePlugin";
+
+                F.Report();
             }
             return Results;
         }

@@ -193,447 +193,447 @@ namespace IronWASP
         #region Questions
         
         static string GenericQuestionToSpecifyRequestSource = @"{0}
-<i<br>><i<br>>
+
 An existing request from one of the logs can be picked.
-<i<br>><i<br>>
+
 Specify the Request to pick by mentioning the Log Source and the ID number of the Request inside the log.
-<i<br>><i<br>>
+
 Also mention a name to this request, this name will be used to refer to this request in the SessionPlugin trace messages.
-<i<br>><i<br>>
+
 ";
 
 
         static string GenericQuestionToShowPseudoCode = @"{0}
 The answers provided by you will be used to generate the Session Plugin.
-<i<br>><i<br>>
+
 If you wish to provide the same set of answers again then you don't have to answer the all the questions in the UI.
-<i<br>><i<br>>
+
 Instead just provide the Pseudo Code that is displayed below.
-<i<br>><i<br>>
+
 The Pseudo Code is an exact representation of your answers and will be used for making the Session Plugin.
-<i<br>><i<br>>
+
 Please go back to the main menu answer further questions or to create a Session Plugin based on your answers.
-<i<br>><i<br>>
+
 ";
 
         static Dictionary<string, string> Questions = new Dictionary<string, string>() {
         //Home Menu
         {HomeMenu__BaseStep, @"
 <i<hh>>Session Plugin Creation Assistant - Main Menu<i</hh>>
-<i<br>><i<br>>
+
 This assistant will help you create a Session Plugin that can handle custom site behaviours like login, csrf token update etc.
-<i<br>><i<br>>
+
 This session plugin can be used in your Automated Scan Jobs, Log Tester, Fuzzers or any other tools that support them.
-<i<br>><i<br>>
+
 Depending on which action you want to program you can select an option from below. Selecting the option will show more details about it.
-<i<br>><i<br>>
+
 Once you have defined how any one or more of these actions must be performed you can create a Session Plugin by clicking the appropriate button below.
-<i<br>><i<br>>
+
 "},
         //Handle Redirect
         {HandleRedirect__BaseStep, @"
 <i<hh>>Follow Responses with Redirect<i</hh>>
-<i<br>><i<br>>
+
 When the request that you are scanning/testing returns a response which is a 301 or 302 redirect to another location then you could choose to follow that response.
-<i<br>><i<br>>
+
 This can be handy in scenarios where the application always returns a redirect for a request and following the redirect will display the actual result of the first request.
-<i<br>><i<br>>
+
 In such cases it would be better if the scanner or the testing tool performed its analysis on the response got after following the redirect.
-<i<br>><i<br>>
+
 If you wish to add this action to the Session Plugin then select 'Yes' below and hit 'Submit'.
-<i<br>><i<br>>
+
 If you have already defined this action and have corresponding Pseudo Code that you would like to provide then select the 'Pseudo Code' option below.
-<i<br>><i<br>>
+
 "},
         {HandleRedirect__ResponseSignatureStep ,@"<i<hh>>Redirect Signature Definition<i</hh>>
-<i<br>><i<br>>
+
 You can define when a redirect must be followed by specifying the signature of the response that you would like to be followed.
-<i<br>><i<br>>
+
 The signature is defined by specifying the response code and optionally the value of the location header.
-<i<br>><i<br>>
+
 If you don't define a signature then all redirects will be followed.
-<i<br>><i<br>>
+
 "},
         {HandleRedirect__EnterPseudoCodeStep, @"<i<hh>>Follow Redirect Pseudo Code<i</hh>>
-<i<br>><i<br>>
+
 If you have already defined the follow redirect action then enter the corresponding pseudo code below.
-<i<br>><i<br>>
+
 "},
         {HandleRedirect__ShowPseudoCodeStep, string.Format(GenericQuestionToShowPseudoCode, @"<i<hh>>Pseudo Code for Handle Redirect Action<i</hh>>
 <i<br>><i<br>>")},
         // Handle SetCookies
         {HandleSetCookies__BaseStep, @"<i<hh>>Read Set-Cookies from Response<i</hh>>
-<i<br>><i<br>>
+
 If the response recieved after sending the main request being scanned or tested has Set-Cookie headers then you can define if these values must be added to the cookie of the next main request that is sent.
-<i<br>><i<br>>
+
 Only those Set-Cookie values whose names will be mentioned will be updated in the Cookie header of the next main request.
-<i<br>><i<br>>
+
 If you wish you specify the Set-Cookie values then selected 'Yes' and hit 'Submit'
-<i<br>><i<br>>
+
         "},
         {HandleSetCookies__ParameterNames, @"<i<hh>>Set-Cookies Names<i</hh>>
-<i<br>><i<br>>
+
 Enter the names of the Set-Cookie headers that you want to be updated in the Cookie header of the next main request.
-<i<br>><i<br>>
+
 Enter the names one per line.
-<i<br>><i<br>>
+
 "},
         //Handle CSRF Tokens
         {HandleCSRFTokens__BaseStep, @"<i<hh>>CSRF-token updating<i</hh>>
-<i<br>><i<br>>
+
 Some requests might have a CSRF token parameter whose value needs to be updated everytime after it is sent or if the underlying session id changes.
-<i<br>><i<br>>
+
 If the main request being scanned/tested has such a parameter or any other parameter that needs to be updated before it is sent then you can define that action in this section.
-<i<br>><i<br>>
+
 If you wish you define this action then select 'Yes' and hit the 'Submit' button.
-<i<br>><i<br>>
+
 If you have already defined this action and have the corresponding Pseudo Code and you like to use the same then selected the 'Pseudo Code' option.
-<i<br>><i<br>>
+
         "},
         {HandleCSRFTokens__PseudoCodeStep, @"<i<hh>>CSRF-token Update Pseudo Code<i</hh>>
-<i<br>><i<br>>
+
 If you have already defined the csrf-token update action then enter the corresponding pseudo code below.
-<i<br>><i<br>>
+
 "},
         {HandleCSRFTokens__ParameterSourceStep, @"<i<hh>>CSRF-token Source Definition<i</hh>>
-<i<br>><i<br>>
+
 Before the CSRF-token or any other value can be updated in the request we must get it from some source.
-<i<br>><i<br>>
+
 There are two supported sources:
-<i<br>><i<br>>
+
 1) Send another request and extract the values from the response of this request
-<i<br>><i<br>>
+
 2) During the scan or test display a pop-up box asking the user to enter this value. (Useful for entering RSA tokens or solving captchas)
-<i<br>><i<br>>
-<i<br>><i<br>>
+
+
 Depending on from where you would like to get the token value, select an option below.
-<i<br>><i<br>>
+
 Please note that when you select the first option in addition to extract some values from the response of another request, you can also choose to update some parameters by prompting the user.
-<i<br>><i<br>>
-        "},
+
+"},
         {HandleCSRFTokens__RequestToSendForResponseStep, string.Format(GenericQuestionToSpecifyRequestSource, @"<i<hh>>Request to send to get CSRF-token<i</hh>>
-<i<br>><i<br>>
+
 You have chose to send a request and extract the token from the response. Enter the details of the request that must be used for this purpose.
-<i<br>><i<br>>
+
 ")},
         {HandleCSRFTokens__ParametersStep, @"<i<hh>>'{0}' CSRF-token Parameter Update Definition<i</hh>>
-<i<br>><i<br>>
+
 The parameters of the '{0}' will be updated based on your requirements.
-<i<br>><i<br>>
+
 You must first specify the section of the request the parameter belongs to like Query, Body etc and  the name of the parameter. This way the parameter to update can be identified.
-<i<br>><i<br>>
+
 If you want to update the path section of the URL incase the server is using URL Rewriting then select 'UrlPathPart' and give the zero-based index of the path section you want to update.
-<i<br>><i<br>>
+
 Then the value to update this parameter with must be made ready. If the value is being extracted from a response of the '{1}' request then you must specify how this value can be extracted.
-<i<br>><i<br>>
+
 If this value occurs inside the value attribute of input tags in the response then it is taken from the first input tag that has the same name as the parameter name provided earlier.
-<i<br>><i<br>>
+
 If this value occurs in a different place then you can provide a regex to extract this value. This regex will be used on the entire response body and the first match will be used.
-<i<br>><i<br>>
+
 For example if the token appears inside the SCRIPT tag of the response as below:
-<i<br>><i<br>>
+
 var c_token = 'ksd9283-asdjsd023-askjd23';
-<i<br>><i<br>>
+
 Then the regex to extract this token would be: var c_token = '(.*?)';
-<i<br>><i<br>>
+
 If you would want to get the value of this parameter from the user by throwing a prompt then you can select that option and provide a hint that will be included in the prompt to help the user identify the correct parameter.
-<i<br>><i<br>>
+
 You can choose to update multiple parameters in this section. After you are done defining the parameters and the parameters are listed in the table at the bottom you can submit this definition.
-<i<br>><i<br>>
+
 "},
         {HandleCSRFTokens__ParametersAskUserOnlyStep, @"<i<hh>>'{0}' CSRF-token Parameter Update Definition<i</hh>>
-<i<br>><i<br>>
+
 The parameters of the '{0}' will be updated based on your requirements.
-<i<br>><i<br>>
+
 You must first specify the section of the request the parameter belongs to like Query, Body etc and  the name of the parameter. This way the parameter to update can be identified.
-<i<br>><i<br>>
+
 If you want to update the path section of the URL incase the server is using URL Rewriting then select 'UrlPathPart' and give the zero-based index of the path section you want to update.
-<i<br>><i<br>>
+
 The value of this parameter will be got from the user by throwing a prompt, provide a hint that will be included in the prompt to help the user identify the correct parameter.
-<i<br>><i<br>>
+
 You can choose to update multiple parameters in this section. After you are done defining the parameters and the parameters are listed in the table at the bottom you can submit this definition.
-<i<br>><i<br>>
+
 "},
         {HandleCSRFTokens__ShowPseudoCodeStep, string.Format(GenericQuestionToShowPseudoCode, @"<i<hh>>Pseudo Code for Handle CSRF-tokens Action<i</hh>>
 <i<br>><i<br>>")},
         //Handle Login
         {HandleLogin__BaseStep, @"<i<hh>>Handle Login<i</hh>>
-<i<br>><i<br>>
+
 If you are scanning or testing a request that belongs to the post-authentication section of the site then it is important to check if the user is still logged in and if the user is logged out a proper login must be performed and the new session information must be updated in the main request before it is sent to the server.
-<i<br>><i<br>>
+
 This section will let you define how to check if the user is still logged in and also to perform a proper login and updating of new session information.
-<i<br>><i<br>>
+
 If you wish you define this action then select 'Yes' and hit the 'Submit' button.
-<i<br>><i<br>>
+
 If you have already defined this action and have the corresponding Pseudo Code and you like to use the same then selected the 'Pseudo Code' option.
-<i<br>><i<br>>
+
 "},
         {HandleLogin__PseudoCodeStep, @"<i<hh>>Handle Login Pseudo Code<i</hh>>
-<i<br>><i<br>>
+
 If you have already defined the handle login action then enter the corresponding pseudo code below.
-<i<br>><i<br>>
+
 "},
         {HandleLogin__LoggedinCheckRequestSourceStep, string.Format(GenericQuestionToSpecifyRequestSource, @"<i<hh>>Request to send to check Logged in status<i</hh>>
-<i<br>><i<br>>
+
 A simple request must be sent to check if the user is still logged in. This could be the request to the user's profile page or welcome page depending on the site's design.
-<i<br>><i<br>>
+
 In any case this must be a request that gives two different responses based on the logged in status of the user so that the response can be analyzed to determine this.
-<i<br>><i<br>>
+
 Specify such a request which will used for this purpose. This request will be referred to as the 'Login Check Request' in subsequent sections.
-<i<br>><i<br>>
+
 ")},
         {HandleLogin__LoggedInLoggedOutSignatureResponseSectionStep, @"<i<hh>>Analyze response of the 'Login Check Request'<i</hh>>
-<i<br>><i<br>>
+
 Once the 'Login Check Request' is sent and a response it recieved it must be analyzed to determine the current login status.
-<i<br>><i<br>>
+
 Since the response will be different for logged in and logged out status you can provide a signature for either one of those statuses.
-<i<br>><i<br>>
+
 Choose the one status that is easier to define using the options below. The options for analysis include checking the response code, response title, response body and/or response redirect location (in case of a redirect).
-<i<br>><i<br>>
+
 For example if the response would be a 200 for logged in status and a 302 to login.php for logged out status then it would suffice to select the 'Logged Out Signature' option and enter the status code as 302.
-<i<br>><i<br>>
+
 But if the differnce is not that obvious then you can make use of the other options to provide a reliable signature.
-<i<br>><i<br>>
+
 "},
         {HandleLogin__LoginRequestSourceStep, string.Format(GenericQuestionToSpecifyRequestSource, @"<i<hh>>Request to send to perform login<i</hh>>
-<i<br>><i<br>>
+
 If the analysis of the 'Login Check Request' shows that the user is logged out then a login must be performed.
-<i<br>><i<br>>
+
 This is done by sending a request that has the user's authentication credentials (username, password, rsa tokens etc).
-<i<br>><i<br>>
+
 Specify this request. This request will be referred to as the 'Login Request' in subsequent sections.
-<i<br>><i<br>>
+
 ")},
          {HandleLogin__ShouldUpdateLoginRequestStep, @"<i<hh>>Updating the 'Login Request'<i</hh>>
-<i<br>><i<br>>
+
 If the 'Login Request' contains any parameters that need to be updated before sending it then it can be handled.
-<i<br>><i<br>>
+
 These could be CSRF-tokens in the 'Login Request' or one-time passwords like RSA tokens that must be entered by the user exactly at the time of login.
-<i<br>><i<br>>
+
 If such updates need to be performed on the 'Login Request' then select 'Yes' and hit 'Submit'.
-<i<br>><i<br>>
+
         "},
         {HandleLogin__IsPreLoginRequestNeededStep,  @"<i<hh>>Should a 'Pre Login Request' be sent<i</hh>>
-<i<br>><i<br>>
+
 You have chose to update some of the parameters of the 'Login Request' before it is sent.
-<i<br>><i<br>>
+
 If any of these parameters need to be updated with values from the response of another request then it can be done. This is a typical requirement in case of CSRF-tokens.
-<i<br>><i<br>>
+
 If another request must be sent to extract parameter value from the response and use in the 'Login Request' then select 'Yes' and hit 'Submit'
-<i<br>><i<br>>
+
 "},
         {HandleLogin__PreLoginRequestSourceStep, string.Format(GenericQuestionToSpecifyRequestSource, @"<i<hh>>Request to send before sending the 'Login Request'<i</hh>>
-<i<br>><i<br>>
+
 You have chose to send a request before sending the 'Login Reqeust' and extract some parameter value from the response and use it to update the 'Login Request'.
-<i<br>><i<br>>
+
 Specify of the details of this request. This request will be referred to as the 'Pre Login Request' in subsequent sections.
-<i<br>><i<br>>
+
 ")},
         {HandleLogin__LoginRequestParametersStep, @"<i<hh>>'Login Request' Parameter Update Definition<i</hh>>
-<i<br>><i<br>>
+
 The parameters of the 'Login Request' will be updated based on your requirements.
-<i<br>><i<br>>
+
 You must first specify the section of the request the parameter belongs to like Query, Body etc and  the name of the parameter. This way the parameter to update can be identified.
-<i<br>><i<br>>
+
 If you want to update the path section of the URL incase the server is using URL Rewriting then select 'UrlPathPart' and give the zero-based index of the path section you want to update.
-<i<br>><i<br>>
+
 Then the value to update this parameter with must be made ready. If the value is being extracted from a response of the 'Pre Login Request' request then you must specify how this value can be extracted.
-<i<br>><i<br>>
+
 If this value occurs inside the value attribute of input tags in the response then it is taken from the first input tag that has the same name as the parameter name provided earlier.
-<i<br>><i<br>>
+
 If this value occurs in a different place then you can provide a regex to extract this value. This regex will be used on the entire response body and the first match will be used.
-<i<br>><i<br>>
+
 For example if the token appears inside the SCRIPT tag of the response as below:
-<i<br>><i<br>>
+
 var c_token = 'ksd9283-asdjsd023-askjd23';
-<i<br>><i<br>>
+
 Then the regex to extract this token would be: var c_token = '(.*?)';
-<i<br>><i<br>>
+
 If you would want to get the value of this parameter from the user by throwing a prompt then you can select that option and provide a hint that will be included in the prompt to help the user identify the correct parameter.
-<i<br>><i<br>>
+
 You can choose to update multiple parameters in this section. After you are done defining the parameters and the parameters are listed in the table at the bottom you can submit this definition.
-<i<br>><i<br>>
+
 "},
  //"Choose how the parameters of the 'Login Request' must be updated from the response of the 'Pre Login Request'."},
         {HandleLogin__ToInjectRequestParametersStep, @"<i<hh>>Update New Session values after Successful Login<i</hh>>
-<i<br>><i<br>>
+
 Once the 'Login Request' is sent and the authentication happens in the server the new session values must be updated in to the 'Main Request'.
-<i<br>><i<br>>
+
 If the session identifier is stored in the cookie and the response of the 'Login Request' contained the new session identifier in its Set-Cookie header then this is automatically updated in the 'Main Request' and no action is required from your side.
-<i<br>><i<br>>
+
 However if this application stores session identifiers in hidden form field parameters or in some other places then you would have to extract it from the response of the 'Login Request' and update this in to the 'Main Request'.
-<i<br>><i<br>>
+
 You can define how this should be done.
-<i<br>><i<br>>
+
 You must first specify the section of the request the parameter belongs to like Query, Body etc and  the name of the parameter. This way the parameter to update can be identified.
-<i<br>><i<br>>
+
 If you want to update the path section of the URL incase the server is using URL Rewriting then select 'UrlPathPart' and give the zero-based index of the path section you want to update.
-<i<br>><i<br>>
+
 Then the value to update this parameter with must be made ready. If the value is being extracted from a response of the 'Login Request' request then you must specify how this value can be extracted.
-<i<br>><i<br>>
+
 If this value occurs inside the value attribute of input tags in the response then it is taken from the first input tag that has the same name as the parameter name provided earlier.
-<i<br>><i<br>>
+
 If this value occurs in a different place then you can provide a regex to extract this value. This regex will be used on the entire response body and the first match will be used.
-<i<br>><i<br>>
+
 For example if the token appears inside the SCRIPT tag of the response as below:
-<i<br>><i<br>>
+
 var c_token = 'ksd9283-asdjsd023-askjd23';
-<i<br>><i<br>>
+
 Then the regex to extract this token would be: var c_token = '(.*?)';
-<i<br>><i<br>>
+
 If you would want to get the value of this parameter from the user by throwing a prompt then you can select that option and provide a hint that will be included in the prompt to help the user identify the correct parameter.
-<i<br>><i<br>>
+
 You can choose to update multiple parameters in this section. After you are done defining the parameters and the parameters are listed in the table at the bottom you can submit this definition.
-<i<br>><i<br>>
+
 "},
  //"Once the 'Login Request' is sent and we get authenticated, we must update the 'Main Request' with updated session values. Choose how the parameters of the 'Main Request' must be updated from the response of the 'Login Request'. Please notes that cookies are updated automatically from set-cookie headers in this step."},
         {HandleLogin__ShowPseudoCodeStep, string.Format(GenericQuestionToShowPseudoCode, @"<i<hh>>Pseudo Code for Handle Login Action<i</hh>>
 <i<br>><i<br>>")},
         //MutliStep Form
         {HandleMultiStep__BaseStep,  @"<i<hh>>Handle Multi-step Form Submission<i</hh>>
-<i<br>><i<br>>
+
 Sometimes applications have multi-step forms where there would user will be asked to complete a series of steps and at the final step all entered data will be processed.
-<i<br>><i<br>>
+
 If you are scanning or testing a request that belongs any one of these steps then the requests that come before and after it must be sent everytime and the response of the final step must be used for analysis instead of the response of the 'Main Request'.
-<i<br>><i<br>>
+
 If such behaviour is required then you can define it here by selecting 'Yes' below and hitting the 'Submit' button.
-<i<br>><i<br>>
+
 If you have already defined this action and have the corresponding Pseudo Code and you like to use the same then selected the 'Pseudo Code' option.
-<i<br>><i<br>>
+
 "},
         {HandleMultiStep__PseudoCodeStep, @"<i<hh>>Handle Multi-step Form Submission Pseudo Code<i</hh>>
-<i<br>><i<br>>
+
 If you have already defined the multi-step form submission action then enter the corresponding pseudo code below.
-<i<br>><i<br>>
+
 "},
         {HandleMultiStep__BeforeAfterInjectionSelectionStep, @"<i<hh>>Multi-step Form Submission Definition<i</hh>>
-<i<br>><i<br>>
+
 If you have chosen to define that actions for multi-step form submission.
-<i<br>><i<br>>
+
 Specify if would want to do other steps of the form submission only before sending the 'Main Request' or only after sending the 'Main Request' or both before and after sending the 'Main Request'.
-<i<br>><i<br>>
+
 For example if the 'Main Request' is the first step of multi-step form submission then you would want to select the second option where the other steps are performed only after the 'Main Request'.
-<i<br>><i<br>>
+
 If the 'Main Request' is the last step then you would want to select the first option where the other steps are performed only before the 'Main Request'
-<i<br>><i<br>>
+
 If the 'Main Request' is one of the intermediate steps then you would want to select the third option where some steps must be performed before the 'Main Request' and some after.
-<i<br>><i<br>>
+
 "},
         {HandleMultiStep__PreInjectionRequestSourceStep, string.Format(GenericQuestionToSpecifyRequestSource, @"<i<hh>>{0} Request to send before 'Main Request'<i</hh>>
-<i<br>><i<br>>
+
 You have chose to sends some requests before sending the 'Main Request', please specify the {0} request that must be sent.
-<i<br>><i<br>>
+
 Provide an approprite name for this request, it will be referred using this name in the subsequent sections and the Session Plugin trace messages.
-<i<br>><i<br>>
+
 ")},
 //@"Specify the source of the {0} request that must be sent before injection."},
         {HandleMultiStep__PreInjectionRequestParametersStep, @"<i<hh>>'{0}' Parameter Update Definition<i</hh>>
-<i<br>><i<br>>
+
 The parameters of the '{0}' will be updated based on your requirements.
-<i<br>><i<br>>
+
 You must first specify the section of the request the parameter belongs to like Query, Body etc and  the name of the parameter. This way the parameter to update can be identified.
-<i<br>><i<br>>
+
 If you want to update the path section of the URL incase the server is using URL Rewriting then select 'UrlPathPart' and give the zero-based index of the path section you want to update.
-<i<br>><i<br>>
+
 Then the value to update this parameter with must be made ready. If the value is being extracted from a response of the '{1}' request then you must specify how this value can be extracted.
-<i<br>><i<br>>
+
 If this value occurs inside the value attribute of input tags in the response then it is taken from the first input tag that has the same name as the parameter name provided earlier.
-<i<br>><i<br>>
+
 If this value occurs in a different place then you can provide a regex to extract this value. This regex will be used on the entire response body and the first match will be used.
-<i<br>><i<br>>
+
 For example if the token appears inside the SCRIPT tag of the response as below:
-<i<br>><i<br>>
+
 var c_token = 'ksd9283-asdjsd023-askjd23';
-<i<br>><i<br>>
+
 Then the regex to extract this token would be: var c_token = '(.*?)';
-<i<br>><i<br>>
+
 If you would want to get the value of this parameter from the user by throwing a prompt then you can select that option and provide a hint that will be included in the prompt to help the user identify the correct parameter.
-<i<br>><i<br>>
+
 You can choose to update multiple parameters in this section. After you are done defining the parameters and the parameters are listed in the table at the bottom you can submit this definition.
-<i<br>><i<br>>
+
 If you don't wish to update any parameters just hit 'Submit'
-<i<br>><i<br>>
+
 "},
         {HandleMultiStep__MorePreInjectionRequestStep, @"<i<hh>>More Requests before 'Main Request'?<i</hh>>
-<i<br>><i<br>>
+
 Should more requests be sent before sending the 'Main Request'?
-<i<br>><i<br>>
+
 "},
         {HandleMultiStep__PostInjectionRequestSourceStep, string.Format(GenericQuestionToSpecifyRequestSource, @"<i<hh>>{0} Request to send after 'Main Request'<i</hh>>
-<i<br>><i<br>>
+
 You have chose to sends some requests after sending the 'Main Request', please specify the {0} request that must be sent.
-<i<br>><i<br>>
+
 Provide an approprite name for this request, it will be referred using this name in the subsequent sections and the Session Plugin trace messages.
-<i<br>><i<br>>
+
 ")},
 //@"Specify the source of the {0} request that must be sent after injection."},
         {HandleMultiStep__PostInjectionRequestParametersStep, @"<i<hh>>'{0}' Parameter Update Definition<i</hh>>
-<i<br>><i<br>>
+
 The parameters of the '{0}' will be updated based on your requirements.
-<i<br>><i<br>>
+
 You must first specify the section of the request the parameter belongs to like Query, Body etc and  the name of the parameter. This way the parameter to update can be identified.
-<i<br>><i<br>>
+
 If you want to update the path section of the URL incase the server is using URL Rewriting then select 'UrlPathPart' and give the zero-based index of the path section you want to update.
-<i<br>><i<br>>
+
 Then the value to update this parameter with must be made ready. If the value is being extracted from a response of the '{1}' request then you must specify how this value can be extracted.
-<i<br>><i<br>>
+
 If this value occurs inside the value attribute of input tags in the response then it is taken from the first input tag that has the same name as the parameter name provided earlier.
-<i<br>><i<br>>
+
 If this value occurs in a different place then you can provide a regex to extract this value. This regex will be used on the entire response body and the first match will be used.
-<i<br>><i<br>>
+
 For example if the token appears inside the SCRIPT tag of the response as below:
-<i<br>><i<br>>
+
 var c_token = 'ksd9283-asdjsd023-askjd23';
-<i<br>><i<br>>
+
 Then the regex to extract this token would be: var c_token = '(.*?)';
-<i<br>><i<br>>
+
 If you would want to get the value of this parameter from the user by throwing a prompt then you can select that option and provide a hint that will be included in the prompt to help the user identify the correct parameter.
-<i<br>><i<br>>
+
 You can choose to update multiple parameters in this section. After you are done defining the parameters and the parameters are listed in the table at the bottom you can submit this definition.
-<i<br>><i<br>>
+
 If you don't wish to update any parameters just hit 'Submit'
-<i<br>><i<br>>
+
 "},
         {HandleMultiStep__MorePostInjectionRequestStep, @"<i<hh>>More Requests after 'Main Request'?<i</hh>>
-<i<br>><i<br>>
+
 Should more requests be sent after sending the 'Main Request'?
-<i<br>><i<br>>
+
 "},
         {HandleMultiStep__ShowPseudoCodeStep, string.Format(GenericQuestionToShowPseudoCode, @"<i<hh>>Pseudo Code for Handle Multi-step Form Submission Action<i</hh>>
 <i<br>><i<br>>")},
         //PluginCreation Form
         {PluginCreation__PluginNameStep, @"<i<hh>>Choose a name for the Session Plugin<i</hh>>
-<i<br>><i<br>>
+
 A Session Plugin will be created based on the actions you have defined. Please provide a name for this plugin.
-<i<br>><i<br>>
+
 The name for the plugin should only consist of alphabets and should not match any of the existing Session Plugin names. After you type in the name of your choice, press the Enter key on your keyboard.
-<i<br>><i<br>>
+
 The following are the existing Session Plugin names:
-<i<br>><i<br>>
+
 {0}
-<i<br>><i<br>>
+
         "},
         {PluginCreation__LanguageStep, @"<i<hh>>Choose the language for the Session Plugin<i</hh>>
-<i<br>><i<br>>
+
 The Session Plugin can be created in Python or Ruby. You could choose one based on which language is more familiar to you. This will help you review the plugin if you wish to and make modifications to it directly.
-<i<br>><i<br>>
+
 If you don't know what Python/Ruby mean or you don't know programming then you can just randonmly select one of the two choices, they both provide the same functionality.
-<i<br>><i<br>>
+
 "},
         {PluginCreation__FinalStep, @"<i<hh>>Session Plugin Creation Complete<i</hh>>
-<i<br>><i<br>>
+
 The Session Plugin can be created based on the inputs provided by you.
-<i<br>><i<br>>
+
 You can now use this in sections of IronWASP that support Session Plugins. Just select the one with the name provided by you when you are prompted to select a Session Plugin.
-<i<br>><i<br>>
+
 As the Session Plugin runs and executes the actions you defined it prints out trace messages so that you can follow how and if it is working properly.
-<i<br>><i<br>>
+
 These messages can be found at 'Dev' -> 'Trace' -> 'Session Plugin Traces'.
-<i<br>><i<br>>
+
 You can click on any of the entries to view details.
-<i<br>><i<br>>
+
 The file containing the code itself can be found at {0}
-<i<br>><i<br>>
+
 You can view it using your favourite ide or use the Script/Plugin editor available under the Dev Tools menu. If you make any changes to the code then save the file, go the 'Dev' -> 'Plugins & Modules' section, you can see all the Plugin names listed on the left-hand side. Click on the name of your Session Plugin, once its selected do a right-click on it and select 'Reload Selected Module'. This will update the plugin in memory so that you changes take effect.
 "},
 
@@ -1781,7 +1781,11 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
                 PartialPseudoCode = SignatureToPartialPseudoCode(Code, Location, Keyword, "Body");
                 SB.AppendLine(string.Format("LastResponse {0}", PartialPseudoCode));
             }
-            
+            if (!(UseLocationSignatureCB.Checked || UseTitleSignatureCB.Checked || UseBodySignatureCB.Checked))
+            {
+                SB.AppendLine(string.Format("LastResponse Code {0}", Code));
+            }
+
             if (LoggedInResponseSignatureRB.Checked)
                 SB.AppendLine("LoggedInSignatureEnds");
             else if (LoggedOutResponseSignatureRB.Checked)
@@ -2343,82 +2347,118 @@ You can view it using your favourite ide or use the Script/Plugin editor availab
 
             Py.AppendLine();
             Py.Append("  "); Py.AppendLine("def follow_redirect(self, req, res):");
-            Py.Append("    "); Py.AppendLine(string.Format("if res.Headers.Has('Location'):", ResponseCode));
+            Py.Append("    "); Py.AppendLine(string.Format("if self.can_follow_redirect(req, res):", ResponseCode));
 
             Rb.AppendLine();
             Rb.Append("  "); Rb.AppendLine("def follow_redirect(req, res)");
-            Rb.Append("    "); Rb.AppendLine(string.Format("if res.headers.has('Location')", ResponseCode));
+            Rb.Append("    "); Rb.AppendLine(string.Format("if can_follow_redirect(req, res)", ResponseCode));
+
+            Py.Append("      "); Py.AppendLine("try:");
+            Py.Append("        "); Py.AppendLine("redirect_req = req.GetRedirect(res)");
+            Py.Append("        "); Py.AppendLine("if redirect_req:");
+            Py.Append("          "); Py.AppendLine("res = redirect_req.Send()");
+            Py.Append("          "); Py.AppendLine("self.Trace(redirect_req, 'Followed redirection in the response for Main Request', 'The response for the Main Request had a redirect that matched the signature specified by user, so it was followed. Click on the load request/response button to view the request that was made to follow the redirect and its response.')");
+            Py.Append("          "); Py.AppendLine("return res");
+            Py.Append("        "); Py.AppendLine("else:");
+            Py.Append("          "); Py.AppendLine("self.Trace(req, 'No redirect in the in the response for Main Request', 'The response for the Main Request did not have a redirect so the follow redirect action is not being performed. Click on the load request/response button to view the Main Request and its response.')");
+            Py.Append("          "); Py.AppendLine("return res");
+            Py.Append("      "); Py.AppendLine("except Exception as e:");
+            Py.Append("        "); Py.AppendLine("self.Trace(req, 'Error following redirection in the response for Main Request', 'The response for the Main Request had a redirect that matched the signature specified by user, so it was followed. But there was an error when following it. Click on the load request/response button to view the Main Request and its response. Exception details - ' + e.Message)");
+            Py.Append("        "); Py.AppendLine("raise e");
+
+            Rb.Append("      "); Rb.AppendLine("begin");
+            Rb.Append("        "); Rb.AppendLine("redirect_req = req.get_redirect(res)");
+            Rb.Append("        "); Rb.AppendLine("if redirect_req");
+            Rb.Append("          "); Rb.AppendLine("res = redirect_req.send_req");
+            Rb.Append("          "); Rb.AppendLine("Trace(redirect_req, 'Followed redirection in the response for Main Request', 'The response for the Main Request had a redirect that matched the signature specified by user, so it was followed. Click on the load request/response button to view the request that was made to follow the redirect and its response.')");
+            Rb.Append("          "); Rb.AppendLine("return res");
+            Rb.Append("        "); Rb.AppendLine("else");
+            Rb.Append("          "); Rb.AppendLine("Trace(req, 'No redirect in the in the response for Main Request', 'The response for the Main Request did not have a redirect so the follow redirect action is not being performed.  Click on the load request/response button to view the Main Request and its response.')");
+            Rb.Append("          "); Rb.AppendLine("return res");
+            Rb.Append("        "); Rb.AppendLine("end");
+            Rb.Append("      "); Rb.AppendLine("rescue => e");
+            Rb.Append("        "); Rb.AppendLine("Trace(req, 'Error following redirection in the response for Main Request', 'The response for the Main Request had a redirect that matched the signature specified by user, so it was followed. But there was an error when following it.  Click on the load request/response button to view the Main Request and its response. Exception details - ' + e.Message)");
+            Rb.Append("        "); Rb.AppendLine("raise e");
+            Rb.Append("      "); Rb.AppendLine("end");
+
+            Py.Append("    "); Py.AppendLine("else:");
+            Py.Append("      "); Py.AppendLine("self.Trace(req, 'Did not follow redirection in the response for Main Request', 'The response for the Main Request did not match the redirect signature specified by user so it was not followed. Click on the load request/response button to view the Main Request and its response.')");
+            Py.Append("      "); Py.AppendLine("return res");
+            Py.AppendLine();
+
+            Rb.Append("    "); Rb.AppendLine("else");
+            Rb.Append("      "); Rb.AppendLine("Trace(req, 'Did not follow redirection in the response for Main Request', 'The response for the Main Request did not match the redirect signature specified by user so it was not followed. Click on the load request/response button to view the Main Request and its response.')");
+            Rb.Append("      "); Rb.AppendLine("return res");
+            Rb.Append("    "); Rb.AppendLine("end");
+            Rb.Append("  "); Rb.AppendLine("end");
+            Rb.AppendLine();
+
+
+            Py.AppendLine();
+            Py.Append("  "); Py.AppendLine("def can_follow_redirect(self, req, res):");
+            Py.Append("    "); Py.AppendLine(string.Format("if res.Code == {0} and res.Headers.Has('Location'):", ResponseCode));
+
+            Rb.AppendLine();
+            Rb.Append("  "); Rb.AppendLine("def can_follow_redirect(req, res)");
+            Rb.Append("    "); Rb.AppendLine(string.Format("if res.code == {0} && res.headers.has('Location')", ResponseCode));
 
             if (MatchType.Length > 0 && Keyword.Length > 0)
             {
                 switch (MatchType)
                 {
                     case ("StartsWith"):
-                        Py.Append("      "); Py.AppendLine(string.Format("if res.Headers.Get('Location').startswith('{0}'):",Keyword));
-                        Rb.Append("      "); Rb.AppendLine(string.Format("if res.headers.get('Location').start_with?('{0}')",Keyword));
+                        Py.Append("      "); Py.AppendLine(string.Format("if res.Headers.Get('Location').startswith('{0}'):", Keyword));
+                        Rb.Append("      "); Rb.AppendLine(string.Format("if res.headers.get('Location').start_with?('{0}')", Keyword));
+                        
+                        Py.Append("        "); Py.AppendLine("return True");
+                        Rb.Append("        "); Rb.AppendLine("return true");
+                        Rb.Append("      "); Rb.AppendLine("end");
                         break;
                     case ("EndsWith"):
-                        Py.Append("      "); Py.AppendLine(string.Format("if res.Headers.Get('Location').endswith('{0}'):",Keyword));
-                        Rb.Append("      "); Rb.AppendLine(string.Format("if res.headers.get('Location').end_with?('{0}')",Keyword));
+                        Py.Append("      "); Py.AppendLine(string.Format("if res.Headers.Get('Location').endswith('{0}'):", Keyword));
+                        Rb.Append("      "); Rb.AppendLine(string.Format("if res.headers.get('Location').end_with?('{0}')", Keyword));
+                                                
+                        Py.Append("        "); Py.AppendLine("return True");
+                        Rb.Append("        "); Rb.AppendLine("return true");
+                        Rb.Append("      "); Rb.AppendLine("end");
                         break;
                     case ("Has"):
-                        Py.Append("      "); Py.AppendLine(string.Format("if res.Headers.Get('Location').count('{0}') > 0:",Keyword));
-                        Rb.Append("      "); Rb.AppendLine(string.Format("if res.headers.get('Location').index('{0}')",Keyword));
+                        Py.Append("      "); Py.AppendLine(string.Format("if res.Headers.Get('Location').count('{0}') > 0:", Keyword));
+                        Rb.Append("      "); Rb.AppendLine(string.Format("if res.headers.get('Location').index('{0}')", Keyword));
+                        
+                        Py.Append("        "); Py.AppendLine("return True");
+                        Rb.Append("        "); Rb.AppendLine("return true");
+                        Rb.Append("      "); Rb.AppendLine("end");
                         break;
                     case ("NotHas"):
-                        Py.Append("      "); Py.AppendLine(string.Format("if res.Headers.Get('Location').count('{0}') == 0:",Keyword));
-                        Rb.Append("      "); Rb.AppendLine(string.Format("if not res.headers.get('Location').index('{0}')",Keyword));
+                        Py.Append("      "); Py.AppendLine(string.Format("if res.Headers.Get('Location').count('{0}') == 0:", Keyword));
+                        Rb.Append("      "); Rb.AppendLine(string.Format("if not res.headers.get('Location').index('{0}')", Keyword));
+                        
+                        Py.Append("        "); Py.AppendLine("return True");
+                        Rb.Append("        "); Rb.AppendLine("return true");
+                        Rb.Append("      "); Rb.AppendLine("end");
                         break;
                     case ("Regex"):
                         if (!(Keyword.StartsWith("/") && Keyword.EndsWith("/"))) throw new Exception("Invalid Pseudo Code");
                         Py.Append("      "); Py.AppendLine(string.Format("if re.match('{0}', res.Headers.Get('Location')):", Keyword.Trim('/')));
                         Rb.Append("      "); Rb.AppendLine(string.Format("if res.headers.get('Location') =~ /{0}/", Keyword.Trim('/')));
+                        
+                        Py.Append("        "); Py.AppendLine("return True");
+                        Rb.Append("        "); Rb.AppendLine("return true");
+                        Rb.Append("      "); Rb.AppendLine("end");
                         break;
                 }
-                Py.Append("        "); Py.AppendLine("try:");
-                Py.Append("          "); Py.AppendLine("redirect_req = req.GetRedirect(res)");
-                Py.Append("          "); Py.AppendLine("if redirect_req:");
-                Py.Append("            "); Py.AppendLine("res = redirect_req.Send()");
-                Py.Append("            "); Py.AppendLine("self.Trace(redirect_req, 'Followed redirection in the response for Main Request', 'The response for the Main Request had a redirect that matched the signature specified by user, so it was followed. Click on the load request/response button to view the request that was made to follow the redirect and its response.')");
-                Py.Append("            "); Py.AppendLine("return res");
-                Py.Append("          "); Py.AppendLine("else:");
-                Py.Append("            "); Py.AppendLine("self.Trace(req, 'No redirect in the in the response for Main Request', 'The response for the Main Request did not have a redirect so the follow redirect action is not being performed. Click on the load request/response button to view the Main Request and its response.')");
-                Py.Append("            "); Py.AppendLine("return res");
-                Py.Append("        "); Py.AppendLine("except Exception as e:");
-                Py.Append("          "); Py.AppendLine("self.Trace(req, 'Error following redirection in the response for Main Request', 'The response for the Main Request had a redirect that matched the signature specified by user, so it was followed. But there was an error when following it. Click on the load request/response button to view the Main Request and its response. Exception details - ' + e.Message)");
-                Py.Append("          "); Py.AppendLine("raise e");
-
-                Rb.Append("        "); Rb.AppendLine("begin");
-                Rb.Append("          "); Rb.AppendLine("redirect_req = req.get_redirect(res)");
-                Rb.Append("          "); Rb.AppendLine("if redirect_req");
-                Rb.Append("            "); Rb.AppendLine("res = redirect_req.send_req");
-                Rb.Append("            "); Rb.AppendLine("Trace(redirect_req, 'Followed redirection in the response for Main Request', 'The response for the Main Request had a redirect that matched the signature specified by user, so it was followed. Click on the load request/response button to view the request that was made to follow the redirect and its response.')");
-                Rb.Append("            "); Rb.AppendLine("return res");
-                Rb.Append("          "); Rb.AppendLine("else");
-                Rb.Append("            "); Rb.AppendLine("Trace(req, 'No redirect in the in the response for Main Request', 'The response for the Main Request did not have a redirect so the follow redirect action is not being performed.  Click on the load request/response button to view the Main Request and its response.')");
-                Rb.Append("            "); Rb.AppendLine("return res");
-                Rb.Append("          "); Rb.AppendLine("end");
-                Rb.Append("        "); Rb.AppendLine("rescue => e");
-                Rb.Append("          "); Rb.AppendLine("Trace(req, 'Error following redirection in the response for Main Request', 'The response for the Main Request had a redirect that matched the signature specified by user, so it was followed. But there was an error when following it.  Click on the load request/response button to view the Main Request and its response. Exception details - ' + e.Message)");
-                Rb.Append("          "); Rb.AppendLine("raise e");
-                Rb.Append("        "); Rb.AppendLine("end");
             }
-            Py.Append("      "); Py.AppendLine("else:");
-            Py.Append("        "); Py.AppendLine("self.Trace(req, 'Did not follow redirection in the response for Main Request', 'The response for the Main Request did not match the redirect signature specified by user so it was not followed. Click on the load request/response button to view the Main Request and its response.')");
-            Py.Append("        "); Py.AppendLine("return res");
-            Py.Append("    "); Py.AppendLine("self.Trace(req, 'Did not follow redirection in the response for Main Request', 'The response for the Main Request did not have a Location header. Click on the load request/response button to view the Main Request and its response.')");
-            Py.Append("    "); Py.AppendLine("return res");
-            Py.AppendLine();
-
-            Rb.Append("      "); Rb.AppendLine("else");
-            Rb.Append("        "); Rb.AppendLine("Trace(req, 'Did not follow redirection in the response for Main Request', 'The response for the Main Request did not match the redirect signature specified by user so it was not followed. Click on the load request/response button to view the Main Request and its response.')");
-            Rb.Append("        "); Rb.AppendLine("return res");
-            Rb.Append("      "); Rb.AppendLine("end");
+            else
+            {
+                Py.Append("      "); Py.AppendLine("return True");
+                Rb.Append("      "); Rb.AppendLine("return true");
+            }
             Rb.Append("    "); Rb.AppendLine("end");
-            Rb.Append("    "); Rb.AppendLine("Trace(req, 'Did not follow redirection in the response for Main Request', 'The response for the Main Request did not have a Location header. Click on the load request/response button to view the Main Request and its response.')");
-            Rb.Append("    "); Rb.AppendLine("return res");
+
+            Py.Append("    "); Py.AppendLine("return False");
+            Rb.Append("    "); Rb.AppendLine("return false");
             Rb.Append("  "); Rb.AppendLine("end");
-            Rb.AppendLine();
 
             Code[0] = Py.ToString();
             Code[1] = Rb.ToString();

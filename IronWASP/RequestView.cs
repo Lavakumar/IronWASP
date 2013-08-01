@@ -34,6 +34,9 @@ namespace IronWASP
             InitializeComponent();
         }
 
+        string ExpandedParameterSection = "";
+        int ExpandedParameterIndex = 0;
+
         Request DisplayedRequest;
 
         bool readOnly = false;
@@ -43,8 +46,7 @@ namespace IronWASP
         bool BodyChanged = false;
         bool UrlPathPartsChanged = false;
         bool QueryParametersChanged = false;
-        bool BodyTypeNormalParametersChanged = false;
-        bool BodyTypeFormatPluginsParametersChanged = false;
+        bool BodyParametersChanged = false;
         bool BodyFormatXmlChanged = false;
         bool CookieParametersChanged = false;
         bool HeadersParametersChanged = false;
@@ -85,6 +87,8 @@ namespace IronWASP
                 HeadersTBP.ReadOnly = ReadOnlyVal;
                 BodyTBP.ReadOnly = ReadOnlyVal;
                 FormatXmlTBP.ReadOnly = ReadOnlyVal;
+                EditTBP.ReadOnly = ReadOnly;
+                SaveEditsLbl.Visible = !ReadOnly;
                 //Disable format plugins
                 //Make all parameters grid value fields read-only
                 foreach (DataGridViewRow Row in UrlPathPartsParametersGrid.Rows)
@@ -95,11 +99,7 @@ namespace IronWASP
                 {
                     Row.Cells[1].ReadOnly = this.ReadOnly;
                 }
-                foreach (DataGridViewRow Row in BodyNormalTypeParametersGrid.Rows)
-                {
-                    Row.Cells[1].ReadOnly = this.ReadOnly;
-                }
-                foreach (DataGridViewRow Row in BodyFormatPluginsParametersGrid.Rows)
+                foreach (DataGridViewRow Row in BodyParametersGrid.Rows)
                 {
                     Row.Cells[1].ReadOnly = this.ReadOnly;
                 }
@@ -139,8 +139,8 @@ namespace IronWASP
                 QueryParametersGrid.Rows.Clear();
                 CookieParametersGrid.Rows.Clear();
                 HeadersParametersGrid.Rows.Clear();
-                BodyNormalTypeParametersGrid.Rows.Clear();
-                BodyFormatPluginsParametersGrid.Rows.Clear();
+                BodyParametersGrid.Rows.Clear();
+                ClearEditTab();
                 foreach (DataGridViewRow Row in FormatPluginsGrid.Rows)
                 {
                     Row.Cells[0].Value = false;
@@ -239,17 +239,74 @@ namespace IronWASP
                 this.SetBody(Req);
                 this.SetUrlPathPartsParameters(Req);
                 this.SetQueryParameters(Req);
-                this.SetBodyParameters(Req);
+                
                 this.SetCookieParameters(Req);
                 this.SetHeadersParameters(Req);
 
                 FormatPluginsGrid.Rows.Clear();
+                FormatPluginsGrid.Rows.Add(new object[] { false, "   --   " });
                 foreach (string Name in FormatPlugin.List())
                 {
                     FormatPluginsGrid.Rows.Add(new object[]{false, Name});
                 }
+                //this.SetBodyParameters(Req);
+                this.AutoDetectFormatAndSetBodyParameters(Req);
                 this.ResetAllChangedValueStatus();
                 this.DisplayedRequest = Req;
+            }
+        }
+
+        void AutoDetectFormatAndSetBodyParameters(Request Req)
+        {
+            if (FormatPluginCallingThread != null)
+            {
+                try
+                {
+                    FormatPluginCallingThread.Abort();
+                }
+                catch { }
+            }
+            ShowStatusMsg("Detecting Request body format..");
+            ShowProgressBar(true);
+            FormatPluginCallingThread = new Thread(AutoDetectFormatAndSetBodyParameters);
+            FormatPluginCallingThread.Start(Req);
+        }
+        void AutoDetectFormatAndSetBodyParameters(object ReqObj)
+        {
+            try
+            {
+                Request Req = ((Request)ReqObj).GetClone();
+                string FPName = FormatPlugin.Get(Req);
+
+                if (FPName == "Normal")
+                {
+                    SetBodyParameters(Req, true);
+                }
+                else if (FPName.Length == 0)
+                {
+                    SetBodyParameters(Req, false);
+                }
+                else
+                {
+                    try
+                    {
+                        FormatPlugin FP = FormatPlugin.Get(FPName);
+                        CurrentFormatXml = FP.ToXmlFromRequest(Req);
+                        CurrentXmlNameValueArray = FormatPlugin.XmlToArray(CurrentFormatXml);
+                        SetDeserializedDataInUi(FP.Name, CurrentFormatXml, CurrentXmlNameValueArray);
+                    }
+                    catch
+                    {
+                        SetBodyParameters(Req, false);
+                    }
+                }
+                this.ResetBodyParametersChangedStatus();
+            }
+            catch (ThreadAbortException) { }
+            finally
+            {
+                ShowStatusMsg("");
+                ShowProgressBar(false);
             }
         }
 
@@ -305,7 +362,7 @@ namespace IronWASP
                 UrlPathPartsParametersGrid.Rows.Clear();
                 for (int i = 0; i < UrlPathParts.Count; i++)
                 {
-                    int RowId = UrlPathPartsParametersGrid.Rows.Add(new object[] { i, UrlPathParts[i] });
+                    int RowId = UrlPathPartsParametersGrid.Rows.Add(new object[] { i, UrlPathParts[i], Properties.Resources.Glass });
                     UrlPathPartsParametersGrid.Rows[RowId].Cells[1].ReadOnly = this.ReadOnly;
                 }
                 this.ResetUrlPathPartsChangedStatus();
@@ -327,7 +384,7 @@ namespace IronWASP
                 {
                     foreach (string Value in Req.Query.GetAll(Name))
                     {
-                        int RowId = QueryParametersGrid.Rows.Add(new object[] { Name, Value });
+                        int RowId = QueryParametersGrid.Rows.Add(new object[] { Name, Value, Properties.Resources.Glass });
                         QueryParametersGrid.Rows[RowId].Cells[1].ReadOnly = this.ReadOnly;
                     }
                 }
@@ -335,26 +392,35 @@ namespace IronWASP
             }
         }
 
-        delegate void SetBodyParameters_d(Request Req);
-        void SetBodyParameters(Request Req)
+        delegate void SetBodyParameters_d(Request Req, bool HideFormatPluginsGrid);
+        void SetBodyParameters(Request Req, bool HideFormatPluginsGrid)
         {
             if (this.BaseTabs.InvokeRequired)
             {
                 SetBodyParameters_d InvokeDelegate_d = new SetBodyParameters_d(SetBodyParameters);
-                this.BaseTabs.Invoke(InvokeDelegate_d, new object[] { Req });
+                this.BaseTabs.Invoke(InvokeDelegate_d, new object[] { Req, HideFormatPluginsGrid });
             }
             else
             {
-                BodyNormalTypeParametersGrid.Rows.Clear();
+                BodyParametersGrid.Rows.Clear();
                 foreach (string Name in Req.Body.GetNames())
                 {
                     foreach (string Value in Req.Body.GetAll(Name))
                     {
-                        int RowId = BodyNormalTypeParametersGrid.Rows.Add(new object[] { Name, Value });
-                        BodyNormalTypeParametersGrid.Rows[RowId].Cells[1].ReadOnly = this.ReadOnly;
+                        int RowId = BodyParametersGrid.Rows.Add(new object[] { Name, Value, Properties.Resources.Glass });
+                        BodyParametersGrid.Rows[RowId].Cells[1].ReadOnly = this.ReadOnly;
                     }
                 }
-                this.ResetBodyTypeNomarlParametersChangedStatus();
+                FormatPluginsGrid.Rows[0].Cells[0].Value = true;
+                if (HideFormatPluginsGrid)
+                {
+                    HideBodyFormatOptions();
+                }
+                else
+                {
+                    ShowBodyFormatOptions();
+                }
+                this.ResetBodyParametersChangedStatus();
             }
         }
 
@@ -373,7 +439,7 @@ namespace IronWASP
                 {
                     foreach (string Value in Req.Cookie.GetAll(Name))
                     {
-                        int RowId = CookieParametersGrid.Rows.Add(new object[] { Name, Value });
+                        int RowId = CookieParametersGrid.Rows.Add(new object[] { Name, Value, Properties.Resources.Glass });
                         CookieParametersGrid.Rows[RowId].Cells[1].ReadOnly = this.ReadOnly;
                     }
                 }
@@ -398,7 +464,7 @@ namespace IronWASP
                     {
                         foreach (string Value in Req.Headers.GetAll(Name))
                         {
-                            int RowId = HeadersParametersGrid.Rows.Add(new object[] { Name, Value });
+                            int RowId = HeadersParametersGrid.Rows.Add(new object[] { Name, Value, Properties.Resources.Glass });
                             HeadersParametersGrid.Rows[RowId].Cells[1].ReadOnly = this.ReadOnly;
                         }
                     }
@@ -459,7 +525,7 @@ namespace IronWASP
         void HandleAllDataChanges()
         {
             if (this.ReadOnly) return;
-            if (HeadersChanged || BodyChanged || UrlPathPartsChanged || QueryParametersChanged || BodyTypeNormalParametersChanged || CookieParametersChanged || HeadersParametersChanged)
+            if (HeadersChanged || BodyChanged || UrlPathPartsChanged || QueryParametersChanged || BodyParametersChanged || CookieParametersChanged || HeadersParametersChanged)
             {
                 ShowStatusMsg("");
             }
@@ -492,10 +558,11 @@ namespace IronWASP
                     this.DisplayedRequest.BodyArray = BodyTBP.GetBytes();
                 else
                     this.DisplayedRequest.BodyString = BodyTBP.GetText();
-                SetBodyParameters(this.DisplayedRequest);
+                AutoDetectFormatAndSetBodyParameters(this.DisplayedRequest);
+                //SetBodyParameters(this.DisplayedRequest);
                 ClearBodyTypeFormatPluginsUi();
                 ResetBodyChangedStatus();
-                ResetBodyTypeNomarlParametersChangedStatus();
+                ResetBodyParametersChangedStatus();
             }
             if (UrlPathPartsChanged && this.DisplayedRequest != null)
             {
@@ -542,7 +609,13 @@ namespace IronWASP
             }
             if (HeadersParametersChanged && this.DisplayedRequest != null)
             {
-                this.DisplayedRequest.Headers.RemoveAll();
+                foreach (string Name in this.DisplayedRequest.Headers.GetNames())
+                {
+                    if (Name != "Cookie")
+                    {
+                        this.DisplayedRequest.Headers.Remove(Name);
+                    }
+                }                
                 foreach (DataGridViewRow Row in HeadersParametersGrid.Rows)
                 {
                     if (Row.Cells[1].Value == null)
@@ -554,37 +627,56 @@ namespace IronWASP
                 ResetHeadersChangedStatus();
                 ResetHeadersParametersChangedStatus();
             }
-            if (BodyTypeNormalParametersChanged && this.DisplayedRequest != null)
+            if (BodyParametersChanged && this.DisplayedRequest != null)
             {
-                this.DisplayedRequest.Body.RemoveAll();
-                foreach (DataGridViewRow Row in BodyNormalTypeParametersGrid.Rows)
+                if (GetSelectedFormatPluginName() == "Normal")
                 {
-                    if (Row.Cells[1].Value == null)
-                        this.DisplayedRequest.Body.Add(Row.Cells[0].Value.ToString(), "");
-                    else
-                        this.DisplayedRequest.Body.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
+                    this.DisplayedRequest.Body.RemoveAll();
+                    foreach (DataGridViewRow Row in BodyParametersGrid.Rows)
+                    {
+                        if (Row.Cells[1].Value == null)
+                            this.DisplayedRequest.Body.Add(Row.Cells[0].Value.ToString(), "");
+                        else
+                            this.DisplayedRequest.Body.Add(Row.Cells[0].Value.ToString(), Row.Cells[1].Value.ToString());
+                    }
+                    this.BodyTBP.SetText(this.DisplayedRequest.BodyString);
+                    ResetBodyChangedStatus();
+                    ResetBodyParametersChangedStatus();
+                    //ClearBodyTypeFormatPluginsUi();
                 }
-                this.BodyTBP.SetText(this.DisplayedRequest.BodyString);
-                ResetBodyChangedStatus();
-                ResetBodyTypeNomarlParametersChangedStatus();
-                ClearBodyTypeFormatPluginsUi();                
-            }
-            if (BodyTypeFormatPluginsParametersChanged && this.DisplayedRequest != null)
-            {
-                string[,] EditedNameValuePairs = new string[BodyFormatPluginsParametersGrid.Rows.Count, 2];
-                foreach (DataGridViewRow Row in BodyFormatPluginsParametersGrid.Rows)
+                else
                 {
-                    EditedNameValuePairs[Row.Index, 0] = Row.Cells[0].Value.ToString();
-                    if (Row.Cells[1].Value == null)
-                        EditedNameValuePairs[Row.Index, 1] = "";
-                    else
-                        EditedNameValuePairs[Row.Index, 1] = Row.Cells[1].Value.ToString();
+                    string[,] EditedNameValuePairs = new string[BodyParametersGrid.Rows.Count, 2];
+                    foreach (DataGridViewRow Row in BodyParametersGrid.Rows)
+                    {
+                        EditedNameValuePairs[Row.Index, 0] = Row.Cells[0].Value.ToString();
+                        if (Row.Cells[1].Value == null)
+                            EditedNameValuePairs[Row.Index, 1] = "";
+                        else
+                            EditedNameValuePairs[Row.Index, 1] = Row.Cells[1].Value.ToString();
+                    }
+                    string PluginName = GetSelectedFormatPluginName();
+                    if (PluginName.Length > 0)
+                        SerializeNewParametersWithFormatPlugin(EditedNameValuePairs, PluginName);
+                    ResetBodyParametersChangedStatus();
                 }
-                string PluginName = GetSelectedFormatPluginName();
-                if(PluginName.Length > 0)
-                    SerializeNewParametersWithFormatPlugin(EditedNameValuePairs, PluginName);
-                ResetBodyTypeFormatPluginsParametersChangedStatus();
             }
+            //if (BodyTypeFormatPluginsParametersChanged && this.DisplayedRequest != null)
+            //{
+            //    string[,] EditedNameValuePairs = new string[BodyParametersGrid.Rows.Count, 2];
+            //    foreach (DataGridViewRow Row in BodyParametersGrid.Rows)
+            //    {
+            //        EditedNameValuePairs[Row.Index, 0] = Row.Cells[0].Value.ToString();
+            //        if (Row.Cells[1].Value == null)
+            //            EditedNameValuePairs[Row.Index, 1] = "";
+            //        else
+            //            EditedNameValuePairs[Row.Index, 1] = Row.Cells[1].Value.ToString();
+            //    }
+            //    string PluginName = GetSelectedFormatPluginName();
+            //    if(PluginName.Length > 0)
+            //        SerializeNewParametersWithFormatPlugin(EditedNameValuePairs, PluginName);
+            //    ResetBodyTypeFormatPluginsParametersChangedStatus();
+            //}
             if (UseSslChanged && this.DisplayedRequest != null)
             {
                 this.DisplayedRequest.SSL = UseSSLCB.Checked;
@@ -594,7 +686,7 @@ namespace IronWASP
 
         void ClearBodyTypeFormatPluginsUi()
         {
-            BodyFormatPluginsParametersGrid.Rows.Clear();
+            BodyParametersGrid.Rows.Clear();
             ConvertXmlToObjectBtn.Text = "Convert this XML to Object";
             FormatXmlTBP.ClearData();
             foreach (DataGridViewRow Row in FormatPluginsGrid.Rows)
@@ -602,7 +694,7 @@ namespace IronWASP
                 Row.Cells[0].Value = false;
             }
             ResetBodyFormatXmlChangedStatus();
-            ResetBodyTypeFormatPluginsParametersChangedStatus();
+            ResetBodyParametersChangedStatus();
         }
 
         void ResetAllChangedValueStatus()
@@ -612,8 +704,7 @@ namespace IronWASP
             ResetBodyChangedStatus();
             ResetUrlPathPartsChangedStatus();
             ResetQueryParametersChangedStatus();
-            ResetBodyTypeNomarlParametersChangedStatus();
-            ResetBodyTypeFormatPluginsParametersChangedStatus();
+            ResetBodyParametersChangedStatus();
             ResetBodyFormatXmlChangedStatus();
             ResetCookieParametersChangedStatus();
             ResetHeadersParametersChangedStatus();
@@ -638,15 +729,11 @@ namespace IronWASP
         {
             QueryParametersChanged = false;
         }
-        void ResetBodyTypeNomarlParametersChangedStatus()
+        void ResetBodyParametersChangedStatus()
         {
-            BodyTypeNormalParametersChanged = false;
+            BodyParametersChanged = false;
         }
-        void ResetBodyTypeFormatPluginsParametersChangedStatus()
-        {
-            BodyTypeFormatPluginsParametersChanged = false;
-        }
-        void ResetBodyFormatXmlChangedStatus()
+       void ResetBodyFormatXmlChangedStatus()
         {
             BodyFormatXmlChanged = false;
         }
@@ -708,16 +795,9 @@ namespace IronWASP
                 RequestChanged();
         }
 
-        private void BodyNormalTypeParametersGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        private void BodyParametersGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            BodyTypeNormalParametersChanged = true;
-            if (DisplayedRequest != null && RequestChanged != null)
-                RequestChanged();
-        }
-
-        private void BodyFormatPluginsParametersGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            BodyTypeFormatPluginsParametersChanged = true;
+            BodyParametersChanged = true;
             if (DisplayedRequest != null && RequestChanged != null)
                 RequestChanged();
         }
@@ -734,7 +814,7 @@ namespace IronWASP
             {
                 string XML = FormatXmlTBP.GetText();
                 string PluginName = this.GetSelectedFormatPluginName();
-                if (PluginName.Length > 0 && XML.Length > 0)
+                if (PluginName != "Normal" && PluginName.Length > 0 && XML.Length > 0)
                     this.SerializeNewXmlWithFormatPlugin(XML, PluginName);
             }
             ResetBodyFormatXmlChangedStatus();
@@ -746,15 +826,32 @@ namespace IronWASP
             string PluginName = "";
             CurrentFormatXml = "";
             CurrentXmlNameValueArray = new string[,]{};
+
+            bool Normal = false;
+            if (e.RowIndex == 0)
+            {
+                Normal = true;
+                this.SetBodyParameters(this.DisplayedRequest, false);
+            }
+
             foreach (DataGridViewRow Row in FormatPluginsGrid.Rows)
             {
                 if (e.RowIndex == Row.Index)
                 {
                     PluginName = Row.Cells[1].Value.ToString();
                 }
-                Row.Cells[0].Value = false;
+                if (Normal && (e.RowIndex == Row.Index))
+                {
+                    Row.Cells[0].Value = true;
+                }
+                else
+                {
+                    Row.Cells[0].Value = false;
+                }
             }
-            BodyFormatPluginsParametersGrid.Rows.Clear();
+            if (Normal) return;
+
+            BodyParametersGrid.Rows.Clear();
             FormatXmlTBP.ClearData();
             ConvertXmlToObjectBtn.Text = "Convert this XML to Object";
             if (FormatPluginCallingThread != null)
@@ -783,6 +880,7 @@ namespace IronWASP
                 CurrentXmlNameValueArray = FormatPlugin.XmlToArray(CurrentFormatXml);
                 ShowStatusMsg("");
                 SetDeserializedDataInUi(PluginName, CurrentFormatXml, CurrentXmlNameValueArray);
+                this.ResetBodyParametersChangedStatus();
                 ShowProgressBar(false);
             }
             catch (ThreadAbortException)
@@ -816,12 +914,27 @@ namespace IronWASP
                 }
                 FormatXmlTBP.SetText(XML);
                 ConvertXmlToObjectBtn.Text = string.Format("Convert this XML to {0}", PluginName);
-                BodyFormatPluginsParametersGrid.Rows.Clear();
+                BodyParametersGrid.Rows.Clear();
                 for (int i = 0; i < XmlNameValueArray.GetLength(0); i++)
                 {
-                    int RowId = BodyFormatPluginsParametersGrid.Rows.Add(new object[] { XmlNameValueArray[i, 0], XmlNameValueArray[i, 1] });
-                    BodyFormatPluginsParametersGrid.Rows[RowId].Cells[1].ReadOnly = this.ReadOnly;
+                    int RowId = BodyParametersGrid.Rows.Add(new object[] { XmlNameValueArray[i, 0], XmlNameValueArray[i, 1], Properties.Resources.Glass });
+                    BodyParametersGrid.Rows[RowId].Cells[1].ReadOnly = this.ReadOnly;
                 }
+                ShowBodyFormatOptions();
+            }
+        }
+
+        delegate void SetUpdatedDeserializedXmlInUi_d(string XML);
+        void SetUpdatedDeserializedXmlInUi(string XML)
+        {
+            if (this.BaseTabs.InvokeRequired)
+            {
+                SetUpdatedDeserializedXmlInUi_d InvokeDelegate_d = new SetUpdatedDeserializedXmlInUi_d(SetUpdatedDeserializedXmlInUi);
+                this.BaseTabs.Invoke(InvokeDelegate_d, new object[] { XML });
+            }
+            else
+            {
+                FormatXmlTBP.SetText(XML);
             }
         }
 
@@ -838,6 +951,7 @@ namespace IronWASP
                 }
             }
             this.CurrentXmlNameValueArray = EditedXmlNameValueArray;
+            this.SetUpdatedDeserializedXmlInUi(this.CurrentFormatXml);
             this.SerializeNewXmlWithFormatPlugin(this.CurrentFormatXml, PluginName);
         }
         void SerializeNewXmlWithFormatPlugin(string XML, string PluginName)
@@ -896,7 +1010,7 @@ namespace IronWASP
                 this.SetBody(Req);
                 this.SetUrlPathPartsParameters(Req);
                 this.SetQueryParameters(Req);
-                this.SetBodyParameters(Req);
+                ///this.SetBodyParameters(Req);
                 this.SetCookieParameters(Req);
                 this.SetHeadersParameters(Req);
             }
@@ -907,7 +1021,12 @@ namespace IronWASP
             foreach (DataGridViewRow Row in FormatPluginsGrid.Rows)
             {
                 if ((bool)Row.Cells[0].Value)
-                    return Row.Cells[1].Value.ToString();
+                {
+                    if (Row.Index == 0)
+                        return "Normal";
+                    else
+                        return Row.Cells[1].Value.ToString();
+                }
             }
             return "";
         }
@@ -933,11 +1052,155 @@ namespace IronWASP
         private void RequestView_Load(object sender, EventArgs e)
         {
             FormatPluginsGrid.Rows.Clear();
+            FormatPluginsGrid.Rows.Add(new object[] { false, "   --   " });
             foreach (string Name in FormatPlugin.List())
             {
                 FormatPluginsGrid.Rows.Add(new object[]{false, Name});
             }
+            HideBodyFormatOptions();
         }
-        
+
+        private void ScanBodyTabs_Selecting(object sender, TabControlCancelEventArgs e)
+        {
+            if (ScanBodyTabs.SelectedIndex == 1 && BodyTabSplit.Panel1Collapsed)
+            {
+                ScanBodyTabs.SelectTab(0);
+            }
+        }
+
+        private void BodyFormatLbl_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (BodyFormatLbl.Text.StartsWith("Hide"))
+            {
+                HideBodyFormatOptions();
+            }
+            else
+            {
+                ShowBodyFormatOptions();
+            }
+        }
+
+        void ShowBodyFormatOptions()
+        {
+            BodyFormatLbl.Text = "Hide Body Format Options";
+            BodyTabSplit.Panel1Collapsed = false;
+            ScanBodyTabs.TabPages[1].Text = "  Format Plugin XML (For Format Plugin Developers)  ";
+        }
+        void HideBodyFormatOptions()
+        {
+            BodyFormatLbl.Text = "Show Body Format Options";
+            BodyTabSplit.Panel1Collapsed = true;
+            ScanBodyTabs.TabPages[1].Text = "";
+            ScanBodyTabs.SelectTab(0);
+        }
+
+        private void BodyParametersGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 2)
+            {
+                ExpandedParameterSection = "Body";
+                ExpandedParameterIndex = e.RowIndex;
+                SetEditTab(BodyParametersGrid.Rows[e.RowIndex].Cells[1].Value.ToString());
+            }
+        }
+
+        void SetEditTab(string Value)
+        {
+            EditTBP.SetText(Value);
+            BaseTabs.TabPages["EditingTab"].Text = "  Selected Parameter Value  ";
+            BaseTabs.SelectTab("EditingTab");
+        }
+
+        void ClearEditTab()
+        {
+            EditTBP.SetText("");
+            BaseTabs.TabPages["EditingTab"].Text = "  ";
+            if (BaseTabs.SelectedTab.Name == "EditingTab")
+            {
+                BaseTabs.SelectTab("HeadersTab");
+            }
+        }
+
+        private void SaveEditsLbl_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            switch (ExpandedParameterSection)
+            {
+                case ("UrlPathParts"):
+                    UrlPathPartsParametersGrid.Rows[ExpandedParameterIndex].Cells[1].Value = EditTBP.GetText();
+                    UrlPathPartsChanged = true;
+                    BaseTabs.SelectTab("UrlPathPartsParametersTab");
+                    break;
+                case ("Query"):
+                    QueryParametersGrid.Rows[ExpandedParameterIndex].Cells[1].Value = EditTBP.GetText();
+                    QueryParametersChanged = true;
+                    BaseTabs.SelectTab("QueryParametersTab");
+                    break;
+                case("Body"):
+                    BodyParametersGrid.Rows[ExpandedParameterIndex].Cells[1].Value = EditTBP.GetText();
+                    BodyParametersChanged = true;
+                    BaseTabs.SelectTab("BodyParametersTab");
+                    break;
+                case ("Cookie"):
+                    CookieParametersGrid.Rows[ExpandedParameterIndex].Cells[1].Value = EditTBP.GetText();
+                    CookieParametersChanged = true;
+                    BaseTabs.SelectTab("CookieParametersTab");
+                    break;
+                case ("Headers"):
+                    HeadersParametersGrid.Rows[ExpandedParameterIndex].Cells[1].Value = EditTBP.GetText();
+                    HeadersParametersChanged = true;
+                    BaseTabs.SelectTab("HeadersParametersTab");
+                    break;
+            }
+            ClearEditTab();
+        }
+
+        private void QueryParametersGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 2)
+            {
+                ExpandedParameterSection = "Query";
+                ExpandedParameterIndex = e.RowIndex;
+                SetEditTab(QueryParametersGrid.Rows[e.RowIndex].Cells[1].Value.ToString());
+            }
+        }
+
+        private void UrlPathPartsParametersGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 2)
+            {
+                ExpandedParameterSection = "UrlPathParts";
+                ExpandedParameterIndex = e.RowIndex;
+                SetEditTab(UrlPathPartsParametersGrid.Rows[e.RowIndex].Cells[1].Value.ToString());
+            }
+        }
+
+        private void CookieParametersGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 2)
+            {
+                ExpandedParameterSection = "Cookie";
+                ExpandedParameterIndex = e.RowIndex;
+                SetEditTab(CookieParametersGrid.Rows[e.RowIndex].Cells[1].Value.ToString());
+            }
+        }
+
+        private void HeadersParametersGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 2)
+            {
+                ExpandedParameterSection = "Headers";
+                ExpandedParameterIndex = e.RowIndex;
+                SetEditTab(HeadersParametersGrid.Rows[e.RowIndex].Cells[1].Value.ToString());
+            }
+        }
+
+        private void BaseTabs_Selecting(object sender, TabControlCancelEventArgs e)
+        {
+            if (e.TabPage.Text.Trim().Length == 0)
+            {
+                e.Cancel = true;
+                return;
+            }
+        }
     }
 }

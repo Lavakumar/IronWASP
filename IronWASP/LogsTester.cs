@@ -190,7 +190,7 @@ namespace IronWASP
                 string ResentVsTestResponseSinglePageResults = DiffWindow.DoSinglePageDiff(ResentResponseString, TestResponseString);
 
                 OriginalVsResentRequestDRV.ShowDiffResults(OriginalVsResentRequestSinglePageResults, OriginalVsResentRequestSidebySideResults[0], OriginalVsResentRequestSidebySideResults[1]);
-                OriginalVsResentResponseDRV.ShowDiffResults(OriginalVsResentResponseSinglePageResults, OriginalVsResentResponseSidebySideResults[0], OriginalVsResentResponseSidebySideResults[0]);
+                OriginalVsResentResponseDRV.ShowDiffResults(OriginalVsResentResponseSinglePageResults, OriginalVsResentResponseSidebySideResults[0], OriginalVsResentResponseSidebySideResults[1]);
                 ResentVsTestRequestDRV.ShowDiffResults(ResentVsTestRequestSinglePageResults, ResentVsTestRequestSidebySideResults[0], ResentVsTestRequestSidebySideResults[1]);
                 ResentVsTestResponseDRV.ShowDiffResults(ResentVsTestResponseSinglePageResults, ResentVsTestResponseSidebySideResults[0], ResentVsTestResponseSidebySideResults[1]);
                 OriginalVsTestRequestDRV.ShowDiffResults(OriginalVsTestRequestSinglePageResults, OriginalVsTestRequestSidebySideResults[0], OriginalVsTestRequestSidebySideResults[1]);
@@ -1108,6 +1108,7 @@ namespace IronWASP
                         if (PR.Id == FindingId)
                         {
                             StringBuilder SB = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;}");
+                            SB.Append(@" \cf1 Showing preview. Loading more details...... \cf0 \par \par ");
                             SB.Append(@" \b \fs30"); SB.Append(Tools.RtfSafe(PR.Title)); SB.Append(@"\b0  \fs20  \par  \par");
                             SB.Append(@" \cf1 \b Plugin: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(PR.Plugin)); SB.Append(@" \par");
                             if (PR.Type == FindingType.Vulnerability)
@@ -1120,11 +1121,91 @@ namespace IronWASP
                             SB.AppendLine(Tools.RtfSafe(PR.Summary));
                             SB.Append(@" \par \par");
                             ResultsDisplayRTB.Rtf = SB.ToString();
+
+                            if (LogLoadThread != null)
+                            {
+                                try
+                                {
+                                    LogLoadThread.Abort();
+                                }
+                                catch { }
+                            }
+                            LogLoadThread = new Thread(LoadFullFinding);
+                            LogLoadThread.Start(new object[]{PR, Int32.Parse(FindingsTree.Nodes[0].Name.Replace("LogId-", ""))});
                         }
                     }
                 }
             }
             catch { }
+        }
+
+        void LoadFullFinding(Object Args)
+        {
+            try
+            {
+                object[] ArgsArray = (object[])Args;
+                Finding F = (Finding) ArgsArray[0];
+                int LogId = (int)ArgsArray[1];
+                Session Sess = Session.FromLog(LogId, this.LogSource);
+
+                string TriggerHighlighting = "";
+                if (F.Triggers.Count > 0)
+                {
+                    Trigger T = F.Triggers.GetTrigger(0);
+                    T.Request = Sess.Request;
+                    if (Sess.Response != null) T.Response = Sess.Response;
+
+                    TriggerHighlighting = Finding.GetTriggerHighlighting(T, F.FinderType, false);
+                }
+                ShowFullFinding(F, TriggerHighlighting);
+
+            }
+            catch(Exception Exp)
+            {
+                IronException.Report("Error load Findings from Logs Testers", Exp);
+            }
+        }
+
+        delegate void ShowFullFinding_d(Finding F, string TriggerHighlighting);
+        void ShowFullFinding(Finding F, string TriggerHighlighting)
+        {
+            if (ResultsDisplayRTB.InvokeRequired)
+            {
+                ShowFullFinding_d CALL_d = new ShowFullFinding_d(ShowFullFinding);
+                ResultsDisplayRTB.Invoke(CALL_d, new object[] { F, TriggerHighlighting });
+            }
+            else
+            {
+                StringBuilder SB = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;}");
+                SB.Append(@" \b \fs30"); SB.Append(Tools.RtfSafe(F.Title)); SB.Append(@"\b0  \fs20  \par  \par");
+                SB.Append(@" \cf1 \b Plugin: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(F.Plugin)); SB.Append(@" \par");
+                if (F.Type == FindingType.Vulnerability)
+                {
+                    SB.Append(@" \cf1 \b Severity: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(F.Severity.ToString())); SB.Append(@" \par");
+                    SB.Append(@" \cf1 \b Confidence: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(F.Confidence.ToString())); SB.Append(@" \par");
+                }
+                SB.Append(@" \par");
+                SB.Append(@" \cf1 \b Summary: \b0 \cf0  \par ");
+                SB.AppendLine(Tools.RtfSafe(F.Summary));
+                SB.Append(@" \par \par \par ");
+                if (F.Triggers.Count > 0)
+                {
+                    Trigger T = F.Triggers.GetTrigger(0);
+                    SB.Append(Tools.RtfSafe(Finding.GetTriggerHighlighting(T, "PassivePlugin", false)));
+                    if (PassivePluginLogRequestView.GetRequest() == null)
+                    {
+                        if (T.Request != null)
+                        {
+                            PassivePluginLogRequestView.SetRequest(T.Request);
+                        }
+                        if (T.Response != null)
+                        {
+                            PassivePluginLogResponseView.SetResponse(T.Response);
+                        }
+                    }
+                }
+                ResultsDisplayRTB.Rtf = SB.ToString();
+            }
         }
 
         private void PassivePluginScanResultsBottomTabs_Selecting(object sender, TabControlCancelEventArgs e)

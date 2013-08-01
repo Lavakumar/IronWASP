@@ -211,7 +211,7 @@ namespace IronWASP
             }
             else
             {
-                return ParameterStore[Key];
+                return new List<string>(ParameterStore[Key]);
             }
         }
         public List<string> GetAll(string Name)

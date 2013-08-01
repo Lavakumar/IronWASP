@@ -32,6 +32,8 @@ namespace IronWASP
         int CurrentStep = 0;
 
         Request RequestToTest = null;
+        bool FromClipboard = false;
+        Request ClipboardRequest = null;
 
         public CreateNewRequestWizard()
         {
@@ -41,6 +43,24 @@ namespace IronWASP
         private void CreateNewRequestWizard_Load(object sender, EventArgs e)
         {
             BuildUserAgentTree();
+            PostBodyTypeCombo.SelectedIndex = 0;
+            try
+            {
+                string CB = Clipboard.GetText();
+                if (CB.Length < 10000)//This limit is to avoid hanging the UI if the user has copied a huge amount of text
+                {
+                    ClipboardRequest = new Request(CB, false, true);
+                }
+                if (ClipboardRequest != null)
+                {
+                    FromClipBoardLbl.Visible = true;
+                    FromClipboardLL.Visible = true;
+                }
+            }
+            catch
+            {
+
+            }
         }
 
         void BuildUserAgentTree()
@@ -156,6 +176,15 @@ namespace IronWASP
                     {
                         RequestToTest.Method = "POST";
                         RequestToTest.BodyString = PostBodyTB.Text.Trim();
+                        try
+                        {
+                            RequestToTest.ContentType = PostBodyTypeCombo.Text;
+                        }
+                        catch 
+                        {
+                            ShowStep0Error("Invalid body content-type value");
+                            return;
+                        }
                     }
                 }
                 CurrentStep = 1;
@@ -207,6 +236,15 @@ namespace IronWASP
         private void UsePostBodyCB_CheckedChanged(object sender, EventArgs e)
         {
             PostBodyTB.Enabled = UsePostBodyCB.Checked;
+            PostBodyTypeCombo.Enabled = UsePostBodyCB.Checked;
+        }
+
+        private void FromClipboardLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            FromClipboard = true;
+            RequestToTest = ClipboardRequest;
+            CurrentStep = 1;
+            BaseTabs.SelectTab(1);
         }
     }
 }

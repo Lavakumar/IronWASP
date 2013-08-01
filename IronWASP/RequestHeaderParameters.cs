@@ -121,7 +121,10 @@ namespace IronWASP
         public void RawRemove(string Name)
         {
             Name = ProcessName(Name);
-
+            if (Name == "Host")
+            {
+                return;
+            }
             base.Remove(Name);
             if (Name.Equals("Cookie"))
             {
@@ -135,7 +138,13 @@ namespace IronWASP
 
         new public void RemoveAll()
         {
+            string Host = "";
+            if (this.Has("Host"))
+            {
+                Host = this.Get("Host");
+            }
             base.RemoveAll();
+            this.Set("Host", Host);
             this.ProcessUpdate("");
         }
         internal string GetAsString()
@@ -158,12 +167,12 @@ namespace IronWASP
             return Name;
         }
 
-        string SafeRaw(string Value)
+        new string SafeRaw(string Value)
         {
             return Tools.HeaderEncode(Value);
         }
 
-        string Encode(string Value)
+        new string Encode(string Value)
         {
             return Tools.HeaderEncode(Value);
         }

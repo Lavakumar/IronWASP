@@ -49,10 +49,14 @@ namespace IronWASP
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CreateNewRequestWizard));
             this.BaseTabs = new System.Windows.Forms.TabControl();
             this.CreateRequestTab = new System.Windows.Forms.TabPage();
+            this.FromClipboardLL = new System.Windows.Forms.LinkLabel();
+            this.FromClipBoardLbl = new System.Windows.Forms.Label();
             this.Step0StatusTB = new System.Windows.Forms.TextBox();
             this.label30 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.PostBodyTypeCombo = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
             this.SelectedUserAgentLbl = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -98,6 +102,8 @@ namespace IronWASP
             // 
             // CreateRequestTab
             // 
+            this.CreateRequestTab.Controls.Add(this.FromClipboardLL);
+            this.CreateRequestTab.Controls.Add(this.FromClipBoardLbl);
             this.CreateRequestTab.Controls.Add(this.Step0StatusTB);
             this.CreateRequestTab.Controls.Add(this.label30);
             this.CreateRequestTab.Controls.Add(this.label3);
@@ -116,11 +122,35 @@ namespace IronWASP
             this.CreateRequestTab.Text = "               Create Request               ";
             this.CreateRequestTab.UseVisualStyleBackColor = true;
             // 
+            // FromClipboardLL
+            // 
+            this.FromClipboardLL.AutoSize = true;
+            this.FromClipboardLL.Location = new System.Drawing.Point(734, 101);
+            this.FromClipboardLL.Name = "FromClipboardLL";
+            this.FromClipboardLL.Size = new System.Drawing.Size(25, 13);
+            this.FromClipboardLL.TabIndex = 17;
+            this.FromClipboardLL.TabStop = true;
+            this.FromClipboardLL.Text = "Yes";
+            this.FromClipboardLL.Visible = false;
+            this.FromClipboardLL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.FromClipboardLL_LinkClicked);
+            // 
+            // FromClipBoardLbl
+            // 
+            this.FromClipBoardLbl.AutoSize = true;
+            this.FromClipBoardLbl.ForeColor = System.Drawing.Color.OrangeRed;
+            this.FromClipBoardLbl.Location = new System.Drawing.Point(199, 101);
+            this.FromClipBoardLbl.Name = "FromClipBoardLbl";
+            this.FromClipBoardLbl.Size = new System.Drawing.Size(530, 13);
+            this.FromClipBoardLbl.TabIndex = 16;
+            this.FromClipBoardLbl.Text = "IMP: IronWASP has detected that you have copied an HTTP Request. Do you want to u" +
+    "se this Request here?";
+            this.FromClipBoardLbl.Visible = false;
+            // 
             // Step0StatusTB
             // 
-            this.Step0StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Step0StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Step0StatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Step0StatusTB.Location = new System.Drawing.Point(113, 446);
             this.Step0StatusTB.Multiline = true;
@@ -153,6 +183,8 @@ namespace IronWASP
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.SeaShell;
+            this.panel1.Controls.Add(this.PostBodyTypeCombo);
+            this.panel1.Controls.Add(this.label8);
             this.panel1.Controls.Add(this.SelectedUserAgentLbl);
             this.panel1.Controls.Add(this.label5);
             this.panel1.Controls.Add(this.label4);
@@ -166,6 +198,28 @@ namespace IronWASP
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(770, 313);
             this.panel1.TabIndex = 10;
+            // 
+            // PostBodyTypeCombo
+            // 
+            this.PostBodyTypeCombo.Enabled = false;
+            this.PostBodyTypeCombo.FormattingEnabled = true;
+            this.PostBodyTypeCombo.Items.AddRange(new object[] {
+            "application/x-www-form-urlencoded",
+            "application/json",
+            "application/xml"});
+            this.PostBodyTypeCombo.Location = new System.Drawing.Point(386, 286);
+            this.PostBodyTypeCombo.Name = "PostBodyTypeCombo";
+            this.PostBodyTypeCombo.Size = new System.Drawing.Size(374, 21);
+            this.PostBodyTypeCombo.TabIndex = 19;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(215, 291);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(174, 13);
+            this.label8.TabIndex = 18;
+            this.label8.Text = "Select Content-Type Header value:";
             // 
             // SelectedUserAgentLbl
             // 
@@ -232,7 +286,7 @@ namespace IronWASP
             this.PostBodyTB.Multiline = true;
             this.PostBodyTB.Name = "PostBodyTB";
             this.PostBodyTB.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.PostBodyTB.Size = new System.Drawing.Size(545, 70);
+            this.PostBodyTB.Size = new System.Drawing.Size(545, 44);
             this.PostBodyTB.TabIndex = 7;
             // 
             // UsePostBodyCB
@@ -249,7 +303,7 @@ namespace IronWASP
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(117, 266);
+            this.label2.Location = new System.Drawing.Point(117, 257);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(93, 13);
             this.label2.TabIndex = 8;
@@ -272,7 +326,7 @@ namespace IronWASP
             this.textBox2.Multiline = true;
             this.textBox2.Name = "textBox2";
             this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(766, 47);
+            this.textBox2.Size = new System.Drawing.Size(766, 40);
             this.textBox2.TabIndex = 4;
             this.textBox2.TabStop = false;
             this.textBox2.Text = resources.GetString("textBox2.Text");
@@ -324,9 +378,9 @@ namespace IronWASP
             // 
             // Step1StatusTB
             // 
-            this.Step1StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Step1StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Step1StatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Step1StatusTB.Location = new System.Drawing.Point(27, 158);
             this.Step1StatusTB.Multiline = true;
@@ -446,6 +500,10 @@ namespace IronWASP
         internal System.Windows.Forms.TextBox Step0StatusTB;
         private System.Windows.Forms.Button Step1PreviousStepBtn;
         internal System.Windows.Forms.TextBox Step1StatusTB;
+        private System.Windows.Forms.Label FromClipBoardLbl;
+        private System.Windows.Forms.LinkLabel FromClipboardLL;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ComboBox PostBodyTypeCombo;
 
     }
 }

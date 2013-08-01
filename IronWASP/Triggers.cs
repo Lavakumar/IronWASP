@@ -25,14 +25,22 @@ namespace IronWASP
     public class Triggers
     {
         List<Trigger> TriggerList = new List<Trigger>();
-        List<string> RequestTriggers = new List<string>();
-        List<string> ResponseTriggers = new List<string>();
+        //List<string> RequestTriggers = new List<string>();
+        //List<string> ResponseTriggers = new List<string>();
         
         public void Add(string RequestTrigger, Request Req, string ResponseTrigger, Response Res)
         {
             if(Req != null || Res != null)
             {
                 Trigger T = new Trigger(RequestTrigger, Req, ResponseTrigger, Res);
+                this.TriggerList.Add(T);
+            }
+        }
+        public void Add(string RequestTrigger, string RequestTriggerDescription, Request Req, string ResponseTrigger, string ResponseTriggerDescription, Response Res)
+        {
+            if (Req != null || Res != null)
+            {
+                Trigger T = new Trigger(RequestTrigger, RequestTriggerDescription, Req, ResponseTrigger, ResponseTriggerDescription, Res);
                 this.TriggerList.Add(T);
             }
         }
@@ -44,6 +52,14 @@ namespace IronWASP
                 this.TriggerList.Add(T);
             }
         }
+        public void Add(string RequestTrigger, string RequestTriggerDescription, Request Req)
+        {
+            if (Req != null)
+            {
+                Trigger T = new Trigger(RequestTrigger, RequestTriggerDescription, Req);
+                this.TriggerList.Add(T);
+            }
+        }
         internal List<Trigger> GetTriggers()
         {
             return this.TriggerList;
@@ -52,6 +68,14 @@ namespace IronWASP
         internal Trigger GetTrigger(int TriggerNumber)
         {
             return TriggerList[TriggerNumber];
+        }
+
+        internal int Count
+        {
+            get
+            {
+                return this.TriggerList.Count;
+            }
         }
     }
 }

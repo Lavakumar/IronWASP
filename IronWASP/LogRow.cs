@@ -41,6 +41,7 @@ namespace IronWASP
         public bool SetCookie = false;
         public bool Editied = false;
         public string Notes = "";
+        public int RoundTrip = 0;
         internal string OriginalRequestHeaders = "";
         internal string Source = "";
 

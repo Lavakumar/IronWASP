@@ -464,29 +464,29 @@ namespace IronWASP
             string ModuleDisplayName = Args[0].ToString();
             string Source = Args[1].ToString();
             int LogId = (int)Args[2];
-            Session Sess = null;
-            switch (Source)
-            {
-                case(RequestSource.Proxy):
-                    Sess = Session.FromProxyLog(LogId);
-                    break;
-                case (RequestSource.Probe):
-                    Sess = Session.FromProbeLog(LogId);
-                    break;
-                case (RequestSource.Scan):
-                    Sess = Session.FromScanLog(LogId);
-                    break;
-                case (RequestSource.Shell):
-                    Sess = Session.FromShellLog(LogId);
-                    break;
-                case (RequestSource.Test):
-                case (RequestSource.TestGroup):
-                    Sess = Session.FromTestLog(LogId);
-                    break;
-                default:
-                    Sess = Session.FromLog(LogId, Source);
-                    break;
-            }
+            Session Sess = IronLog.GetLog(Source, LogId);
+            //switch (Source)
+            //{
+            //    case(RequestSource.Proxy):
+            //        Sess = Session.FromProxyLog(LogId);
+            //        break;
+            //    case (RequestSource.Probe):
+            //        Sess = Session.FromProbeLog(LogId);
+            //        break;
+            //    case (RequestSource.Scan):
+            //        Sess = Session.FromScanLog(LogId);
+            //        break;
+            //    case (RequestSource.Shell):
+            //        Sess = Session.FromShellLog(LogId);
+            //        break;
+            //    case (RequestSource.Test):
+            //    case (RequestSource.TestGroup):
+            //        Sess = Session.FromTestLog(LogId);
+            //        break;
+            //    default:
+            //        Sess = Session.FromLog(LogId, Source);
+            //        break;
+            //}
             if (Sess != null)
             {
                 Module M = GetModuleFromDisplayName(ModuleDisplayName, SESSION);
@@ -650,8 +650,26 @@ namespace IronWASP
                     if (M.FileName.Length == 0)
                         throw new Exception("Module is missing script files");
                     ScriptSource ModuleSource = Engine.CreateScriptSourceFromFile(FullName);
-                    CompiledCode CompiledModule = ModuleSource.Compile();
-                    ModuleSource.ExecuteProgram();
+                    ScriptErrorReporter CompileErrors = new ScriptErrorReporter();
+                    string ErrorMessage = "";
+                    CompiledCode CompiledModule = ModuleSource.Compile(CompileErrors);
+                    ErrorMessage = CompileErrors.GetErrors();
+                    if (M.FileName.EndsWith(".py"))
+                    {
+                        string IndentError = PluginEditor.CheckPythonIndentation(ModuleSource.GetCode())[1];
+                        if (IndentError.Length > 0)
+                        {
+                            ErrorMessage = string.Format("{0}\r\n{1}", IndentError, ErrorMessage);
+                        }
+                    }
+                    if (ErrorMessage.Length == 0)
+                    {
+                        ModuleSource.ExecuteProgram();
+                    }
+                    else
+                    {
+                        throw new Exception(string.Format("Syntax error in module file:{0}\r\n{1}", M.FileName, ErrorMessage));
+                    }
                 }
             }
             catch(Exception Exp)

@@ -391,30 +391,29 @@ namespace IronWASP
 
             StringBuilder SB = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;}");
             string IntroMessage = @"<i<h1>><i<h>>Welcome to the Script Creation Assistant<i</h>><i</h1>>
-<i<br>><i<br>>
 You don't have to be an expert to do scripting with IronWASP. If you just know the very basics of programming like what are variables, methods, for loops etc then you are good to go. This assistant will help you learn how to create scripts using the IronWASP API and turn your ideas in to working code.
-<i<br>><i<br>>
+
 You can use the Scripting Shell built in to IronWASP to run these scripts.
-<i<br>><i<br>>
+
 There are different sections here, in each section you define what you are trying to do and the script to perform that action will be created for you when you click on the 'Generate Code' button.
-<i<br>><i<br>>
+
 You can put the code from various sections together to create the scripts to fit your unique needs.
-<i<br>><i<br>>
+
 Let us look at some scenarios:
-<i<br>><i<br>>
-You want to analyze the HTTP logs to identify certain issues:<i<br>>
-  1: Use the script from the 'Log Analysis' section to read through the logs one at a time<i<br>>
-  2: Use the Request and Response sections to find out how to read the different properties and values from the Request and Response of the log and analyze them.<i<br>>
-<i<br>>
-You want to create a Password cracker for a site you are testing:<i<br>>
-  1: Use the Request section to learn how to create and send the login request<i<br>>
-  2: The Request section will also show you how to change the values of the username and password parameters<i<br>>
-  3: The Response section will show you how to read the response properties like status code, headers and how to extract data from the various HTML elements<i<br>>
-<i<br>>
-You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
-  1: Use the Request section to create a request object to fuzz or test<i<br>>
-  2: Use the Fuzzer section to create sample script that shows how you can inject your payloads in different sections of this request and get the response<i<br>>
-  3: Use the Response section to learn how you can analyze this response and identify if your payload had any effect<i<br>>
+
+You want to analyze the HTTP logs to identify certain issues:
+  1: Use the script from the 'Log Analysis' section to read through the logs one at a time
+  2: Use the Request and Response sections to find out how to read the different properties and values from the Request and Response of the log and analyze them.
+
+You want to create a Password cracker for a site you are testing:
+  1: Use the Request section to learn how to create and send the login request
+  2: The Request section will also show you how to change the values of the username and password parameters
+  3: The Response section will show you how to read the response properties like status code, headers and how to extract data from the various HTML elements
+
+You want to create a custom fuzzer or scanner to check for an issue:
+  1: Use the Request section to create a request object to fuzz or test
+  2: Use the Fuzzer section to create sample script that shows how you can inject your payloads in different sections of this request and get the response
+  3: Use the Response section to learn how you can analyze this response and identify if your payload had any effect
 ";
             SB.AppendLine(Tools.RtfSafe(IntroMessage));
             IntroRTB.Rtf = SB.ToString();
@@ -944,12 +943,12 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
             string[] Tags = new string[] { "<method>", "<full_url>", "<ssl>", "<base_url>", "<url>", "<url_path>", "<url_dir>", "<body_string>", "<content_length>", "<content_type>", "<cookie_string>", "<host>", "<file>", "<upp>", "<q>", "<c>", "<b>", "<h>",
             "</method>", "</full_url>", "</ssl>", "</base_url>", "</url>", "</url_path>", "</url_dir>", "</body_string>", "</content_length>", "</content_type>", "</cookie_string>", "</host>", "</file>", "</upp>", "</q>", "</c>", "</b>", "</h>"};
 
-            string FullTemplate = @"<method>POST</method> <url_path><url_dir>/<upp>aaa</upp>/<upp>bbb</upp>/<upp></url_dir>ccc.<file>aspx</file></upp></url_path>?<q>ddd</q>=<q>111</q>&<q>eee</q>=<q>222</q><i<br>>
-<h>Host</h>: <h><host>ironwasp.org</host></h><i<br>>
-<h>Cookie</h>: <h><cookie_string><c>fff</c>=<c>333</c>; <c>ggg</c>=<c>444</c></cookie_string></h><i<br>>
-<h>Content-Type</h>: <h><content_type>application/x-www-form-urlencoded</content_type></h><i<br>>
-<h>Content-Length</h>: <h><content_length>15</content_length></h><i<br>>
-<i<br>>
+            string FullTemplate = @"<method>POST</method> <url_path><url_dir>/<upp>aaa</upp>/<upp>bbb</upp>/<upp></url_dir>ccc.<file>aspx</file></upp></url_path>?<q>ddd</q>=<q>111</q>&<q>eee</q>=<q>222</q>
+<h>Host</h>: <h><host>ironwasp.org</host></h>
+<h>Cookie</h>: <h><cookie_string><c>fff</c>=<c>333</c>; <c>ggg</c>=<c>444</c></cookie_string></h>
+<h>Content-Type</h>: <h><content_type>application/x-www-form-urlencoded</content_type></h>
+<h>Content-Length</h>: <h><content_length>15</content_length></h>
+
 <body_string><b>hhh</b>=<b>555</b>&<b>iii</b>=<b>666</b></body_string>
 ";
 
@@ -1269,13 +1268,13 @@ You want to create a custom fuzzer or scanner to check for an issue:<i<br>>
             string[] Tags = new string[] { "<version>", "<code>", "<status>", "<h>", "<type>", "<char>", "<sc>", "<t>", "<len>", "<b>",
             "</version>", "</code>", "</status>", "</h>", "</type>", "</char>", "</sc>", "</t>", "</len>","</b>" };
 
-            string FullTemplate = @"<version>HTTP/1.1</version> <code>200</code> <status>OK</status><i<br>>
-<h>Server</h>: <h>Microsoft-IIS/7.0</h><i<br>>
-<h>Content-Type</h>: <h><type>text/html; charset=<char>utf-8</char></type></h><i<br>>
-<h>Content-Length</h>: <h><len>69</len></h><i<br>>
-<h>Set-Cookie</h>: <h><sc>aaa=111; expires=Thu, 01-Jan-2015 19:57:42 GMT; path=/; domain=.ironwasp.org</sc></h><i<br>>
-<h>Set-Cookie</h>: <h><sc>bbb=222; expires=Wed, 03-Jul-2013 19:57:42 GMT; path=/; domain=www.ironwasp.org; HttpOnly</sc></h><i<br>>
-<i<br>>
+            string FullTemplate = @"<version>HTTP/1.1</version> <code>200</code> <status>OK</status>
+<h>Server</h>: <h>Microsoft-IIS/7.0</h>
+<h>Content-Type</h>: <h><type>text/html; charset=<char>utf-8</char></type></h>
+<h>Content-Length</h>: <h><len>69</len></h>
+<h>Set-Cookie</h>: <h><sc>aaa=111; expires=Thu, 01-Jan-2015 19:57:42 GMT; path=/; domain=.ironwasp.org</sc></h>
+<h>Set-Cookie</h>: <h><sc>bbb=222; expires=Wed, 03-Jul-2013 19:57:42 GMT; path=/; domain=www.ironwasp.org; HttpOnly</sc></h>
+
 <b><html>Welcome</html></b>
 
 ";

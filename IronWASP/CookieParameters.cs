@@ -213,7 +213,7 @@ namespace IronWASP
             return Tools.UrlDecode(Value);
         }
 
-        string SafeRaw(string Value)
+        internal static string SafeRaw(string Value)
         {
             return Tools.RelaxedCookieEncode(Value);
         }

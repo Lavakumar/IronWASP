@@ -160,7 +160,7 @@ namespace IronWASP
             Name = SafeRaw(Name);
             if (ParameterStore.ContainsKey(Name))
             {
-                return ParameterStore[Name];
+                return new List<string>(ParameterStore[Name]);
             }
             else
             {
@@ -291,17 +291,17 @@ namespace IronWASP
             }
         }
 
-        string Encode(string Value)
+        internal static string Encode(string Value)
         {
             return Tools.HeaderEncode(Value);
         }
 
-        string Decode(string Value)
+        internal static string Decode(string Value)
         {
             return Value;
         }
 
-        string SafeRaw(string Value)
+        internal static string SafeRaw(string Value)
         {
             return Tools.HeaderEncode(Value);
         }

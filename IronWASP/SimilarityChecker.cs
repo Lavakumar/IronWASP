@@ -66,6 +66,15 @@ namespace IronWASP
             ItemsDictionary[Key] = new SimilarityCheckerItem(Key, Item);
         }
 
+        public void Add(string Key, Response Item, string Payload)
+        {
+            if (ItemsDictionary.ContainsKey(Key))
+            {
+                throw new Exception(string.Format("Key-{0} already exists!", Key));
+            }
+            ItemsDictionary[Key] = new SimilarityCheckerItem(Key, Item, Payload);
+        }
+
         public void Check()
         {
             List<List<SimilarityCheckerItem>> CodeGroups = GroupByCode(new List<SimilarityCheckerItem>(ItemsDictionary.Values));
@@ -149,11 +158,11 @@ namespace IronWASP
 
             foreach (SimilarityCheckerItem Item in Group)
             {
-                if (!LengthGroupDict.ContainsKey(Item.Res.BodyLength))
+                if (!LengthGroupDict.ContainsKey(Item.ProcessedBodyString.Length))
                 {
-                    LengthGroupDict[Item.Res.BodyLength] = new List<SimilarityCheckerItem>();
+                    LengthGroupDict[Item.ProcessedBodyString.Length] = new List<SimilarityCheckerItem>();
                 }
-                LengthGroupDict[Item.Res.BodyLength].Add(Item);
+                LengthGroupDict[Item.ProcessedBodyString.Length].Add(Item);
             }
 
             foreach (int Key in LengthGroupDict.Keys)
@@ -181,7 +190,7 @@ namespace IronWASP
             int i = 0;
             foreach (SimilarityCheckerItem Item in Group)
             {
-                Lengths[i] = Item.Res.BodyLength;
+                Lengths[i] = Item.ProcessedBodyString.Length;
                 i++;
             }
 
@@ -211,7 +220,7 @@ namespace IronWASP
                 {
                     foreach (SimilarityCheckerItem Item in Group)
                     {
-                        if (Item.Res.BodyLength == Length && !GroupedKeys.Contains(Item.Key))
+                        if (Item.ProcessedBodyString.Length == Length && !GroupedKeys.Contains(Item.Key))
                         {
                             SubGroup.Add(Item);
                             GroupedKeys.Add(Item.Key);
@@ -248,7 +257,7 @@ namespace IronWASP
                 Matched.Add(PendingMatch[0]);
                 for (int i = 1; i < PendingMatch.Count; i++)
                 {
-                    if (PendingMatch[0].Res.BodyString == PendingMatch[i].Res.BodyString)
+                    if (PendingMatch[0].ProcessedBodyString == PendingMatch[i].ProcessedBodyString)
                     {
                         Matched.Add(PendingMatch[i]);
                     }
@@ -288,7 +297,7 @@ namespace IronWASP
                 Matched.Add(PendingMatch[0]);
                 for (int i = 1; i < PendingMatch.Count; i++)
                 {
-                    if (Tools.DiffLevel(PendingMatch[0].Res.BodyString, PendingMatch[i].Res.BodyString) < 4)
+                    if (Tools.DiffLevel(PendingMatch[0].ProcessedBodyString, PendingMatch[i].ProcessedBodyString) < 4)
                     {
                         Matched.Add(PendingMatch[i]);
                     }
@@ -303,7 +312,5 @@ namespace IronWASP
 
             return ContentGroups;
         }
-
-        
     }
 }

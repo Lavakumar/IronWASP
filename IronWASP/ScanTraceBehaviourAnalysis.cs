@@ -16,6 +16,13 @@ namespace IronWASP
             InitializeComponent();
         }
 
+        ScanTraceBehaviourAnalysisResultsUiInformation CurrentUiResults = new ScanTraceBehaviourAnalysisResultsUiInformation();
+
+        internal static List<string> DefaultErrorKeywords = new List<string>() { "error", "exception", "not allowed", "unauthorized", "blocked", "filtered", "attack", "unexpected", "sql", "database", "failed" };
+        internal static int DefaultResponseTimeChange = 1000;
+        internal static int DefaultResponseTimeChangeFactor = 10;
+        internal static int DefaultCharsCount = 20;
+
         Thread AnalysisThread = null;
 
         int SelectedTraceId = 0;
@@ -38,10 +45,10 @@ namespace IronWASP
                 ScanPluginsGrid.Rows.Add(new object[] { true, Name });
             }
 
-            ConfigKeywordsTB.Text = "error, exception, not allowed, unauthorized, blocked, filtered, attack, unexpected, sql, database, failed";
-            ConfigResponseTimeChangeMSTB.Text = "1000";
-            ConfigResponseTimeChangeFactorTB.Text = "10";
-            ConfigCharsCountTB.Text = "20";
+            ConfigKeywordsTB.Text = string.Join(", ", DefaultErrorKeywords.ToArray());
+            ConfigResponseTimeChangeMSTB.Text = DefaultResponseTimeChange.ToString();
+            ConfigResponseTimeChangeFactorTB.Text = DefaultResponseTimeChangeFactor.ToString();
+            ConfigCharsCountTB.Text = DefaultCharsCount.ToString();
         }
 
         private void ScanPluginsGrid_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -216,12 +223,6 @@ namespace IronWASP
                 if (TEK.Length > 0) this.Keywords.Add(TEK);
             }
 
-            //if (this.Keywords.Count == 0)
-            //{
-            //    ShowError("No keywords specified");
-            //    return false;
-            //}
-            
             try
             {
                 this.RoundtripIncrease = Int32.Parse(ConfigResponseTimeChangeMSTB.Text.Trim());
@@ -429,7 +430,7 @@ namespace IronWASP
                     {
                         CanDo = false;
                         string TraceOverviewMessage = IronDB.GetScanTraceOverviewAndMessage(CurrentId)[0];
-                        IronTrace ScanTraceRecord = IronDB.GetScanTraceRecords(CurrentId, 1)[0];
+                        IronTrace ScanTraceRecord = IronDB.GetScanTraces(CurrentId, 1)[0];
 
                         if (this.SelectedChecks.Contains(ScanTraceRecord.PluginName))
                         {
@@ -456,24 +457,9 @@ namespace IronWASP
         void AnalyzeTraceId(int CurrentId, string TraceOverviewMessage, IronTrace ScanTraceRecord)
         {
             ShowAnalysisStatus(string.Format("Analyzing Trace ID - {0}", CurrentId));
-            List<Dictionary<string, string>> OverviewEntries = IronTrace.GetOverviewEntriesFromXml(TraceOverviewMessage);
-            List<string> Payloads = new List<string>();
-            List<int> RoundTrips = new List<int>();
-            List<int> LogIds = new List<int>();
-            foreach (Dictionary<string, string> Entry in OverviewEntries)
-            {
-                try
-                {
-                    int LogId = Int32.Parse(Entry["log_id"]);
-                    int Time = Int32.Parse(Entry["time"]);
-                    Payloads.Add(Entry["payload"]);
-                    LogIds.Add(LogId);
-                    RoundTrips.Add(Time);
-                }
-                catch { }
-            }
+            
             BehaviourAnalysis BA = new BehaviourAnalysis(this.Keywords, this.RoundtripIncrease, this.RoundtripIncreaseFactor, this.InsertedCharsCount);
-            BA.Analyze(Payloads, LogIds, RoundTrips, ScanTraceRecord.Section);
+            BA.Analyze(TraceOverviewMessage, ScanTraceRecord.Section);
 
             bool CodeResultFound = false;
             bool KeywordsResultFound = false;
@@ -527,6 +513,91 @@ namespace IronWASP
             string BaselineCode = TraceGrid.SelectedRows[0].Cells["BaselineCodeClmn"].Value.ToString();
             string BaselineRoundtrip = TraceGrid.SelectedRows[0].Cells["BaselineRoundtripClmn"].Value.ToString();
 
+            ScanTraceBehaviourAnalysisResultsUiInformation UiResults = GetUiDisplayResults(ResultsXml, BaselineCode, BaselineRoundtrip);
+            this.CurrentUiResults = UiResults;
+
+            StringBuilder SB = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;\red255\green255\blue255;}");
+            SB.Append(Tools.RtfSafe(UiResults.SummaryText));
+
+            SummaryRTB.Rtf = SB.ToString();
+
+            if (UiResults.CodeGridRows.Count > 0)
+            {
+                BottomTabs.TabPages["CodeTab"].Text = "  Code Variation  ";
+                foreach (object[] Row in UiResults.CodeGridRows)
+                {
+                    CodeGrid.Rows.Add(Row);
+                }
+            }
+            else
+            {
+                BottomTabs.TabPages["CodeTab"].Text = "  -  ";
+            }
+            if (UiResults.TimeGridRows.Count > 0)
+            {
+                BottomTabs.TabPages["TimeTab"].Text = "  Time Variation  ";
+                foreach (object[] Row in UiResults.TimeGridRows)
+                {
+                    RoundtripGrid.Rows.Add(Row);
+                }
+            }
+            else
+            {
+                BottomTabs.TabPages["TimeTab"].Text = "  -  ";
+            }
+            if (UiResults.KeywordGridRows.Count > 0)
+            {
+                BottomTabs.TabPages["KeywordsTab"].Text = "  Keywords Inserted  ";
+                foreach (object[] Row in UiResults.KeywordGridRows)
+                {
+                    KeywordsGrid.Rows.Add(Row);
+                }
+            }
+            else
+            {
+                BottomTabs.TabPages["KeywordsTab"].Text = "  -  ";
+            }
+            if (UiResults.BodyGridRows.Count > 0)
+            {
+                BottomTabs.TabPages["BodyTab"].Text = "  Body Variation  ";
+                foreach (object[] Row in UiResults.BodyGridRows)
+                {
+                    BodyGrid.Rows.Add(Row);
+                }
+            }
+            else
+            {
+                BottomTabs.TabPages["BodyTab"].Text = "  -  ";
+            }
+            if (UiResults.SetCookieGridRows.Count > 0)
+            {
+                BottomTabs.TabPages["SetCookieTab"].Text = "  Set-Cookie Variations  ";
+                foreach (object[] Row in UiResults.SetCookieGridRows)
+                {
+                    SetCookieGrid.Rows.Add(Row);
+                }
+            }
+            else
+            {
+                BottomTabs.TabPages["SetCookieTab"].Text = "  -  ";
+            }
+            if (UiResults.HeadersGridRows.Count > 0)
+            {
+                BottomTabs.TabPages["HeadersTab"].Text = "  Headers Variation  ";
+                foreach (object[] Row in UiResults.HeadersGridRows)
+                {
+                    HeadersGrid.Rows.Add(Row);
+                }
+                HeadersGrid.Columns[1].SortMode = DataGridViewColumnSortMode.Programmatic;
+            }
+            else
+            {
+                BottomTabs.TabPages["HeadersTab"].Text = "  -  ";
+            }
+        }
+
+        internal static ScanTraceBehaviourAnalysisResultsUiInformation GetUiDisplayResults(string ResultsXml, string BaselineCode, string BaselineRoundtrip)
+        {
             List<BehaviourAnalysisResult> Results = BehaviourAnalysisResult.ToObjectList(ResultsXml);
             List<int> Codes = new List<int>();
             List<string> Keywords = new List<string>();
@@ -542,71 +613,104 @@ namespace IronWASP
             List<object[]> BodyGridRows = new List<object[]>();
             List<object[]> TimeGridRows = new List<object[]>();
 
+            Dictionary<string, string> HeaderVariationMessage = new Dictionary<string, string>() {
+            {"+", "Header added, this header was missing in baseline response"}, 
+            {"-", "Missing header, this header was present in baseline response"}, 
+            {">", "Value added, this header had an empty value in baseline"},
+            {"<", "Empty value, this header had a non-empty value in baseline"}
+            };
+
+            Dictionary<string, string> SetCookieVariationMessage = new Dictionary<string, string>() {
+            {"+", "Cookie added, this cookie was missing in baseline response"}, 
+            {"-", "Missing cookie, this cookie was present in baseline response"}, 
+            {">", "Value added, this cookie had an empty value in baseline"},
+            {"<", "Empty value, this cookie had a non-empty value in baseline"}
+            };
+
+            Dictionary<string, string> HeaderVariationMessageForSummary = new Dictionary<string, string>() {
+            {"+", "header added, this header was missing in baseline response"}, 
+            {"-", "header is missing, this header was present in baseline response"}, 
+            {">", "header's value added, this header had an empty value in baseline"},
+            {"<", "header's value is empty, this header had a non-empty value in baseline"}
+            };
+
+            Dictionary<string, string> SetCookieVariationMessageForSummary = new Dictionary<string, string>() {
+            {"+", "cookie added, this cookie was missing in baseline response"}, 
+            {"-", "cookie is missing, this cookie was present in baseline response"}, 
+            {">", "cookie's value added, this cookie had an empty value in baseline"},
+            {"<", "cookie's value is empty, this cookie had a non-empty value in baseline"}
+            };
+
             foreach (BehaviourAnalysisResult Result in Results)
             {
                 if (Result.ResponseCodeResult > 0)
                 {
-                    CodeGridRows.Add(new object[]{Result.LogId, Result.ResponseCodeResult, Result.Payload});
-                    if(!Codes.Contains(Result.ResponseCodeResult)) Codes.Add(Result.ResponseCodeResult);
+                    CodeGridRows.Add(new object[] { Result.LogId, Result.ResponseCodeResult, Result.Payload });
+                    if (!Codes.Contains(Result.ResponseCodeResult)) Codes.Add(Result.ResponseCodeResult);
                 }
                 if (Result.ResponseContentResult > 0)
                 {
-                    BodyGridRows.Add(new object[]{Result.LogId, Result.ResponseContentResult, Result.Payload});
-                    if(!InsertedChars.Contains(Result.ResponseContentResult)) InsertedChars.Add(Result.ResponseContentResult);
+                    BodyGridRows.Add(new object[] { Result.LogId, Result.ResponseContentResult, Result.Payload });
+                    if (!InsertedChars.Contains(Result.ResponseContentResult)) InsertedChars.Add(Result.ResponseContentResult);
                 }
                 if (Result.RoundtripTimeResult.Length > 0)
                 {
-                    TimeGridRows.Add(new object[]{Result.LogId, Result.RoundtripTimeResult, Result.Payload});
-                    if(Int32.Parse(Result.RoundtripTimeResult.Trim(new char[]{'+', '-', 'm', 's'})) > 0) Roundtrips.Add(Result.RoundtripTimeResult);
+                    TimeGridRows.Add(new object[] { Result.LogId, Result.RoundtripTimeResult, Result.Payload });
+                    if (Int32.Parse(Result.RoundtripTimeResult.Trim(new char[] { '+', '-', 'm', 's' })) > 0)
+                    {
+                        if (!Roundtrips.Contains(Result.RoundtripTimeResult)) Roundtrips.Add(Result.RoundtripTimeResult);
+                    }
                 }
 
-                if (Result.ResponseKeywordsResult.Count > 0) KeywordGridRows.Add(new object[]{Result.LogId, string.Join(", ", Result.ResponseKeywordsResult.ToArray()), Result.Payload});
+                if (Result.ResponseKeywordsResult.Count > 0) KeywordGridRows.Add(new object[] { Result.LogId, string.Join(", ", Result.ResponseKeywordsResult.ToArray()), Result.Payload });
                 foreach (string Keyword in Result.ResponseKeywordsResult)
                 {
                     if (!Keywords.Contains(Keyword)) Keywords.Add(Keyword);
                 }
 
-                if (Result.SetCookieHeaderResult.Count > 0) SetCookieGridRows.Add(new object[] { Result.LogId, string.Join(", ", Result.SetCookieHeaderResult.ToArray()), Result.Payload });
+                if (Result.SetCookieHeaderResult.Count > 0)
+                {
+                    foreach (string SetCook in Result.SetCookieHeaderResult)
+                    {
+                        SetCookieGridRows.Add(new object[] { Result.LogId, SetCook.Substring(1), SetCookieVariationMessage[SetCook[0].ToString()], Result.Payload });
+                    }
+                }
                 foreach (string SC in Result.SetCookieHeaderResult)
                 {
                     if (!SetCookies.Contains(SC)) SetCookies.Add(SC);
                 }
 
-                if (Result.ResponseHeadersResult.Count > 0) HeadersGridRows.Add(new object[] { Result.LogId, string.Join(", ", Result.ResponseHeadersResult.ToArray()), Result.Payload });
+                if (Result.ResponseHeadersResult.Count > 0)
+                {
+                    foreach (string HeaderRes in Result.ResponseHeadersResult)
+                    {
+                        HeadersGridRows.Add(new object[] { Result.LogId, HeaderRes.Substring(1), HeaderVariationMessage[HeaderRes[0].ToString()], Result.Payload });
+                    }
+                }
                 foreach (string H in Result.ResponseHeadersResult)
                 {
-                    if (! Headers.Contains(H)) Headers.Add(H);
+                    if (!Headers.Contains(H)) Headers.Add(H);
                 }
             }
 
-            if (CodeGridRows.Count > 0)
-            {
-                //CodeGridRows.Insert(0, new object[] { BaselineLogId, BaselineCode, string.Format("(baseline) {0}", BaselinePayload) });
-            }
-            if (TimeGridRows.Count > 0)
-            {
-                //TimeGridRows.Insert(0, new object[] { BaselineLogId, string.Format("{0} ms", BaselineRoundtrip), string.Format("(baseline) {0}", BaselinePayload) });
-            }
-
-            StringBuilder SB = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;}");
             StringBuilder Summary = new StringBuilder();
-            Summary.Append("<i<h1>>Payload Effect Analysis Result:<i</h1>><i<br>><i<br>>");
+            
             if (Codes.Count > 0)
             {
-                Summary.Append(string.Format("Some payloads caused the response codes to change from the baseline value of {0} to ", BaselineCode));
+                Summary.Append(string.Format("Response codes changed from the baseline value of <i<cg>><i<b>>{0}<i</b>><i</cg>> to ", BaselineCode));
                 for (int i = 0; i < Codes.Count; i++)
                 {
-                    Summary.Append(Codes[i]);
+                    Summary.Append(string.Format("<i<cb>><i<b>>{0}<i</b>><i</cb>>", Codes[i]));
                     if (i < Codes.Count - 1) Summary.Append(", ");
                 }
                 Summary.Append("<i<br>><i<br>>");
             }
             if (Keywords.Count > 0)
             {
-                Summary.Append("Some payloads caused the introduction of the following keywords in the response:<i<br>>");
+                Summary.Append("Occurance of the following keywords in the response: ");
                 for (int i = 0; i < Keywords.Count; i++)
                 {
-                    Summary.Append("<i<cr>>"); Summary.Append(Keywords[i]); Summary.Append("<i</cr>>");
+                    Summary.Append("<i<cr>><i<b>>"); Summary.Append(Keywords[i]); Summary.Append("<i</b>><i</cr>>");
                     if (i < Keywords.Count - 1) Summary.Append(", ");
                 }
                 Summary.Append("<i<br>><i<br>>");
@@ -614,24 +718,45 @@ namespace IronWASP
             if (InsertedChars.Count > 0)
             {
                 InsertedChars.Sort();
-                Summary.Append("Some payloads caused the response to change. where the number of new characters found in the responses were ");
-                for (int i = InsertedChars.Count - 1; i >= 0; i--)
-                {
-                    Summary.Append(InsertedChars[i]);
-                    if (i > 0) Summary.Append(", ");
-                }
+                Summary.Append(string.Format("Up to <i<cb>><i<b>>{0}<i</b>><i</cb>> characters of new content found in some responses.", InsertedChars[0]));
                 Summary.Append("<i<br>><i<br>>");
             }
+
+            if (SetCookies.Count > 0)
+            {
+                Summary.Append("Changes in Set-Cookie values:<i<br>>");
+                foreach (string SetCookie in SetCookies)
+                {
+                    Summary.Append("    ");
+                    Summary.Append("<i<co>><i<b>>"); Summary.Append(SetCookie.Substring(1)); Summary.Append("<i</b>><i</co>> ");
+                    Summary.Append(SetCookieVariationMessageForSummary[SetCookie[0].ToString()]);
+                    Summary.Append("<i<br>>");
+                }
+                Summary.Append("<i<br>>");
+            }
+            if (Headers.Count > 0)
+            {
+                Summary.Append("Changes in Response Headers:<i<br>>");
+                foreach (string Header in Headers)
+                {
+                    Summary.Append("    ");
+                    Summary.Append("<i<co>><i<b>>"); Summary.Append(Header.Substring(1)); Summary.Append("<i</b>><i</co>> ");
+                    Summary.Append(HeaderVariationMessageForSummary[Header[0].ToString()]);
+                    Summary.Append("<i<br>>");
+                }
+                Summary.Append("<i<br>>");
+            }
+
             if (Roundtrips.Count > 0)
             {
                 int BaselineRoundtripInt = Int32.Parse(BaselineRoundtrip);
-                
+
                 List<int> PlusRoundtripIntList = new List<int>();
                 List<int> MinusRoundtripIntList = new List<int>();
 
                 for (int i = 0; i < Roundtrips.Count; i++)
                 {
-                    int RoundtripDiff = Int32.Parse(Roundtrips[i].Trim(new char[]{'+', '-', 'm', 's', ' '}));
+                    int RoundtripDiff = Int32.Parse(Roundtrips[i].Trim(new char[] { '+', '-', 'm', 's', ' ' }));
                     if (Roundtrips[i][0] == '+')
                     {
                         PlusRoundtripIntList.Add(BaselineRoundtripInt + RoundtripDiff);
@@ -645,125 +770,76 @@ namespace IronWASP
                 PlusRoundtripIntList.Sort();
                 MinusRoundtripIntList.Sort();
 
+                Summary.Append(string.Format("Variation in the response roundtrip time from baseline value {0} ms:<i<br>><i<br>>", BaselineRoundtripInt));
+
+                string BaselineTimeStr = string.Format("{0} ms (Normal)", BaselineRoundtripInt);
+
+                string HighestTimeStr = "";
+                string LowestTimeStr = "";
+
+                double Factor = (double)BaselineRoundtripInt / 100.0;
+
+                if (Factor == 0) Factor = 1.0;//To avoid divide by 0 exception or multiply by 0 and get 0
+
                 if (PlusRoundtripIntList.Count > 0)
                 {
-                    Summary.Append(string.Format("Some payloads caused the response time to INCREASE from the baseline value of {0} ms to ", BaselineRoundtrip));
-                    for (int i = PlusRoundtripIntList.Count - 1; i >= 0; i--)
+                    HighestTimeStr = string.Format("{0} ms (Highest variation)", PlusRoundtripIntList[0]);
+                    if ((double)PlusRoundtripIntList[0] / Factor > 250.0)
                     {
-                        Summary.Append(PlusRoundtripIntList[i]); Summary.Append(" ms");
-                        if (i > 0) Summary.Append(", ");
+                        Factor = (double)PlusRoundtripIntList[0] / 250.0;
+                        if (Factor == 0) Factor = 1.0;
                     }
-                    Summary.Append("<i<br>><i<br>>");
+                    else if ((double)PlusRoundtripIntList[0] / Factor < 100.0)
+                    {
+                        Factor = (double)PlusRoundtripIntList[0] / 100.0;
+                        if (Factor == 0) Factor = 1.0;
+                    }
                 }
-
                 if (MinusRoundtripIntList.Count > 0)
                 {
-                    Summary.Append(string.Format("Some payloads caused the response time to DECREASE from the baseline value of {0} ms to ", BaselineRoundtrip));
-                    for (int i = MinusRoundtripIntList.Count - 1; i >= 0; i--)
-                    {
-                        Summary.Append(MinusRoundtripIntList[i]); Summary.Append(" ms");
-                        if (i > 0) Summary.Append(", ");
-                    }
-                    Summary.Append("<i<br>><i<br>>");
+                    LowestTimeStr = string.Format("{0} ms (Lowest variation)", MinusRoundtripIntList[0]);
                 }
-            }
-            if (SetCookies.Count > 0)
-            {
-                Summary.Append("Some payloads caused the Set-Cookie values to vary from the baseline response as follows:<i<br>>");
-                for (int i = 0; i < SetCookies.Count; i++)
-                {
-                    Summary.Append(SetCookies[i]);
-                    if (i < SetCookies.Count - 1) Summary.Append(", ");
-                }
-                Summary.Append("<i<br>><i<br>>");
-            }
-            if (Headers.Count > 0)
-            {
-                Summary.Append("Some payloads caused the header parameters to vary from the baseline response as follows:<i<br>>");
-                for (int i = 0; i < Headers.Count; i++)
-                {
-                    Summary.Append(Headers[i]);
-                    if (i < Headers.Count - 1) Summary.Append(", ");
-                }
-                Summary.Append("<i<br>><i<br>>");
-            }
 
-            SB.Append(Tools.RtfSafe(Summary.ToString()));
-            SummaryRTB.Rtf = SB.ToString();
-            
-            if (CodeGridRows.Count > 0)
-            {
-                BottomTabs.TabPages["CodeTab"].Text = "  Code Variation  ";
-                foreach (object[] Row in CodeGridRows)
+                Summary.Append("<i<hlg>>");
+                Summary.Append(new String(' ', (int)Math.Round(((double)BaselineRoundtripInt / Factor))));
+                Summary.Append("<i</hlg>>");
+                Summary.Append("    "); Summary.Append(BaselineTimeStr); Summary.Append("<i<br>>");
+
+                if (HighestTimeStr.Length > 0)
                 {
-                    CodeGrid.Rows.Add(Row);
+                    Summary.Append("<i<hlb>>");
+                    Summary.Append(new String(' ', (int)Math.Round(((double)PlusRoundtripIntList[0] / Factor))));
+                    Summary.Append("<i</hlb>>");
+                    Summary.Append("    "); Summary.Append(HighestTimeStr); Summary.Append("<i<br>>");
                 }
+                if (LowestTimeStr.Length > 0)
+                {
+                    Summary.Append("<i<hlo>>");
+                    Summary.Append(new String(' ', (int)Math.Round(((double)MinusRoundtripIntList[0] / Factor))));
+                    Summary.Append("<i</hlo>>");
+                    Summary.Append("    "); Summary.Append(LowestTimeStr); Summary.Append("<i<br>>");
+                }
+                Summary.Append("<i<br>>");
+            }
+           
+            ScanTraceBehaviourAnalysisResultsUiInformation UiResult = new ScanTraceBehaviourAnalysisResultsUiInformation();
+            string SummaryText = Summary.ToString();
+            if (Summary.Length == 0)
+            {
+                UiResult.SummaryText = "<i<h1>>No significant variations could be observed<i</h1>><i<br>><i<br>>";
             }
             else
             {
-                BottomTabs.TabPages["CodeTab"].Text = "  -  ";
+                UiResult.SummaryText = string.Format("<i<h1>>Some payloads caused the following effects:<i</h1>><i<br>><i<br>>{0}", SummaryText);
             }
-            if (TimeGridRows.Count > 0)
-            {
-                BottomTabs.TabPages["TimeTab"].Text = "  Time Variation  ";
-                foreach (object[] Row in TimeGridRows)
-                {
-                    RoundtripGrid.Rows.Add(Row);
-                }
-            }
-            else
-            {
-                BottomTabs.TabPages["TimeTab"].Text = "  -  ";
-            }
-            if (KeywordGridRows.Count > 0)
-            {
-                BottomTabs.TabPages["KeywordsTab"].Text = "  Keywords Inserted  ";
-                foreach (object[] Row in KeywordGridRows)
-                {
-                    KeywordsGrid.Rows.Add(Row);
-                }
-            }
-            else
-            {
-                BottomTabs.TabPages["KeywordsTab"].Text = "  -  ";
-            }
-            if (BodyGridRows.Count > 0)
-            {
-                BottomTabs.TabPages["BodyTab"].Text = "  Body Variation  ";
-                foreach (object[] Row in BodyGridRows)
-                {
-                    BodyGrid.Rows.Add(Row);
-                }
-            }
-            else
-            {
-                BottomTabs.TabPages["BodyTab"].Text = "  -  ";
-            }
-            if (SetCookieGridRows.Count > 0)
-            {
-                BottomTabs.TabPages["SetCookieTab"].Text = "  Set-Cookie Variations  ";
-                foreach (object[] Row in SetCookieGridRows)
-                {
-                    SetCookieGrid.Rows.Add(Row);
-                }
-            }
-            else
-            {
-                BottomTabs.TabPages["SetCookieTab"].Text = "  -  ";
-            }
-            if (HeadersGridRows.Count > 0)
-            {
-                BottomTabs.TabPages["HeadersTab"].Text = "  Headers Variation  ";
-                foreach (object[] Row in HeadersGridRows)
-                {
-                    HeadersGrid.Rows.Add(Row);
-                }
-                HeadersGrid.Columns[1].SortMode = DataGridViewColumnSortMode.Programmatic;
-            }
-            else
-            {
-                BottomTabs.TabPages["HeadersTab"].Text = "  -  ";
-            }
+            UiResult.SummaryText = Summary.ToString();
+            UiResult.CodeGridRows = new List<object[]>(CodeGridRows);
+            UiResult.KeywordGridRows = new List<object[]>(KeywordGridRows);
+            UiResult.SetCookieGridRows = new List<object[]>(SetCookieGridRows);
+            UiResult.HeadersGridRows = new List<object[]>(HeadersGridRows);
+            UiResult.BodyGridRows = new List<object[]>(BodyGridRows);
+            UiResult.TimeGridRows = new List<object[]>(TimeGridRows);
+            return UiResult;
         }
 
         private void LoadTraceViewerBtn_Click(object sender, EventArgs e)
@@ -771,38 +847,53 @@ namespace IronWASP
             try
             {
                 int ID = SelectedTraceId;
-                string[] OverviewAndMessage = IronDB.GetScanTraceOverviewAndMessage(ID);
-                string OverviewXml = OverviewAndMessage[0];
-                string Message = OverviewAndMessage[1];
+                LogTraceViewer TraceViewer = new LogTraceViewer(ID, CurrentUiResults);
+                
+                //string[] OverviewAndMessage = IronDB.GetScanTraceOverviewAndMessage(ID);
+                //string OverviewXml = OverviewAndMessage[0];
+                //string Message = OverviewAndMessage[1];
+                //IronTrace ScanTraceRecord = IronDB.GetScanTraces(ID, 1)[0];
 
 
-                //string Message = IronDB.GetScanTraceMessage(ID);
-                StringBuilder SB = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;}");
-                SB.Append(Tools.RtfSafe(Message));
-                LogTraceViewer TraceViewer = new LogTraceViewer();
-                TraceViewer.ScanTraceMsgRTB.Rtf = SB.ToString();
+                ////string Message = IronDB.GetScanTraceMessage(ID);
+                //StringBuilder SB = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;\red255\green255\blue255;}");
+                //SB.Append(Tools.RtfSafe(Message));
+                //LogTraceViewer TraceViewer = new LogTraceViewer(OverviewXml, ScanTraceRecord.Section);
+                //TraceViewer.ScanTraceMsgRTB.Rtf = SB.ToString();
 
-                try
-                {
-                    List<Dictionary<string, string>> OverviewEntries = IronTrace.GetOverviewEntriesFromXml(OverviewXml);
+                //try
+                //{
+                //    List<Dictionary<string, string>> OverviewEntries = IronTrace.GetOverviewEntriesFromXml(OverviewXml);
 
-                    foreach (Dictionary<string, string> Entry in OverviewEntries)
-                    {
-                        TraceViewer.ScanTraceOverviewGrid.Rows.Add(new object[] { false, Entry["id"], Entry["log_id"], Entry["payload"], Entry["code"], Entry["length"], Entry["mime"], Entry["time"], Entry["signature"] });
-                    }
-                }
-                catch
-                {
-                    //Probaly an entry from the log of an older version
-                }
+                //    foreach (Dictionary<string, string> Entry in OverviewEntries)
+                //    {
+                //        TraceViewer.ScanTraceOverviewGrid.Rows.Add(new object[] { false, Entry["id"], Entry["log_id"], Entry["payload"], Entry["code"], Entry["length"], Entry["mime"], Entry["time"], Entry["signature"] });
+                //    }
 
+                //    TraceViewer.SetAnalysisUiResults(CurrentUiResults);
+                //}
+                //catch
+                //{
+                //    //Probaly an entry from the log of an older version
+                //}
+                //TraceViewer.ShouldDoAnalysis = false;//We already updaing these values, they don't have to be calculated again
                 TraceViewer.Show();
-
             }
             catch (Exception Exp)
             {
                 IronException.Report("Error reading ScanTrace Message from DB", Exp.Message, Exp.StackTrace);
             }
         }
+    }
+
+    internal class ScanTraceBehaviourAnalysisResultsUiInformation
+    {
+        internal string SummaryText = "";
+        internal List<object[]> CodeGridRows = new List<object[]>();
+        internal List<object[]> KeywordGridRows = new List<object[]>();
+        internal List<object[]> SetCookieGridRows = new List<object[]>();
+        internal List<object[]> HeadersGridRows = new List<object[]>();
+        internal List<object[]> BodyGridRows = new List<object[]>();
+        internal List<object[]> TimeGridRows = new List<object[]>();
     }
 }

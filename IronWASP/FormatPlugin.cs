@@ -32,6 +32,8 @@ namespace IronWASP
         string RequestXml = "";
         string RequestHash = "";
 
+        public bool AutoDetect = false;
+
         public virtual bool Is(Request Request)
         {
             try
@@ -130,16 +132,19 @@ namespace IronWASP
             List<string> PropertyPaths = new List<string>();
             StringReader XMLStringReader = new StringReader(XML.Trim());
             XmlReader Reader = XmlReader.Create(XMLStringReader);
+
             int ParameterCount = 0;
             bool Read = true;
-            bool NextRead = false;
+
+            bool CrlfAttributeSet = false;
+
             while (Read)
             {
-                if (!NextRead) Read = Reader.Read();
-                NextRead = false;
+                Read = Reader.Read();
                 if (!Read) continue;
                 if (Reader.IsStartElement())
                 {
+                    CrlfAttributeSet = false;
                     Paths.Add(Reader.Name);
                     if (HasOname)
                     {
@@ -158,6 +163,10 @@ namespace IronWASP
                                 }
                             }
                             catch { }
+                            if (Reader.GetAttribute("crlf") != null && Reader.GetAttribute("crlf") == "1")
+                            {
+                                CrlfAttributeSet = true;
+                            }
                         }
                     }
                     else
@@ -168,42 +177,43 @@ namespace IronWASP
                     {
                         PropertyPaths.Add("");
                     }
-                    Read = Reader.Read();
-                    if (Reader.NodeType == XmlNodeType.EndElement)
+
+                    if (Reader.IsEmptyElement)
                     {
                         ParameterCount++;
-                        string Value = "";
                         ParameterNames.Add(JoinPaths(Paths, PropertyPaths));
-                        ParameterValues.Add(Value);
+                        ParameterValues.Add(Reader.Value);
+                        
                         int C = Paths.Count;
                         if (C > 0)
                         {
                             Paths.RemoveAt(C - 1);
                             PropertyPaths.RemoveAt(C - 1);
                         }
-                    }
-                    else
-                    {
-                        NextRead = true;
                     }
                 }
-                else
+                else if (Reader.NodeType == XmlNodeType.Text || Reader.NodeType == XmlNodeType.CDATA)
                 {
-                    if (Reader.NodeType == XmlNodeType.EndElement)
+                    ParameterCount++;
+                    string Value = Reader.Value.Trim();
+                    if (CrlfAttributeSet)
                     {
-                        int C = Paths.Count;
-                        if (C > 0)
-                        {
-                            Paths.RemoveAt(C - 1);
-                            PropertyPaths.RemoveAt(C - 1);
-                        }
+                        Value = Value.Replace("\n", "\r\n");//XmlReader reads \r\n as \n
                     }
-                    else
+                    ParameterNames.Add(JoinPaths(Paths, PropertyPaths));
+                    ParameterValues.Add(Value);
+                }
+                else if (Reader.NodeType == XmlNodeType.Whitespace || Reader.NodeType == XmlNodeType.SignificantWhitespace)
+                {
+
+                }
+                else if (Reader.NodeType == XmlNodeType.EndElement)
+                {
+                    int C = Paths.Count;
+                    if (C > 0)
                     {
-                        ParameterCount++;
-                        string Value = Reader.Value.Trim();
-                        ParameterNames.Add(JoinPaths(Paths, PropertyPaths));
-                        ParameterValues.Add(Value);
+                        Paths.RemoveAt(C - 1);
+                        PropertyPaths.RemoveAt(C - 1);
                     }
                 }
             }
@@ -266,48 +276,91 @@ namespace IronWASP
             //XmlWriter Writer = XmlWriter.Create(OutXml);
             StringWriter OutXml = new StringWriter();
             XmlTextWriter Writer = new XmlTextWriter(OutXml);
+            Writer.Formatting = Formatting.Indented;
             int ParameterCount = 0;
             bool Read = true;
-            bool NextRead = false;
+            //bool NextRead = false;
             while (Read)
             {
-                if (!NextRead) Read = Reader.Read();
-                NextRead = false;
+                //if (!NextRead) Read = Reader.Read();
+                //NextRead = false;
+                Read = Reader.Read();
                 if (!Read) continue;
+                //while (Reader.NodeType == XmlNodeType.Whitespace || Reader.NodeType == XmlNodeType.SignificantWhitespace)
+                //{
+                //    Reader.Read();
+                //}
                 if (Reader.IsStartElement())
                 {
                     Writer.WriteStartElement(Reader.Name);
                     if(Reader.HasAttributes) Writer.WriteAttributes(Reader, false);
-                    Read = Reader.Read();
-                    if (Reader.NodeType == XmlNodeType.EndElement)
-                    {
-                        if (ParameterCount == InjectionPosition)
-                            Writer.WriteString(Payload);
-                        else
-                            Writer.WriteString("");
-                        ParameterCount++;
-                        Writer.WriteEndElement();
-                    }
-                    else
-                    {
-                        NextRead = true;
-                    }
-                }
-                else
-                {
-                    if (Reader.NodeType == XmlNodeType.EndElement)
-                    {
-                        Writer.WriteEndElement();
-                    }
-                    else
+                    if (Reader.IsEmptyElement)
                     {
                         if (ParameterCount == InjectionPosition)
                             Writer.WriteString(Payload);
                         else
                             Writer.WriteString(Reader.Value);
                         ParameterCount++;
+                        Writer.WriteEndElement();
                     }
+                    
+                    //Read = Reader.Read();
+                    //while (Reader.NodeType == XmlNodeType.Whitespace || Reader.NodeType == XmlNodeType.SignificantWhitespace)
+                    //{
+                    //    Reader.Read();
+                    //}
+                    //if (Reader.NodeType == XmlNodeType.Text || Reader.NodeType == XmlNodeType.EndElement)
+                    //{
+                    //    if (ParameterCount == InjectionPosition)
+                    //        Writer.WriteString(Payload);
+                    //    else
+                    //        Writer.WriteString(Reader.Value);
+                    //    ParameterCount++;
+                    //}
+                    //else
+                    //{
+                    //    NextRead = true;
+                    //}
+                    //if (Reader.NodeType == XmlNodeType.EndElement)
+                    //{
+                    //    //if (ParameterCount == InjectionPosition)
+                    //    //    Writer.WriteString(Payload);
+                    //    //else
+                    //    //    Writer.WriteString("");
+                    //    //ParameterCount++;
+                    //    Writer.WriteEndElement();
+                    //}
                 }
+                else if (Reader.NodeType == XmlNodeType.Text)
+                {
+                    if (ParameterCount == InjectionPosition)
+                        Writer.WriteString(Payload);
+                    else
+                        Writer.WriteString(Reader.Value);
+                    ParameterCount++;
+                }
+                else if (Reader.NodeType == XmlNodeType.Whitespace || Reader.NodeType == XmlNodeType.SignificantWhitespace)
+                {
+                }
+                else if (Reader.NodeType == XmlNodeType.EndElement)
+                {
+                    Writer.WriteEndElement();
+                }
+                //else
+                //{
+                //    if (Reader.NodeType == XmlNodeType.EndElement)
+                //    {
+                //        Writer.WriteEndElement();
+                //    }
+                //    //else
+                //    //{
+                //    //    if (ParameterCount == InjectionPosition)
+                //    //        Writer.WriteString(Payload);
+                //    //    else
+                //    //        Writer.WriteString(Reader.Value);
+                //    //    ParameterCount++;
+                //    //}
+                //}
             }
             Reader.Close();
             Writer.Close();
@@ -331,12 +384,26 @@ namespace IronWASP
 
         public static void Add(FormatPlugin FP)
         {
-            if ((FP.Name.Length > 0) && !(FP.Name.Equals("All") || FP.Name.Equals("None")))
+            if ((FP.Name.Length > 0) && !(FP.Name.Equals("All") || FP.Name.Equals("None") || FP.Name.Equals("Normal")))
             {
                 if (!List().Contains(FP.Name))
                 {
-                    FP.FileName = PluginEngine.FileName;
+                    if (FP.FileName != "Internal")
+                    {
+                        FP.FileName = PluginEngine.FileName;
+                    }
                     Collection.Add(FP);
+                }
+            }
+            else
+            {
+                if (FP.Name.Length == 0)
+                {
+                    IronException.Report("Invalid Format Plugin Name", "The Format Plugin's name is empty so it cannot be loaded.");
+                }
+                else
+                {
+                    IronException.Report("Invalid Format Plugin Name", string.Format("The Format Plugin's name is '{0}' which is an invalid value. Set a different name.", FP.Name));
                 }
             }
         }
@@ -377,40 +444,64 @@ namespace IronWASP
             Collection.RemoveAt(PluginIndex);
         }
 
-        public static List<FormatPlugin> Get(Request Request)
+        public static string Get(Request Request)
         {
-            return Get(Request, new List<string>() { "JSON", "MultiPart", "XML" });
+            return Get(Request, new List<string>() {"MultiPart", "JSON", "SOAP", "XML" });
         }
 
-        public static List<FormatPlugin> Get(Request Request, List<string> FormatsToCheckFor)
+        public static string Get(Request Req, List<string> FormatsToCheckFor)
         {
-            List<FormatPlugin> RightPlugins = new List<FormatPlugin>();
-            foreach (string Name in List())
+            if (IsNormal(Req))
             {
-                if (!FormatsToCheckFor.Contains(Name)) continue;
-                if (Get(Name).Is(Request)) RightPlugins.Add(Get(Name));
+                return "Normal";
             }
-            return RightPlugins;
+            else
+	        {
+                foreach (string Name in FormatsToCheckFor)
+                {
+                    if (Get(Name).Is(Req)) return Name;
+                }   
+            }
+            return "";
         }
 
-        public static List<FormatPlugin> Get(Response Response)
+        public static string Get(Response Res)
         {
-            List<FormatPlugin> RightPlugins = new List<FormatPlugin>();
-            foreach (string Name in List())
+            if (Res.IsJson)
             {
-                if (Get(Name).Is(Response)) RightPlugins.Add(Get(Name));
+                return "JSON";
             }
-            return RightPlugins;
+            else if (Res.IsXml)
+            {
+                if (Get("SOAP").Is(Res))
+                    return "SOAP";
+                else
+                    return "XML";
+            }
+            else
+            {
+                if (Get("MultiPart").Is(Res)) return "MultiPart";
+            }
+            return "";
         }
 
-        public static bool IsNormal(Request Request)
+        public static string Get(Response Res, List<string> FormatsToCheckFor)
+        {
+            foreach (string Name in FormatsToCheckFor)
+            {
+                if (Get(Name).Is(Res)) return Name;
+            }
+            return "";
+        }
+
+        public static bool IsNormal(Request Req)
         {
             try
             {
-                if (Request.BodyLength == 0) return true;
-                if (Request.Body.Count == 0) return false;
-                string BodyString = Request.BodyString;
-                string[] KVs = Request.BodyString.Split('&');
+                if (Req.BodyLength == 0) return true;
+                if (Req.Body.Count == 0) return false;
+                string BodyString = Req.BodyString;
+                string[] KVs = Req.BodyString.Split('&');
                 if (KVs.Length == 0) return false;
                 bool EqualFound = false;
                 foreach (string KV in KVs)
@@ -419,7 +510,7 @@ namespace IronWASP
                     if (KV.Contains("=")) EqualFound = true;
                     string[] kv = KV.Split('=');
                     if (kv.Length == 0) return false;
-                    if (!Regex.IsMatch(kv[0], @"^[A-Za-z0-9_\-\.]+$")) return false;
+                    if (!Regex.IsMatch(kv[0], @"^[A-Za-z0-9_\-\.%()]+$")) return false;
                 }
                 if (!EqualFound) return false;
             }

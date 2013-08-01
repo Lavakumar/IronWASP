@@ -33,6 +33,7 @@ using Jint;
 using Jint.Expressions;
 using Antlr.Runtime;
 
+
 namespace IronWASP
 {
     public class Tools
@@ -69,8 +70,50 @@ namespace IronWASP
             return Output;
         }
 
+        internal static string StripRtfTags(string Text)
+        {
+            Text = Text.Replace("<i<br>>", "");
+            Text = Text.Replace("<i<hh>>", "");
+            Text = Text.Replace("<i</hh>>", "");
+            Text = Text.Replace("<i<h>>", "");
+            Text = Text.Replace("<i</h>>", "");
+            Text = Text.Replace("<i<b>>", "");
+            Text = Text.Replace("<i</b>>", "");
+            Text = Text.Replace("<i<i>>", "");
+            Text = Text.Replace("<i</i>>", "");
+            Text = Text.Replace("<i<cr>>", "");
+            Text = Text.Replace("<i</cr>>", "");
+            Text = Text.Replace("<i<cg>>", "");
+            Text = Text.Replace("<i</cg>>", "");
+            Text = Text.Replace("<i<cb>>", "");
+            Text = Text.Replace("<i</cb>>", "");
+            Text = Text.Replace("<i<co>>", "");
+            Text = Text.Replace("<i</co>>", "");
+            Text = Text.Replace("<i<cw>>", "");
+            Text = Text.Replace("<i</cw>>", "");
+            Text = Text.Replace("<i<ac>>", "");
+            Text = Text.Replace("<i</ac>>", "");
+            Text = Text.Replace("<i<ar>>", "");
+            Text = Text.Replace("<i</ar>>", "");
+            Text = Text.Replace("<i<al>>", "");
+            Text = Text.Replace("<i</al>>", "");
+            Text = Text.Replace("<i<hlr>>", "");
+            Text = Text.Replace("<i</hlr>>", "");
+            Text = Text.Replace("<i<hlg>>", "");
+            Text = Text.Replace("<i</hlg>>", "");
+            Text = Text.Replace("<i<hlb>>", "");
+            Text = Text.Replace("<i</hlb>>", "");
+            Text = Text.Replace("<i<hlo>>", "");
+            Text = Text.Replace("<i</hlo>>", "");
+            Text = Text.Replace("<i<h1>>", "");
+            Text = Text.Replace("<i</h1>>", "");
+            return Text;
+        }
+
         internal static string RtfSafe(string Text)
         {
+            Text = Text.Replace("\r\n", "<i<br>>");
+            Text = Text.Replace("\n", "<i<br>>");
             Text = Text.Replace("\\","\\\\");
             Text = Text.Replace("{", "\\{");
             Text = Text.Replace("}", "\\}");
@@ -89,6 +132,10 @@ namespace IronWASP
             Text = Text.Replace("<i</cg>>", " \\cf0 ");
             Text = Text.Replace("<i<cb>>", " \\cf1 ");
             Text = Text.Replace("<i</cb>>", " \\cf0 ");
+            Text = Text.Replace("<i<co>>", " \\cf2 ");
+            Text = Text.Replace("<i</co>>", " \\cf0 ");
+            Text = Text.Replace("<i<cw>>", " \\cf5 ");
+            Text = Text.Replace("<i</cw>>", " \\cf0 ");
             Text = Text.Replace("<i<ac>>", " \\qc ");
             Text = Text.Replace("<i</ac>>", " \\pard ");
             Text = Text.Replace("<i<ar>>", " \\qr ");
@@ -585,7 +632,11 @@ namespace IronWASP
         public static bool IsJson(string Text)
         {
             string TrimmedText = Text.Trim();
-            if ((TrimmedText.StartsWith("{") || TrimmedText.StartsWith("[{")) && (TrimmedText.EndsWith("}") || TrimmedText.EndsWith("}]")))
+            if(TrimmedText.StartsWith("[") && TrimmedText.EndsWith("]"))
+            {
+                TrimmedText = TrimmedText.TrimStart('[').TrimEnd(']').Trim();
+            }
+            if (TrimmedText.StartsWith("{") && TrimmedText.EndsWith("}"))
             {
                 try
                 {
@@ -608,7 +659,8 @@ namespace IronWASP
                 try
                 {
                     XmlDocument Doc = new XmlDocument();
-                    Doc.InnerXml = Text;
+                    Doc.XmlResolver = null;
+                    Doc.LoadXml(TrimmedText);
                 }
                 catch { return false; }
                 return true;
@@ -617,6 +669,33 @@ namespace IronWASP
             {
                 return false;
             }
+        }
+
+        public static bool IsSoap(string Text)
+        {
+            string TrimmedText = Text.Trim();
+            if (TrimmedText.StartsWith("<") && TrimmedText.EndsWith(">"))
+            {
+                try
+                {
+                    XmlDocument Doc = new XmlDocument();
+                    Doc.XmlResolver = null;
+                    Doc.LoadXml(TrimmedText);
+                    if (Doc.DocumentElement.LocalName == "Envelope")
+                    {
+                        if (Doc.DocumentElement.ChildNodes.Count == 1 && Doc.DocumentElement.ChildNodes[0].LocalName == "Body")
+                        {
+                            return true;
+                        }
+                        else if (Doc.DocumentElement.ChildNodes.Count == 2 && Doc.DocumentElement.ChildNodes[0].LocalName == "Header" && Doc.DocumentElement.ChildNodes[1].LocalName == "Body")
+                        {
+                            return true;
+                        }
+                    }
+                }
+                catch {}
+            }
+            return false;
         }
 
 
@@ -826,11 +905,38 @@ namespace IronWASP
             return Output.ToString();
         }
 
+        public static List<string> SplitLines(string Content)
+        {
+            List<string> Result = new List<string>();
+            string[] Split = null;
+            if (Content.Contains("\n"))
+            {
+                Split = Content.Split(new char[] { '\n' });
+            }
+            else
+            {
+                Split = Content.Split(new char[] { '\r' });
+            }
+            for (int i = 0; i < Split.Length; i++)
+            {
+                string Trimmed = Split[i].Trim('\r').Trim('\n');
+                if(Trimmed.Length > 0) Result.Add(Trimmed);
+            }
+            return Result;
+        }
+
+        public static string CreateString(char C, int Repeat)
+        {
+            return new String(C, Repeat);
+        }
+
         public static bool IsXmlContentSame(string One, string Two)
         {
             XmlDocument XmlOne = new XmlDocument();
+            XmlOne.XmlResolver = null;
             XmlOne.LoadXml(One);
             XmlDocument XmlTwo = new XmlDocument();
+            XmlTwo.XmlResolver = null;
             XmlTwo.LoadXml(Two);
 
             if (XmlOne.ChildNodes.Count == XmlTwo.ChildNodes.Count)
@@ -862,6 +968,187 @@ namespace IronWASP
             {
                 return false;
             }
+        }
+
+        public static List<string> NwToIp(string NetworkAddress)
+        {
+            List<string> IPs = new List<string>();
+            if (NetworkAddress.Contains("/"))
+            {
+                string[] Parts = NetworkAddress.Split('/');
+                if (Parts.Length != 2)
+                {
+                    throw new Exception("Invalid address format");
+                }
+                string[] NwParts = GetCleanNwAddr(Parts[0]);
+                if (NwParts.Length == 1)
+                {
+                    throw new Exception(NwParts[0]);
+                }
+                int SM = 0;
+                try
+                {
+                    SM = Int32.Parse(Parts[1].Trim());
+                    if (SM < 1 || SM > 31) throw new Exception();
+                }
+                catch
+                {
+                    throw new Exception("Invalid CIDR number");
+                }
+                int Octect = SM / 8;
+                int Position = SM % 8;
+                string[] NwAddr = new string[4];
+                for (int i = 0; i < 4; i++)
+                {
+                    if (i == Octect)
+                    {
+                        int OctNum = Int32.Parse(NwParts[i]);
+                        string OctBin = Convert.ToString(OctNum, 2).PadLeft(8, '0');
+                        string OctBinPrefix = OctBin.Substring(0, Position);
+                        int Lowest = Convert.ToInt32(OctBinPrefix.PadRight(8, '0'), 2);
+                        int Highest = Convert.ToInt32(OctBinPrefix.PadRight(8, '1'), 2);
+                        NwAddr[i] = string.Format("{0}-{1}", Lowest, Highest);
+                    }
+                    else if(i > Octect)
+                    {
+                        NwAddr[i] = "0-255";
+                    }
+                    else
+                    {
+                        NwAddr[i] = NwParts[i];
+                    }
+                }
+                IPs = GetOctectRange(NwAddr, 0);
+                if (IPs.Count > 1)
+                {
+                    IPs.RemoveAt(0);//Remove network address
+                    IPs.RemoveAt(IPs.Count - 1);//Remove broadcast address
+                }
+            }
+            else if (NetworkAddress.Contains("-"))
+            {
+                string[] NwParts = GetCleanNwAddr(NetworkAddress);
+                if (NwParts.Length != 4) throw new Exception(NwParts[0]);
+                IPs.AddRange(GetOctectRange(NwParts, 0));
+            }
+            return IPs;
+        }
+
+        static List<string> GetOctectRange(string[] NwAddr, int OctectIndex)
+        {
+            List<string> IPs = new List<string>();
+
+            if (NwAddr[OctectIndex].Contains("-"))
+            {
+                List<int> Range = GetNumberRange(NwAddr[OctectIndex]);
+                foreach (int Number in Range)
+                {
+                    if (OctectIndex == 3)
+                    {
+                        IPs.Add(string.Format("{0}.{1}.{2}.{3}", NwAddr[0], NwAddr[1], NwAddr[2], Number));
+                    }
+                    else
+                    {
+                        string[] NewNwAddr = new string[4];
+                        NwAddr.CopyTo(NewNwAddr, 0);
+                        NewNwAddr[OctectIndex] = Number.ToString();
+                        IPs.AddRange(GetOctectRange(NewNwAddr, OctectIndex + 1));
+                    }
+                }
+            }
+            else
+            {
+                if (OctectIndex == 3)
+                {
+                    IPs.Add(string.Format("{0}.{1}.{2}.{3}", NwAddr[0], NwAddr[1], NwAddr[2], NwAddr[3]));
+                }
+                else
+                {
+                    IPs.AddRange(GetOctectRange(NwAddr, OctectIndex + 1));
+                }
+            }
+            return IPs;
+        }
+
+        public static string[] GetCleanNwAddr(string NwAddr)
+        {
+            string[] Parts = NwAddr.Trim().Split('.');
+            string[] Result = new string[4];
+            if (Parts.Length != 4)
+            {
+                return new string[] {"Invalid Network address"};
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                List<int> Nums = new List<int>();
+                if (Parts[i].Contains("-"))
+                {
+                    string[] SubParts = Parts[i].Split('-');
+                    if (SubParts.Length != 2)
+                    {
+                        return new string[] { "Invalid Network address" };
+                    }
+                    try
+                    {
+                        int FirstNum = Int32.Parse(SubParts[0].Trim());
+                        int LastNum = Int32.Parse(SubParts[1].Trim());
+                        if (FirstNum >= LastNum)
+                        {
+                            return new string[] { "Invalid address range" };
+                        }
+                        Nums.Add(FirstNum);
+                        Nums.Add(LastNum);
+                    }
+                    catch
+                    {
+                        return new string[] { "Invalid Network address" };
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        Nums.Add(Int32.Parse(Parts[i].Trim()));
+                    }
+                    catch
+                    {
+                        return new string[] { "Invalid Network address" };
+                    }
+                }
+                foreach (int Num in Nums)
+                {
+                    if ((Num < 0 || Num > 255) || ((i == 0) && (Num < 1 || Num > 223)))
+                    {
+                        return new string[] { "Invalid Network address" };
+                    }
+                }
+                if (Nums.Count == 1)
+                {
+                    Result[i] = Nums[0].ToString();
+                }
+                else if (Nums.Count == 2)
+                {
+                    Result[i] = string.Format("{0}-{1}", Nums[0], Nums[1]);
+                }
+            }
+            return Result;
+        }
+
+        static List<int> GetNumberRange(string Range)
+        {
+            List<int> Numbers = new List<int>();
+            string[] RangeParts = Range.Split('-');
+            if(RangeParts.Length != 2)
+            {
+                throw new Exception("Invalid range");
+            }
+            int Start = Int32.Parse(RangeParts[0].Trim());
+            int End = Int32.Parse(RangeParts[1].Trim());
+            for (int i = Start; i <= End; i++)
+            {
+                Numbers.Add(i);
+            }
+            return Numbers;
         }
 
         static bool IsXmlNodeSame(XmlNode One, XmlNode Two)

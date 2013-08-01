@@ -777,6 +777,12 @@ namespace IronWASP
         }
         public Response Send()
         {
+            if (!IronProxy.ProxyRunning)
+            {
+                throw new Exception("IronWASP Proxy is currently not running. IronWASP cannot send Requests unless the Proxy is started. Please go to the Proxy section of IronWASP and click on the 'Start Proxy' button to fix this problem.");
+            }
+
+
             this.response = null;
             StringDictionary Flags = new StringDictionary();
             string BuiltBy;
@@ -1582,11 +1588,11 @@ namespace IronWASP
             return true;
         }
 
-        string PathPartEncode(string Value)
+        internal static string PathPartEncode(string Value)
         {
             return Tools.UrlPathPartEncode(Value);
         }
-        string PathPartDecode(string Value)
+        internal static string PathPartDecode(string Value)
         {
             return Tools.UrlPathPartDecode(Value);
         }

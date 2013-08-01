@@ -82,7 +82,7 @@ namespace IronWASP
             try
             {
                 SQLiteCommand Cmd = MT_DB.CreateCommand();
-                Cmd.CommandText = "UPDATE TestLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, Notes=@Notes WHERE ID=@ID";
+                Cmd.CommandText = "UPDATE TestLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, RoundTrip=@RoundTrip, Notes=@Notes WHERE ID=@ID";
                 Cmd.Parameters.AddWithValue("@Code", Response.Code);
                 Cmd.Parameters.AddWithValue("@Length", Response.BodyLength);
                 Cmd.Parameters.AddWithValue("@MIME", Response.ContentType);
@@ -94,6 +94,7 @@ namespace IronWASP
                     Cmd.Parameters.AddWithValue("@ResponseBody", Response.BodyString);
                 //Cmd.Parameters.AddWithValue("@ResponseBody", Response.BodyString);
                 Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(Response.IsBinary));
+                Cmd.Parameters.AddWithValue("@RoundTrip", Response.RoundTrip);
                 Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
                 Cmd.Parameters.AddWithValue("@ID", Response.ID);
                 Cmd.ExecuteNonQuery();
@@ -424,7 +425,7 @@ namespace IronWASP
                         //Insert Request/Response in to DB
                         foreach (Session IrSe in IronSessions)
                         {
-                            Cmd.CommandText = "INSERT INTO ProxyLog (ID , SSL, HostName, Method, URL, Edited, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, OriginalRequestHeaders, OriginalRequestBody, BinaryOriginalRequest, Code, Length, MIME, SetCookie, ResponseHeaders, ResponseBody, BinaryResponse, OriginalResponseHeaders, OriginalResponseBody, BinaryOriginalResponse, Notes) VALUES (@ID , @SSL, @HostName, @Method, @URL, @Edited, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @OriginalRequestHeaders, @OriginalRequestBody, @BinaryOriginalRequest, @Code, @Length, @MIME, @SetCookie, @ResponseHeaders, @ResponseBody, @BinaryResponse, @OriginalResponseHeaders, @OriginalResponseBody, @BinaryOriginalResponse, @Notes)";
+                            Cmd.CommandText = "INSERT INTO ProxyLog (ID , SSL, HostName, Method, URL, Edited, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, OriginalRequestHeaders, OriginalRequestBody, BinaryOriginalRequest, Code, Length, MIME, SetCookie, ResponseHeaders, ResponseBody, BinaryResponse, OriginalResponseHeaders, OriginalResponseBody, BinaryOriginalResponse, RoundTrip, Notes) VALUES (@ID , @SSL, @HostName, @Method, @URL, @Edited, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @OriginalRequestHeaders, @OriginalRequestBody, @BinaryOriginalRequest, @Code, @Length, @MIME, @SetCookie, @ResponseHeaders, @ResponseBody, @BinaryResponse, @OriginalResponseHeaders, @OriginalResponseBody, @BinaryOriginalResponse, @RoundTrip, @Notes)";
                             Cmd.Parameters.AddWithValue("@ID", IrSe.Request.ID);
                             Cmd.Parameters.AddWithValue("@SSL", AsInt(IrSe.Request.SSL));
                             Cmd.Parameters.AddWithValue("@HostName", IrSe.Request.Host);
@@ -480,12 +481,14 @@ namespace IronWASP
                                     Cmd.Parameters.AddWithValue("@OriginalResponseBody", IrSe.OriginalResponse.BodyString);
                                 //Cmd.Parameters.AddWithValue("@OriginalResponseBody", IrSe.OriginalResponse.BodyString);
                                 Cmd.Parameters.AddWithValue("@BinaryOriginalResponse", AsInt(IrSe.OriginalResponse.IsBinary));
+                                Cmd.Parameters.AddWithValue("@RoundTrip", IrSe.OriginalResponse.RoundTrip);
                             }
                             else
                             {
                                 Cmd.Parameters.AddWithValue("@OriginalResponseHeaders", "");//IrSe.Response.GetHeadersAsString());
                                 Cmd.Parameters.AddWithValue("@OriginalResponseBody", "");//IrSe.Response.BodyString);
                                 Cmd.Parameters.AddWithValue("@BinaryOriginalResponse", 0);
+                                Cmd.Parameters.AddWithValue("@RoundTrip", IrSe.Response.RoundTrip);
                             }
                             Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
                             Cmd.ExecuteNonQuery();
@@ -515,7 +518,7 @@ namespace IronWASP
                         }
                         foreach (Response Res in Responses)
                         {
-                            Cmd.CommandText = "UPDATE ProxyLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, Edited=@Edited, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, Notes=@Notes WHERE ID=@ID";
+                            Cmd.CommandText = "UPDATE ProxyLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, Edited=@Edited, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, RoundTrip=@RoundTrip, Notes=@Notes WHERE ID=@ID";
                             Cmd.Parameters.AddWithValue("@Code", Res.Code);
                             Cmd.Parameters.AddWithValue("@Length", Res.BodyLength);
                             Cmd.Parameters.AddWithValue("@MIME", Res.ContentType);
@@ -529,6 +532,7 @@ namespace IronWASP
                                 Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
                             //Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
                             Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(Res.IsBinary));
+                            Cmd.Parameters.AddWithValue("@RoundTrip", Res.RoundTrip);
                             Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
                             Cmd.Parameters.AddWithValue("@ID", Res.ID);
                             Cmd.ExecuteNonQuery();
@@ -552,7 +556,7 @@ namespace IronWASP
                         }
                         foreach (Response Res in OriginalResponses)
                         {
-                            Cmd.CommandText = "UPDATE ProxyLog SET Edited=@Edited, OriginalResponseHeaders=@OriginalResponseHeaders, OriginalResponseBody=@OriginalResponseBody, BinaryOriginalResponse=@BinaryOriginalResponse, Notes=@Notes WHERE ID=@ID";
+                            Cmd.CommandText = "UPDATE ProxyLog SET Edited=@Edited, OriginalResponseHeaders=@OriginalResponseHeaders, OriginalResponseBody=@OriginalResponseBody, BinaryOriginalResponse=@BinaryOriginalResponse, RoundTrip=@RoundTrip, Notes=@Notes WHERE ID=@ID";
                             Cmd.Parameters.AddWithValue("@Edited", 1);
                             //Cmd.Parameters.AddWithValue("@OriginalResponseHeaders", Res.GetHeadersAsString());
                             Cmd.Parameters.AddWithValue("@OriginalResponseHeaders", Res.StoredHeadersString);
@@ -564,6 +568,7 @@ namespace IronWASP
                             Cmd.Parameters.AddWithValue("@BinaryOriginalResponse", AsInt(Res.IsBinary));
                             Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
                             Cmd.Parameters.AddWithValue("@ID", Res.ID);
+                            Cmd.Parameters.AddWithValue("@RoundTrip", Res.RoundTrip);
                             Cmd.ExecuteNonQuery();
                         }
                         foreach (Request Req in EditedRequests)
@@ -697,6 +702,7 @@ namespace IronWASP
                                 Cmd.Parameters.AddWithValue("@OriginalResponseHeaders", "");
                                 Cmd.Parameters.AddWithValue("@OriginalResponseBody", "");
                                 Cmd.Parameters.AddWithValue("@BinaryOriginalResponse", 0);
+                                Cmd.Parameters.AddWithValue("@RoundTrip", ResArr[1].RoundTrip);
                             }
                             else
                             {
@@ -706,6 +712,7 @@ namespace IronWASP
                                 else
                                     Cmd.Parameters.AddWithValue("@OriginalResponseBody", ResArr[0].BodyString);
                                 Cmd.Parameters.AddWithValue("@BinaryOriginalResponse", AsInt(ResArr[0].IsBinary));
+                                Cmd.Parameters.AddWithValue("@RoundTrip", ResArr[0].RoundTrip);
                             }
 
                             Cmd.ExecuteNonQuery();
@@ -746,7 +753,7 @@ namespace IronWASP
                         //Insert Request/Response in to DB
                         foreach (Session IrSe in IronSessions)
                         {
-                            Cmd.CommandText = "INSERT INTO ShellLog (ID , SSL, HostName, Method, URL, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, Code, Length, MIME, SetCookie, ResponseHeaders, ResponseBody, BinaryResponse, Notes) VALUES (@ID , @SSL, @HostName, @Method, @URL, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @Code, @Length, @MIME, @SetCookie, @ResponseHeaders, @ResponseBody, @BinaryResponse, @Notes)";
+                            Cmd.CommandText = "INSERT INTO ShellLog (ID , SSL, HostName, Method, URL, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, Code, Length, MIME, SetCookie, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip, Notes) VALUES (@ID , @SSL, @HostName, @Method, @URL, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @Code, @Length, @MIME, @SetCookie, @ResponseHeaders, @ResponseBody, @BinaryResponse, @RoundTrip, @Notes)";
                             Cmd.Parameters.AddWithValue("@ID", IrSe.Request.ID);
                             Cmd.Parameters.AddWithValue("@SSL", AsInt(IrSe.Request.SSL));
                             Cmd.Parameters.AddWithValue("@HostName", IrSe.Request.Host);
@@ -775,6 +782,7 @@ namespace IronWASP
                                 Cmd.Parameters.AddWithValue("@ResponseBody", IrSe.Response.BodyString);
                             //Cmd.Parameters.AddWithValue("@ResponseBody", IrSe.Response.BodyString);
                             Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(IrSe.Response.IsBinary));
+                            Cmd.Parameters.AddWithValue("@RoundTrip", IrSe.Response.RoundTrip);
                             Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
                             Cmd.ExecuteNonQuery();
                         }
@@ -801,7 +809,7 @@ namespace IronWASP
                         }
                         foreach (Response Res in Responses)
                         {
-                            Cmd.CommandText = "UPDATE ShellLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, Notes=@Notes WHERE ID=@ID";
+                            Cmd.CommandText = "UPDATE ShellLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, RoundTrip=@RoundTrip, Notes=@Notes WHERE ID=@ID";
                             Cmd.Parameters.AddWithValue("@Code", Res.Code);
                             Cmd.Parameters.AddWithValue("@Length", Res.BodyLength);
                             Cmd.Parameters.AddWithValue("@MIME", Res.ContentType);
@@ -814,6 +822,7 @@ namespace IronWASP
                                 Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
                             //Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
                             Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(Res.IsBinary));
+                            Cmd.Parameters.AddWithValue("@RoundTrip", Res.RoundTrip);
                             Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
                             Cmd.Parameters.AddWithValue("@ID", Res.ID);
                             Cmd.ExecuteNonQuery();
@@ -843,7 +852,7 @@ namespace IronWASP
                         //Insert Request/Response in to DB
                         foreach (Session IrSe in IronSessions)
                         {
-                            Cmd.CommandText = "INSERT INTO ProbeLog (ID , SSL, HostName, Method, URL, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, Code, Length, MIME, SetCookie, ResponseHeaders, ResponseBody, BinaryResponse, Notes) VALUES (@ID , @SSL, @HostName, @Method, @URL, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @Code, @Length, @MIME, @SetCookie, @ResponseHeaders, @ResponseBody, @BinaryResponse, @Notes)";
+                            Cmd.CommandText = "INSERT INTO ProbeLog (ID , SSL, HostName, Method, URL, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, Code, Length, MIME, SetCookie, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip, Notes) VALUES (@ID , @SSL, @HostName, @Method, @URL, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @Code, @Length, @MIME, @SetCookie, @ResponseHeaders, @ResponseBody, @BinaryResponse, @RoundTrip, @Notes)";
                             Cmd.Parameters.AddWithValue("@ID", IrSe.Request.ID);
                             Cmd.Parameters.AddWithValue("@SSL", AsInt(IrSe.Request.SSL));
                             Cmd.Parameters.AddWithValue("@HostName", IrSe.Request.Host);
@@ -872,6 +881,7 @@ namespace IronWASP
                                 Cmd.Parameters.AddWithValue("@ResponseBody", IrSe.Response.BodyString);
                             //Cmd.Parameters.AddWithValue("@ResponseBody", IrSe.Response.BodyString);
                             Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(IrSe.Response.IsBinary));
+                            Cmd.Parameters.AddWithValue("@RoundTrip", IrSe.Response.RoundTrip);
                             Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
                             Cmd.ExecuteNonQuery();
                         }
@@ -898,7 +908,7 @@ namespace IronWASP
                         }
                         foreach (Response Res in Responses)
                         {
-                            Cmd.CommandText = "UPDATE ProbeLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, Notes=@Notes WHERE ID=@ID";
+                            Cmd.CommandText = "UPDATE ProbeLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, RoundTrip=@RoundTrip, Notes=@Notes WHERE ID=@ID";
                             Cmd.Parameters.AddWithValue("@Code", Res.Code);
                             Cmd.Parameters.AddWithValue("@Length", Res.BodyLength);
                             Cmd.Parameters.AddWithValue("@MIME", Res.ContentType);
@@ -911,6 +921,7 @@ namespace IronWASP
                                 Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
                             //Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
                             Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(Res.IsBinary));
+                            Cmd.Parameters.AddWithValue("@RoundTrip", Res.RoundTrip);
                             Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
                             Cmd.Parameters.AddWithValue("@ID", Res.ID);
                             Cmd.ExecuteNonQuery();
@@ -940,7 +951,7 @@ namespace IronWASP
                         //Insert Request/Response in to DB
                         foreach (Session IrSe in IronSessions)
                         {
-                            Cmd.CommandText = "INSERT INTO ScanLog (ID , ScanID, SSL, HostName, Method, URL, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, Code, Length, MIME, SetCookie, ResponseHeaders, ResponseBody, BinaryResponse, Notes) VALUES (@ID , @ScanID, @SSL, @HostName, @Method, @URL, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @Code, @Length, @MIME, @SetCookie, @ResponseHeaders, @ResponseBody, @BinaryResponse, @Notes)";
+                            Cmd.CommandText = "INSERT INTO ScanLog (ID , ScanID, SSL, HostName, Method, URL, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, Code, Length, MIME, SetCookie, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip, Notes) VALUES (@ID , @ScanID, @SSL, @HostName, @Method, @URL, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @Code, @Length, @MIME, @SetCookie, @ResponseHeaders, @ResponseBody, @BinaryResponse, @RoundTrip, @Notes)";
                             Cmd.Parameters.AddWithValue("@ID", IrSe.Request.ID);
                             Cmd.Parameters.AddWithValue("@ScanID", IrSe.Request.ScanID);
                             Cmd.Parameters.AddWithValue("@SSL", AsInt(IrSe.Request.SSL));
@@ -969,6 +980,7 @@ namespace IronWASP
                             //Cmd.Parameters.AddWithValue("@ResponseBody", IrSe.Response.BodyString);
                             Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(IrSe.Response.IsBinary));
                             Cmd.Parameters.AddWithValue("@SetCookie", AsInt((IrSe.Response.SetCookies.Count > 0)));
+                            Cmd.Parameters.AddWithValue("@RoundTrip", IrSe.Response.RoundTrip);
                             Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
                             Cmd.ExecuteNonQuery();
                         }
@@ -996,7 +1008,7 @@ namespace IronWASP
                         }
                         foreach (Response Res in Responses)
                         {
-                            Cmd.CommandText = "UPDATE ScanLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, Notes=@Notes WHERE ID=@ID";
+                            Cmd.CommandText = "UPDATE ScanLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, RoundTrip=@RoundTrip, Notes=@Notes WHERE ID=@ID";
                             Cmd.Parameters.AddWithValue("@Code", Res.Code);
                             Cmd.Parameters.AddWithValue("@Length", Res.BodyLength);
                             Cmd.Parameters.AddWithValue("@MIME", Res.ContentType);
@@ -1009,6 +1021,7 @@ namespace IronWASP
                                 Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
                             //Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
                             Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(Res.IsBinary));
+                            Cmd.Parameters.AddWithValue("@RoundTrip", Res.RoundTrip);
                             Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
                             Cmd.Parameters.AddWithValue("@ID", Res.ID);
                             Cmd.ExecuteNonQuery();
@@ -1035,13 +1048,13 @@ namespace IronWASP
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(Log))
                     {
-                        Cmd.CommandText = "CREATE TABLE IF NOT EXISTS Log (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, Notes TEXT)";
+                        Cmd.CommandText = "CREATE TABLE IF NOT EXISTS Log (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, RoundTrip INT, Notes TEXT)";
                         Cmd.ExecuteNonQuery();
                         
                         //Insert Request/Response in to DB
                         foreach (Session IrSe in IronSessions)
                         {
-                            Cmd.CommandText = "INSERT INTO Log (ID , SSL, HostName, Method, URL, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, Code, Length, MIME, SetCookie, ResponseHeaders, ResponseBody, BinaryResponse, Notes) VALUES (@ID , @SSL, @HostName, @Method, @URL, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @Code, @Length, @MIME, @SetCookie, @ResponseHeaders, @ResponseBody, @BinaryResponse, @Notes)";
+                            Cmd.CommandText = "INSERT INTO Log (ID , SSL, HostName, Method, URL, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, Code, Length, MIME, SetCookie, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip, Notes) VALUES (@ID , @SSL, @HostName, @Method, @URL, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @Code, @Length, @MIME, @SetCookie, @ResponseHeaders, @ResponseBody, @BinaryResponse, @RoundTrip, @Notes)";
                             Cmd.Parameters.AddWithValue("@ID", IrSe.Request.ID);
                             Cmd.Parameters.AddWithValue("@SSL", AsInt(IrSe.Request.SSL));
                             Cmd.Parameters.AddWithValue("@HostName", IrSe.Request.Host);
@@ -1070,6 +1083,7 @@ namespace IronWASP
                                 Cmd.Parameters.AddWithValue("@ResponseBody", IrSe.Response.BodyString);
                             //Cmd.Parameters.AddWithValue("@ResponseBody", IrSe.Response.BodyString);
                             Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(IrSe.Response.IsBinary));
+                            Cmd.Parameters.AddWithValue("@RoundTrip", IrSe.Response.RoundTrip);
                             Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
                             Cmd.ExecuteNonQuery();
                         }
@@ -1096,7 +1110,7 @@ namespace IronWASP
                         }
                         foreach (Response Res in Responses)
                         {
-                            Cmd.CommandText = "UPDATE Log SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, Notes=@Notes WHERE ID=@ID";
+                            Cmd.CommandText = "UPDATE Log SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, RoundTrip=@RoundTrip, Notes=@Notes WHERE ID=@ID";
                             Cmd.Parameters.AddWithValue("@Code", Res.Code);
                             Cmd.Parameters.AddWithValue("@Length", Res.BodyLength);
                             Cmd.Parameters.AddWithValue("@MIME", Res.ContentType);
@@ -1109,6 +1123,7 @@ namespace IronWASP
                                 Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
                             //Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
                             Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(Res.IsBinary));
+                            Cmd.Parameters.AddWithValue("@RoundTrip", Res.RoundTrip);
                             Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
                             Cmd.Parameters.AddWithValue("@ID", Res.ID);
                             Cmd.ExecuteNonQuery();
@@ -1126,36 +1141,7 @@ namespace IronWASP
         }
         #endregion
 
-        internal static void CreateScan(int ScanID, Request Req)
-        {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
-            DB.Open();
-            try
-            {
-                SQLiteCommand Cmd = DB.CreateCommand();
-                Cmd.CommandText = "INSERT INTO ScanQueue (ScanID, RequestHeaders, RequestBody, BinaryRequest, Status, Method, URL) VALUES (@ScanID, @RequestHeaders, @RequestBody, @BinaryRequest, @Status, @Method, @URL)";
-                Cmd.Parameters.AddWithValue("@ScanID", ScanID);
-                Cmd.Parameters.AddWithValue("@RequestHeaders", Req.GetHeadersAsString());
-                if(Req.IsBinary)
-                    Cmd.Parameters.AddWithValue("@RequestBody", Req.BinaryBodyString);
-                else
-                    Cmd.Parameters.AddWithValue("@RequestBody", Req.BodyString);
-                Cmd.Parameters.AddWithValue("@BinaryRequest", AsInt(Req.IsBinary));
-                Cmd.Parameters.AddWithValue("@Status", "Not Started");
-                Cmd.Parameters.AddWithValue("@Method", Req.Method);
-                Cmd.Parameters.AddWithValue("@URL", Req.FullUrl);
-                Cmd.ExecuteNonQuery();
-            }
-            catch(Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
-
-            //CreateScan(ScanID, Req, "Not Started", "", "", "", "");
-        }
-
+        #region LogTraces
         internal static void LogTraces(List<IronTrace> Traces)
         {
             SQLiteConnection Log = new SQLiteConnection("data source=" + TraceLogFile);
@@ -1181,7 +1167,7 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch(Exception Exp)
+            catch (Exception Exp)
             {
                 Log.Close();
                 throw Exp;
@@ -1208,7 +1194,7 @@ namespace IronWASP
                             Cmd.Parameters.AddWithValue("@Section", Trace.Section);
                             Cmd.Parameters.AddWithValue("@Parameter", Trace.Parameter);
                             Cmd.Parameters.AddWithValue("@Title", Trace.Title);
-                            Cmd.Parameters.AddWithValue("@Message", Trace.Message);
+                            Cmd.Parameters.AddWithValue("@Message", Trace.MessageXml);
                             Cmd.Parameters.AddWithValue("@OverviewXml", Trace.OverviewXml);
                             Cmd.ExecuteNonQuery();
                         }
@@ -1255,6 +1241,39 @@ namespace IronWASP
                 throw Exp;
             }
             Log.Close();
+        }
+        #endregion
+
+        #region Scanning
+
+        internal static void CreateScan(int ScanID, Request Req)
+        {
+            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
+            DB.Open();
+            try
+            {
+                SQLiteCommand Cmd = DB.CreateCommand();
+                Cmd.CommandText = "INSERT INTO ScanQueue (ScanID, RequestHeaders, RequestBody, BinaryRequest, Status, Method, URL) VALUES (@ScanID, @RequestHeaders, @RequestBody, @BinaryRequest, @Status, @Method, @URL)";
+                Cmd.Parameters.AddWithValue("@ScanID", ScanID);
+                Cmd.Parameters.AddWithValue("@RequestHeaders", Req.GetHeadersAsString());
+                if(Req.IsBinary)
+                    Cmd.Parameters.AddWithValue("@RequestBody", Req.BinaryBodyString);
+                else
+                    Cmd.Parameters.AddWithValue("@RequestBody", Req.BodyString);
+                Cmd.Parameters.AddWithValue("@BinaryRequest", AsInt(Req.IsBinary));
+                Cmd.Parameters.AddWithValue("@Status", "Not Started");
+                Cmd.Parameters.AddWithValue("@Method", Req.Method);
+                Cmd.Parameters.AddWithValue("@URL", Req.FullUrl);
+                Cmd.ExecuteNonQuery();
+            }
+            catch(Exception Exp)
+            {
+                DB.Close();
+                throw Exp;
+            }
+            DB.Close();
+
+            //CreateScan(ScanID, Req, "Not Started", "", "", "", "");
         }
 
         internal static void UpdateScan(int ScanID, Request Req, string Status, string InjectionPoints, string FormatPlugin, string ScanPlugins, string SessionPlugin)
@@ -1339,6 +1358,7 @@ namespace IronWASP
             Log.Close();
 
         }
+        #endregion
 
         internal static void LogPluginResults(List<Finding> Results)
         {
@@ -1352,23 +1372,27 @@ namespace IronWASP
                     {
                         foreach (Finding PR in Results)
                         {
-                            Cmd.CommandText = "INSERT INTO PluginResult (ID, HostName, Title, Plugin, Summary, Severity, Confidence, Type, UniquenessString) VALUES (@ID,@HostName,@Title,@Plugin,@Summary,@Severity,@Confidence,@Type,@UniquenessString)";
+                            Cmd.CommandText = "INSERT INTO Findings (ID, HostName, Title, FinderName, FinderType, ScanID, Meta, Summary, Severity, Confidence, Type, UniquenessString) VALUES (@ID, @HostName, @Title, @FinderName, @FinderType, @ScanID, @Meta, @Summary, @Severity, @Confidence, @Type, @UniquenessString)";
                             Cmd.Parameters.AddWithValue("@ID", PR.Id);
                             Cmd.Parameters.AddWithValue("@HostName", PR.AffectedHost);
                             Cmd.Parameters.AddWithValue("@Title", PR.Title);
-                            Cmd.Parameters.AddWithValue("@Plugin", PR.Plugin);
-                            Cmd.Parameters.AddWithValue("@Summary", PR.Summary);
+                            Cmd.Parameters.AddWithValue("@FinderName", PR.FinderName);
+                            Cmd.Parameters.AddWithValue("@FinderType", PR.FinderType);
+                            Cmd.Parameters.AddWithValue("@ScanID", PR.ScanId);
+                            Cmd.Parameters.AddWithValue("@Meta", PR.XmlMeta);
+                            Cmd.Parameters.AddWithValue("@Summary", PR.XmlSummary);
                             Cmd.Parameters.AddWithValue("@Severity", GetSeverity(PR.Severity));
                             Cmd.Parameters.AddWithValue("@Confidence", GetConfidence(PR.Confidence));
                             Cmd.Parameters.AddWithValue("@Type", GetResultType(PR.Type));
                             Cmd.Parameters.AddWithValue("@UniquenessString", PR.Signature);
                             Cmd.ExecuteNonQuery();
 
-                            Cmd.CommandText = "INSERT INTO Triggers (ID, RequestTrigger, RequestHeaders, RequestBody, BinaryRequest, ResponseTrigger, ResponseHeaders, ResponseBody, BinaryResponse) VALUES (@ID, @RequestTrigger, @RequestHeaders, @RequestBody, @BinaryRequest, @ResponseTrigger, @ResponseHeaders, @ResponseBody, @BinaryResponse)";
+                            Cmd.CommandText = "INSERT INTO Triggers (ID, TriggersEncoded, RequestTriggerDesc, RequestTrigger, RequestHeaders, RequestBody, BinaryRequest, ResponseTriggerDesc, ResponseTrigger, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip) VALUES (@ID, 1, @RequestTriggerDesc, @RequestTrigger, @RequestHeaders, @RequestBody, @BinaryRequest, @ResponseTriggerDesc, @ResponseTrigger, @ResponseHeaders, @ResponseBody, @BinaryResponse, @RoundTrip)";
                             foreach (Trigger T in PR.Triggers.GetTriggers())
                             {
                                 Cmd.Parameters.AddWithValue("@ID", PR.Id);
-                                Cmd.Parameters.AddWithValue("@RequestTrigger", T.RequestTrigger);
+                                Cmd.Parameters.AddWithValue("@RequestTriggerDesc", T.RequestTriggerDescription);
+                                Cmd.Parameters.AddWithValue("@RequestTrigger", Tools.Base64Encode(T.RequestTrigger));
                                 Cmd.Parameters.AddWithValue("@RequestHeaders", T.Request.StoredHeadersString);// .GetHeadersAsString());
                                 if (T.Request.IsBinary)
                                     Cmd.Parameters.AddWithValue("@RequestBody", T.Request.StoredBinaryBodyString);
@@ -1377,22 +1401,49 @@ namespace IronWASP
                                 Cmd.Parameters.AddWithValue("@BinaryRequest", AsInt(T.Request.IsBinary));
                                 if (T.Response != null)
                                 {
-                                    Cmd.Parameters.AddWithValue("@ResponseTrigger", T.ResponseTrigger);
+                                    Cmd.Parameters.AddWithValue("@ResponseTriggerDesc", T.ResponseTriggerDescription);
+                                    Cmd.Parameters.AddWithValue("@ResponseTrigger", Tools.Base64Encode(T.ResponseTrigger));
                                     Cmd.Parameters.AddWithValue("@ResponseHeaders", T.Response.StoredHeadersString);// .GetHeadersAsString());
                                     if (T.Response.IsBinary)
                                         Cmd.Parameters.AddWithValue("@ResponseBody", T.Response.StoredBinaryBodyString);
                                     else
                                         Cmd.Parameters.AddWithValue("@ResponseBody", T.Response.BodyString);
                                     Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(T.Response.IsBinary));
+                                    Cmd.Parameters.AddWithValue("@RoundTrip", T.Response.RoundTrip);
                                 }
                                 else
                                 {
+                                    Cmd.Parameters.AddWithValue("@ResponseTriggerDesc", "");
                                     Cmd.Parameters.AddWithValue("@ResponseTrigger", "");
                                     Cmd.Parameters.AddWithValue("@ResponseHeaders", "");
                                     Cmd.Parameters.AddWithValue("@ResponseBody", "");
                                     Cmd.Parameters.AddWithValue("@BinaryResponse", "");
+                                    Cmd.Parameters.AddWithValue("@RoundTrip", 0);
                                 }
                                 Cmd.ExecuteNonQuery();
+                            }
+                            if (PR.FromActiveScan)
+                            {
+                                try
+                                {
+                                    Cmd.CommandText = "INSERT INTO BaseLine (FindingID, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip) VALUES (@FindingID, @RequestHeaders, @RequestBody, @BinaryRequest, @ResponseHeaders, @ResponseBody, @BinaryResponse, @RoundTrip)";
+                                    Cmd.Parameters.AddWithValue("@FindingID", PR.Id);
+                                    Cmd.Parameters.AddWithValue("@RequestHeaders", PR.BaseRequest.StoredHeadersString);
+                                    if(PR.BaseRequest.IsBinary)
+                                        Cmd.Parameters.AddWithValue("@RequestBody", PR.BaseRequest.StoredBinaryBodyString);
+                                    else
+                                        Cmd.Parameters.AddWithValue("@RequestBody", PR.BaseRequest.BodyString);
+                                    Cmd.Parameters.AddWithValue("@BinaryRequest", AsInt(PR.BaseRequest.IsBinary));
+                                    Cmd.Parameters.AddWithValue("@ResponseHeaders", PR.BaseResponse.StoredHeadersString);
+                                    if (PR.BaseResponse.IsBinary)
+                                        Cmd.Parameters.AddWithValue("@ResponseBody", PR.BaseResponse.StoredBinaryBodyString);
+                                    else
+                                        Cmd.Parameters.AddWithValue("@ResponseBody", PR.BaseResponse.BodyString);
+                                    Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(PR.BaseResponse.IsBinary));
+                                    Cmd.Parameters.AddWithValue("@RoundTrip", PR.BaseResponse.RoundTrip);
+                                    Cmd.ExecuteNonQuery();
+                                }
+                                catch { }
                             }
                         }
                     }
@@ -2381,37 +2432,37 @@ namespace IronWASP
         internal static IronLogRecord GetRecordFromProxyLog(int ID)
         {
             string DataSource = "data source=" + ProxyLogFile;
-            string Cmd = "SELECT SSL, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, OriginalRequestHeaders, OriginalRequestBody, BinaryOriginalRequest, OriginalResponseHeaders, OriginalResponseBody, BinaryOriginalResponse FROM ProxyLog WHERE ID=@ID LIMIT 1";
+            string Cmd = "SELECT SSL, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, OriginalRequestHeaders, OriginalRequestBody, BinaryOriginalRequest, OriginalResponseHeaders, OriginalResponseBody, BinaryOriginalResponse, RoundTrip FROM ProxyLog WHERE ID=@ID LIMIT 1";
             return GetRecordFromDB(DataSource, Cmd,ID, true);
         }
         internal static IronLogRecord GetRecordFromTestLog(int ID)
         {
             string DataSource = "data source=" + TestLogFile;
-            string Cmd = "SELECT RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse FROM TestLog WHERE ID=@ID LIMIT 1";
+            string Cmd = "SELECT RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip FROM TestLog WHERE ID=@ID LIMIT 1";
             return GetRecordFromDB(DataSource, Cmd, ID, false);
         }
         internal static IronLogRecord GetRecordFromShellLog(int ID)
         {
             string DataSource = "data source=" + ShellLogFile;
-            string Cmd = "SELECT RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse FROM ShellLog WHERE ID=@ID LIMIT 1";
+            string Cmd = "SELECT RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip FROM ShellLog WHERE ID=@ID LIMIT 1";
             return GetRecordFromDB(DataSource, Cmd, ID, false);
         }
         internal static IronLogRecord GetRecordFromProbeLog(int ID)
         {
             string DataSource = "data source=" + ProbeLogFile;
-            string Cmd = "SELECT RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse FROM ProbeLog WHERE ID=@ID LIMIT 1";
+            string Cmd = "SELECT RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip FROM ProbeLog WHERE ID=@ID LIMIT 1";
             return GetRecordFromDB(DataSource, Cmd, ID, false);
         }
         internal static IronLogRecord GetRecordFromScanLog(int ID)
         {
             string DataSource = "data source=" + ScanLogFile;
-            string Cmd = "SELECT RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse FROM ScanLog WHERE ID=@ID LIMIT 1";
+            string Cmd = "SELECT RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip FROM ScanLog WHERE ID=@ID LIMIT 1";
             return GetRecordFromDB(DataSource, Cmd, ID, false);
         }
         internal static IronLogRecord GetRecordFromOtherSourceLog(int ID, string Source)
         {
             string DataSource = "data source=" + GetOtherSourceLogFileName(Source);
-            string Cmd = "SELECT RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse FROM Log WHERE ID=@ID LIMIT 1";
+            string Cmd = "SELECT RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip FROM Log WHERE ID=@ID LIMIT 1";
             return GetRecordFromDB(DataSource, Cmd, ID, false);
         }
 
@@ -2437,6 +2488,11 @@ namespace IronWASP
                 //ILR.SSL = (result["SSL"].ToString().Equals("1"));
                 ILR.IsRequestBinary = (result["BinaryRequest"].ToString().Equals("1"));
                 ILR.IsResponseBinary = (result["BinaryResponse"].ToString().Equals("1"));
+                try
+                {
+                    ILR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
+                }
+                catch { }
                 if (IsProxyLog)
                 {
                     ILR.OriginalRequestHeaders = result["OriginalRequestHeaders"].ToString();
@@ -2460,37 +2516,37 @@ namespace IronWASP
         internal static List<IronLogRecord> GetRecordsFromProxyLog()
         {
             string DataSource = "data source=" + ProxyLogFile;
-            string Cmd = "SELECT ID, SSL, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, OriginalRequestHeaders, OriginalRequestBody, BinaryOriginalRequest, OriginalResponseHeaders, OriginalResponseBody, BinaryOriginalResponse FROM ProxyLog";
+            string Cmd = "SELECT ID, SSL, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, OriginalRequestHeaders, OriginalRequestBody, BinaryOriginalRequest, OriginalResponseHeaders, OriginalResponseBody, BinaryOriginalResponse, RoundTrip FROM ProxyLog";
             return GetRecordsFromDB(DataSource, Cmd, true);
         }
         internal static List<IronLogRecord> GetRecordsFromTestLog()
         {
             string DataSource = "data source=" + TestLogFile;
-            string Cmd = "SELECT ID, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse FROM TestLog";
+            string Cmd = "SELECT ID, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip FROM TestLog";
             return GetRecordsFromDB(DataSource, Cmd, false);
         }
         internal static List<IronLogRecord> GetRecordsFromShellLog()
         {
             string DataSource = "data source=" + ShellLogFile;
-            string Cmd = "SELECT ID, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse FROM ShellLog";
+            string Cmd = "SELECT ID, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip FROM ShellLog";
             return GetRecordsFromDB(DataSource, Cmd, false);
         }
         internal static List<IronLogRecord> GetRecordsFromProbeLog()
         {
             string DataSource = "data source=" + ProbeLogFile;
-            string Cmd = "SELECT ID, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse FROM ProbeLog";
+            string Cmd = "SELECT ID, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip FROM ProbeLog";
             return GetRecordsFromDB(DataSource, Cmd, false);
         }
         internal static List<IronLogRecord> GetRecordsFromScanLog()
         {
             string DataSource = "data source=" + ScanLogFile;
-            string Cmd = "SELECT ID, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse FROM ScanLog";
+            string Cmd = "SELECT ID, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip FROM ScanLog";
             return GetRecordsFromDB(DataSource, Cmd, false);
         }
         internal static List<IronLogRecord> GetRecordsFromOtherSourceLog(string Source)
         {
             string DataSource = "data source=" + GetOtherSourceLogFileName(Source);
-            string Cmd = "SELECT ID, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse FROM Log";
+            string Cmd = "SELECT ID, RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip FROM Log";
             return GetRecordsFromDB(DataSource, Cmd, false);
         }
 
@@ -2524,6 +2580,11 @@ namespace IronWASP
                         //ILR.SSL = (result["SSL"].ToString().Equals("1"));
                         ILR.IsRequestBinary = (result["BinaryRequest"].ToString().Equals("1"));
                         ILR.IsResponseBinary = (result["BinaryResponse"].ToString().Equals("1"));
+                        try
+                        {
+                            ILR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
+                        }
+                        catch { }
                         if (IsProxyLog)
                         {
                             ILR.OriginalRequestHeaders = result["OriginalRequestHeaders"].ToString();
@@ -2551,31 +2612,31 @@ namespace IronWASP
         public static List<LogRow> GetRecordsFromProxyLog(int StartIndex, int Count)
         {
             string DataSource = "data source=" + ProxyLogFile;
-            string Cmd = "SELECT ID , SSL, HostName, Method, URL, Edited, File, Parameters, BinaryRequest, BinaryOriginalRequest, Code, Length, MIME, SetCookie, BinaryResponse, BinaryOriginalResponse FROM ProxyLog WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
+            string Cmd = "SELECT ID , SSL, HostName, Method, URL, Edited, File, Parameters, BinaryRequest, BinaryOriginalRequest, Code, Length, MIME, SetCookie, BinaryResponse, BinaryOriginalResponse, RoundTrip FROM ProxyLog WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
             return GetRecordsFromDB(DataSource, Cmd, "proxy", StartIndex, Count);
         }
         public static List<LogRow> GetRecordsFromTestLog(int StartIndex, int Count)
         {
             string DataSource = "data source=" + TestLogFile;
-            string Cmd = "SELECT ID, SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse FROM TestLog WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
+            string Cmd = "SELECT ID, SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse, RoundTrip FROM TestLog WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
             return GetRecordsFromDB(DataSource, Cmd, "test", StartIndex, Count);
         }
         public static List<LogRow> GetRecordsFromShellLog(int StartIndex, int Count)
         {
             string DataSource = "data source=" + ShellLogFile;
-            string Cmd = "SELECT ID , SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse FROM ShellLog WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
+            string Cmd = "SELECT ID , SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse, RoundTrip FROM ShellLog WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
             return GetRecordsFromDB(DataSource, Cmd, "shell", StartIndex, Count);
         }
         public static List<LogRow> GetRecordsFromProbeLog(int StartIndex, int Count)
         {
             string DataSource = "data source=" + ProbeLogFile;
-            string Cmd = "SELECT ID , SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse FROM ProbeLog WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
+            string Cmd = "SELECT ID , SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse, RoundTrip FROM ProbeLog WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
             return GetRecordsFromDB(DataSource, Cmd, "probe", StartIndex, Count);
         }
         public static List<LogRow> GetRecordsFromScanLog(int StartIndex, int Count)
         {
             string DataSource = "data source=" + ScanLogFile;
-            string Cmd = "SELECT ID , ScanID, SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse FROM ScanLog WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
+            string Cmd = "SELECT ID , ScanID, SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse, RoundTrip FROM ScanLog WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
             return GetRecordsFromDB(DataSource, Cmd, "scan", StartIndex, Count);
         }
         public static List<LogRow> GetRecordsFromSelectedOtherSourceLog(int StartIndex, int Count)
@@ -2585,7 +2646,7 @@ namespace IronWASP
         public static List<LogRow> GetRecordsFromOtherSourceLog(int StartIndex, int Count, string Source)
         {
             string DataSource = "data source=" + GetOtherSourceLogFileName(Source);
-            string Cmd = "SELECT ID , SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse FROM Log WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
+            string Cmd = "SELECT ID , SSL, HostName, Method, URL, File, Parameters, BinaryRequest, Code, Length, MIME, SetCookie, BinaryResponse, RoundTrip FROM Log WHERE ID>@ID ORDER BY ID LIMIT @LIMIT";
             return GetRecordsFromDB(DataSource, Cmd, Source, StartIndex, Count);
         }
 
@@ -2628,6 +2689,12 @@ namespace IronWASP
                         catch { LR.Length = 0; }
                         LR.Mime = result["MIME"].ToString();
                         LR.SetCookie = result["SetCookie"].ToString().Equals("1");
+                        try
+                        {
+                            LR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
+                        }
+                        catch { }
+                        
                         IronLogRecords.Add(LR);
                     }
                     catch { }
@@ -2701,7 +2768,7 @@ namespace IronWASP
         public static int GetLastPluginResultLogRowId()
         {
             string DataSource = "data source=" + PluginResultsLogFile;
-            string Cmd = "SELECT max(ID) FROM PluginResult";
+            string Cmd = "SELECT max(ID) FROM Findings";
             return GetLastRowIdFromDB(DataSource, Cmd);
         }
         public static int GetLastExceptionLogRowId()
@@ -2747,13 +2814,13 @@ namespace IronWASP
         public static List<LogRow> GetRecordsFromProxyLogForUrl(string Host, string Url, int StartIndex, int Count)
         {
             string DataSource = "data source=" + ProxyLogFile;
-            string Cmd = "SELECT ID , SSL, Method, URL, File, Parameters, Code, Length, MIME, SetCookie FROM ProxyLog WHERE HostName=@HostName and URL LIKE @URL ID>@ID ORDER BY ID LIMIT @LIMIT";
+            string Cmd = "SELECT ID , SSL, Method, URL, File, Parameters, Code, Length, MIME, SetCookie, RoundTrip FROM ProxyLog WHERE HostName=@HostName and URL LIKE @URL ID>@ID ORDER BY ID LIMIT @LIMIT";
             return GetRecordsFromDBForUrl(DataSource, Cmd, Host, Url, "proxy", StartIndex, Count);
         }
         public static List<LogRow> GetRecordsFromProbeLogForUrl(string Host, string Url, int StartIndex, int Count)
         {
             string DataSource = "data source=" + ProbeLogFile;
-            string Cmd = "SELECT ID , SSL, Method, URL, File, Parameters, Code, Length, MIME, SetCookie FROM ProbeLog WHERE HostName=@HostName and URL LIKE @URL ID>@ID ORDER BY ID LIMIT @LIMIT";
+            string Cmd = "SELECT ID , SSL, Method, URL, File, Parameters, Code, Length, MIME, SetCookie, RoundTrip FROM ProbeLog WHERE HostName=@HostName and URL LIKE @URL ID>@ID ORDER BY ID LIMIT @LIMIT";
             return GetRecordsFromDBForUrl(DataSource, Cmd, Host, Url, "probe", StartIndex, Count);
         }
         static List<LogRow> GetRecordsFromDBForUrl(string DataSource, string CmdString, string Host, string Url, string LogType, int StartIndex, int Count)
@@ -2797,6 +2864,11 @@ namespace IronWASP
                         catch { LR.Length = 0; }
                         LR.Mime = result["MIME"].ToString();
                         LR.SetCookie = result["SetCookie"].ToString().Equals("1");
+                        try
+                        {
+                            LR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
+                        }
+                        catch { }
                         IronLogRecords.Add(LR);
                     }
                     catch { }
@@ -2873,26 +2945,53 @@ namespace IronWASP
             SQLiteConnection DB = new SQLiteConnection("data source=" + PluginResultsLogFile);
             DB.Open();
             SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT HostName, Title, Plugin, Summary, Severity, Confidence, Type, UniquenessString FROM PluginResult WHERE ID=@ID LIMIT 1";
+            cmd.CommandText = "SELECT HostName, Title, FinderName, FinderType, Meta, Summary, Severity, Confidence, Type, UniquenessString FROM Findings WHERE ID=@ID LIMIT 1";
             cmd.Parameters.AddWithValue("@ID", ID);
             SQLiteDataReader result = cmd.ExecuteReader();
             Finding PR = new Finding(result["HostName"].ToString());
             PR.Id = ID;
             PR.Title = result["Title"].ToString();
-            PR.Plugin = result["Plugin"].ToString();
-            PR.Summary = result["Summary"].ToString();
+            PR.FinderName = result["FinderName"].ToString();
+            PR.FinderType = result["FinderType"].ToString();
+            try
+            {
+                PR.XmlSummary = result["Summary"].ToString();
+            }
+            catch
+            {
+                PR.Summary = result["Summary"].ToString();
+            }
+            try
+            {
+                PR.XmlMeta = result["Meta"].ToString();
+            }
+            catch { }
             PR.Severity = GetSeverity(Int32.Parse(result["Severity"].ToString()));
             PR.Confidence = GetConfidence(Int32.Parse(result["Confidence"].ToString()));
             PR.Type = GetResultType(Int32.Parse(result["Type"].ToString()));
             PR.Signature = result["UniquenessString"].ToString();
             result.Close();
-            cmd.CommandText = "SELECT RequestTrigger, RequestHeaders, RequestBody, BinaryRequest, ResponseTrigger, ResponseHeaders, ResponseBody, BinaryResponse  FROM Triggers WHERE ID=@ID";
+            cmd.CommandText = "SELECT TriggersEncoded, RequestTriggerDesc, RequestTrigger, RequestHeaders, RequestBody, BinaryRequest, ResponseTriggerDesc, ResponseTrigger, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip FROM Triggers WHERE ID=@ID";
             cmd.Parameters.AddWithValue("@ID", ID);
             result = cmd.ExecuteReader();
             while (result.Read())
             {
                 string RequestTrigger = result["RequestTrigger"].ToString();
                 string ResponseTrigger = result["ResponseTrigger"].ToString();
+
+                if (result["TriggersEncoded"].ToString().Equals("1"))
+                {
+                    try
+                    {
+                        RequestTrigger = Tools.Base64Decode(RequestTrigger);
+                    }
+                    catch { }
+                    try
+                    {
+                        ResponseTrigger = Tools.Base64Decode(ResponseTrigger);
+                    }
+                    catch { }
+                }
 
                 IronLogRecord ILR = new IronLogRecord();
                 ILR.RequestHeaders = result["RequestHeaders"].ToString();
@@ -2902,18 +3001,51 @@ namespace IronWASP
                 ILR.ResponseHeaders = result["ResponseHeaders"].ToString();
                 ILR.ResponseBody = result["ResponseBody"].ToString();
                 ILR.IsResponseBinary = (result["BinaryResponse"].ToString().Equals("1"));
-
+                try
+                {
+                    ILR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
+                }
+                catch { }
                 Session IrSe = Session.GetIronSessionFromIronLogRecord(ILR,0);
                 if (IrSe.Response != null)
                 {
-                    PR.Triggers.Add(RequestTrigger, IrSe.Request, ResponseTrigger, IrSe.Response);
+                    PR.Triggers.Add(RequestTrigger, result["RequestTriggerDesc"].ToString(), IrSe.Request, ResponseTrigger, result["ResponseTriggerDesc"].ToString(), IrSe.Response);
                 }
                 else
                 {
-                    PR.Triggers.Add(RequestTrigger, IrSe.Request);
+                    PR.Triggers.Add(RequestTrigger, result["RequestTriggerDesc"].ToString(), IrSe.Request);
                 }
             }
             result.Close();
+            if (PR.FromActiveScan)
+            {
+                try
+                {
+                    cmd.CommandText = "SELECT RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip FROM BaseLine WHERE FindingID=@FindingID LIMIT 1";
+                    cmd.Parameters.AddWithValue("@FindingID", ID);
+                    result = cmd.ExecuteReader();
+                    if (result.HasRows)
+                    {
+                        IronLogRecord ILR = new IronLogRecord();
+                        ILR.RequestHeaders = result["RequestHeaders"].ToString();
+                        ILR.RequestBody = result["RequestBody"].ToString();
+                        ILR.IsRequestBinary = (result["BinaryRequest"].ToString().Equals("1"));
+
+                        ILR.ResponseHeaders = result["ResponseHeaders"].ToString();
+                        ILR.ResponseBody = result["ResponseBody"].ToString();
+                        ILR.IsResponseBinary = (result["BinaryResponse"].ToString().Equals("1"));
+                        try
+                        {
+                            ILR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
+                        }
+                        catch { }
+                        Session IrSe = Session.GetIronSessionFromIronLogRecord(ILR, 0);
+                        PR.BaseRequest = IrSe.Request;
+                        PR.BaseResponse = IrSe.Response;
+                    }
+                }
+                catch { }
+            }
             DB.Close();
             return PR;
         }
@@ -3739,7 +3871,7 @@ namespace IronWASP
             SQLiteConnection DB = new SQLiteConnection("data source=" + PluginResultsLogFile);
             DB.Open();
             SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT ID, HostName, Title, Plugin, UniquenessString, Severity, Confidence, Type FROM PluginResult WHERE ID > @StartID LIMIT 1000";
+            cmd.CommandText = "SELECT ID, HostName, Title, FinderName, FinderType, Meta, UniquenessString, Severity, Confidence, Type FROM Findings WHERE ID > @StartID LIMIT 1000";
             cmd.Parameters.AddWithValue("@StartID", StartID);
             SQLiteDataReader result = cmd.ExecuteReader();
             while (result.Read())
@@ -3747,7 +3879,13 @@ namespace IronWASP
                 Finding PR = new Finding(result["HostName"].ToString());
                 PR.Id = Int32.Parse(result["ID"].ToString());
                 PR.Title = result["Title"].ToString();
-                PR.Plugin = result["Plugin"].ToString();
+                PR.FinderName = result["FinderName"].ToString();
+                PR.FinderType = result["FinderType"].ToString();
+                try
+                {
+                    PR.XmlMeta = result["Meta"].ToString();
+                }
+                catch { }
                 PR.AffectedHost = result["HostName"].ToString();
                 PR.Severity = GetSeverity(Int32.Parse(result["Severity"].ToString()));
                 PR.Confidence = GetConfidence(Int32.Parse(result["Confidence"].ToString()));
@@ -3819,7 +3957,12 @@ namespace IronWASP
             return TraceRecords;
         }
 
-        internal static List<IronTrace> GetScanTraceRecords(int StartID, int Count)
+        internal static IronTrace GetScanTrace(int ID)
+        {
+            return GetScanTraces(ID, 1)[0];
+        }
+
+        internal static List<IronTrace> GetScanTraces(int StartID, int Count)
         {
             List<IronTrace> TraceRecords = new List<IronTrace>();
             SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile);
@@ -3827,7 +3970,7 @@ namespace IronWASP
             try
             {
                 SQLiteCommand cmd = DB.CreateCommand();
-                cmd.CommandText = "SELECT ID, ScanID, PluginName, Section, Parameter, Title, Message FROM ScanTrace WHERE ID > @StartID ORDER BY ID LIMIT @LIMIT";
+                cmd.CommandText = "SELECT ID, ScanID, PluginName, Section, Parameter, Title, Message, OverviewXml FROM ScanTrace WHERE ID > @StartID ORDER BY ID LIMIT @LIMIT";
                 cmd.Parameters.AddWithValue("@StartID", StartID -1);
                 cmd.Parameters.AddWithValue("@LIMIT", Count);
                 SQLiteDataReader result = cmd.ExecuteReader();
@@ -3844,7 +3987,59 @@ namespace IronWASP
                     Trace.Section = result["Section"].ToString();
                     Trace.Parameter = result["Parameter"].ToString();
                     Trace.Title = result["Title"].ToString();
-                    Trace.Message = result["Message"].ToString();
+                    try
+                    {
+                        Trace.MessageXml = result["Message"].ToString();
+                    }
+                    catch
+                    {
+                        Trace.Message = result["Message"].ToString();
+                    }
+                    Trace.OverviewXml = result["OverviewXml"].ToString();
+                    TraceRecords.Add(Trace);
+                }
+                result.Close();
+            }
+            catch (Exception Exp)
+            {
+                DB.Close();
+                throw Exp;
+            }
+            DB.Close();
+            return TraceRecords;
+        }
+
+        internal static List<IronTrace> GetScanTraces(Finding F)
+        {
+            List<IronTrace> TraceRecords = new List<IronTrace>();
+
+            SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile);
+            DB.Open();
+            try
+            {
+                SQLiteCommand cmd = DB.CreateCommand();
+                cmd.CommandText = "SELECT ID, Message, OverviewXml FROM ScanTrace WHERE ScanID=@ScanID AND PluginName=@PluginName AND Section=@Section AND Parameter=@Parameter ORDER BY ID";
+                cmd.Parameters.AddWithValue("@ScanID", F.ScanId);
+                cmd.Parameters.AddWithValue("@PluginName", F.FinderName);
+                cmd.Parameters.AddWithValue("@Section", F.AffectedSection);
+                cmd.Parameters.AddWithValue("@Parameter", F.AffectedParameter);
+
+                SQLiteDataReader result = cmd.ExecuteReader();
+                while (result.Read())
+                {
+                    IronTrace Trace = new IronTrace();
+                    try
+                    { Trace.ID = Int32.Parse(result["ID"].ToString()); }
+                    catch { continue; }
+                    try
+                    {
+                        Trace.MessageXml = result["Message"].ToString();
+                    }
+                    catch
+                    {
+                        Trace.Message = result["Message"].ToString();
+                    }
+                    Trace.OverviewXml = result["OverviewXml"].ToString();
                     TraceRecords.Add(Trace);
                 }
                 result.Close();
@@ -3888,7 +4083,7 @@ namespace IronWASP
                 {
                     cmd.CommandText = "DROP TABLE IF EXISTS ProxyLog";
                     cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ProxyLog (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, Edited INT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, OriginalRequestHeaders TEXT, OriginalRequestBody TEXT, BinaryOriginalRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, OriginalResponseHeaders TEXT, OriginalResponseBody TEXT, BinaryOriginalResponse INT, Notes TEXT)";
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ProxyLog (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, Edited INT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, OriginalRequestHeaders TEXT, OriginalRequestBody TEXT, BinaryOriginalRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, OriginalResponseHeaders TEXT, OriginalResponseBody TEXT, BinaryOriginalResponse INT, RoundTrip INT, Notes TEXT)";
                     cmd.ExecuteNonQuery();
                 }
                 create.Commit();
@@ -3903,7 +4098,7 @@ namespace IronWASP
                 {
                     cmd.CommandText = "DROP TABLE IF EXISTS MTLog";
                     cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS TestLog (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, Notes TEXT)";
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS TestLog (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, RoundTrip INT, Notes TEXT)";
                     cmd.ExecuteNonQuery();
                 }
                 create.Commit();
@@ -3918,7 +4113,7 @@ namespace IronWASP
                 {
                     cmd.CommandText = "DROP TABLE IF EXISTS ShellLog";
                     cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ShellLog (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, Notes TEXT)";
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ShellLog (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT,  RoundTrip INT, Notes TEXT)";
                     cmd.ExecuteNonQuery();
                 }
                 create.Commit();
@@ -3933,7 +4128,7 @@ namespace IronWASP
                 {
                     cmd.CommandText = "DROP TABLE IF EXISTS ProbeLog";
                     cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ProbeLog (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, Notes TEXT)";
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ProbeLog (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT,  RoundTrip INT, Notes TEXT)";
                     cmd.ExecuteNonQuery();
                 }
                 create.Commit();
@@ -3948,7 +4143,7 @@ namespace IronWASP
                 {
                     cmd.CommandText = "DROP TABLE IF EXISTS ScanLog";
                     cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ScanLog (ID INT PRIMARY KEY, ScanID INT, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, Notes TEXT)";
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ScanLog (ID INT PRIMARY KEY, ScanID INT, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT,  RoundTrip INT, Notes TEXT)";
                     cmd.ExecuteNonQuery();
                 }
                 create.Commit();
@@ -3961,13 +4156,17 @@ namespace IronWASP
             {
                 using (SQLiteCommand cmd = new SQLiteCommand(log))
                 {
-                    cmd.CommandText = "DROP TABLE IF EXISTS PluginResult";
+                    cmd.CommandText = "DROP TABLE IF EXISTS Findings";
                     cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS PluginResult (ID INT, HostName TEXT, Title TEXT, Plugin TEXT, Summary TEXT, Severity INT, Confidence INT, Type INT, UniquenessString TEXT)";
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS Findings (ID INT, HostName TEXT, Title TEXT, FinderName TEXT, FinderType TEXT, ScanID INT, Meta TEXT, Summary TEXT, Severity INT, Confidence INT, Type INT, UniquenessString TEXT)";
                     cmd.ExecuteNonQuery();
                     cmd.CommandText = "DROP TABLE IF EXISTS Triggers";
                     cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS Triggers (ID INT, RequestTrigger TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, ResponseTrigger TEXT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT)";
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS Triggers (ID INT, TriggersEncoded INT, RequestTriggerDesc TEXT, RequestTrigger TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, ResponseTriggerDesc TEXT, ResponseTrigger TEXT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, RoundTrip INT)";
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = "DROP TABLE IF EXISTS BaseLine";
+                    cmd.ExecuteNonQuery();
+                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS BaseLine (FindingID INT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, RoundTrip INT)";
                     cmd.ExecuteNonQuery();
                 }
                 create.Commit();
@@ -4139,6 +4338,185 @@ namespace IronWASP
             }
             DB.Close();
             #endregion
+
+            #region Finding
+            DB = new SQLiteConnection("data source=" + PluginResultsLogFile);
+            DB.Open();
+            try
+            {
+                SQLiteCommand cmd = DB.CreateCommand();
+                cmd.CommandText = "SELECT Meta FROM Findings WHERE ID=1";
+                SQLiteDataReader result = cmd.ExecuteReader();
+                result.Close();
+            }
+            catch
+            {
+                using (SQLiteTransaction Alter = DB.BeginTransaction())
+                {
+                    try
+                    {
+                        using (SQLiteCommand Cmd = new SQLiteCommand(DB))
+                        {
+                            Cmd.CommandText = "ALTER TABLE Triggers ADD COLUMN TriggersEncoded INT";
+                            Cmd.ExecuteNonQuery();
+                            Cmd.CommandText = "ALTER TABLE Triggers ADD COLUMN RequestTriggerDesc TEXT";
+                            Cmd.ExecuteNonQuery();
+                            Cmd.CommandText = "ALTER TABLE Triggers ADD COLUMN ResponseTriggerDesc TEXT";
+                            Cmd.ExecuteNonQuery();
+                        
+                            Cmd.CommandText = "ALTER TABLE PluginResult ADD COLUMN Meta TEXT";
+                            Cmd.ExecuteNonQuery();
+                            Cmd.CommandText = "ALTER TABLE PluginResult ADD COLUMN ScanID INT";
+                            Cmd.ExecuteNonQuery();
+                            Cmd.CommandText = "ALTER TABLE PluginResult ADD COLUMN FinderName TEXT";
+                            Cmd.ExecuteNonQuery();
+                            Cmd.CommandText = "ALTER TABLE PluginResult ADD COLUMN FinderType TEXT";
+                            Cmd.ExecuteNonQuery();
+                            Cmd.CommandText = "UPDATE PluginResult SET FinderName = Plugin";
+                            Cmd.ExecuteNonQuery();
+                            Cmd.CommandText = "ALTER TABLE PluginResult RENAME TO Findings";
+                            Cmd.ExecuteNonQuery();                        
+                        }
+                        Alter.Commit();
+                    }
+                    catch { }
+                }
+            }
+            DB.Close();
+            #endregion
+
+            #region FindingBaseLine
+            DB = new SQLiteConnection("data source=" + PluginResultsLogFile);
+            DB.Open();
+            try
+            {
+                SQLiteCommand cmd = DB.CreateCommand();
+                cmd.CommandText = "SELECT FindingID FROM BaseLine WHERE ID=1";
+                SQLiteDataReader result = cmd.ExecuteReader();
+                result.Close();
+            }
+            catch
+            {
+                try
+                {
+                    SQLiteCommand Cmd = new SQLiteCommand(DB);
+                    Cmd.CommandText = "CREATE TABLE IF NOT EXISTS BaseLine (FindingID INT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, RoundTrip INT)";
+                    Cmd.ExecuteNonQuery();                        
+                }
+                catch { }
+            }
+            DB.Close();
+            #endregion
+
+            #region RoundTrip
+            DB = new SQLiteConnection("data source=" + ProxyLogFile);
+            DB.Open();
+            try
+            {
+                SQLiteCommand cmd = DB.CreateCommand();
+                cmd.CommandText = "SELECT RoundTrip FROM ProxyLog WHERE ID=1";
+                SQLiteDataReader result = cmd.ExecuteReader();
+                result.Close();
+                DB.Close();
+            }
+            catch
+            {
+                try
+                {
+                    SQLiteCommand Cmd = DB.CreateCommand();
+                    Cmd.CommandText = "ALTER TABLE ProxyLog ADD COLUMN RoundTrip INT";
+                    Cmd.ExecuteNonQuery();
+                }
+                catch { }
+                finally
+                {
+                    DB.Close();
+                }
+                try
+                {
+                    DB = new SQLiteConnection("data source=" + TestLogFile);
+                    DB.Open();
+                    SQLiteCommand Cmd = DB.CreateCommand();
+                    Cmd.CommandText = "ALTER TABLE TestLog ADD COLUMN RoundTrip INT";
+                    Cmd.ExecuteNonQuery();
+                }
+                catch { }
+                finally
+                {
+                    DB.Close();
+                }
+                try
+                {
+                    DB = new SQLiteConnection("data source=" + ShellLogFile);
+                    DB.Open();
+                    SQLiteCommand Cmd = DB.CreateCommand();
+                    Cmd.CommandText = "ALTER TABLE ShellLog ADD COLUMN RoundTrip INT";
+                    Cmd.ExecuteNonQuery();
+                }
+                catch { }
+                finally
+                {
+                    DB.Close();
+                }
+                try
+                {
+                    DB = new SQLiteConnection("data source=" + ProbeLogFile);
+                    DB.Open();
+                    SQLiteCommand Cmd = DB.CreateCommand();
+                    Cmd.CommandText = "ALTER TABLE ProbeLog ADD COLUMN RoundTrip INT";
+                    Cmd.ExecuteNonQuery();
+                }
+                catch { }
+                finally
+                {
+                    DB.Close();
+                }
+                try
+                {
+                    DB = new SQLiteConnection("data source=" + ScanLogFile);
+                    DB.Open();
+                    SQLiteCommand Cmd = DB.CreateCommand();
+                    Cmd.CommandText = "ALTER TABLE ScanLog ADD COLUMN RoundTrip INT";
+                    Cmd.ExecuteNonQuery();
+                }
+                catch { }
+                finally
+                {
+                    DB.Close();
+                }
+                try
+                {
+                    DB = new SQLiteConnection("data source=" + PluginResultsLogFile);
+                    DB.Open();
+                    SQLiteCommand Cmd = DB.CreateCommand();
+                    Cmd.CommandText = "ALTER TABLE Triggers ADD COLUMN RoundTrip INT";
+                    Cmd.ExecuteNonQuery();
+                }
+                catch { }
+                finally
+                {
+                    DB.Close();
+                }
+                foreach (string Source in Config.GetOtherSourceList())
+                {
+                    try
+                    {
+                        DB = new SQLiteConnection("data source=" + GetOtherSourceLogFileName(Source));
+                        DB.Open();
+                        SQLiteCommand Cmd = DB.CreateCommand();
+                        Cmd.CommandText = "ALTER TABLE Log ADD COLUMN RoundTrip INT";
+                        Cmd.ExecuteNonQuery();
+                    }
+                    catch { }
+                    finally
+                    {
+                        DB.Close();
+                    }
+                }
+            }
+            
+            #endregion
+
         }
 
         static string GetOtherSourceLogFileName(string Source)

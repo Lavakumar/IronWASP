@@ -20,6 +20,7 @@ using System;
 using System.Threading;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml;
 
 namespace IronWASP
 {
@@ -105,7 +106,9 @@ namespace IronWASP
         internal static Thread RequestFormatThread;
 
         StringBuilder TraceMsg = new StringBuilder();
+        XmlWriter TraceMsgXml;
         string RequestTraceMsg = "";
+        int CurrentTraceRequestLogId = 0;
         string TraceTitle = "";
         int TraceTitleWeight = 0;
         string CurrentPlugin = "";
@@ -1111,9 +1114,9 @@ namespace IronWASP
             {
                 this.TestResponse = this.TestRequest.Send();
             }
-            if (this.LogSource.Equals(RequestSource.Scan) && this.RequestTraceMsg.Length > 0)
+            if (this.LogSource.Equals(RequestSource.Scan))
             {
-                this.Trace("   " + this.TestResponse.ID.ToString() + " | " + this.RequestTraceMsg);
+                this.CurrentTraceRequestLogId = this.TestResponse.ID;
             }
             //Response InterestingResponse = SessionHandler.GetInterestingResponse(this.TestRequest, this.TestResponse);
             Response ResponseFromInjection = SessionHandler.DoAfterSending(this.TestResponse, this.TestRequest);
@@ -1170,11 +1173,20 @@ namespace IronWASP
             return SessionHandler.DoAfterSending(ResponseFromInjection, RequestToInject);
         }
 
-        public void AddFinding(Finding PR)
+        public void AddFinding(Finding F)
         {
-            this.PRs.Add(PR);
-            PR.Plugin = this.ActivePluginName;
-            PR.Report();
+            F.ScanId = this.ID;
+            F.AffectedSection = this.InjectedSection;
+            F.AffectedParameter = this.InjectedParameter;
+
+            F.FinderName = this.ActivePluginName;
+            F.FinderType = "ActivePlugin";
+
+            F.BaseRequest = this.BaseRequest;
+            F.BaseResponse = this.BaseResponse;
+
+            this.PRs.Add(F);
+            F.Report();
         }
         public void CheckAll()
         {
@@ -1682,7 +1694,11 @@ namespace IronWASP
         public void StartTrace()
         {
             TraceMsg = new StringBuilder();
+            TraceMsgXml = XmlWriter.Create(TraceMsg);
+            TraceMsgXml.WriteStartDocument();
+            TraceMsgXml.WriteStartElement("trace");
             TraceOverviewEntries = new List<string[]>();
+            CurrentTraceRequestLogId = 0;
             RequestTraceMsg = "";
             TraceTitle = "";
             TraceTitleWeight = 0;
@@ -1690,24 +1706,43 @@ namespace IronWASP
         }
         public void RequestTrace(string Message)
         {
-            if (this.RequestTraceMsg.Length > 0) TraceMsg.Append("<i<br>>");//Probably the ResponseTrace matching the last RequestTrace was not called
-            this.RequestTraceMsg = Message;
+            if (this.RequestTraceMsg.Length > 0)
+            {
+                IronException.Report(string.Format("Invalid Trace Commands in {0} Plugin", this.CurrentPlugin), string.Format("RequestTrace() command called after RequestTrace() command. RequestTrace() command must be followed by a ResponseTrace() command before calling any other commands.\r\nThe message being logged was:\r\n{0}", Tools.EncodeForTrace(Message)));
+                //TraceMsg.Append("<i<br>>");//Probably the ResponseTrace matching the last RequestTrace was not called
+            }
+            this.RequestTraceMsg = Tools.EncodeForTrace(Message);
         }
 
         public void ResponseTrace(string Message)
         {
-            if (RequestTraceMsg.Length == 0 && Message.Length > 0)
-            {
-                TraceMsg.Append("<i<cr>>This request was not traced. You forgot to call the RequestTrace method in your code.<i</cr>> ");
-            }
-            TraceMsg.Append(Message);
+            TraceMsgXml.WriteStartElement("type_b");
+            
+            TraceMsgXml.WriteStartElement("log_id"); TraceMsgXml.WriteValue(this.CurrentTraceRequestLogId); TraceMsgXml.WriteEndElement();
+            TraceMsgXml.WriteStartElement("req"); TraceMsgXml.WriteValue(RequestTraceMsg); TraceMsgXml.WriteEndElement();
+            TraceMsgXml.WriteStartElement("res"); TraceMsgXml.WriteValue(Tools.EncodeForTrace(Message)); TraceMsgXml.WriteEndElement();
+
+            TraceMsgXml.WriteEndElement();
+
+            //if (RequestTraceMsg.Length == 0 && Message.Length > 0)
+            //{
+            //    TraceMsg.Append("<i<cr>>This request was not traced. You forgot to call the RequestTrace method in your code.<i</cr>> ");
+            //}
+            //TraceMsg.Append(Tools.EncodeForTrace(Message));
+            
             RequestTraceMsg = "";
         }
 
         public void Trace(string Message)
         {
-            TraceMsg.Append("<i<br>>");
-            TraceMsg.Append(Message);
+            if (RequestTraceMsg.Length > 0)
+            {
+                IronException.Report(string.Format("Invalid Trace Commands in {0} Plugin", this.CurrentPlugin), string.Format("Trace() command called after RequestTrace() command. RequestTrace() command must be followed by a ResponseTrace() command before calling any other commands.\r\nThe message being logged was:\r\n{0}", Tools.EncodeForTrace(Message)));
+            }
+            
+            TraceMsgXml.WriteStartElement("type_a"); TraceMsgXml.WriteValue(Tools.EncodeForTrace(Message)); TraceMsgXml.WriteEndElement();
+            //TraceMsg.Append("<i<br>>");
+            //TraceMsg.Append(Tools.EncodeForTrace(Message));
         }
 
         public void SetTraceTitle(string Title, int Weight)
@@ -1737,9 +1772,17 @@ namespace IronWASP
 
         public void LogTrace(string Title)
         {
+            try
+            {
+                this.TraceMsgXml.WriteEndElement();
+                this.TraceMsgXml.WriteEndDocument();
+                this.TraceMsgXml.Close();
+            }
+            catch { }
             IronTrace IT = new IronTrace(this.ScanID, CurrentPlugin, this.CurrentSection, this.CurrentParameterName, Title, TraceMsg.ToString(), this.TraceOverviewEntries);
             IT.Report();
             this.TraceMsg = new StringBuilder();
+            
             this.RequestTraceMsg = "";
             this.TraceTitle = "";
             this.TraceTitleWeight = 0;

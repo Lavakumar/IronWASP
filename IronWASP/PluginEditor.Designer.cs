@@ -85,6 +85,7 @@ namespace IronWASP
             this.IronPythonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.IronRubyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CheckSyntaxF5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FixPythonIndentationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PluginEditorAPISplit = new System.Windows.Forms.SplitContainer();
             this.PluginEditorAPITreeTabs = new System.Windows.Forms.TabControl();
             this.PluginEditorPythonAPITreeTab = new System.Windows.Forms.TabPage();
@@ -97,7 +98,6 @@ namespace IronWASP
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.PluginEditorOpenFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.PluginEditorSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.FixPythonIndentationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PluginEditorBaseSplit.Panel1.SuspendLayout();
             this.PluginEditorBaseSplit.Panel2.SuspendLayout();
             this.PluginEditorBaseSplit.SuspendLayout();
@@ -479,6 +479,14 @@ namespace IronWASP
             this.CheckSyntaxF5ToolStripMenuItem.Text = "Check Syntax - F5";
             this.CheckSyntaxF5ToolStripMenuItem.Click += new System.EventHandler(this.CheckSyntaxF5ToolStripMenuItem_Click);
             // 
+            // FixPythonIndentationToolStripMenuItem
+            // 
+            this.FixPythonIndentationToolStripMenuItem.Name = "FixPythonIndentationToolStripMenuItem";
+            this.FixPythonIndentationToolStripMenuItem.Size = new System.Drawing.Size(141, 20);
+            this.FixPythonIndentationToolStripMenuItem.Text = "Fix Python Indentation ";
+            this.FixPythonIndentationToolStripMenuItem.Visible = false;
+            this.FixPythonIndentationToolStripMenuItem.Click += new System.EventHandler(this.FixPythonIndentationToolStripMenuItem_Click);
+            // 
             // PluginEditorAPISplit
             // 
             this.PluginEditorAPISplit.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -610,14 +618,6 @@ namespace IronWASP
             // 
             this.PluginEditorSaveFileDialog.Title = "Save File";
             // 
-            // FixPythonIndentationToolStripMenuItem
-            // 
-            this.FixPythonIndentationToolStripMenuItem.Name = "FixPythonIndentationToolStripMenuItem";
-            this.FixPythonIndentationToolStripMenuItem.Size = new System.Drawing.Size(141, 20);
-            this.FixPythonIndentationToolStripMenuItem.Text = "Fix Python Indentation ";
-            this.FixPythonIndentationToolStripMenuItem.Visible = false;
-            this.FixPythonIndentationToolStripMenuItem.Click += new System.EventHandler(this.FixPythonIndentationToolStripMenuItem_Click);
-            // 
             // PluginEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -703,6 +703,5 @@ namespace IronWASP
         private System.Windows.Forms.Button SearchMovePreviousBtn;
         private System.Windows.Forms.Button SearchMoveNextBtn;
         private System.Windows.Forms.ToolStripMenuItem FixPythonIndentationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     }
 }

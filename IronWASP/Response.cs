@@ -611,7 +611,8 @@ namespace IronWASP
 
             if (LowerCaseBodyString.StartsWith("<") || LowerCaseBodyString.EndsWith(">"))
             {
-                if (LowerCaseBodyString.Contains("<html ") || LowerCaseBodyString.Contains("<html>") ||
+                if (LowerCaseBodyString.StartsWith("<!doctype html") || 
+                    LowerCaseBodyString.Contains("<html ") || LowerCaseBodyString.Contains("<html>") ||
                     LowerCaseBodyString.Contains("</html>") || LowerCaseBodyString.Contains("<a ") ||
                     LowerCaseBodyString.Contains("<div ") || LowerCaseBodyString.Contains("<div>") ||
                     LowerCaseBodyString.Contains("<form ") || LowerCaseBodyString.Contains("<form>") ||
@@ -624,17 +625,14 @@ namespace IronWASP
                     if (this.ProcessHtml())
                     {
                         this.isHtml = true;
-                        return;
                     }
                 }
-                else
+                if (!LowerCaseBodyString.StartsWith("<!doctype html") && Tools.IsXml(this.BodyString))
                 {
-                    if (Tools.IsXml(this.BodyString))
-                    {
-                        this.isXml = true;
-                        return;
-                    }
+                    this.isXml = true;
+                    return;
                 }
+                if (this.IsHtml || this.IsXml) return;
             }
             else
             {

@@ -91,6 +91,12 @@ namespace IronWASP
         internal static void SendRequest()
         {
             if (ManualTesting.CurrentRequest == null) return;
+
+            if (!IronProxy.ProxyRunning)
+            {
+                throw new Exception("IronWASP Proxy is currently not running. IronWASP cannot send Requests unless the Proxy is started. Please go to the Proxy section of IronWASP and click on the 'Start Proxy' button to fix this problem.");
+            }
+            
             IronUI.ResetMTResponseDisplayFields();
             Request Request = ManualTesting.CurrentRequest.GetClone();
             StringDictionary Flags = new StringDictionary();

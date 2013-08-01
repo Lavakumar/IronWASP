@@ -62,6 +62,8 @@ namespace IronWASP
         internal static ImportForm IF;
         internal static CloseForm CF;
 
+        internal static int MainViewSelectedScanTraceId = 0;
+
         static DateTime TopMostTime;
 
         //internal static List<StartScanJobWizard> StartScanJobWizards = new List<StartScanJobWizard>();
@@ -832,7 +834,7 @@ namespace IronWASP
                     if (UI.ScanTraceGrid.Rows.Count >= IronLog.MaxRowCount) break;
                     try
                     {
-                        UI.ScanTraceGrid.Rows.Add(new object[] { Trace.ID, Trace.ScanID, Trace.PluginName, Trace.Section, Trace.Parameter, Trace.Title, Trace.Message });
+                        UI.ScanTraceGrid.Rows.Add(new object[] { Trace.ID, Trace.ScanID, Trace.PluginName, Trace.Section, Trace.Parameter, Trace.Title });
                         if (Trace.ID > IronTrace.ScanTraceMax) IronTrace.ScanTraceMax = Trace.ID;
                         if (Trace.ID < IronTrace.ScanTraceMin || IronTrace.ScanTraceMin < 1) IronTrace.ScanTraceMin = Trace.ID;
                     }
@@ -3300,27 +3302,131 @@ namespace IronWASP
                 ResetPluginResultsTab();
                 StringBuilder SB = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;}");
                 SB.Append(@" \b \fs30"); SB.Append(Tools.RtfSafe(PR.Title)); SB.Append(@"\b0  \fs20  \par  \par");
-                SB.Append(@" \cf1 \b ID: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(PR.Id.ToString())); SB.Append(@" \par");
-                SB.Append(@" \cf1 \b Plugin: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(PR.Plugin)); SB.Append(@" \par");
+                SB.Append(@" \cf1 \b Finding ID: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(PR.Id.ToString())); SB.Append(@" \par");
                 if (PR.Type == FindingType.Vulnerability)
                 {
-                    SB.Append(@" \cf1 \b Severity: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(PR.Severity.ToString())); SB.Append(@" \par");
-                    SB.Append(@" \cf1 \b Confidence: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(PR.Confidence.ToString())); SB.Append(@" \par");
+                    SB.Append(@" \par \cf1 \b Severity: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(PR.Severity.ToString())); SB.Append(@" \par");
+                    SB.Append(@" \cf1 \b Confidence: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(PR.Confidence.ToString())); SB.Append(@" \par  \par");
+                }
+                switch (PR.FinderType)
+                {
+                    case("ActivePlugin"):
+                        SB.Append(@" \cf1 \b Discovery Mode: \b0 \cf0 Automated Vulnerability Scan \par");
+                        SB.Append(@" \cf1 \b Scan ID: \b0 \cf0 "); SB.AppendLine(PR.ScanId.ToString()); SB.Append(@" \par");
+                        SB.Append(@" \cf1 \b Vulnerability Check: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(PR.FinderName)); SB.Append(@" \par");
+                        break;
+                    case ("PassivePlugin"):
+                        SB.Append(@" \cf1 \b Discovery Mode: \b0 \cf0 Passive Traffic Analysis \par");
+                        SB.Append(@" \cf1 \b Passive Plugin Name: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(PR.FinderName)); SB.Append(@" \par");
+                        break;
+                    default:
+                        if (PR.FinderType.Length > 0 || PR.FinderName.Length > 0)
+                        {
+                            SB.Append(@" \cf1 \b Discovered By: \b0 \cf0 "); SB.AppendLine(Tools.RtfSafe(string.Format("{0} {1}",PR.FinderName, PR.FinderType))); SB.Append(@" \par");
+                        }
+                        break;
                 }
                 SB.Append(@" \par");
                 SB.Append(@" \cf1 \b Summary: \b0 \cf0  \par ");
                 SB.AppendLine(Tools.RtfSafe(PR.Summary));
-                SB.Append(@" \par \par");
+                SB.Append(@" \par ");
+                switch (PR.FinderType)
+                {
+                    case("ActivePlugin"):
+                        StringBuilder ASB = new StringBuilder();
+                        if (PR.Reasons.Count > 0)
+                        {
+                            ASB.Append("<i<br>>IronWASP has reported this issue because of the following reasons:<i<br>>");
+                            for (int i = 0; i < PR.Reasons.Count; i++)
+                            {
+                                ASB.Append(string.Format("<i<br>><i<b>><i<cb>>Reason {0}:<i</b>><i</cb>> <i<br>>", i + 1));
+                                ASB.Append(PR.Reasons[i].Reason);
+
+                                if (PR.Reasons[i].TriggerIds.Count > 0)
+                                {
+                                    ASB.Append("<i<br>><i<br>>The request and response associated with this check can be seen by clicking on ");
+                                    if (PR.Reasons[i].TriggerIds.Count == 1)
+                                    {
+                                        ASB.Append("Trigger "); ASB.Append(PR.Reasons[i].TriggerIds[0]);
+                                    }
+                                    else
+                                    {
+                                        ASB.Append("Triggers ");
+                                        for(int ii=0; ii < PR.Reasons[i].TriggerIds.Count; ii++)
+                                        {
+                                            if (ii == 0)
+                                            {
+                                                ASB.Append(PR.Reasons[i].TriggerIds[ii]);
+                                            }
+                                            else if (ii == PR.Reasons[i].TriggerIds.Count - 1)
+                                            {
+                                                ASB.Append(" and "); ASB.Append(PR.Reasons[i].TriggerIds[ii]);
+                                            }
+                                            else
+                                            {
+                                                ASB.Append(", "); ASB.Append(PR.Reasons[i].TriggerIds[ii]);
+                                            }
+                                        }
+                                    }
+                                    ASB.Append("<i<br>>The 'Trigger Analysis Tools' section has tools to compare the Request/Response of two different triggers or one trigger and the normal Request/Response.");
+                                    ASB.Append("<i<br>>Doing a right-click on a Trigger id will show a menu with options to resend selected request or to send it after editing. Click on the 'Select this Request for Manual Testing' option in that menu for this feature.");
+                                }
+                                if (PR.Reasons[i].FalsePositiveCheck.Length > 0)
+                                {
+                                    ASB.Append("<i<br>><i<br>><i<cg>><i<b>>False Positive Check Assistance:<i</b>><i</cg>><i<br>>");
+                                    ASB.Append(PR.Reasons[i].FalsePositiveCheck);
+                                    ASB.Append("<i<br>>");
+                                }
+                            }
+                        }
+                        ASB.Append("<i<br>><i<hh>>More Scan Information:<i</hh>><i<br>>");
+                        ASB.Append("To view all the payloads, requests/responses and detailed scan trace information associated with this vulnerability detection scan, please click on the associated button in the <i<b>>Trigger Analysis Tools<i</b>> section below.<i<br>>");
+                        SB.Append(Tools.RtfSafe(ASB.ToString()));
+                        break;
+                    case("PassivePlugin"):
+                        Request AHR = new Request(PR.AffectedHost);
+                        StringBuilder PSB = new StringBuilder();
+                        PSB.Append("<i<br>><i<br>><i<b>><i<co>>NOTE:<i</b>><i</co>><i<br>>");
+                        PSB.Append(string.Format("There might be more instances of this issue in <i<cb>>{0}<i</cb>> but they have not been reported to avoid creating a lot of noise.", AHR.Host));
+                        PSB.Append(string.Format("<i<br>><i<br>>In order to identify every single instance of this issue on <i<cb>>{0}<i</cb>> follow these steps:", AHR.Host));
+                        PSB.Append("<i<br>>1) Go to the 'Logs' section in IronWASP and click on the 'Search and Analyze Logs' button");
+                        PSB.Append("<i<br>>2) Select the logs on which you want to do the analysis. Proxy logs would be selected by default.");
+                        PSB.Append("<i<br>>3) Click the checkbox before the Hostname filter option and then click on the '+' radio button to set this filter option as a white-list.");
+                        PSB.Append(string.Format("<i<br>>4) Now enter the hostname <i<cb>>{0}<i</cb>> in to the textbox field in this area. Donot add http:// or https:// or / here.", AHR.Host));
+                        PSB.Append("<i<br>>5) If required you can configure some of the other options to set the search filter and then click on the 'Search with this Filter' button to perform a search.");
+                        PSB.Append("<i<br>>6) Click on the 'Select all rows' checkbox in the search results section and then click on the 'Test Selected Sessions' button.");
+                        PSB.Append("<i<br>>7) A new window wil appear, select the 'Run Passive Plugins on Selected Sessions' option here and click the 'Next Step' button.");
+                        PSB.Append(string.Format("<i<br>>8) You will be shown a list of Passive Plugins, select the one named <i<cb>>{0}<i</cb>> and click the 'Start Test' button", PR.FinderName));
+                        PSB.Append("<i<br>>9) Now you will be shown all instances of this issue present in the logs matching your search filter.");
+                        SB.Append(Tools.RtfSafe(PSB.ToString()));
+                        break;
+
+                }
                 UI.ResultsDisplayRTB.Rtf = SB.ToString();
-                
+
+                if (PR.FromActiveScan && PR.BaseRequest != null && PR.BaseResponse != null)
+                {
+                    UI.ResultsTriggersGrid.Rows.Add(new object[] { "Normal" });
+                    UI.SelectForDiffTriggersGrid.Rows.Add(new object[] { false, "Normal" });
+                }
                 for (int i=0; i < PR.Triggers.GetTriggers().Count; i++ )
                 {
-                    UI.ResultsTriggersGrid.Rows.Add(new object[] { (i + 1).ToString() });
+                    UI.ResultsTriggersGrid.Rows.Add(new object[] { string.Format("Trigger {0}", i + 1) });
+                    UI.SelectForDiffTriggersGrid.Rows.Add(new object[] { false, string.Format("Trigger {0}", i + 1) });
                 }
                 if (UI.ResultsTriggersGrid.Rows.Count > 0)
                 {
-                    UI.ResultsTriggersGrid.Rows[0].Selected = true;
-                    DisplayPluginResultsTrigger(0);
+                    if (PR.FromActiveScan && UI.ResultsTriggersGrid.Rows.Count == 2)
+                    {
+                        UI.ResultsTriggersGrid.Rows[1].Selected = false;
+                        UI.ResultsTriggersGrid.Rows[1].Selected = true;
+                    }
+                    else
+                    {
+                        UI.ResultsTriggersGrid.Rows[0].Selected = false;
+                        UI.ResultsTriggersGrid.Rows[0].Selected = true;
+                    }
+                    //DisplayPluginResultsTrigger(0);
                 }
                 if (!UI.main_tab.SelectedTab.Name.Equals("mt_results")) UI.main_tab.SelectTab("mt_results");
             }
@@ -3330,6 +3436,7 @@ namespace IronWASP
         {
             UI.ResultsDisplayRTB.Text = "";
             UI.ResultsTriggersGrid.Rows.Clear();
+            UI.SelectForDiffTriggersGrid.Rows.Clear();
             ResetPluginResultsFields();
         }
 
@@ -3343,6 +3450,7 @@ namespace IronWASP
             }
             else
             {
+                ResetPluginResultsTab();
                 StringBuilder SB = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;}");
                 SB.Append(@" \b \fs30 "); SB.Append(Tools.RtfSafe(IrEx.Title)); SB.Append(@"\b0 ");
                 SB.Append(@" \par"); SB.Append(@" \par"); SB.Append(@" \fs20 ");
@@ -3351,10 +3459,6 @@ namespace IronWASP
                 SB.Append(@" \par "); SB.Append(@" \par ");
                 UI.ResultsDisplayRTB.Rtf = SB.ToString();
                 UI.ResultsTriggersGrid.Rows.Clear();
-                UI.ResultsRequestTriggerTB.Text = "";
-                UI.ResultsResponseTriggerTB.Text = "";
-                UI.ResultsRequestIDV.Text = "";
-                UI.ResultsResponseIDV.Text = "";
                 if (!UI.main_tab.SelectedTab.Name.Equals("mt_results")) UI.main_tab.SelectTab("mt_results");
             }
         }
@@ -3371,6 +3475,7 @@ namespace IronWASP
             }
             else
             {
+                ResetPluginResultsTab();
                 UI.SiteMapLogGrid.Visible = false;
                 UI.SiteMapLogGrid.Rows.Clear();
                 foreach (DataGridViewRow Row in UI.ProxyLogGrid.Rows)
@@ -4579,6 +4684,9 @@ namespace IronWASP
             }
             catch{ ShowWaitFormMessage("Error reading Other Source Log DB.."); }
 
+            //Clear all data from the results section
+            ResetPluginResultsTab();
+
             //StepWaitFormProgressBar();
             ShowWaitFormGridMessage(1, Counter, "In Progress", 2, true);
             ShowWaitFormMessage("Updating Proxy Logs..");
@@ -4871,7 +4979,7 @@ namespace IronWASP
             List<IronTrace> ScanTraces = new List<IronTrace>();
             try
             {
-                ScanTraces = IronDB.GetScanTraceRecords(StartID, IronLog.MaxRowCount);
+                ScanTraces = IronDB.GetScanTraces(StartID, IronLog.MaxRowCount);
             }
             catch
             {
@@ -5196,9 +5304,22 @@ namespace IronWASP
         internal static void DisplayPluginResultsTrigger(int TriggerID)
         {
             ResetPluginResultsFields();
-            Trigger SelectedTrigger = Finding.CurrentPluginResult.Triggers.GetTrigger(TriggerID);
-            UI.ResultsRequestTriggerTB.Text = SelectedTrigger.RequestTrigger;
-            UI.ResultsResponseTriggerTB.Text = SelectedTrigger.ResponseTrigger;
+            Trigger SelectedTrigger;
+            if (TriggerID == -1)
+            {
+                if (Finding.CurrentPluginResult.BaseRequest != null && Finding.CurrentPluginResult.BaseResponse != null)
+                {
+                    SelectedTrigger = new Trigger("", Finding.CurrentPluginResult.BaseRequest, "", Finding.CurrentPluginResult.BaseResponse);
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                SelectedTrigger = Finding.CurrentPluginResult.Triggers.GetTrigger(TriggerID);
+            }
             if (SelectedTrigger.Request != null)
             {
                 DisplayPluginResultsRequest(SelectedTrigger.Request);
@@ -5207,28 +5328,49 @@ namespace IronWASP
             {
                 DisplayPluginResultsResponse(SelectedTrigger.Response);
             }
+            
+            if (SelectedTrigger.Request != null || SelectedTrigger.Response != null)
+            {
+                UI.ResultsTriggerOptionsPanel.Visible = true;
+            }
+            if (UI.SelectForDiffTriggersGrid.Rows.Count > 1)
+            {
+                UI.ResultsTriggersComparePanel.Visible = true;
+            }
+            if (Finding.CurrentPluginResult.FromActiveScan)
+            {
+                UI.ResultsScanTracePanel.Visible = true;
+            }
+
+            StringBuilder SB = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;}");
+            SB.AppendLine(@" \fs20 ");
+            SB.AppendLine(Tools.RtfSafe(Finding.GetTriggerHighlighting(SelectedTrigger, Finding.CurrentPluginResult.FinderType, TriggerID == -1)));
+            SB.Append(@" \par \par");
+            UI.TriggerHighlightRTB.Rtf = SB.ToString();
         }
 
         internal static void DisplayPluginResultsRequest(Request Req)
         {
             if (Req != null)
             {
-                UI.ResultsRequestIDV.Text = Req.ToShortString();
+                UI.ResultsRequestView.SetRequest(Req);
             }
         }
         internal static void DisplayPluginResultsResponse(Response Res)
         {
             if (Res != null)
             {
-                UI.ResultsResponseIDV.Text = Res.ToString();
+                UI.ResultsResponseView.SetResponse(Res);
             }
         }
         internal static void ResetPluginResultsFields()
         {
-            UI.ResultsRequestTriggerTB.Text = "";
-            UI.ResultsResponseTriggerTB.Text = "";
-            UI.ResultsRequestIDV.Text = "";
-            UI.ResultsResponseIDV.Text = "";
+            UI.TriggerHighlightRTB.Text = "";
+            UI.ResultsRequestView.ClearRequest();
+            UI.ResultsResponseView.ClearResponse();
+            UI.ResultsTriggerOptionsPanel.Visible = false;
+            UI.ResultsScanTracePanel.Visible = false;
+            UI.ResultsTriggersComparePanel.Visible = false;
         }
 
         delegate void UpdateException_d(IronException IrEx);

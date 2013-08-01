@@ -54,7 +54,9 @@ namespace IronWASP
         internal static Queue<string> SessionsQ = new Queue<string>();
         internal static Session CurrentSession;
         //internal static Session StoredSession;
-        
+
+        internal static bool ProxyRunning = false;
+
         internal static int Port = 8080;
         internal static bool LoopBackOnly = true;
         internal static bool SystemProxy = false;
@@ -169,6 +171,8 @@ namespace IronWASP
 
         internal static void Start()
         {
+            ProxyRunning = true;
+            
             if (!EventHandlersAssigned)
             {
                 Fiddler.FiddlerApplication.AfterSessionComplete += delegate(Fiddler.Session Sess)
@@ -186,34 +190,81 @@ namespace IronWASP
                     IronProxy.BeforeResponse(Sess);
                 };
 
-                Fiddler.FiddlerApplication.OverrideServerCertificateValidation += delegate(Fiddler.Session Sess, string sExpectedCN, X509Certificate ServerCertificate, X509Chain ServerCertificateChain, SslPolicyErrors sslPolicyErrors, out bool bTreatCertificateAsValid)
+                Fiddler.FiddlerApplication.OnValidateServerCertificate += delegate(object sender, Fiddler.ValidateServerCertificateEventArgs e)
                 {
-                    string SSLError = sslPolicyErrors.ToString();
-                    if (!SSLError.Equals("None"))
+                    if(e.CertificatePolicyErrors != SslPolicyErrors.None)
                     {
                         string PluginName = "Internal SSL Checker";
-                        string Signature = string.Format("SSLCertificateChecker|{0}|{1}|{2}", new object[] { Sess.host, Sess.port.ToString(), sslPolicyErrors.ToString() });
-                        if (Finding.IsSignatureUnique(PluginName, Sess.host, FindingType.Vulnerability, Signature))
+                        string Signature = string.Format("SSLCertificateChecker|{0}|{1}|{2}", new object[] { e.Session.host, e.Session.port.ToString(), e.CertificatePolicyErrors.ToString() });
+                        if (Finding.IsSignatureUnique(PluginName, e.Session.host, FindingType.Vulnerability, Signature))
                         {
-                            Finding PR = new Finding(Sess.host);
+                            Finding PR = new Finding(e.Session.host);
                             PR.Plugin = PluginName;
                             PR.Severity = FindingSeverity.Medium;
                             PR.Confidence = FindingConfidence.High;
-                            PR.Title = string.Format("SSL Certificate Error for {0}:{1} ", new object[] { Sess.host, Sess.port.ToString() });
-                            PR.Summary = string.Format("The remote server running Host: {0} and Port: {1} returned an invalid SSL certificate.<i<br>> <i<h>>Error:<i</h>> {2}. <i<br>> <i<h>>Certificate Details:<i</h>> {3}", new object[] { Sess.host, Sess.port.ToString(), sslPolicyErrors.ToString(), ServerCertificate.Subject });
+                            PR.Title = string.Format("SSL Certificate Error for {0}:{1} ", new object[] { e.Session.host, e.Session.port.ToString() });
+                            PR.Summary = string.Format("The remote server running Host: {0} and Port: {1} returned an invalid SSL certificate.<i<br>> <i<h>>Error:<i</h>> {2}. <i<br>> <i<h>>Certificate Details:<i</h>> {3}", new object[] { e.Session.host, e.Session.port.ToString(), e.CertificatePolicyErrors.ToString(), e.ServerCertificate.Subject });
                             PR.Signature = Signature;
                             PR.Report();
                         }
-                        Sess.oFlags.Add("IronFlag-SslError", "Yes");
-                        bTreatCertificateAsValid = false;
-                        return false;
+                        e.Session.oFlags.Add("IronFlag-SslError", "Yes");
                     }
-                    else
-                    {
-                        bTreatCertificateAsValid = true;
-                        return true;
-                    }                    
+
+                    //string SSLError = sslPolicyErrors.ToString();
+                    //if (!SSLError.Equals("None"))
+                    //{
+                    //    string PluginName = "Internal SSL Checker";
+                    //    string Signature = string.Format("SSLCertificateChecker|{0}|{1}|{2}", new object[] { Sess.host, Sess.port.ToString(), sslPolicyErrors.ToString() });
+                    //    if (Finding.IsSignatureUnique(PluginName, Sess.host, FindingType.Vulnerability, Signature))
+                    //    {
+                    //        Finding PR = new Finding(Sess.host);
+                    //        PR.Plugin = PluginName;
+                    //        PR.Severity = FindingSeverity.Medium;
+                    //        PR.Confidence = FindingConfidence.High;
+                    //        PR.Title = string.Format("SSL Certificate Error for {0}:{1} ", new object[] { Sess.host, Sess.port.ToString() });
+                    //        PR.Summary = string.Format("The remote server running Host: {0} and Port: {1} returned an invalid SSL certificate.<i<br>> <i<h>>Error:<i</h>> {2}. <i<br>> <i<h>>Certificate Details:<i</h>> {3}", new object[] { Sess.host, Sess.port.ToString(), sslPolicyErrors.ToString(), ServerCertificate.Subject });
+                    //        PR.Signature = Signature;
+                    //        PR.Report();
+                    //    }
+                    //    Sess.oFlags.Add("IronFlag-SslError", "Yes");
+                    //    bTreatCertificateAsValid = false;
+                    //    return false;
+                    //}
+                    //else
+                    //{
+                    //    bTreatCertificateAsValid = true;
+                    //    return true;
+                    //}
                 };
+
+                //Fiddler.FiddlerApplication.OnValidateServerCertificate.OverrideServerCertificateValidation += delegate(Fiddler.Session Sess, string sExpectedCN, X509Certificate ServerCertificate, X509Chain ServerCertificateChain, SslPolicyErrors sslPolicyErrors, out bool bTreatCertificateAsValid)
+                //{
+                //    string SSLError = sslPolicyErrors.ToString();
+                //    if (!SSLError.Equals("None"))
+                //    {
+                //        string PluginName = "Internal SSL Checker";
+                //        string Signature = string.Format("SSLCertificateChecker|{0}|{1}|{2}", new object[] { Sess.host, Sess.port.ToString(), sslPolicyErrors.ToString() });
+                //        if (Finding.IsSignatureUnique(PluginName, Sess.host, FindingType.Vulnerability, Signature))
+                //        {
+                //            Finding PR = new Finding(Sess.host);
+                //            PR.Plugin = PluginName;
+                //            PR.Severity = FindingSeverity.Medium;
+                //            PR.Confidence = FindingConfidence.High;
+                //            PR.Title = string.Format("SSL Certificate Error for {0}:{1} ", new object[] { Sess.host, Sess.port.ToString() });
+                //            PR.Summary = string.Format("The remote server running Host: {0} and Port: {1} returned an invalid SSL certificate.<i<br>> <i<h>>Error:<i</h>> {2}. <i<br>> <i<h>>Certificate Details:<i</h>> {3}", new object[] { Sess.host, Sess.port.ToString(), sslPolicyErrors.ToString(), ServerCertificate.Subject });
+                //            PR.Signature = Signature;
+                //            PR.Report();
+                //        }
+                //        Sess.oFlags.Add("IronFlag-SslError", "Yes");
+                //        bTreatCertificateAsValid = false;
+                //        return false;
+                //    }
+                //    else
+                //    {
+                //        bTreatCertificateAsValid = true;
+                //        return true;
+                //    }                    
+                //};
 
                 Fiddler.FiddlerApplication.OnNotification += delegate(object Sender, Fiddler.NotificationEventArgs Args)
                 {
@@ -233,17 +284,18 @@ namespace IronWASP
             IronUI.UpdateProxyStatusInConfigPanel(true);
             if (IronProxy.LoopBackOnly)
             {
-                Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.DecryptSSL);
+                Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default & ~ Fiddler.FiddlerCoreStartupFlags.AllowRemoteClients & ~Fiddler.FiddlerCoreStartupFlags.RegisterAsSystemProxy);
+                //Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default);
             }
             else
             {
-                Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.DecryptSSL | Fiddler.FiddlerCoreStartupFlags.AllowRemoteClients);
+                Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default & ~Fiddler.FiddlerCoreStartupFlags.RegisterAsSystemProxy & ~Fiddler.FiddlerCoreStartupFlags.ChainToUpstreamGateway);
             }
-
         }
 
         internal static void Stop()
         {
+            ProxyRunning = false;
             try
             {
                 Fiddler.FiddlerApplication.Shutdown();

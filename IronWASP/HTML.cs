@@ -360,6 +360,18 @@ namespace IronWASP
                                     Contexts.Add("UrlAttribute");
                                 }
                             }
+                            else if (Attribute.Value.StartsWith("vbscript:", StringComparison.OrdinalIgnoreCase))
+                            {
+                                string VBAttributeValue = Attribute.Value.Substring(9);
+                                if (VBAttributeValue.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
+                                {
+                                    Contexts.Add("VBUrl");
+                                }
+                                else
+                                {
+                                    Contexts.Add("UrlAttribute");
+                                }
+                            }
                             else
                             {
                                 Contexts.Add("UrlAttribute");
@@ -395,6 +407,18 @@ namespace IronWASP
                                                 if (JSAttributeValue.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
                                                 {
                                                     Contexts.Add("JSUrl");
+                                                }
+                                                else if (RedirectUrl.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
+                                                {
+                                                    Contexts.Add("UrlAttribute");
+                                                }
+                                            }
+                                            else if (RedirectUrl.StartsWith("vbscript:", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                string VBAttributeValue = RedirectUrl.Substring(9);
+                                                if (VBAttributeValue.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
+                                                {
+                                                    Contexts.Add("VBUrl");
                                                 }
                                                 else if (RedirectUrl.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
                                                 {
@@ -490,42 +514,65 @@ namespace IronWASP
             }
             if (ShouldGetJavaScript)
                 Scripts.AddRange(GetJavaScript(this.Html.DocumentNode, Keyword));
+            else
+                Scripts.AddRange(GetVisualBasic(this.Html.DocumentNode, Keyword));
             return Scripts;
         }
 
         public List<string> GetJavaScript(HtmlNode Node, string Keyword)
         {
-            List<string> JavaScripts = new List<string>();
-            if (Node == null) return JavaScripts;
+            return GetScript(Node, Keyword, true);
+        }
+
+        public List<string> GetVisualBasic(HtmlNode Node, string Keyword)
+        {
+            return GetScript(Node, Keyword, false);
+        }
+
+        public List<string> GetScript(HtmlNode Node, string Keyword, bool ShouldGetJavaScript)
+        {
+            List<string> Scripts = new List<string>();
+            if (Node == null) return Scripts;
             if (Node.Attributes != null)
             {
                 foreach (HtmlAttribute Attr in Node.Attributes)
                 {
                     if (Attr.Value != null)
                     {
-                        if (EventAttributes.Contains(Attr.Name) && (Keyword.Length == 0 || Attr.Value.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0))
+                        if (ShouldGetJavaScript && EventAttributes.Contains(Attr.Name) && (Keyword.Length == 0 || Attr.Value.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0))
                         {
-                            if(Attr.Value.EndsWith(";"))
-                                JavaScripts.Add(Attr.Value);
+                            if (Attr.Value.EndsWith(";"))
+                                Scripts.Add(Attr.Value);
                             else
-                                JavaScripts.Add(Attr.Value + ";");
+                                Scripts.Add(Attr.Value + ";");
                         }
                         else if (IsUrlAttribute(Node.Name, Attr.Name) && Attr.Value.StartsWith("javascript:", StringComparison.OrdinalIgnoreCase) && (Keyword.Length == 0 || Attr.Value.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0))
                         {
-                            JavaScripts.AddRange(GetJavaScriptUrlScripts(new List<string>() { Attr.Value }));
+                            if (ShouldGetJavaScript)
+                            {
+                                Scripts.AddRange(GetJavaScriptUrlScripts(new List<string>() { Attr.Value }));
+                            }
+                        }
+                        else if (IsUrlAttribute(Node.Name, Attr.Name) && Attr.Value.StartsWith("vbscript:", StringComparison.OrdinalIgnoreCase) && (Keyword.Length == 0 || Attr.Value.IndexOf(Keyword, StringComparison.OrdinalIgnoreCase) >= 0))
+                        {
+                            if (!ShouldGetJavaScript)
+                            {
+                                Scripts.AddRange(GetVisualBasicUrlScripts(new List<string>() { Attr.Value }));
+                            }
                         }
                     }
                 }
             }
-            if(Node.ChildNodes != null)
+            if (Node.ChildNodes != null)
             {
-                foreach(HtmlNode ChildNode in Node.ChildNodes)
+                foreach (HtmlNode ChildNode in Node.ChildNodes)
                 {
-                    JavaScripts.AddRange(GetJavaScript(ChildNode, Keyword));
+                    Scripts.AddRange(GetScript(ChildNode, Keyword, ShouldGetJavaScript));
                 }
             }
-            return JavaScripts;
+            return Scripts;
         }
+
 
         List<string> GetJavaScriptUrlScripts(List<string> JavaScriptUrls)
         {
@@ -544,6 +591,25 @@ namespace IronWASP
                 }
             }
             return JavaScriptUrlScripts;
+        }
+
+        List<string> GetVisualBasicUrlScripts(List<string> VisualBasicUrls)
+        {
+            List<string> VisualBasicUrlScripts = new List<string>();
+            foreach (string Url in VisualBasicUrls)
+            {
+                if (Url.StartsWith("vbscript:", StringComparison.OrdinalIgnoreCase))
+                {
+                    string VBWithinUrl = Url.Substring(9);
+                    VBWithinUrl = VBWithinUrl.Trim();
+                    if (VBWithinUrl.StartsWith("\"") && VBWithinUrl.EndsWith("\""))
+                        VBWithinUrl = VBWithinUrl.Trim('"');
+                    else if (VBWithinUrl.StartsWith("'") && VBWithinUrl.EndsWith("'"))
+                        VBWithinUrl = VBWithinUrl.Trim('\'');
+                    VisualBasicUrlScripts.Add(VBWithinUrl);
+                }
+            }
+            return VisualBasicUrlScripts;
         }
 
         public List<string> GetCss()

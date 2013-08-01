@@ -632,11 +632,12 @@ You can either select all parameters or entire sections for scanning. Or go thro
             }
             else
             {
-                List<FormatPlugin> RightList = FormatPlugin.Get(RequestToScan);
-                if (RightList.Count > 0)
+                string FPName = FormatPlugin.Get(RequestToScan);
+                if (FPName.Length > 0 && FPName != "Normal")
                 {
-                    string FormatPluginName = RightList[0].Name;
-                    string XML = RightList[0].ToXmlFromRequest(RequestToScan);
+                    string FormatPluginName = FPName;
+                    FormatPlugin FP = FormatPlugin.Get(FPName);
+                    string XML = FP.ToXmlFromRequest(RequestToScan);
                     string[,] XmlInjectionPoints = FormatPlugin.XmlToArray(XML);
                     SetBodyTypeFormatPluginInjectionPointsInUi(FormatPluginName, XmlInjectionPoints, XML);
                     SetBodyTypeMessage(string.Format("Request body format has been auto-detected as '{0}'", FormatPluginName));

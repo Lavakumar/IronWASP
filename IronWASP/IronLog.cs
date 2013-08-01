@@ -399,7 +399,7 @@ namespace IronWASP
             }
         }
 
-        static Session GetLog(string Source, int ID)
+        internal static Session GetLog(string Source, int ID)
         {
             Session IrSe = null;
             switch (Source)
@@ -420,13 +420,20 @@ namespace IronWASP
                     IrSe = Session.FromProbeLog(ID);
                     break;
                 case RequestSource.Trigger:
-                    Trigger SelectedTrigger = Finding.CurrentPluginResult.Triggers.GetTrigger(ID -1);
-                    if (SelectedTrigger.Request != null)
+                    if (ID == 0)
                     {
-                        if (SelectedTrigger.Response == null)
-                            IrSe = new Session(SelectedTrigger.Request);
-                        else
-                            IrSe = new Session(SelectedTrigger.Request, SelectedTrigger.Response);
+                        IrSe = new Session(Finding.CurrentPluginResult.BaseRequest, Finding.CurrentPluginResult.BaseResponse);
+                    }
+                    else
+                    {
+                        Trigger SelectedTrigger = Finding.CurrentPluginResult.Triggers.GetTrigger(ID - 1);
+                        if (SelectedTrigger.Request != null)
+                        {
+                            if (SelectedTrigger.Response == null)
+                                IrSe = new Session(SelectedTrigger.Request);
+                            else
+                                IrSe = new Session(SelectedTrigger.Request, SelectedTrigger.Response);
+                        }
                     }
                     break;
                 case RequestSource.TestGroup:

@@ -201,6 +201,17 @@ namespace IronWASP
                             if (T.Response.IsBinary) T.Response.StoredBinaryBodyString = T.Response.BinaryBodyString;
                         }
                     }
+                    if (PR.FromActiveScan)
+                    {
+                        try
+                        {
+                            PR.BaseRequest.StoredHeadersString = PR.BaseRequest.GetHeadersAsString();
+                            if (PR.BaseRequest.IsBinary) PR.BaseRequest.StoredBinaryBodyString = PR.BaseRequest.BinaryBodyString;
+                            PR.BaseResponse.StoredHeadersString = PR.BaseResponse.GetHeadersAsString();
+                            if (PR.BaseResponse.IsBinary) PR.BaseResponse.StoredBinaryBodyString = PR.BaseResponse.BinaryBodyString;
+                        }
+                        catch { }
+                    }
                     PR.Id = Interlocked.Increment(ref Config.PluginResultCount);
                     PRs.Add(PR);
                 }
