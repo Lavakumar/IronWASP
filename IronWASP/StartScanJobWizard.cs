@@ -29,6 +29,8 @@ namespace IronWASP
 {
     public partial class StartScanJobWizard : Form
     {
+        bool CanClose = false;
+
         Fuzzer Fuzz = null;
 
         bool ScanJobMode = true;
@@ -114,6 +116,7 @@ namespace IronWASP
 
         private void CancelBtn_Click(object sender, EventArgs e)
         {
+            this.CanClose = true;
             this.Close();
         }
 
@@ -192,9 +195,14 @@ namespace IronWASP
         private void BaseTabs_Selecting(object sender, TabControlCancelEventArgs e)
         {
             if (BaseTabs.SelectedIndex != CurrentStep)
+            {
                 BaseTabs.SelectTab(CurrentStep);
+                MessageBox.Show("Use the 'Next Step ->' and 'Previous Step ->' buttons on the bottom left and right corners of this window for navigation.");
+            }
             else if ((ScanJobMode && CurrentStep == 2) || (!ScanJobMode && CurrentStep == 1))
+            {
                 CheckAndUpdateInjectionPointsInUi();
+            }
         }
 
         
@@ -1347,6 +1355,7 @@ You can either select all parameters or entire sections for scanning. Or go thro
         {
             if (FinalBtn.Text.Equals("Close"))
             {
+                this.CanClose = true;
                 this.Close();
             }
             else
@@ -1411,6 +1420,7 @@ You can either select all parameters or entire sections for scanning. Or go thro
                     }
                     else
                     {
+                        this.CanClose = true;
                         this.Close();
                     }
                 }
@@ -1881,6 +1891,36 @@ You can either select all parameters or entire sections for scanning. Or go thro
         {
             SessionPluginCreationAssistant SPCA = new SessionPluginCreationAssistant();
             SPCA.Show();
+        }
+
+        private void StartScanJobWizard_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (IronUI.UI.CanShutdown) return;
+            if (!CanClose)
+            {
+                if (this.CurrentStep == 0)
+                {
+                    this.CanClose = true;
+                }
+                else if ((this.ScanJobMode && this.CurrentStep == 3) || (!this.ScanJobMode && this.CurrentStep == 2))
+                {
+                    if (this.ScanJobMode)
+                    {
+                        e.Cancel = true;
+                        MessageBox.Show("If you have started the scan then you can close this window by clicking on the 'Close' button on the button right corner of the window.\r\n Otherwise use the '<- Previous Step' button on the bottom left corner to go to the first step and then press the 'Cancel' button on the bottom left corner.");
+                    }
+                    else
+                    {
+                        e.Cancel = true;
+                        MessageBox.Show("You can close this window by clicking on the 'Done' button on the button right corner of the window.");
+                    }
+                }
+                else
+                {
+                    e.Cancel = true;
+                    MessageBox.Show("This window can only be closed from the first step.\r\nUse the '<- Previous Step' button on the bottom left corner to go to the first step and then press the 'Cancel' button on the bottom left corner.");
+                }
+            }
         }
     }
 }

@@ -44,7 +44,7 @@ namespace IronWASP
 
         internal static Dictionary<string, int> OtherSourceCounterDict = new Dictionary<string, int>();
 
-        internal static Dictionary<string, Request> APIResponseDict = new Dictionary<string, Request>();
+        //internal static Dictionary<string, Request> APIResponseDict = new Dictionary<string, Request>();
         internal static bool OpeningIronProjectFile = false;
         internal static string RootDir = "";
         internal static bool BlinkPrompt = true;

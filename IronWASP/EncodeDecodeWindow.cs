@@ -62,7 +62,7 @@ namespace IronWASP
             DisableAllButtons();
             StatusTB.Text = "Executing...";
             OutputTB.Text = "";
-            Input = InputTB.Text;
+            Input = InputTB.GetText();
             T = new Thread(ExecuteCommand);
             T.Start();
         }
@@ -79,7 +79,49 @@ namespace IronWASP
             {
                 Status = "Error: " + Exp.Message;
             }
-            IronUI.ShowEncodeDecodeResult(Result, Status);
+            ShowEncodeDecodeResult(Result, Status);
+        }
+
+        delegate void ShowEncodeDecodeResult_d(string Result, string Message);
+        internal void ShowEncodeDecodeResult(string Result, string Message)
+        {
+            if (this.InvokeRequired)
+            {
+                ShowEncodeDecodeResult_d SEDR_d = new ShowEncodeDecodeResult_d(ShowEncodeDecodeResult);
+                this.Invoke(SEDR_d, new object[] { Result, Message });
+            }
+            else
+            {
+                OutputTB.SetText(Result);
+                if (Message.Length > 0)
+                {
+                    StatusTB.BackColor = Color.Red;
+                }
+                else
+                {
+                    StatusTB.BackColor = SystemColors.Control;
+                }
+                StatusTB.Text = Message;
+                EnableAllEncodeDecodeCommandButtons();
+            }
+        }
+
+        void EnableAllEncodeDecodeCommandButtons()
+        {
+            UrlEncodeBtn.Enabled = true;
+            HtmlEncodeBtn.Enabled = true;
+            HexEncodeBtn.Enabled = true;
+            Base64EncodeBtn.Enabled = true;
+            ToHexBtn.Enabled = true;
+            UrlDecodeBtn.Enabled = true;
+            HtmlDecodeBtn.Enabled = true;
+            HexDecodeBtn.Enabled = true;
+            Base64DecodeBtn.Enabled = true;
+            MD5Btn.Enabled = true;
+            SHA1Btn.Enabled = true;
+            SHA256Btn.Enabled = true;
+            SHA384Btn.Enabled = true;
+            SHA512Btn.Enabled = true;
         }
 
         void DisableAllButtons()
@@ -186,7 +228,14 @@ namespace IronWASP
 
         private void EncodeOutToEncodeInBtn_Click(object sender, EventArgs e)
         {
-            InputTB.Text = OutputTB.Text;
-        }        
+            if (OutputTB.IsBinary)
+            {
+                InputTB.SetBytes(OutputTB.GetBytes());
+            }
+            else
+            {
+                InputTB.SetText(OutputTB.GetText());
+            }
+        }
     }
 }

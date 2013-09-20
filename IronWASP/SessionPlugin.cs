@@ -177,7 +177,10 @@ namespace IronWASP
             {
                 if (!List().Contains(SP.Name))
                 {
-                    SP.FileName = PluginEngine.FileName;
+                    if (SP.FileName != "Internal")
+                    {
+                        SP.FileName = PluginEngine.FileName;
+                    }
                     Collection.Add(SP);
                 }
             }

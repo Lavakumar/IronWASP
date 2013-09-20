@@ -261,51 +261,51 @@ namespace IronWASP
             }
         }
 
-        internal static void MarkForJavaScriptTesting(string Source, string ID)
-        {
-            try
-            {
-                int IntID = Int32.Parse(ID);
-                MarkForJavaScriptTesting(Source, IntID);
-            }
-            catch { return; }
-        }
+        //internal static void MarkForJavaScriptTesting(string Source, string ID)
+        //{
+        //    try
+        //    {
+        //        int IntID = Int32.Parse(ID);
+        //        MarkForJavaScriptTesting(Source, IntID);
+        //    }
+        //    catch { return; }
+        //}
         
-        internal static void MarkForJavaScriptTesting(string Source, int ID)
-        {
-            object[] Details = new object[] { Source, ID };
+        //internal static void MarkForJavaScriptTesting(string Source, int ID)
+        //{
+        //    object[] Details = new object[] { Source, ID };
 
-            Thread Worker = new Thread(MarkForJavaScriptTesting);
-            Worker.Start(Details);
-        }
+        //    Thread Worker = new Thread(MarkForJavaScriptTesting);
+        //    Worker.Start(Details);
+        //}
 
-        static void MarkForJavaScriptTesting(object Details)
-        {
-            try
-            {
-                object[] DetailsArray = (object[])Details;
-                string Source = DetailsArray[0].ToString();
-                int ID = (int)DetailsArray[1];
+        //static void MarkForJavaScriptTesting(object Details)
+        //{
+        //    try
+        //    {
+        //        object[] DetailsArray = (object[])Details;
+        //        string Source = DetailsArray[0].ToString();
+        //        int ID = (int)DetailsArray[1];
 
-                Session IrSe = GetLog(Source, ID);
-                if (IrSe == null)
-                {
-                    IronUI.ShowLogStatus("Unable to read Response from log", true);
-                    return;
-                }
-                if (IrSe.Response == null)
-                {
-                    IronUI.ShowLogStatus("Unable to read Response from 4log", true);
-                    return;
-                }
-                IronUI.FillAndShowJavaScriptTester(IrSe.Response.BodyString);
-            }
-            catch (Exception Exp)
-            {
-                IronUI.ShowLogStatus("Unable to read Response from Log", true);
-                IronException.Report("Error reading from log", Exp.Message, Exp.StackTrace);
-            }
-        }
+        //        Session IrSe = GetLog(Source, ID);
+        //        if (IrSe == null)
+        //        {
+        //            IronUI.ShowLogStatus("Unable to read Response from log", true);
+        //            return;
+        //        }
+        //        if (IrSe.Response == null)
+        //        {
+        //            IronUI.ShowLogStatus("Unable to read Response from 4log", true);
+        //            return;
+        //        }
+        //        IronUI.FillAndShowJavaScriptTester(IrSe.Response.BodyString);
+        //    }
+        //    catch (Exception Exp)
+        //    {
+        //        IronUI.ShowLogStatus("Unable to read Response from Log", true);
+        //        IronException.Report("Error reading from log", Exp.Message, Exp.StackTrace);
+        //    }
+        //}
 
         internal static void CopyRequest(string Source, string ID)
         {

@@ -41,70 +41,62 @@ namespace IronWASP
         internal static string TraceLogFile = "";
         internal static string ConfigFile = Config.RootDir + "\\IronConfig.exe";
 
+        internal static StreamWriter CommandsLogFile;
         
 
         internal static void LogMTRequest(Request Request)
         {
-            SQLiteConnection MT_DB = new SQLiteConnection("data source=" + TestLogFile);
-            MT_DB.Open();
-            try
+            using (SQLiteConnection MT_DB = new SQLiteConnection("data source=" + TestLogFile))
             {
-                SQLiteCommand Cmd = MT_DB.CreateCommand();
-                Cmd.CommandText = "INSERT INTO TestLog (ID, SSL, HostName, Method, URL, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, Notes) VALUES (@ID, @SSL, @HostName, @Method, @URL, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @Notes)";
-                Cmd.Parameters.AddWithValue("@ID", Request.ID);
-                Cmd.Parameters.AddWithValue("@SSL", AsInt(Request.SSL));
-                Cmd.Parameters.AddWithValue("@HostName", Request.Host);
-                Cmd.Parameters.AddWithValue("@Method", Request.Method);
-                Cmd.Parameters.AddWithValue("@URL", Request.URL);
-                Cmd.Parameters.AddWithValue("@File", Request.File);
-                Cmd.Parameters.AddWithValue("@Parameters", Request.GetParametersString());
-                //Cmd.Parameters.AddWithValue("@RequestHeaders", Request.GetHeadersAsStringWithoutFullURL());
-                Cmd.Parameters.AddWithValue("@RequestHeaders", Request.GetHeadersAsString());
-                if (Request.IsBinary)
-                    Cmd.Parameters.AddWithValue("@RequestBody", Request.BinaryBodyString);
-                else
-                    Cmd.Parameters.AddWithValue("@RequestBody", Request.BodyString);
-                //Cmd.Parameters.AddWithValue("@RequestBody", Request.BodyString);
-                Cmd.Parameters.AddWithValue("@BinaryRequest", AsInt(Request.IsBinary));
-                Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
-                Cmd.ExecuteNonQuery();
+                MT_DB.Open();
+                using (SQLiteCommand Cmd = MT_DB.CreateCommand())
+                {
+                    Cmd.CommandText = "INSERT INTO TestLog (ID, SSL, HostName, Method, URL, File, Parameters, RequestHeaders, RequestBody, BinaryRequest, Notes) VALUES (@ID, @SSL, @HostName, @Method, @URL, @File, @Parameters, @RequestHeaders, @RequestBody, @BinaryRequest, @Notes)";
+                    Cmd.Parameters.AddWithValue("@ID", Request.ID);
+                    Cmd.Parameters.AddWithValue("@SSL", AsInt(Request.SSL));
+                    Cmd.Parameters.AddWithValue("@HostName", Request.Host);
+                    Cmd.Parameters.AddWithValue("@Method", Request.Method);
+                    Cmd.Parameters.AddWithValue("@URL", Request.URL);
+                    Cmd.Parameters.AddWithValue("@File", Request.File);
+                    Cmd.Parameters.AddWithValue("@Parameters", Request.GetParametersString());
+                    //Cmd.Parameters.AddWithValue("@RequestHeaders", Request.GetHeadersAsStringWithoutFullURL());
+                    Cmd.Parameters.AddWithValue("@RequestHeaders", Request.GetHeadersAsString());
+                    if (Request.IsBinary)
+                        Cmd.Parameters.AddWithValue("@RequestBody", Request.BinaryBodyString);
+                    else
+                        Cmd.Parameters.AddWithValue("@RequestBody", Request.BodyString);
+                    //Cmd.Parameters.AddWithValue("@RequestBody", Request.BodyString);
+                    Cmd.Parameters.AddWithValue("@BinaryRequest", AsInt(Request.IsBinary));
+                    Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
+                    Cmd.ExecuteNonQuery();
+                }
             }
-            catch(Exception Exp)
-            {
-                throw Exp;
-            }
-            MT_DB.Close();
         }
         internal static void LogMTResponse(Response Response)
         {
-            SQLiteConnection MT_DB = new SQLiteConnection("data source=" + TestLogFile);
-            MT_DB.Open();
-            try
+            using (SQLiteConnection MT_DB = new SQLiteConnection("data source=" + TestLogFile))
             {
-                SQLiteCommand Cmd = MT_DB.CreateCommand();
-                Cmd.CommandText = "UPDATE TestLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, RoundTrip=@RoundTrip, Notes=@Notes WHERE ID=@ID";
-                Cmd.Parameters.AddWithValue("@Code", Response.Code);
-                Cmd.Parameters.AddWithValue("@Length", Response.BodyLength);
-                Cmd.Parameters.AddWithValue("@MIME", Response.ContentType);
-                Cmd.Parameters.AddWithValue("@SetCookie", AsInt((Response.SetCookies.Count > 0)));
-                Cmd.Parameters.AddWithValue("@ResponseHeaders", Response.GetHeadersAsString());
-                if (Response.IsBinary)
-                    Cmd.Parameters.AddWithValue("@ResponseBody", Response.BinaryBodyString);
-                else
-                    Cmd.Parameters.AddWithValue("@ResponseBody", Response.BodyString);
-                //Cmd.Parameters.AddWithValue("@ResponseBody", Response.BodyString);
-                Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(Response.IsBinary));
-                Cmd.Parameters.AddWithValue("@RoundTrip", Response.RoundTrip);
-                Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
-                Cmd.Parameters.AddWithValue("@ID", Response.ID);
-                Cmd.ExecuteNonQuery();
+                MT_DB.Open();
+                using (SQLiteCommand Cmd = MT_DB.CreateCommand())
+                {
+                    Cmd.CommandText = "UPDATE TestLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, RoundTrip=@RoundTrip, Notes=@Notes WHERE ID=@ID";
+                    Cmd.Parameters.AddWithValue("@Code", Response.Code);
+                    Cmd.Parameters.AddWithValue("@Length", Response.BodyLength);
+                    Cmd.Parameters.AddWithValue("@MIME", Response.ContentType);
+                    Cmd.Parameters.AddWithValue("@SetCookie", AsInt((Response.SetCookies.Count > 0)));
+                    Cmd.Parameters.AddWithValue("@ResponseHeaders", Response.GetHeadersAsString());
+                    if (Response.IsBinary)
+                        Cmd.Parameters.AddWithValue("@ResponseBody", Response.BinaryBodyString);
+                    else
+                        Cmd.Parameters.AddWithValue("@ResponseBody", Response.BodyString);
+                    //Cmd.Parameters.AddWithValue("@ResponseBody", Response.BodyString);
+                    Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(Response.IsBinary));
+                    Cmd.Parameters.AddWithValue("@RoundTrip", Response.RoundTrip);
+                    Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
+                    Cmd.Parameters.AddWithValue("@ID", Response.ID);
+                    Cmd.ExecuteNonQuery();
+                }
             }
-            catch(Exception Exp)
-            {
-                MT_DB.Close();
-                throw Exp;
-            }
-            MT_DB.Close();
         }
 
         //internal static void AddToTestGroup(int ID, string Group)
@@ -147,23 +139,18 @@ namespace IronWASP
 
         internal static void AddToTestGroup(int ID, string Group)
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
-            string CMD = "INSERT INTO TestGroups (Name, ID) VALUES (@Name, @ID)";
-            DB.Open();
-            try
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile))
             {
-                SQLiteCommand Cmd = DB.CreateCommand();
-                Cmd.CommandText = CMD;
-                Cmd.Parameters.AddWithValue("@Name", Group);
-                Cmd.Parameters.AddWithValue("@ID", ID);
-                Cmd.ExecuteNonQuery();
+                string CMD = "INSERT INTO TestGroups (Name, ID) VALUES (@Name, @ID)";
+                DB.Open();
+                using (SQLiteCommand Cmd = DB.CreateCommand())
+                {
+                    Cmd.CommandText = CMD;
+                    Cmd.Parameters.AddWithValue("@Name", Group);
+                    Cmd.Parameters.AddWithValue("@ID", ID);
+                    Cmd.ExecuteNonQuery();
+                }
             }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         //internal static void ClearGroup(string Group)
@@ -205,43 +192,33 @@ namespace IronWASP
 
         internal static void ClearGroup(string Group)
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
-            string CMD = "DELETE FROM TestGroups WHERE Name=@Name";
-            DB.Open();
-            try
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile))
             {
-                SQLiteCommand Cmd = DB.CreateCommand();
-                Cmd.CommandText = CMD;
-                Cmd.Parameters.AddWithValue("@Name", Group);
-                Cmd.ExecuteNonQuery();
+                string CMD = "DELETE FROM TestGroups WHERE Name=@Name";
+                DB.Open();
+                using (SQLiteCommand Cmd = DB.CreateCommand())
+                {
+                    Cmd.CommandText = CMD;
+                    Cmd.Parameters.AddWithValue("@Name", Group);
+                    Cmd.ExecuteNonQuery();
+                }
             }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         internal static void RenameGroup(string OldGroup, string NewGroup)
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
-            string CMD = "UPDATE TestGroups SET Name=@NewName WHERE Name=@OldName";
-            DB.Open();
-            try
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile))
             {
-                SQLiteCommand Cmd = DB.CreateCommand();
-                Cmd.CommandText = CMD;
-                Cmd.Parameters.AddWithValue("@OldName", OldGroup);
-                Cmd.Parameters.AddWithValue("@NewName", NewGroup);
-                Cmd.ExecuteNonQuery();
+                string CMD = "UPDATE TestGroups SET Name=@NewName WHERE Name=@OldName";
+                DB.Open();
+                using (SQLiteCommand Cmd = DB.CreateCommand())
+                {
+                    Cmd.CommandText = CMD;
+                    Cmd.Parameters.AddWithValue("@OldName", OldGroup);
+                    Cmd.Parameters.AddWithValue("@NewName", NewGroup);
+                    Cmd.ExecuteNonQuery();
+                }
             }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         //internal static void LoadTestGroups()
@@ -354,70 +331,66 @@ namespace IronWASP
 
         internal static void LoadTestGroups()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
-
             Dictionary<string, List<int>> Groups = new Dictionary<string, List<int>>();
 
-            DB.Open();
-            try
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile))
             {
-                SQLiteCommand Cmd = DB.CreateCommand();
-                Cmd.CommandText = "SELECT Name, ID FROM TestGroups";
-                SQLiteDataReader result = Cmd.ExecuteReader();
-                while (result.Read())
+                DB.Open();
+                using (SQLiteCommand Cmd = DB.CreateCommand())
                 {
-                    try
+                    Cmd.CommandText = "SELECT Name, ID FROM TestGroups";
+                    using (SQLiteDataReader result = Cmd.ExecuteReader())
                     {
-                        int ID = Int32.Parse(result["ID"].ToString());
-                        string Group = result["Name"].ToString();
-                        if (ID != 0)
+                        while (result.Read())
                         {
-                            if (!Groups.ContainsKey(Group))
-                                Groups[Group] = new List<int>();
-                            Groups[Group].Add(ID);
+                            try
+                            {
+                                int ID = Int32.Parse(result["ID"].ToString());
+                                string Group = result["Name"].ToString();
+                                if (ID != 0)
+                                {
+                                    if (!Groups.ContainsKey(Group))
+                                        Groups[Group] = new List<int>();
+                                    Groups[Group].Add(ID);
+                                }
+                            }
+                            catch { }
                         }
                     }
-                    catch { }
-                }
-                Dictionary<string, Dictionary<int, Session>> GroupSessions = new Dictionary<string, Dictionary<int, Session>>();
-                Dictionary<string,int> CurrentGroupLogId = new Dictionary<string,int>();
-                foreach (string Group in Groups.Keys)
-                {
-                    Groups[Group].Sort();
-                    foreach (int ID in Groups[Group])
-                    {
-                        Session Irse = Session.FromTestLog(ID);
-                        if (!GroupSessions.ContainsKey(Group))
-                            GroupSessions[Group] = new Dictionary<int, Session>();
-                        GroupSessions[Group][ID] = Irse;
-                        
-                        CurrentGroupLogId[Group] = ID;
-                    }
-                }
-                lock (ManualTesting.GroupSessions)
-                {
-                    ManualTesting.GroupSessions = new Dictionary<string,Dictionary<int,Session>>(GroupSessions);
-                }
-                lock (ManualTesting.CurrentGroupLogId)
-                {
-                    ManualTesting.CurrentGroupLogId = new Dictionary<string,int>(CurrentGroupLogId);
                 }
             }
-            catch (Exception Exp)
+
+            Dictionary<string, Dictionary<int, Session>> GroupSessions = new Dictionary<string, Dictionary<int, Session>>();
+            Dictionary<string, int> CurrentGroupLogId = new Dictionary<string, int>();
+            foreach (string Group in Groups.Keys)
             {
-                DB.Close();
-                throw Exp;
+                Groups[Group].Sort();
+                foreach (int ID in Groups[Group])
+                {
+                    Session Irse = Session.FromTestLog(ID);
+                    if (!GroupSessions.ContainsKey(Group))
+                        GroupSessions[Group] = new Dictionary<int, Session>();
+                    GroupSessions[Group][ID] = Irse;
+
+                    CurrentGroupLogId[Group] = ID;
+                }
             }
-            DB.Close();
+            lock (ManualTesting.GroupSessions)
+            {
+                ManualTesting.GroupSessions = new Dictionary<string, Dictionary<int, Session>>(GroupSessions);
+            }
+            lock (ManualTesting.CurrentGroupLogId)
+            {
+                ManualTesting.CurrentGroupLogId = new Dictionary<string, int>(CurrentGroupLogId);
+            }
         }
 
         #region LogRequestResponses
         internal static void LogProxyMessages(List<Session> IronSessions, List<Request> Requests, List<Response> Responses, List<Request> OriginalRequests, List<Response> OriginalResponses, List<Request> EditedRequests, List<Response> EditedResponses)
         {
-            SQLiteConnection Log = new SQLiteConnection("data source=" + ProxyLogFile);
-            Log.Open();
-            try
+            using (SQLiteConnection Log = new SQLiteConnection("data source=" + ProxyLogFile))
             {
+                Log.Open();
                 using (SQLiteTransaction InsertLogs = Log.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(Log))
@@ -618,134 +591,120 @@ namespace IronWASP
                     InsertLogs.Commit();
                 }
             }
-            catch (Exception Exp)
-            {
-                Log.Close();
-                throw Exp;
-            }
-            Log.Close();
         }
 
         internal static void LogProxyMessages(List<Request[]> RequestArrs, List<Response[]> ResponseArrs)
         {
-            SQLiteConnection Log = new SQLiteConnection("data source=" + ProxyLogFile);
-            Log.Open();
-            try
+            using (SQLiteConnection Log = new SQLiteConnection("data source=" + ProxyLogFile))
             {
-                using (SQLiteTransaction InsertLogs = Log.BeginTransaction())
-                {
-                    using (SQLiteCommand Cmd = new SQLiteCommand(Log))
+                Log.Open();
+                    using (SQLiteTransaction InsertLogs = Log.BeginTransaction())
                     {
-                        foreach (Request[] ReqArr in RequestArrs)
+                        using (SQLiteCommand Cmd = new SQLiteCommand(Log))
                         {
-                            Cmd.CommandText = "INSERT INTO ProxyLog (ID , SSL, HostName, Method, URL, Edited, File, Parameters, OriginalRequestHeaders, OriginalRequestBody, BinaryOriginalRequest, RequestHeaders, RequestBody, BinaryRequest, Edited, Notes) VALUES (@ID , @SSL, @HostName, @Method, @URL, @Edited, @File, @Parameters, @OriginalRequestHeaders, @OriginalRequestBody, @BinaryOriginalRequest, @RequestHeaders, @RequestBody, @BinaryRequest, @Edited, @Notes)";
-                            Cmd.Parameters.AddWithValue("@ID", ReqArr[1].ID);
-                            Cmd.Parameters.AddWithValue("@SSL", AsInt(ReqArr[1].SSL));
-                            Cmd.Parameters.AddWithValue("@HostName", ReqArr[1].Host);
-                            Cmd.Parameters.AddWithValue("@Method", ReqArr[1].Method);
-                            Cmd.Parameters.AddWithValue("@URL", ReqArr[1].URL);
-                            //Cmd.Parameters.AddWithValue("@File", Req.File);
-                            Cmd.Parameters.AddWithValue("@File", ReqArr[1].StoredFile);
-                            Cmd.Parameters.AddWithValue("@Parameters", ReqArr[1].StoredParameters);
-                            //Cmd.Parameters.AddWithValue("@RequestHeaders", Req.GetHeadersAsString());
-                            Cmd.Parameters.AddWithValue("@RequestHeaders", ReqArr[1].StoredHeadersString);
-                            if (ReqArr[1].IsBinary)
-                                Cmd.Parameters.AddWithValue("@RequestBody", ReqArr[1].StoredBinaryBodyString);
-                            else
-                                Cmd.Parameters.AddWithValue("@RequestBody", ReqArr[1].BodyString);
-                            //Cmd.Parameters.AddWithValue("@RequestBody", Req.BodyString);
-                            Cmd.Parameters.AddWithValue("@BinaryRequest", AsInt(ReqArr[1].IsBinary));
-                            Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
-
-                            if (ReqArr[0] == null)
+                            foreach (Request[] ReqArr in RequestArrs)
                             {
-                                Cmd.Parameters.AddWithValue("@OriginalRequestHeaders", "");
-                                Cmd.Parameters.AddWithValue("@OriginalRequestBody", "");
-                                Cmd.Parameters.AddWithValue("@BinaryOriginalRequest", 0);
-                                Cmd.Parameters.AddWithValue("@Edited", 0);
-                            }
-                            else
-                            {
-                                Cmd.Parameters.AddWithValue("@OriginalRequestHeaders", ReqArr[0].StoredHeadersString);
-                                if (ReqArr[0].IsBinary)
-                                    Cmd.Parameters.AddWithValue("@OriginalRequestBody", ReqArr[0].StoredBinaryBodyString);
+                                Cmd.CommandText = "INSERT INTO ProxyLog (ID , SSL, HostName, Method, URL, Edited, File, Parameters, OriginalRequestHeaders, OriginalRequestBody, BinaryOriginalRequest, RequestHeaders, RequestBody, BinaryRequest, Edited, Notes) VALUES (@ID , @SSL, @HostName, @Method, @URL, @Edited, @File, @Parameters, @OriginalRequestHeaders, @OriginalRequestBody, @BinaryOriginalRequest, @RequestHeaders, @RequestBody, @BinaryRequest, @Edited, @Notes)";
+                                Cmd.Parameters.AddWithValue("@ID", ReqArr[1].ID);
+                                Cmd.Parameters.AddWithValue("@SSL", AsInt(ReqArr[1].SSL));
+                                Cmd.Parameters.AddWithValue("@HostName", ReqArr[1].Host);
+                                Cmd.Parameters.AddWithValue("@Method", ReqArr[1].Method);
+                                Cmd.Parameters.AddWithValue("@URL", ReqArr[1].URL);
+                                //Cmd.Parameters.AddWithValue("@File", Req.File);
+                                Cmd.Parameters.AddWithValue("@File", ReqArr[1].StoredFile);
+                                Cmd.Parameters.AddWithValue("@Parameters", ReqArr[1].StoredParameters);
+                                //Cmd.Parameters.AddWithValue("@RequestHeaders", Req.GetHeadersAsString());
+                                Cmd.Parameters.AddWithValue("@RequestHeaders", ReqArr[1].StoredHeadersString);
+                                if (ReqArr[1].IsBinary)
+                                    Cmd.Parameters.AddWithValue("@RequestBody", ReqArr[1].StoredBinaryBodyString);
                                 else
-                                    Cmd.Parameters.AddWithValue("@OriginalRequestBody", ReqArr[0].BodyString);
-                                Cmd.Parameters.AddWithValue("@BinaryOriginalRequest", AsInt(ReqArr[0].IsBinary));
-                                Cmd.Parameters.AddWithValue("@Edited", 1);
-                            }
+                                    Cmd.Parameters.AddWithValue("@RequestBody", ReqArr[1].BodyString);
+                                //Cmd.Parameters.AddWithValue("@RequestBody", Req.BodyString);
+                                Cmd.Parameters.AddWithValue("@BinaryRequest", AsInt(ReqArr[1].IsBinary));
+                                Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
 
-                            Cmd.ExecuteNonQuery();
-                        }
-
-                        foreach (Response[] ResArr in ResponseArrs)
-                        {
-                            Cmd.CommandText = "UPDATE ProxyLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, OriginalResponseHeaders=@OriginalResponseHeaders, OriginalResponseBody=@OriginalResponseBody, BinaryOriginalResponse=@BinaryOriginalResponse, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, Notes=@Notes WHERE ID=@ID";
-                            Cmd.Parameters.AddWithValue("@Code", ResArr[1].Code);
-                            Cmd.Parameters.AddWithValue("@Length", ResArr[1].BodyLength);
-                            Cmd.Parameters.AddWithValue("@MIME", ResArr[1].ContentType);
-                            Cmd.Parameters.AddWithValue("@Edited", 0);
-                            Cmd.Parameters.AddWithValue("@SetCookie", AsInt((ResArr[1].SetCookies.Count > 0)));
-                            //Cmd.Parameters.AddWithValue("@ResponseHeaders", Res.GetHeadersAsString());
-                            Cmd.Parameters.AddWithValue("@ResponseHeaders", ResArr[1].StoredHeadersString);
-                            if (ResArr[1].IsBinary)
-                                Cmd.Parameters.AddWithValue("@ResponseBody", ResArr[1].StoredBinaryBodyString);
-                            else
-                                Cmd.Parameters.AddWithValue("@ResponseBody", ResArr[1].BodyString);
-                            //Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
-                            Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(ResArr[1].IsBinary));
-                            Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
-                            Cmd.Parameters.AddWithValue("@ID", ResArr[1].ID);
-
-                            if (ResArr[0] == null)
-                            {
-                                Cmd.Parameters.AddWithValue("@OriginalResponseHeaders", "");
-                                Cmd.Parameters.AddWithValue("@OriginalResponseBody", "");
-                                Cmd.Parameters.AddWithValue("@BinaryOriginalResponse", 0);
-                                Cmd.Parameters.AddWithValue("@RoundTrip", ResArr[1].RoundTrip);
-                            }
-                            else
-                            {
-                                Cmd.Parameters.AddWithValue("@OriginalResponseHeaders", ResArr[0].StoredHeadersString);
-                                if (ResArr[0].IsBinary)
-                                    Cmd.Parameters.AddWithValue("@OriginalResponseBody", ResArr[0].StoredBinaryBodyString);
+                                if (ReqArr[0] == null)
+                                {
+                                    Cmd.Parameters.AddWithValue("@OriginalRequestHeaders", "");
+                                    Cmd.Parameters.AddWithValue("@OriginalRequestBody", "");
+                                    Cmd.Parameters.AddWithValue("@BinaryOriginalRequest", 0);
+                                    Cmd.Parameters.AddWithValue("@Edited", 0);
+                                }
                                 else
-                                    Cmd.Parameters.AddWithValue("@OriginalResponseBody", ResArr[0].BodyString);
-                                Cmd.Parameters.AddWithValue("@BinaryOriginalResponse", AsInt(ResArr[0].IsBinary));
-                                Cmd.Parameters.AddWithValue("@RoundTrip", ResArr[0].RoundTrip);
-                            }
+                                {
+                                    Cmd.Parameters.AddWithValue("@OriginalRequestHeaders", ReqArr[0].StoredHeadersString);
+                                    if (ReqArr[0].IsBinary)
+                                        Cmd.Parameters.AddWithValue("@OriginalRequestBody", ReqArr[0].StoredBinaryBodyString);
+                                    else
+                                        Cmd.Parameters.AddWithValue("@OriginalRequestBody", ReqArr[0].BodyString);
+                                    Cmd.Parameters.AddWithValue("@BinaryOriginalRequest", AsInt(ReqArr[0].IsBinary));
+                                    Cmd.Parameters.AddWithValue("@Edited", 1);
+                                }
 
-                            Cmd.ExecuteNonQuery();
-                        }
-
-                        foreach (Response[] ResArr in ResponseArrs)
-                        {
-                            if (ResArr[0] != null)
-                            {
-                                Cmd.CommandText = "UPDATE ProxyLog SET Edited=@Edited WHERE ID=@ID";
-                                Cmd.Parameters.AddWithValue("@Edited", 1);
-                                Cmd.Parameters.AddWithValue("@ID", ResArr[0].ID);
                                 Cmd.ExecuteNonQuery();
                             }
+
+                            foreach (Response[] ResArr in ResponseArrs)
+                            {
+                                Cmd.CommandText = "UPDATE ProxyLog SET Code=@Code, Length=@Length, MIME=@MIME, SetCookie=@SetCookie, OriginalResponseHeaders=@OriginalResponseHeaders, OriginalResponseBody=@OriginalResponseBody, BinaryOriginalResponse=@BinaryOriginalResponse, ResponseHeaders=@ResponseHeaders, ResponseBody=@ResponseBody, BinaryResponse=@BinaryResponse, Notes=@Notes WHERE ID=@ID";
+                                Cmd.Parameters.AddWithValue("@Code", ResArr[1].Code);
+                                Cmd.Parameters.AddWithValue("@Length", ResArr[1].BodyLength);
+                                Cmd.Parameters.AddWithValue("@MIME", ResArr[1].ContentType);
+                                Cmd.Parameters.AddWithValue("@Edited", 0);
+                                Cmd.Parameters.AddWithValue("@SetCookie", AsInt((ResArr[1].SetCookies.Count > 0)));
+                                //Cmd.Parameters.AddWithValue("@ResponseHeaders", Res.GetHeadersAsString());
+                                Cmd.Parameters.AddWithValue("@ResponseHeaders", ResArr[1].StoredHeadersString);
+                                if (ResArr[1].IsBinary)
+                                    Cmd.Parameters.AddWithValue("@ResponseBody", ResArr[1].StoredBinaryBodyString);
+                                else
+                                    Cmd.Parameters.AddWithValue("@ResponseBody", ResArr[1].BodyString);
+                                //Cmd.Parameters.AddWithValue("@ResponseBody", Res.BodyString);
+                                Cmd.Parameters.AddWithValue("@BinaryResponse", AsInt(ResArr[1].IsBinary));
+                                Cmd.Parameters.AddWithValue("@Notes", "Some Notes");
+                                Cmd.Parameters.AddWithValue("@ID", ResArr[1].ID);
+
+                                if (ResArr[0] == null)
+                                {
+                                    Cmd.Parameters.AddWithValue("@OriginalResponseHeaders", "");
+                                    Cmd.Parameters.AddWithValue("@OriginalResponseBody", "");
+                                    Cmd.Parameters.AddWithValue("@BinaryOriginalResponse", 0);
+                                    Cmd.Parameters.AddWithValue("@RoundTrip", ResArr[1].RoundTrip);
+                                }
+                                else
+                                {
+                                    Cmd.Parameters.AddWithValue("@OriginalResponseHeaders", ResArr[0].StoredHeadersString);
+                                    if (ResArr[0].IsBinary)
+                                        Cmd.Parameters.AddWithValue("@OriginalResponseBody", ResArr[0].StoredBinaryBodyString);
+                                    else
+                                        Cmd.Parameters.AddWithValue("@OriginalResponseBody", ResArr[0].BodyString);
+                                    Cmd.Parameters.AddWithValue("@BinaryOriginalResponse", AsInt(ResArr[0].IsBinary));
+                                    Cmd.Parameters.AddWithValue("@RoundTrip", ResArr[0].RoundTrip);
+                                }
+
+                                Cmd.ExecuteNonQuery();
+                            }
+
+                            foreach (Response[] ResArr in ResponseArrs)
+                            {
+                                if (ResArr[0] != null)
+                                {
+                                    Cmd.CommandText = "UPDATE ProxyLog SET Edited=@Edited WHERE ID=@ID";
+                                    Cmd.Parameters.AddWithValue("@Edited", 1);
+                                    Cmd.Parameters.AddWithValue("@ID", ResArr[0].ID);
+                                    Cmd.ExecuteNonQuery();
+                                }
+                            }
                         }
+                        InsertLogs.Commit();
                     }
-                    InsertLogs.Commit();
-                }
             }
-            catch (Exception Exp)
-            {
-                Log.Close();
-                throw Exp;
-            }
-            Log.Close();
         }
 
         internal static void LogShellMessages(List<Session> IronSessions, List<Request> Requests, List<Response> Responses)
         {
-            SQLiteConnection Log = new SQLiteConnection("data source=" + ShellLogFile);
-            Log.Open();
-            try
+            using(SQLiteConnection Log = new SQLiteConnection("data source=" + ShellLogFile))
             {
+            Log.Open();
                 using (SQLiteTransaction Create = Log.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(Log))
@@ -831,20 +790,13 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch(Exception Exp)
-            {
-                Log.Close();
-                throw Exp;
-            }
-            Log.Close();
         }
 
         internal static void LogProbeMessages(List<Session> IronSessions, List<Request> Requests, List<Response> Responses)
         {
-            SQLiteConnection Log = new SQLiteConnection("data source=" + ProbeLogFile);
-            Log.Open();
-            try
+            using(SQLiteConnection Log = new SQLiteConnection("data source=" + ProbeLogFile))
             {
+            Log.Open();
                 using (SQLiteTransaction Create = Log.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(Log))
@@ -930,20 +882,13 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch (Exception Exp)
-            {
-                Log.Close();
-                throw Exp;
-            }
-            Log.Close();
         }
 
         internal static void LogScanMessages(List<Session> IronSessions, List<Request> Requests, List<Response> Responses)
         {
-            SQLiteConnection Log = new SQLiteConnection("data source=" + ScanLogFile);
-            Log.Open();
-            try
+            using(SQLiteConnection Log = new SQLiteConnection("data source=" + ScanLogFile))
             {
+            Log.Open();
                 using (SQLiteTransaction Create = Log.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(Log))
@@ -1030,20 +975,13 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch(Exception Exp)
-            {
-                Log.Close();
-                throw Exp;
-            }
-            Log.Close();
         }
 
         internal static void LogOtherSourceMessages(List<Session> IronSessions, List<Request> Requests, List<Response> Responses, string Source)
         {
-            SQLiteConnection Log = new SQLiteConnection("data source=" + GetOtherSourceLogFileName(Source));
-            Log.Open();
-            try
+            using(SQLiteConnection Log = new SQLiteConnection("data source=" + GetOtherSourceLogFileName(Source)))
             {
+            Log.Open();
                 using (SQLiteTransaction Create = Log.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(Log))
@@ -1132,22 +1070,16 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch (Exception Exp)
-            {
-                Log.Close();
-                throw Exp;
-            }
-            Log.Close();
         }
         #endregion
 
         #region LogTraces
         internal static void LogTraces(List<IronTrace> Traces)
         {
-            SQLiteConnection Log = new SQLiteConnection("data source=" + TraceLogFile);
-            Log.Open();
-            try
+            using(SQLiteConnection Log = new SQLiteConnection("data source=" + TraceLogFile))
             {
+            Log.Open();
+            
                 using (SQLiteTransaction Create = Log.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(Log))
@@ -1167,20 +1099,13 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch (Exception Exp)
-            {
-                Log.Close();
-                throw Exp;
-            }
-            Log.Close();
         }
 
         internal static void LogScanTraces(List<IronTrace> Traces)
         {
-            SQLiteConnection Log = new SQLiteConnection("data source=" + TraceLogFile);
-            Log.Open();
-            try
+            using(SQLiteConnection Log = new SQLiteConnection("data source=" + TraceLogFile))
             {
+            Log.Open();
                 using (SQLiteTransaction Create = Log.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(Log))
@@ -1202,20 +1127,13 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch (Exception Exp)
-            {
-                Log.Close();
-                throw Exp;
-            }
-            Log.Close();
         }
 
         internal static void LogSessionPluginTraces(List<IronTrace> Traces)
         {
-            SQLiteConnection Log = new SQLiteConnection("data source=" + TraceLogFile);
-            Log.Open();
-            try
+            using(SQLiteConnection Log = new SQLiteConnection("data source=" + TraceLogFile))
             {
+            Log.Open();
                 using (SQLiteTransaction Create = Log.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(Log))
@@ -1235,12 +1153,6 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch (Exception Exp)
-            {
-                Log.Close();
-                throw Exp;
-            }
-            Log.Close();
         }
         #endregion
 
@@ -1248,15 +1160,15 @@ namespace IronWASP
 
         internal static void CreateScan(int ScanID, Request Req)
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile))
             {
-                SQLiteCommand Cmd = DB.CreateCommand();
+            DB.Open();
+            using (SQLiteCommand Cmd = DB.CreateCommand())
+            {
                 Cmd.CommandText = "INSERT INTO ScanQueue (ScanID, RequestHeaders, RequestBody, BinaryRequest, Status, Method, URL) VALUES (@ScanID, @RequestHeaders, @RequestBody, @BinaryRequest, @Status, @Method, @URL)";
                 Cmd.Parameters.AddWithValue("@ScanID", ScanID);
                 Cmd.Parameters.AddWithValue("@RequestHeaders", Req.GetHeadersAsString());
-                if(Req.IsBinary)
+                if (Req.IsBinary)
                     Cmd.Parameters.AddWithValue("@RequestBody", Req.BinaryBodyString);
                 else
                     Cmd.Parameters.AddWithValue("@RequestBody", Req.BodyString);
@@ -1266,23 +1178,17 @@ namespace IronWASP
                 Cmd.Parameters.AddWithValue("@URL", Req.FullUrl);
                 Cmd.ExecuteNonQuery();
             }
-            catch(Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
             }
-            DB.Close();
-
             //CreateScan(ScanID, Req, "Not Started", "", "", "", "");
         }
 
         internal static void UpdateScan(int ScanID, Request Req, string Status, string InjectionPoints, string FormatPlugin, string ScanPlugins, string SessionPlugin)
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile))
             {
-                SQLiteCommand Cmd = DB.CreateCommand();
+            DB.Open();
+                using(SQLiteCommand Cmd = DB.CreateCommand())
+                {
                 Cmd.CommandText = "UPDATE ScanQueue SET RequestHeaders=@RequestHeaders, RequestBody=@RequestBody, BinaryRequest=@BinaryRequest, Status=@Status, Method=@Method, URL=@URL, SessionPlugin=@SessionPlugin, InjectionPoints=@InjectionPoints, FormatPlugin=@FormatPlugin, ScanPlugins=@ScanPlugins WHERE ScanID=@ScanID";
                 Cmd.Parameters.AddWithValue("@ScanID", ScanID);
                 Cmd.Parameters.AddWithValue("@RequestHeaders", Req.GetHeadersAsString());
@@ -1299,42 +1205,31 @@ namespace IronWASP
                 Cmd.Parameters.AddWithValue("@FormatPlugin", FormatPlugin);
                 Cmd.Parameters.AddWithValue("@ScanPlugins", ScanPlugins);
                 Cmd.ExecuteNonQuery();
+                }
             }
-            catch(Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
         
         internal static void UpdateScanStatus(int ScanID, string Status)
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile))
             {
-                SQLiteCommand Cmd = DB.CreateCommand();
+            DB.Open();
+                using(SQLiteCommand Cmd = DB.CreateCommand())
+                {
                 Cmd.CommandText = "UPDATE ScanQueue SET Status=@Status WHERE ScanID=@ScanID";
                 Cmd.Parameters.AddWithValue("@ScanID", ScanID);
                 Cmd.Parameters.AddWithValue("@Status", Status);
                 Cmd.ExecuteNonQuery();
+                }
             }
-            catch(Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         internal static void UpdateScanStatus(List<int> ScanIDs, string Status)
         {
-            SQLiteConnection Log = new SQLiteConnection("data source=" + IronProjectFile);
+            using(SQLiteConnection Log = new SQLiteConnection("data source=" + IronProjectFile))
+            {
             Log.Open();
 
-            try
-            {
                 using (SQLiteTransaction Create = Log.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(Log))
@@ -1350,22 +1245,14 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch (Exception Exp)
-            {
-                Log.Close();
-                throw Exp;
-            }
-            Log.Close();
-
         }
         #endregion
 
         internal static void LogPluginResults(List<Finding> Results)
         {
-            SQLiteConnection Log = new SQLiteConnection("data source=" + PluginResultsLogFile);
-            Log.Open();
-            try
+            using(SQLiteConnection Log = new SQLiteConnection("data source=" + PluginResultsLogFile))
             {
+            Log.Open();
                 using (SQLiteTransaction Create = Log.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(Log))
@@ -1450,42 +1337,30 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch(Exception Exp)
-            {
-                Log.Close();
-                throw Exp;
-            }
-            Log.Close();
         }
         internal static void LogException(IronException IrEx)
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ExceptionsLogFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + ExceptionsLogFile))
             {
-                SQLiteCommand Cmd = DB.CreateCommand();
+            DB.Open();
+                using(SQLiteCommand Cmd = DB.CreateCommand())
+                {
                 Cmd.CommandText = "INSERT INTO Exceptions (ID, Title, Message, StackTrace) VALUES (@ID, @Title, @Message, @StackTrace)";
                 Cmd.Parameters.AddWithValue("@ID", IrEx.ID);
                 Cmd.Parameters.AddWithValue("@Title", IrEx.Title);
                 Cmd.Parameters.AddWithValue("@Message", IrEx.Message);
                 Cmd.Parameters.AddWithValue("@StackTrace", IrEx.StackTrace);
                 Cmd.ExecuteNonQuery();
+                }
             }
-            catch(Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         #region StoreConfig
         internal static void StoreProxyConfig()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
+            DB.Open();
                 using (SQLiteTransaction Create = DB.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(DB))
@@ -1502,20 +1377,14 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch(Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         internal static void StoreUpstreamProxyConfig()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
+            DB.Open();
+            
                 using (SQLiteTransaction Create = DB.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(DB))
@@ -1524,7 +1393,18 @@ namespace IronWASP
                         Cmd.ExecuteNonQuery();
 
                         Cmd.CommandText = "INSERT INTO UpstreamProxy (Use, IP, Port) VALUES (@Use, @IP, @Port)";
-                        Cmd.Parameters.AddWithValue("@Use", AsInt(IronProxy.UseUpstreamProxy));
+                        if (IronProxy.UseSystemProxyAsUpStreamProxy) 
+                        {
+                            Cmd.Parameters.AddWithValue("@Use", 2);
+                        }
+                        else if (IronProxy.UseUpstreamProxy)
+                        {
+                            Cmd.Parameters.AddWithValue("@Use", 1);
+                        }
+                        else
+                        {
+                            Cmd.Parameters.AddWithValue("@Use", 0);
+                        }
                         Cmd.Parameters.AddWithValue("@IP", IronProxy.UpstreamProxyIP);
                         Cmd.Parameters.AddWithValue("@Port", IronProxy.UpstreamProxyPort.ToString());
                         Cmd.ExecuteNonQuery();
@@ -1532,20 +1412,13 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch(Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         internal static void StoreRequestTextContentTypesConfig()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
+            DB.Open();
                 using (SQLiteTransaction Create = DB.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(DB))
@@ -1562,20 +1435,13 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch(Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         internal static void StoreResponseTextContentTypesConfig()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
+            DB.Open();
                 using (SQLiteTransaction Create = DB.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(DB))
@@ -1592,20 +1458,13 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch(Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         internal static void StoreScriptPathsConfig()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
+           using(SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
+           {
             DB.Open();
-            try
-            {
                 using (SQLiteTransaction Create = DB.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(DB))
@@ -1630,20 +1489,13 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch(Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         internal static void StoreScriptCommandsConfig()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
+            DB.Open();
                 using (SQLiteTransaction Create = DB.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(DB))
@@ -1668,20 +1520,13 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch(Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         internal static void StoreInterceptRules()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
+            DB.Open();
                 using (SQLiteTransaction Create = DB.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(DB))
@@ -1735,20 +1580,13 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch(Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         internal static void StoreDisplayRules()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
+            DB.Open();
                 using (SQLiteTransaction Create = DB.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(DB))
@@ -1791,21 +1629,14 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch(Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         internal static void StoreJSTaintConfig()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
-                using (SQLiteTransaction Create = DB.BeginTransaction())
+            DB.Open();
+               using (SQLiteTransaction Create = DB.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(DB))
                     {
@@ -1841,20 +1672,13 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         internal static void StoreScannerSettings()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
+            DB.Open();
                 using (SQLiteTransaction Create = DB.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(DB))
@@ -1871,20 +1695,13 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         internal static void StorePassiveAnalysisSettings()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
+            DB.Open();
                 using (SQLiteTransaction Create = DB.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(DB))
@@ -1903,20 +1720,13 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         internal static void StoreCharacterEscapingRules()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
+            DB.Open();
                 using (SQLiteTransaction Create = DB.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(DB))
@@ -1934,20 +1744,13 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
 
         internal static void StoreParametersBlackList()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
+            DB.Open();
                 using (SQLiteTransaction Create = DB.BeginTransaction())
                 {
                     using (SQLiteCommand Cmd = new SQLiteCommand(DB))
@@ -1965,12 +1768,6 @@ namespace IronWASP
                     Create.Commit();
                 }
             }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
         }
         #endregion
 
@@ -2003,11 +1800,11 @@ namespace IronWASP
         static List<LogRow> SearchDB(string DataSource, string CmdString, LogSearchQuery Query)
         {
             List<LogRow> IronLogRecords = new List<LogRow>();
-            SQLiteConnection DB = new SQLiteConnection(DataSource);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection(DataSource))
             {
-                SQLiteCommand cmd = DB.CreateCommand();
+            DB.Open();
+            using (SQLiteCommand cmd = DB.CreateCommand())
+            {
                 cmd.CommandText = CmdString;
                 if (Query.UrlMatchString.Length > 0)
                 {
@@ -2015,7 +1812,7 @@ namespace IronWASP
                 }
                 if (Query.Keyword.Length > 0)
                 {
-                    cmd.Parameters.AddWithValue("@Keyword", string.Format("%{0}%",Query.Keyword));
+                    cmd.Parameters.AddWithValue("@Keyword", string.Format("%{0}%", Query.Keyword));
                 }
 
                 if (Query.MethodsToCheck.Count > 0)
@@ -2078,40 +1875,36 @@ namespace IronWASP
                     }
                 }
 
-                SQLiteDataReader result = cmd.ExecuteReader();
-                while (result.Read())
+                using (SQLiteDataReader result = cmd.ExecuteReader())
                 {
-                    try
+                    while (result.Read())
                     {
-                        LogRow LR = new LogRow();
-                        try { LR.ID = Int32.Parse(result["ID"].ToString()); }
-                        catch { continue; }
-                        LR.Host = result["HostName"].ToString();
-                        LR.Method = result["Method"].ToString();
-                        LR.Url = result["URL"].ToString();
-                        LR.File = result["File"].ToString();
-                        LR.SSL = result["SSL"].ToString().Equals("1");
-                        LR.Parameters = result["Parameters"].ToString();
                         try
-                        { LR.Code = Int32.Parse(result["Code"].ToString()); }
-                        catch { LR.Code = -1; }
-                        try
-                        { LR.Length = Int32.Parse(result["Length"].ToString()); }
-                        catch { LR.Length = 0; }
-                        LR.Mime = result["MIME"].ToString();
-                        LR.SetCookie = result["SetCookie"].ToString().Equals("1");
-                        IronLogRecords.Add(LR);
+                        {
+                            LogRow LR = new LogRow();
+                            try { LR.ID = Int32.Parse(result["ID"].ToString()); }
+                            catch { continue; }
+                            LR.Host = result["HostName"].ToString();
+                            LR.Method = result["Method"].ToString();
+                            LR.Url = result["URL"].ToString();
+                            LR.File = result["File"].ToString();
+                            LR.SSL = result["SSL"].ToString().Equals("1");
+                            LR.Parameters = result["Parameters"].ToString();
+                            try
+                            { LR.Code = Int32.Parse(result["Code"].ToString()); }
+                            catch { LR.Code = -1; }
+                            try
+                            { LR.Length = Int32.Parse(result["Length"].ToString()); }
+                            catch { LR.Length = 0; }
+                            LR.Mime = result["MIME"].ToString();
+                            LR.SetCookie = result["SetCookie"].ToString().Equals("1");
+                            IronLogRecords.Add(LR);
+                        }
+                        catch { }
                     }
-                    catch { }
                 }
-                result.Close();
             }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
             }
-            DB.Close();
             return IronLogRecords;
         }
         
@@ -2468,48 +2261,45 @@ namespace IronWASP
 
         static IronLogRecord GetRecordFromDB(string DataSource, string CmdString, int ID, bool IsProxyLog)
         {
-            SQLiteConnection DB = new SQLiteConnection(DataSource);
             IronLogRecord ILR = new IronLogRecord();
-            DB.Open();
-            try
+            
+            using(SQLiteConnection DB = new SQLiteConnection(DataSource))
             {
-                SQLiteCommand cmd = DB.CreateCommand();
+            DB.Open();
+                using(SQLiteCommand cmd = DB.CreateCommand())
+                {
                 cmd.CommandText = CmdString;
                 cmd.Parameters.AddWithValue("@ID", ID);
-                SQLiteDataReader result = cmd.ExecuteReader();
-                if(!result.HasRows)
+                using (SQLiteDataReader result = cmd.ExecuteReader())
                 {
-                    throw new Exception("ID not found in DB");
+                    if (!result.HasRows)
+                    {
+                        throw new Exception("ID not found in DB");
+                    }
+                    ILR.RequestHeaders = result["RequestHeaders"].ToString();
+                    ILR.RequestBody = result["RequestBody"].ToString();
+                    ILR.ResponseHeaders = result["ResponseHeaders"].ToString();
+                    ILR.ResponseBody = result["ResponseBody"].ToString();
+                    //ILR.SSL = (result["SSL"].ToString().Equals("1"));
+                    ILR.IsRequestBinary = (result["BinaryRequest"].ToString().Equals("1"));
+                    ILR.IsResponseBinary = (result["BinaryResponse"].ToString().Equals("1"));
+                    try
+                    {
+                        ILR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
+                    }
+                    catch { }
+                    if (IsProxyLog)
+                    {
+                        ILR.OriginalRequestHeaders = result["OriginalRequestHeaders"].ToString();
+                        ILR.OriginalRequestBody = result["OriginalRequestBody"].ToString();
+                        ILR.IsOriginalRequestBinary = (result["BinaryOriginalRequest"].ToString().Equals("1"));
+                        ILR.OriginalResponseHeaders = result["OriginalResponseHeaders"].ToString();
+                        ILR.OriginalResponseBody = result["OriginalResponseBody"].ToString();
+                        ILR.IsOriginalResponseBinary = (result["BinaryOriginalResponse"].ToString().Equals("1"));
+                    }
                 }
-                ILR.RequestHeaders = result["RequestHeaders"].ToString();
-                ILR.RequestBody = result["RequestBody"].ToString();
-                ILR.ResponseHeaders = result["ResponseHeaders"].ToString();
-                ILR.ResponseBody = result["ResponseBody"].ToString();
-                //ILR.SSL = (result["SSL"].ToString().Equals("1"));
-                ILR.IsRequestBinary = (result["BinaryRequest"].ToString().Equals("1"));
-                ILR.IsResponseBinary = (result["BinaryResponse"].ToString().Equals("1"));
-                try
-                {
-                    ILR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
                 }
-                catch { }
-                if (IsProxyLog)
-                {
-                    ILR.OriginalRequestHeaders = result["OriginalRequestHeaders"].ToString();
-                    ILR.OriginalRequestBody = result["OriginalRequestBody"].ToString();
-                    ILR.IsOriginalRequestBinary = (result["BinaryOriginalRequest"].ToString().Equals("1"));
-                    ILR.OriginalResponseHeaders = result["OriginalResponseHeaders"].ToString();
-                    ILR.OriginalResponseBody = result["OriginalResponseBody"].ToString();
-                    ILR.IsOriginalResponseBinary = (result["BinaryOriginalResponse"].ToString().Equals("1"));
-                }
-                result.Close();
             }
-            catch(Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
             return ILR;
         }
 
@@ -2553,59 +2343,56 @@ namespace IronWASP
         static List<IronLogRecord> GetRecordsFromDB(string DataSource, string CmdString, bool IsProxyLog)
         {
             List<IronLogRecord> IronLogRecords = new List<IronLogRecord>();
-            SQLiteConnection DB = new SQLiteConnection(DataSource);
-            DB.Open();
-            try
+
+            using(SQLiteConnection DB = new SQLiteConnection(DataSource))
             {
-                SQLiteCommand cmd = DB.CreateCommand();
+            DB.Open();
+            using (SQLiteCommand cmd = DB.CreateCommand())
+            {
                 cmd.CommandText = CmdString;
-                SQLiteDataReader result = cmd.ExecuteReader();
-                while (result.Read())
+                using (SQLiteDataReader result = cmd.ExecuteReader())
                 {
-                    try
+                    while (result.Read())
                     {
-                        IronLogRecord ILR = new IronLogRecord();
                         try
                         {
-                            ILR.ID = Int32.Parse(result["ID"].ToString());
-                        }
-                        catch
-                        {
-                            ILR.ID = 0;
-                        }
-                        ILR.RequestHeaders = result["RequestHeaders"].ToString();
-                        ILR.RequestBody = result["RequestBody"].ToString();
-                        ILR.ResponseHeaders = result["ResponseHeaders"].ToString();
-                        ILR.ResponseBody = result["ResponseBody"].ToString();
-                        //ILR.SSL = (result["SSL"].ToString().Equals("1"));
-                        ILR.IsRequestBinary = (result["BinaryRequest"].ToString().Equals("1"));
-                        ILR.IsResponseBinary = (result["BinaryResponse"].ToString().Equals("1"));
-                        try
-                        {
-                            ILR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
+                            IronLogRecord ILR = new IronLogRecord();
+                            try
+                            {
+                                ILR.ID = Int32.Parse(result["ID"].ToString());
+                            }
+                            catch
+                            {
+                                ILR.ID = 0;
+                            }
+                            ILR.RequestHeaders = result["RequestHeaders"].ToString();
+                            ILR.RequestBody = result["RequestBody"].ToString();
+                            ILR.ResponseHeaders = result["ResponseHeaders"].ToString();
+                            ILR.ResponseBody = result["ResponseBody"].ToString();
+                            //ILR.SSL = (result["SSL"].ToString().Equals("1"));
+                            ILR.IsRequestBinary = (result["BinaryRequest"].ToString().Equals("1"));
+                            ILR.IsResponseBinary = (result["BinaryResponse"].ToString().Equals("1"));
+                            try
+                            {
+                                ILR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
+                            }
+                            catch { }
+                            if (IsProxyLog)
+                            {
+                                ILR.OriginalRequestHeaders = result["OriginalRequestHeaders"].ToString();
+                                ILR.OriginalRequestBody = result["OriginalRequestBody"].ToString();
+                                ILR.IsOriginalRequestBinary = (result["BinaryOriginalRequest"].ToString().Equals("1"));
+                                ILR.OriginalResponseHeaders = result["OriginalResponseHeaders"].ToString();
+                                ILR.OriginalResponseBody = result["OriginalResponseBody"].ToString();
+                                ILR.IsOriginalResponseBinary = (result["BinaryOriginalResponse"].ToString().Equals("1"));
+                            }
+                            IronLogRecords.Add(ILR);
                         }
                         catch { }
-                        if (IsProxyLog)
-                        {
-                            ILR.OriginalRequestHeaders = result["OriginalRequestHeaders"].ToString();
-                            ILR.OriginalRequestBody = result["OriginalRequestBody"].ToString();
-                            ILR.IsOriginalRequestBinary = (result["BinaryOriginalRequest"].ToString().Equals("1"));
-                            ILR.OriginalResponseHeaders = result["OriginalResponseHeaders"].ToString();
-                            ILR.OriginalResponseBody = result["OriginalResponseBody"].ToString();
-                            ILR.IsOriginalResponseBinary = (result["BinaryOriginalResponse"].ToString().Equals("1"));
-                        }
-                        IronLogRecords.Add(ILR);
                     }
-                    catch { }
                 }
-                result.Close();
             }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
             }
-            DB.Close();
             return IronLogRecords;
         }
 
@@ -2653,60 +2440,56 @@ namespace IronWASP
         static List<LogRow> GetRecordsFromDB(string DataSource, string CmdString, string LogType, int StartIndex, int Count)
         {
             List<LogRow> IronLogRecords = new List<LogRow>();
-            SQLiteConnection DB = new SQLiteConnection(DataSource);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection(DataSource))
             {
-                SQLiteCommand cmd = DB.CreateCommand();
+            DB.Open();
+            using (SQLiteCommand cmd = DB.CreateCommand())
+            {
                 cmd.CommandText = CmdString;
                 cmd.Parameters.AddWithValue("@ID", StartIndex);
                 cmd.Parameters.AddWithValue("@LIMIT", Count);
-                SQLiteDataReader result = cmd.ExecuteReader();
-                while (result.Read())
+                using (SQLiteDataReader result = cmd.ExecuteReader())
                 {
-                    try
+                    while (result.Read())
                     {
-                        LogRow LR = new LogRow();
-                        try { LR.ID = Int32.Parse(result["ID"].ToString()); }
-                        catch { continue; }
-                        if (LogType.Equals("scan"))
+                        try
                         {
-                            try { LR.ScanID = Int32.Parse(result["ScanID"].ToString()); }
+                            LogRow LR = new LogRow();
+                            try { LR.ID = Int32.Parse(result["ID"].ToString()); }
                             catch { continue; }
-                        }
-                        if (LogType.Equals("proxy"))LR.Editied = result["Edited"].ToString().Equals("1");
-                        LR.Host = result["HostName"].ToString();
-                        LR.Method = result["Method"].ToString();
-                        LR.Url = result["URL"].ToString();
-                        LR.File = result["File"].ToString();
-                        LR.SSL = result["SSL"].ToString().Equals("1");
-                        LR.Parameters = result["Parameters"].ToString();
-                        try
-                        { LR.Code = Int32.Parse(result["Code"].ToString()); }
-                        catch { LR.Code = -1; }
-                        try
-                        { LR.Length = Int32.Parse(result["Length"].ToString()); }
-                        catch { LR.Length = 0; }
-                        LR.Mime = result["MIME"].ToString();
-                        LR.SetCookie = result["SetCookie"].ToString().Equals("1");
-                        try
-                        {
-                            LR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
+                            if (LogType.Equals("scan"))
+                            {
+                                try { LR.ScanID = Int32.Parse(result["ScanID"].ToString()); }
+                                catch { continue; }
+                            }
+                            if (LogType.Equals("proxy")) LR.Editied = result["Edited"].ToString().Equals("1");
+                            LR.Host = result["HostName"].ToString();
+                            LR.Method = result["Method"].ToString();
+                            LR.Url = result["URL"].ToString();
+                            LR.File = result["File"].ToString();
+                            LR.SSL = result["SSL"].ToString().Equals("1");
+                            LR.Parameters = result["Parameters"].ToString();
+                            try
+                            { LR.Code = Int32.Parse(result["Code"].ToString()); }
+                            catch { LR.Code = -1; }
+                            try
+                            { LR.Length = Int32.Parse(result["Length"].ToString()); }
+                            catch { LR.Length = 0; }
+                            LR.Mime = result["MIME"].ToString();
+                            LR.SetCookie = result["SetCookie"].ToString().Equals("1");
+                            try
+                            {
+                                LR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
+                            }
+                            catch { }
+
+                            IronLogRecords.Add(LR);
                         }
                         catch { }
-                        
-                        IronLogRecords.Add(LR);
                     }
-                    catch { }
                 }
-                result.Close();
             }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
             }
-            DB.Close();
             return IronLogRecords;
         }
 
@@ -2786,27 +2569,23 @@ namespace IronWASP
         static int GetLastRowIdFromDB(string DataSource, string CmdString)
         {
             int LastRowId = 0;
-            SQLiteConnection DB = new SQLiteConnection(DataSource);
+            using(SQLiteConnection DB = new SQLiteConnection(DataSource))
+            {
             DB.Open();
-            try
+            using (SQLiteCommand cmd = DB.CreateCommand())
             {
-                SQLiteCommand cmd = DB.CreateCommand();
                 cmd.CommandText = CmdString;
-                SQLiteDataReader result = cmd.ExecuteReader();
-                while (result.Read())
+                using (SQLiteDataReader result = cmd.ExecuteReader())
                 {
-                    try { LastRowId = Int32.Parse(result[0].ToString()); }
-                    catch { }
-                    break;
+                    while (result.Read())
+                    {
+                        try { LastRowId = Int32.Parse(result[0].ToString()); }
+                        catch { }
+                        break;
+                    }
                 }
-                result.Close();
             }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
             }
-            DB.Close();
             return LastRowId;
         }
         #endregion
@@ -2826,391 +2605,458 @@ namespace IronWASP
         static List<LogRow> GetRecordsFromDBForUrl(string DataSource, string CmdString, string Host, string Url, string LogType, int StartIndex, int Count)
         {
             List<LogRow> IronLogRecords = new List<LogRow>();
-            SQLiteConnection DB = new SQLiteConnection(DataSource);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection(DataSource))
             {
-                SQLiteCommand cmd = DB.CreateCommand();
+            DB.Open();
+            using (SQLiteCommand cmd = DB.CreateCommand())
+            {
                 cmd.CommandText = CmdString;
                 cmd.Parameters.AddWithValue("@HostName", Host);
                 cmd.Parameters.AddWithValue("@URL", Url);
                 cmd.Parameters.AddWithValue("@ID", StartIndex);
                 cmd.Parameters.AddWithValue("@LIMIT", Count);
-                SQLiteDataReader result = cmd.ExecuteReader();
-                while (result.Read())
+                using (SQLiteDataReader result = cmd.ExecuteReader())
                 {
-                    try
+                    while (result.Read())
                     {
-                        LogRow LR = new LogRow();
-                        try { LR.ID = Int32.Parse(result["ID"].ToString()); }
-                        catch { continue; }
-                        if (LogType.Equals("proxy"))
-                            LR.Source = "Proxy";
-                        else if (LogType.Equals("probe"))
-                            LR.Source = "Probe";
-                        else
-                            break;
-                        LR.Host = Host;
-                        LR.Method = result["Method"].ToString();
-                        LR.Url = result["URL"].ToString();
-                        LR.File = result["File"].ToString();
-                        LR.SSL = result["SSL"].ToString().Equals("1");
-                        LR.Parameters = result["Parameters"].ToString();
-                        try
-                        { LR.Code = Int32.Parse(result["Code"].ToString()); }
-                        catch { LR.Code = -1; }
-                        try
-                        { LR.Length = Int32.Parse(result["Length"].ToString()); }
-                        catch { LR.Length = 0; }
-                        LR.Mime = result["MIME"].ToString();
-                        LR.SetCookie = result["SetCookie"].ToString().Equals("1");
                         try
                         {
-                            LR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
+                            LogRow LR = new LogRow();
+                            try { LR.ID = Int32.Parse(result["ID"].ToString()); }
+                            catch { continue; }
+                            if (LogType.Equals("proxy"))
+                                LR.Source = "Proxy";
+                            else if (LogType.Equals("probe"))
+                                LR.Source = "Probe";
+                            else
+                                break;
+                            LR.Host = Host;
+                            LR.Method = result["Method"].ToString();
+                            LR.Url = result["URL"].ToString();
+                            LR.File = result["File"].ToString();
+                            LR.SSL = result["SSL"].ToString().Equals("1");
+                            LR.Parameters = result["Parameters"].ToString();
+                            try
+                            { LR.Code = Int32.Parse(result["Code"].ToString()); }
+                            catch { LR.Code = -1; }
+                            try
+                            { LR.Length = Int32.Parse(result["Length"].ToString()); }
+                            catch { LR.Length = 0; }
+                            LR.Mime = result["MIME"].ToString();
+                            LR.SetCookie = result["SetCookie"].ToString().Equals("1");
+                            try
+                            {
+                                LR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
+                            }
+                            catch { }
+                            IronLogRecords.Add(LR);
                         }
                         catch { }
-                        IronLogRecords.Add(LR);
                     }
-                    catch { }
                 }
-                result.Close();
             }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
             }
-            DB.Close();
             return IronLogRecords;
         }
 
         internal static Scanner GetScannerFromDB(int ScanID)
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
             Scanner ScannerFromLog = null;
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT RequestHeaders, RequestBody, BinaryRequest, Status, InjectionPoints, FormatPlugin, SessionPlugin, ScanPlugins FROM ScanQueue WHERE ScanID=@ScanID LIMIT 1";
-            cmd.Parameters.AddWithValue("@ScanID", ScanID);
-            SQLiteDataReader result = cmd.ExecuteReader();
-
-            IronLogRecord ILR = new IronLogRecord();
-            ILR.RequestHeaders = result["RequestHeaders"].ToString();
-            ILR.RequestBody = result["RequestBody"].ToString();
-            ILR.IsRequestBinary = (result["BinaryRequest"].ToString().Equals("1"));
-            Session Irse = Session.GetIronSessionFromIronLogRecord(ILR,0);
-            Request Req = Irse.Request;
-            string Status = result["Status"].ToString();
-            string FormatPluginName =  result["FormatPlugin"].ToString();
-            string SessionPluginName = result["SessionPlugin"].ToString();
-            string InjectionString = result["InjectionPoints"].ToString();
-            string[] ScanPluginsArray = result["ScanPlugins"].ToString().Split(new char[] { ',' });
-            DB.Close();
-            ScannerFromLog = new Scanner(Req);
-            ScannerFromLog.ScanID = ScanID;
-
-            if (Status.Equals("Not Started")) return ScannerFromLog;
-
-            if (SessionPluginName.Length > 0)
+            
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile))
             {
-                if (!SessionPluginName.Equals("None") && SessionPlugin.List().Contains(SessionPluginName))
-                {
-                    ScannerFromLog.SessionHandler = SessionPlugin.Get(SessionPluginName);
-                }
-            }
-            if (FormatPluginName.Length > 0)
-            {
-                if (!FormatPluginName.Equals("None") && FormatPlugin.List().Contains(FormatPluginName))
-                {
-                    ScannerFromLog.BodyFormat = FormatPlugin.Get(FormatPluginName);
-                }
-            }
-            if (ScanPluginsArray.Length > 0)
-            {
-                List<string> ValidScanPlugins = ActivePlugin.List();
-                foreach (string Name in ScanPluginsArray)
-                {
-                    if (ValidScanPlugins.Contains(Name))
-                    {
-                        ScannerFromLog.AddCheck(Name);
-                    }
-                }
-            }
-            ScannerFromLog.AbsorbInjectionString(InjectionString);
-            ScannerFromLog.Status = Status;
-            return ScannerFromLog;
-        }
-        internal static Finding GetPluginResultFromDB(int ID)
-        {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + PluginResultsLogFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT HostName, Title, FinderName, FinderType, Meta, Summary, Severity, Confidence, Type, UniquenessString FROM Findings WHERE ID=@ID LIMIT 1";
-            cmd.Parameters.AddWithValue("@ID", ID);
-            SQLiteDataReader result = cmd.ExecuteReader();
-            Finding PR = new Finding(result["HostName"].ToString());
-            PR.Id = ID;
-            PR.Title = result["Title"].ToString();
-            PR.FinderName = result["FinderName"].ToString();
-            PR.FinderType = result["FinderType"].ToString();
-            try
-            {
-                PR.XmlSummary = result["Summary"].ToString();
-            }
-            catch
-            {
-                PR.Summary = result["Summary"].ToString();
-            }
-            try
-            {
-                PR.XmlMeta = result["Meta"].ToString();
-            }
-            catch { }
-            PR.Severity = GetSeverity(Int32.Parse(result["Severity"].ToString()));
-            PR.Confidence = GetConfidence(Int32.Parse(result["Confidence"].ToString()));
-            PR.Type = GetResultType(Int32.Parse(result["Type"].ToString()));
-            PR.Signature = result["UniquenessString"].ToString();
-            result.Close();
-            cmd.CommandText = "SELECT TriggersEncoded, RequestTriggerDesc, RequestTrigger, RequestHeaders, RequestBody, BinaryRequest, ResponseTriggerDesc, ResponseTrigger, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip FROM Triggers WHERE ID=@ID";
-            cmd.Parameters.AddWithValue("@ID", ID);
-            result = cmd.ExecuteReader();
-            while (result.Read())
-            {
-                string RequestTrigger = result["RequestTrigger"].ToString();
-                string ResponseTrigger = result["ResponseTrigger"].ToString();
-
-                if (result["TriggersEncoded"].ToString().Equals("1"))
-                {
-                    try
-                    {
-                        RequestTrigger = Tools.Base64Decode(RequestTrigger);
-                    }
-                    catch { }
-                    try
-                    {
-                        ResponseTrigger = Tools.Base64Decode(ResponseTrigger);
-                    }
-                    catch { }
-                }
-
-                IronLogRecord ILR = new IronLogRecord();
-                ILR.RequestHeaders = result["RequestHeaders"].ToString();
-                ILR.RequestBody = result["RequestBody"].ToString();
-                ILR.IsRequestBinary = (result["BinaryRequest"].ToString().Equals("1"));
                 
-                ILR.ResponseHeaders = result["ResponseHeaders"].ToString();
-                ILR.ResponseBody = result["ResponseBody"].ToString();
-                ILR.IsResponseBinary = (result["BinaryResponse"].ToString().Equals("1"));
-                try
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
                 {
-                    ILR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
-                }
-                catch { }
-                Session IrSe = Session.GetIronSessionFromIronLogRecord(ILR,0);
-                if (IrSe.Response != null)
-                {
-                    PR.Triggers.Add(RequestTrigger, result["RequestTriggerDesc"].ToString(), IrSe.Request, ResponseTrigger, result["ResponseTriggerDesc"].ToString(), IrSe.Response);
-                }
-                else
-                {
-                    PR.Triggers.Add(RequestTrigger, result["RequestTriggerDesc"].ToString(), IrSe.Request);
-                }
-            }
-            result.Close();
-            if (PR.FromActiveScan)
-            {
-                try
-                {
-                    cmd.CommandText = "SELECT RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip FROM BaseLine WHERE FindingID=@FindingID LIMIT 1";
-                    cmd.Parameters.AddWithValue("@FindingID", ID);
-                    result = cmd.ExecuteReader();
-                    if (result.HasRows)
+                    cmd.CommandText = "SELECT RequestHeaders, RequestBody, BinaryRequest, Status, InjectionPoints, FormatPlugin, SessionPlugin, ScanPlugins FROM ScanQueue WHERE ScanID=@ScanID LIMIT 1";
+                    cmd.Parameters.AddWithValue("@ScanID", ScanID);
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
                     {
                         IronLogRecord ILR = new IronLogRecord();
                         ILR.RequestHeaders = result["RequestHeaders"].ToString();
                         ILR.RequestBody = result["RequestBody"].ToString();
                         ILR.IsRequestBinary = (result["BinaryRequest"].ToString().Equals("1"));
+                        Session Irse = Session.GetIronSessionFromIronLogRecord(ILR, 0);
+                        Request Req = Irse.Request;
+                        string Status = result["Status"].ToString();
+                        string FormatPluginName = result["FormatPlugin"].ToString();
+                        string SessionPluginName = result["SessionPlugin"].ToString();
+                        string InjectionString = result["InjectionPoints"].ToString();
+                        string[] ScanPluginsArray = result["ScanPlugins"].ToString().Split(new char[] { ',' });
 
-                        ILR.ResponseHeaders = result["ResponseHeaders"].ToString();
-                        ILR.ResponseBody = result["ResponseBody"].ToString();
-                        ILR.IsResponseBinary = (result["BinaryResponse"].ToString().Equals("1"));
-                        try
+                        ScannerFromLog = new Scanner(Req);
+                        ScannerFromLog.ScanID = ScanID;
+
+                        if (Status.Equals("Not Started")) return ScannerFromLog;
+
+                        if (SessionPluginName.Length > 0)
                         {
-                            ILR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
+                            if (!SessionPluginName.Equals("None") && SessionPlugin.List().Contains(SessionPluginName))
+                            {
+                                ScannerFromLog.SessionHandler = SessionPlugin.Get(SessionPluginName);
+                            }
                         }
-                        catch { }
-                        Session IrSe = Session.GetIronSessionFromIronLogRecord(ILR, 0);
-                        PR.BaseRequest = IrSe.Request;
-                        PR.BaseResponse = IrSe.Response;
+                        if (FormatPluginName.Length > 0)
+                        {
+                            if (!FormatPluginName.Equals("None") && FormatPlugin.List().Contains(FormatPluginName))
+                            {
+                                ScannerFromLog.BodyFormat = FormatPlugin.Get(FormatPluginName);
+                            }
+                        }
+                        if (ScanPluginsArray.Length > 0)
+                        {
+                            List<string> ValidScanPlugins = ActivePlugin.List();
+                            foreach (string Name in ScanPluginsArray)
+                            {
+                                if (ValidScanPlugins.Contains(Name))
+                                {
+                                    ScannerFromLog.AddCheck(Name);
+                                }
+                            }
+                        }
+                        ScannerFromLog.AbsorbInjectionString(InjectionString);
+                        ScannerFromLog.Status = Status;
+
                     }
                 }
-                catch { }
             }
-            DB.Close();
+            
+            return ScannerFromLog;
+        }
+        internal static Finding GetPluginResultFromDB(int ID)
+        {
+            Finding PR = null;
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + PluginResultsLogFile))
+            {
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT HostName, Title, FinderName, FinderType, Meta, Summary, Severity, Confidence, Type, UniquenessString FROM Findings WHERE ID=@ID LIMIT 1";
+                    cmd.Parameters.AddWithValue("@ID", ID);
+                    using(SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+                        PR = new Finding(result["HostName"].ToString());
+                        PR.Id = ID;
+                        PR.Title = result["Title"].ToString();
+                        PR.FinderName = result["FinderName"].ToString();
+                        PR.FinderType = result["FinderType"].ToString();
+                        try
+                        {
+                            PR.XmlSummary = result["Summary"].ToString();
+                        }
+                        catch
+                        {
+                            PR.Summary = result["Summary"].ToString();
+                        }
+                        try
+                        {
+                            PR.XmlMeta = result["Meta"].ToString();
+                        }
+                        catch { }
+                        PR.Severity = GetSeverity(Int32.Parse(result["Severity"].ToString()));
+                        PR.Confidence = GetConfidence(Int32.Parse(result["Confidence"].ToString()));
+                        PR.Type = GetResultType(Int32.Parse(result["Type"].ToString()));
+                        PR.Signature = result["UniquenessString"].ToString();
+                    }
+                    
+                    cmd.CommandText = "SELECT TriggersEncoded, RequestTriggerDesc, RequestTrigger, RequestHeaders, RequestBody, BinaryRequest, ResponseTriggerDesc, ResponseTrigger, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip FROM Triggers WHERE ID=@ID";
+                    cmd.Parameters.AddWithValue("@ID", ID);
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+                        while (result.Read())
+                        {
+                            string RequestTrigger = result["RequestTrigger"].ToString();
+                            string ResponseTrigger = result["ResponseTrigger"].ToString();
+
+                            if (result["TriggersEncoded"].ToString().Equals("1"))
+                            {
+                                try
+                                {
+                                    RequestTrigger = Tools.Base64Decode(RequestTrigger);
+                                }
+                                catch { }
+                                try
+                                {
+                                    ResponseTrigger = Tools.Base64Decode(ResponseTrigger);
+                                }
+                                catch { }
+                            }
+
+                            IronLogRecord ILR = new IronLogRecord();
+                            ILR.RequestHeaders = result["RequestHeaders"].ToString();
+                            ILR.RequestBody = result["RequestBody"].ToString();
+                            ILR.IsRequestBinary = (result["BinaryRequest"].ToString().Equals("1"));
+
+                            ILR.ResponseHeaders = result["ResponseHeaders"].ToString();
+                            ILR.ResponseBody = result["ResponseBody"].ToString();
+                            ILR.IsResponseBinary = (result["BinaryResponse"].ToString().Equals("1"));
+                            try
+                            {
+                                ILR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
+                            }
+                            catch { }
+                            Session IrSe = Session.GetIronSessionFromIronLogRecord(ILR, 0);
+                            if (IrSe.Response != null)
+                            {
+                                PR.Triggers.Add(RequestTrigger, result["RequestTriggerDesc"].ToString(), IrSe.Request, ResponseTrigger, result["ResponseTriggerDesc"].ToString(), IrSe.Response);
+                            }
+                            else
+                            {
+                                PR.Triggers.Add(RequestTrigger, result["RequestTriggerDesc"].ToString(), IrSe.Request);
+                            }
+                        }
+                    }
+
+                    if (PR.FromActiveScan)
+                    {
+                        try
+                        {
+                            cmd.CommandText = "SELECT RequestHeaders, RequestBody, BinaryRequest, ResponseHeaders, ResponseBody, BinaryResponse, RoundTrip FROM BaseLine WHERE FindingID=@FindingID LIMIT 1";
+                            cmd.Parameters.AddWithValue("@FindingID", ID);
+                            using (SQLiteDataReader result = cmd.ExecuteReader())
+                            {
+                                if (result.HasRows)
+                                {
+                                    IronLogRecord ILR = new IronLogRecord();
+                                    ILR.RequestHeaders = result["RequestHeaders"].ToString();
+                                    ILR.RequestBody = result["RequestBody"].ToString();
+                                    ILR.IsRequestBinary = (result["BinaryRequest"].ToString().Equals("1"));
+
+                                    ILR.ResponseHeaders = result["ResponseHeaders"].ToString();
+                                    ILR.ResponseBody = result["ResponseBody"].ToString();
+                                    ILR.IsResponseBinary = (result["BinaryResponse"].ToString().Equals("1"));
+                                    try
+                                    {
+                                        ILR.RoundTrip = Int32.Parse(result["RoundTrip"].ToString());
+                                    }
+                                    catch { }
+                                    Session IrSe = Session.GetIronSessionFromIronLogRecord(ILR, 0);
+                                    PR.BaseRequest = IrSe.Request;
+                                    PR.BaseResponse = IrSe.Response;
+                                }
+                            }
+                        }
+                        catch { }
+                    }
+
+                }
+            }
             return PR;
         }
         
         internal static IronException GetException(int ID)
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ExceptionsLogFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT Title, Message, StackTrace FROM Exceptions WHERE ID=@ID";
-            cmd.Parameters.AddWithValue("@ID", ID);
-            SQLiteDataReader result = cmd.ExecuteReader();
-            IronException IrEx = new IronException();
-            IrEx.Title = result["Title"].ToString();
-            IrEx.Message = result["Message"].ToString();
-            IrEx.StackTrace = result["StackTrace"].ToString();
-            result.Close();
-            DB.Close();
+            IronException IrEx = null;
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + ExceptionsLogFile))
+            {
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT Title, Message, StackTrace FROM Exceptions WHERE ID=@ID";
+                    cmd.Parameters.AddWithValue("@ID", ID);
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+                        IrEx = new IronException();
+                        IrEx.Title = result["Title"].ToString();
+                        IrEx.Message = result["Message"].ToString();
+                        IrEx.StackTrace = result["StackTrace"].ToString();
+                    }
+                }
+            }
             return IrEx;
         }
 
         internal static string GetTraceMessage(int ID)
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT Message FROM Trace WHERE ID=@ID";
-            cmd.Parameters.AddWithValue("@ID", ID);
-            SQLiteDataReader result = cmd.ExecuteReader();
-            string Message = result["Message"].ToString();
-            result.Close();
-            DB.Close();
+            string Message = "";
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile))
+            {
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT Message FROM Trace WHERE ID=@ID";
+                    cmd.Parameters.AddWithValue("@ID", ID);
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+                        Message = result["Message"].ToString();
+                    }
+                }
+            }
             return Message;
         }
 
         internal static string GetScanTraceMessage(int ID)
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT Message FROM ScanTrace WHERE ID=@ID";
-            cmd.Parameters.AddWithValue("@ID", ID);
-            SQLiteDataReader result = cmd.ExecuteReader();
-            string Message = result["Message"].ToString();
-            result.Close();
-            DB.Close();
+            string Message = "";
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile))
+            {
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT Message FROM ScanTrace WHERE ID=@ID";
+                    cmd.Parameters.AddWithValue("@ID", ID);
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+                        Message = result["Message"].ToString();
+                    }
+                }
+            }
             return Message;
         }
 
         internal static string[] GetScanTraceOverviewAndMessage(int ID)
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT Message, OverviewXml FROM ScanTrace WHERE ID=@ID";
-            cmd.Parameters.AddWithValue("@ID", ID);
-            SQLiteDataReader result = cmd.ExecuteReader();
-            string Message = result["Message"].ToString();
+            string Message = "";
             string Overview = "";
-            try
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile))
             {
-                Overview = result["OverviewXml"].ToString();
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT Message, OverviewXml FROM ScanTrace WHERE ID=@ID";
+                    cmd.Parameters.AddWithValue("@ID", ID);
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+                        Message = result["Message"].ToString();
+                        Overview = "";
+                        try
+                        {
+                            Overview = result["OverviewXml"].ToString();
+                        }
+                        catch { }
+                    }
+                }
             }
-            catch { }
-            result.Close();
-            DB.Close();
             return new string[]{Overview, Message};
         }
 
         internal static string GetScanStatus(int ScanID)
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
-            DB.Open();
             string Message = "";
-            try
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile))
             {
-                SQLiteCommand Cmd = DB.CreateCommand();
-                Cmd.CommandText = "SELECT Status FROM ScanQueue WHERE ScanID=@ScanID";
-                Cmd.Parameters.AddWithValue("@ScanID", ScanID);
-                SQLiteDataReader result = Cmd.ExecuteReader();
-                Message = result["Status"].ToString();
-                result.Close();
+                DB.Open();
+                try
+                {
+                    using (SQLiteCommand Cmd = DB.CreateCommand())
+                    {
+                        Cmd.CommandText = "SELECT Status FROM ScanQueue WHERE ScanID=@ScanID";
+                        Cmd.Parameters.AddWithValue("@ScanID", ScanID);
+                        using (SQLiteDataReader result = Cmd.ExecuteReader())
+                        {
+                            Message = result["Status"].ToString();
+                        }
+                    }
+                }
+                catch { }
             }
-            catch { }
-            DB.Close();
             return Message;
         }
 
         #region UpdateConfigFromDB
         internal static void UpdateProxyConfigFromDB()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT LoopBack, SystemProxy, Port FROM IronProxy";
-            SQLiteDataReader result = cmd.ExecuteReader();
-            if (result.HasRows)
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
-                if (result.Read())
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
                 {
-                    string Port = result["Port"].ToString();
-                    if (IronProxy.ValidProxyPort(Port))
+                    cmd.CommandText = "SELECT LoopBack, SystemProxy, Port FROM IronProxy";
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
                     {
-                        IronProxy.Port = Int32.Parse(Port);
+                        if (result.HasRows)
+                        {
+                            if (result.Read())
+                            {
+                                string Port = result["Port"].ToString();
+                                if (IronProxy.ValidProxyPort(Port))
+                                {
+                                    IronProxy.Port = Int32.Parse(Port);
+                                }
+                                else
+                                {
+                                    IronProxy.Port = 8080;
+                                }
+                                IronProxy.LoopBackOnly = result["LoopBack"].ToString().Equals("1");
+                                IronProxy.SystemProxy = result["SystemProxy"].ToString().Equals("1");
+                            }
+                        }
+                        else
+                        {
+                            IronProxy.Port = 8080;
+                            IronProxy.LoopBackOnly = true;
+                            IronProxy.SystemProxy = false;
+                        }
                     }
-                    else
-                    {
-                        IronProxy.Port = 8080;
-                    }
-                    IronProxy.LoopBackOnly = result["LoopBack"].ToString().Equals("1");
-                    IronProxy.SystemProxy = result["SystemProxy"].ToString().Equals("1");
                 }
             }
-            else
-            {
-                IronProxy.Port = 8080;
-                IronProxy.LoopBackOnly = true;
-                IronProxy.SystemProxy = false;
-            }
-            result.Close();
-            DB.Close();
         }
 
         internal static void UpdateUpstreamProxyConfigFromDB()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT Use, IP, Port FROM UpstreamProxy";
-            SQLiteDataReader result = cmd.ExecuteReader();
-            if (result.HasRows)
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
-                if (result.Read())
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
                 {
-                    string Port = result["Port"].ToString();
-                    if (IronProxy.ValidPort(Port))
+                    cmd.CommandText = "SELECT Use, IP, Port FROM UpstreamProxy";
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
                     {
-                        IronProxy.UpstreamProxyPort = Int32.Parse(Port);
-                    }
-                    IronProxy.UseUpstreamProxy = result["Use"].ToString().Equals("1");
-                    string IP = result["IP"].ToString();
-                    if (IP.Length > 0)
-                    {
-                        IronProxy.UpstreamProxyIP = IP;
+                        if (result.HasRows)
+                        {
+                            if (result.Read())
+                            {
+                                string Port = result["Port"].ToString();
+                                if (IronProxy.ValidPort(Port))
+                                {
+                                    IronProxy.UpstreamProxyPort = Int32.Parse(Port);
+                                }
+                                switch (result["Use"].ToString())
+                                {
+                                    case ("2"):
+                                        IronProxy.UseSystemProxyAsUpStreamProxy = true;
+                                        IronProxy.UseUpstreamProxy = false;
+                                        break;
+                                    case ("1"):
+                                        IronProxy.UseSystemProxyAsUpStreamProxy = false;
+                                        IronProxy.UseUpstreamProxy = true;
+                                        break;
+                                    case ("0"):
+                                        IronProxy.UseSystemProxyAsUpStreamProxy = false;
+                                        IronProxy.UseUpstreamProxy = false;
+                                        break;
+                                }
+                                string IP = result["IP"].ToString();
+                                if (IP.Length > 0)
+                                {
+                                    IronProxy.UpstreamProxyIP = IP;
+                                }
+                            }
+                        }
                     }
                 }
             }
-            result.Close();
-            DB.Close();
         }
 
         internal static void UpdateRequestTextContentTypesConfigFromDB()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT Type FROM TextRequestTypes";
-            SQLiteDataReader result = cmd.ExecuteReader();
             List<string> RequestTextContentTypes = new List<string>();
-            while (result.Read())
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
-                RequestTextContentTypes.Add(result["Type"].ToString());
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT Type FROM TextRequestTypes";
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+                        while (result.Read())
+                        {
+                            RequestTextContentTypes.Add(result["Type"].ToString());
+                        }
+                    }
+                }
             }
-            result.Close();
-            DB.Close();
             lock (Request.TextContentTypes)
             {
                 Request.TextContentTypes.Clear();
@@ -3221,18 +3067,22 @@ namespace IronWASP
 
         internal static void UpdateResponseTextContentTypesConfigFromDB()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT Type FROM TextResponseTypes";
-            SQLiteDataReader result = cmd.ExecuteReader();
             List<string> ResponseTextContentTypes = new List<string>();
-            while (result.Read())
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
-                ResponseTextContentTypes.Add(result["Type"].ToString());
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT Type FROM TextResponseTypes";
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+                        while (result.Read())
+                        {
+                            ResponseTextContentTypes.Add(result["Type"].ToString());
+                        }
+                    }
+                }
             }
-            result.Close();
-            DB.Close();
             lock (Response.TextContentTypes)
             {
                 Response.TextContentTypes.Clear();
@@ -3242,27 +3092,33 @@ namespace IronWASP
 
         internal static void UpdateScriptPathsConfigFromDB()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT Path FROM PyPath";
-            SQLiteDataReader result = cmd.ExecuteReader();
-            List<string> PyPaths = new List<string>(); 
-            while (result.Read())
-            {
-                PyPaths.Add(result["Path"].ToString());
-            }
-            result.Close();
+            List<string> PyPaths = new List<string>();
+            List<string> RbPaths = new List<string>();
 
-            cmd.CommandText = "SELECT Path FROM RbPath";
-            result = cmd.ExecuteReader();
-            List<string> RbPaths = new List<string>(); 
-            while (result.Read())
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
-                RbPaths.Add(result["Path"].ToString());
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT Path FROM PyPath";
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {            
+                        while (result.Read())
+                        {
+                            PyPaths.Add(result["Path"].ToString());
+                        }
+                    }
+
+                    cmd.CommandText = "SELECT Path FROM RbPath";
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    { 
+                        while (result.Read())
+                        {
+                            RbPaths.Add(result["Path"].ToString());
+                        }
+                    }
+                }
             }
-            result.Close();
-            DB.Close();
 
             lock (IronScripting.PyPaths)
             {
@@ -3278,26 +3134,33 @@ namespace IronWASP
 
         internal static void UpdateScriptCommandsConfigFromDB()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT Command FROM PyStartCommands";
-            SQLiteDataReader result = cmd.ExecuteReader();
             List<string> PyCommands = new List<string>();
-            while (result.Read())
-            {
-                PyCommands.Add(result["Command"].ToString());
-            }
-            result.Close();
-            cmd.CommandText = "SELECT Command FROM RbStartCommands";
-            result = cmd.ExecuteReader();
             List<string> RbCommands = new List<string>();
-            while (result.Read())
+
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
-                RbCommands.Add(result["Command"].ToString());
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT Command FROM PyStartCommands";
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+                        while (result.Read())
+                        {
+                            PyCommands.Add(result["Command"].ToString());
+                        }
+                    }
+
+                    cmd.CommandText = "SELECT Command FROM RbStartCommands";
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+                        while (result.Read())
+                        {
+                            RbCommands.Add(result["Command"].ToString());
+                        }
+                    }
+                }
             }
-            result.Close();
-            DB.Close();
 
             lock (IronScripting.PyCommands)
             {
@@ -3313,153 +3176,161 @@ namespace IronWASP
 
         internal static void UpdateInterceptRulesFromDB()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT Get, Post, OtherMethods, Html, JS, CSS, Xml, JSON, OtherText, Img, OtherBinary, Code200, Code2xx, Code301_2, Code3xx, Code403, Code4xx, Code500, Code5xx, FileExt, FileExtPlus, FileExtMinus, PlusFileExts, MinusFileExts, Host, HostPlus, HostMinus, PlusHosts, MinusHosts, RequestKeyword, RequestKeywordPlus, RequestKeywordMinus, PlusRequestKeyword, MinusRequestKeyword, ResponseKeyword, ResponseKeywordPlus, ResponseKeywordMinus, PlusResponseKeyword, MinusResponseKeyword, RequestRulesOnResponse FROM InterceptRules";
-            SQLiteDataReader result = cmd.ExecuteReader();
-            if (result.HasRows)
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
-                if (result.Read())
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
                 {
-                    IronProxy.InterceptGET = result["Get"].ToString().Equals("1");
-                    IronProxy.InterceptPOST = result["Post"].ToString().Equals("1");
-                    IronProxy.InterceptOtherMethods = result["OtherMethods"].ToString().Equals("1");
-                    IronProxy.InterceptHTML = result["Html"].ToString().Equals("1");
-                    IronProxy.InterceptJS = result["JS"].ToString().Equals("1");
-                    IronProxy.InterceptCSS = result["CSS"].ToString().Equals("1");
-                    IronProxy.InterceptXML = result["Xml"].ToString().Equals("1");
-                    IronProxy.InterceptJSON = result["Json"].ToString().Equals("1");
-                    IronProxy.InterceptOtherText = result["OtherText"].ToString().Equals("1");
-                    IronProxy.InterceptImg = result["Img"].ToString().Equals("1");
-                    IronProxy.InterceptOtherBinary = result["OtherBinary"].ToString().Equals("1");
-                    IronProxy.Intercept200 = result["Code200"].ToString().Equals("1");
-                    IronProxy.Intercept2xx = result["Code2xx"].ToString().Equals("1");
-                    IronProxy.Intercept301_2 = result["Code301_2"].ToString().Equals("1");
-                    IronProxy.Intercept3xx = result["Code3xx"].ToString().Equals("1");
-                    IronProxy.Intercept403 = result["Code403"].ToString().Equals("1");
-                    IronProxy.Intercept4xx = result["Code4xx"].ToString().Equals("1");
-                    IronProxy.Intercept500 = result["Code500"].ToString().Equals("1");
-                    IronProxy.Intercept5xx = result["Code5xx"].ToString().Equals("1");
-                    IronProxy.InterceptCheckFileExtensions = result["FileExt"].ToString().Equals("1");
-                    IronProxy.InterceptCheckFileExtensionsPlus = result["FileExtPlus"].ToString().Equals("1");
-                    IronProxy.InterceptCheckFileExtensionsMinus = result["FileExtMinus"].ToString().Equals("1");
-                    string[] PlusFileExtentions = result["PlusFileExts"].ToString().Split(new char[] { ',' });
-                    lock (IronProxy.InterceptFileExtensions)
+                    cmd.CommandText = "SELECT Get, Post, OtherMethods, Html, JS, CSS, Xml, JSON, OtherText, Img, OtherBinary, Code200, Code2xx, Code301_2, Code3xx, Code403, Code4xx, Code500, Code5xx, FileExt, FileExtPlus, FileExtMinus, PlusFileExts, MinusFileExts, Host, HostPlus, HostMinus, PlusHosts, MinusHosts, RequestKeyword, RequestKeywordPlus, RequestKeywordMinus, PlusRequestKeyword, MinusRequestKeyword, ResponseKeyword, ResponseKeywordPlus, ResponseKeywordMinus, PlusResponseKeyword, MinusResponseKeyword, RequestRulesOnResponse FROM InterceptRules";
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
                     {
-                        IronProxy.InterceptFileExtensions.Clear();
-                        IronProxy.InterceptFileExtensions.AddRange(PlusFileExtentions);
+                        if (result.HasRows)
+                        {
+                            if (result.Read())
+                            {
+                                IronProxy.InterceptGET = result["Get"].ToString().Equals("1");
+                                IronProxy.InterceptPOST = result["Post"].ToString().Equals("1");
+                                IronProxy.InterceptOtherMethods = result["OtherMethods"].ToString().Equals("1");
+                                IronProxy.InterceptHTML = result["Html"].ToString().Equals("1");
+                                IronProxy.InterceptJS = result["JS"].ToString().Equals("1");
+                                IronProxy.InterceptCSS = result["CSS"].ToString().Equals("1");
+                                IronProxy.InterceptXML = result["Xml"].ToString().Equals("1");
+                                IronProxy.InterceptJSON = result["Json"].ToString().Equals("1");
+                                IronProxy.InterceptOtherText = result["OtherText"].ToString().Equals("1");
+                                IronProxy.InterceptImg = result["Img"].ToString().Equals("1");
+                                IronProxy.InterceptOtherBinary = result["OtherBinary"].ToString().Equals("1");
+                                IronProxy.Intercept200 = result["Code200"].ToString().Equals("1");
+                                IronProxy.Intercept2xx = result["Code2xx"].ToString().Equals("1");
+                                IronProxy.Intercept301_2 = result["Code301_2"].ToString().Equals("1");
+                                IronProxy.Intercept3xx = result["Code3xx"].ToString().Equals("1");
+                                IronProxy.Intercept403 = result["Code403"].ToString().Equals("1");
+                                IronProxy.Intercept4xx = result["Code4xx"].ToString().Equals("1");
+                                IronProxy.Intercept500 = result["Code500"].ToString().Equals("1");
+                                IronProxy.Intercept5xx = result["Code5xx"].ToString().Equals("1");
+                                IronProxy.InterceptCheckFileExtensions = result["FileExt"].ToString().Equals("1");
+                                IronProxy.InterceptCheckFileExtensionsPlus = result["FileExtPlus"].ToString().Equals("1");
+                                IronProxy.InterceptCheckFileExtensionsMinus = result["FileExtMinus"].ToString().Equals("1");
+                                string[] PlusFileExtentions = result["PlusFileExts"].ToString().Split(new char[] { ',' });
+                                lock (IronProxy.InterceptFileExtensions)
+                                {
+                                    IronProxy.InterceptFileExtensions.Clear();
+                                    IronProxy.InterceptFileExtensions.AddRange(PlusFileExtentions);
+                                }
+                                string[] MinusFileExtentions = result["MinusFileExts"].ToString().Split(new char[] { ',' });
+                                lock (IronProxy.DontInterceptFileExtensions)
+                                {
+                                    IronProxy.DontInterceptFileExtensions.Clear();
+                                    IronProxy.DontInterceptFileExtensions.AddRange(MinusFileExtentions);
+                                }
+
+                                IronProxy.InterceptCheckHostNames = result["Host"].ToString().Equals("1");
+                                IronProxy.InterceptCheckHostNamesPlus = result["HostPlus"].ToString().Equals("1");
+                                IronProxy.InterceptCheckHostNamesMinus = result["HostMinus"].ToString().Equals("1");
+                                string[] PlusHostNames = result["PlusHosts"].ToString().Split(new char[] { ',' });
+                                lock (IronProxy.InterceptHostNames)
+                                {
+                                    IronProxy.InterceptHostNames.Clear();
+                                    IronProxy.InterceptHostNames.AddRange(PlusHostNames);
+                                }
+                                string[] MinusHostNames = result["MinusHosts"].ToString().Split(new char[] { ',' });
+                                lock (IronProxy.DontInterceptHostNames)
+                                {
+                                    IronProxy.DontInterceptHostNames.Clear();
+                                    IronProxy.DontInterceptHostNames.AddRange(MinusHostNames);
+                                }
+
+                                IronProxy.InterceptCheckRequestWithKeyword = result["RequestKeyword"].ToString().Equals("1");
+                                IronProxy.InterceptCheckRequestWithKeywordPlus = result["RequestKeywordPlus"].ToString().Equals("1");
+                                IronProxy.InterceptCheckRequestWithKeywordMinus = result["RequestKeywordMinus"].ToString().Equals("1");
+                                IronProxy.InterceptRequestWithKeyword = result["PlusRequestKeyword"].ToString();
+                                IronProxy.DontInterceptRequestWithKeyword = result["MinusRequestKeyword"].ToString();
+
+                                IronProxy.InterceptCheckResponseWithKeyword = result["ResponseKeyword"].ToString().Equals("1");
+                                IronProxy.InterceptCheckResponseWithKeywordPlus = result["ResponseKeywordPlus"].ToString().Equals("1");
+                                IronProxy.InterceptCheckResponseWithKeywordMinus = result["ResponseKeywordMinus"].ToString().Equals("1");
+                                IronProxy.InterceptResponseWithKeyword = result["PlusResponseKeyword"].ToString();
+                                IronProxy.DontInterceptResponseWithKeyword = result["MinusResponseKeyword"].ToString();
+
+                                IronProxy.RequestRulesOnResponse = result["RequestRulesOnResponse"].ToString().Equals("1");
+
+                            }
+                        }
                     }
-                    string[] MinusFileExtentions = result["MinusFileExts"].ToString().Split(new char[] { ',' });
-                    lock (IronProxy.DontInterceptFileExtensions)
-                    {
-                        IronProxy.DontInterceptFileExtensions.Clear();
-                        IronProxy.DontInterceptFileExtensions.AddRange(MinusFileExtentions);
-                    }
-
-                    IronProxy.InterceptCheckHostNames = result["Host"].ToString().Equals("1");
-                    IronProxy.InterceptCheckHostNamesPlus = result["HostPlus"].ToString().Equals("1");
-                    IronProxy.InterceptCheckHostNamesMinus = result["HostMinus"].ToString().Equals("1");
-                    string[] PlusHostNames = result["PlusHosts"].ToString().Split(new char[] { ',' });
-                    lock (IronProxy.InterceptHostNames)
-                    {
-                        IronProxy.InterceptHostNames.Clear();
-                        IronProxy.InterceptHostNames.AddRange(PlusHostNames);
-                    }
-                    string[] MinusHostNames = result["MinusHosts"].ToString().Split(new char[] { ',' });
-                    lock (IronProxy.DontInterceptHostNames)
-                    {
-                        IronProxy.DontInterceptHostNames.Clear();
-                        IronProxy.DontInterceptHostNames.AddRange(MinusHostNames);
-                    }
-
-                    IronProxy.InterceptCheckRequestWithKeyword = result["RequestKeyword"].ToString().Equals("1");
-                    IronProxy.InterceptCheckRequestWithKeywordPlus = result["RequestKeywordPlus"].ToString().Equals("1");
-                    IronProxy.InterceptCheckRequestWithKeywordMinus = result["RequestKeywordMinus"].ToString().Equals("1");
-                    IronProxy.InterceptRequestWithKeyword = result["PlusRequestKeyword"].ToString();
-                    IronProxy.DontInterceptRequestWithKeyword = result["MinusRequestKeyword"].ToString();
-
-                    IronProxy.InterceptCheckResponseWithKeyword = result["ResponseKeyword"].ToString().Equals("1");
-                    IronProxy.InterceptCheckResponseWithKeywordPlus = result["ResponseKeywordPlus"].ToString().Equals("1");
-                    IronProxy.InterceptCheckResponseWithKeywordMinus = result["ResponseKeywordMinus"].ToString().Equals("1");
-                    IronProxy.InterceptResponseWithKeyword = result["PlusResponseKeyword"].ToString();
-                    IronProxy.DontInterceptResponseWithKeyword = result["MinusResponseKeyword"].ToString();
-
-                    IronProxy.RequestRulesOnResponse = result["RequestRulesOnResponse"].ToString().Equals("1");
-
                 }
             }
-            result.Close();
-            DB.Close();
         }
 
         internal static void UpdateDisplayRulesFromDB()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT Get, Post, OtherMethods, Html, JS, CSS, Xml, JSON, OtherText, Img, OtherBinary, Code200, Code2xx, Code301_2, Code3xx, Code403, Code4xx, Code500, Code5xx, FileExt, FileExtPlus, FileExtMinus, PlusFileExts, MinusFileExts, Host, HostPlus, HostMinus, PlusHosts, MinusHosts FROM DisplayRules";
-            SQLiteDataReader result = cmd.ExecuteReader();
-            if (result.HasRows)
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
-                if (result.Read())
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
                 {
-                    IronProxy.DisplayGET = result["Get"].ToString().Equals("1");
-                    IronProxy.DisplayPOST = result["Post"].ToString().Equals("1");
-                    IronProxy.DisplayOtherMethods = result["OtherMethods"].ToString().Equals("1");
-                    IronProxy.DisplayHTML = result["Html"].ToString().Equals("1");
-                    IronProxy.DisplayJS = result["JS"].ToString().Equals("1");
-                    IronProxy.DisplayCSS = result["CSS"].ToString().Equals("1");
-                    IronProxy.DisplayXML = result["Xml"].ToString().Equals("1");
-                    IronProxy.DisplayJSON = result["Json"].ToString().Equals("1");
-                    IronProxy.DisplayOtherText = result["OtherText"].ToString().Equals("1");
-                    IronProxy.DisplayImg = result["Img"].ToString().Equals("1");
-                    IronProxy.DisplayOtherBinary = result["OtherBinary"].ToString().Equals("1");
-                    IronProxy.Display200 = result["Code200"].ToString().Equals("1");
-                    IronProxy.Display2xx = result["Code2xx"].ToString().Equals("1");
-                    IronProxy.Display301_2 = result["Code301_2"].ToString().Equals("1");
-                    IronProxy.Display3xx = result["Code3xx"].ToString().Equals("1");
-                    IronProxy.Display403 = result["Code403"].ToString().Equals("1");
-                    IronProxy.Display4xx = result["Code4xx"].ToString().Equals("1");
-                    IronProxy.Display500 = result["Code500"].ToString().Equals("1");
-                    IronProxy.Display5xx = result["Code5xx"].ToString().Equals("1");
+                    cmd.CommandText = "SELECT Get, Post, OtherMethods, Html, JS, CSS, Xml, JSON, OtherText, Img, OtherBinary, Code200, Code2xx, Code301_2, Code3xx, Code403, Code4xx, Code500, Code5xx, FileExt, FileExtPlus, FileExtMinus, PlusFileExts, MinusFileExts, Host, HostPlus, HostMinus, PlusHosts, MinusHosts FROM DisplayRules";
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+                        if (result.HasRows)
+                        {
+                            if (result.Read())
+                            {
+                                IronProxy.DisplayGET = result["Get"].ToString().Equals("1");
+                                IronProxy.DisplayPOST = result["Post"].ToString().Equals("1");
+                                IronProxy.DisplayOtherMethods = result["OtherMethods"].ToString().Equals("1");
+                                IronProxy.DisplayHTML = result["Html"].ToString().Equals("1");
+                                IronProxy.DisplayJS = result["JS"].ToString().Equals("1");
+                                IronProxy.DisplayCSS = result["CSS"].ToString().Equals("1");
+                                IronProxy.DisplayXML = result["Xml"].ToString().Equals("1");
+                                IronProxy.DisplayJSON = result["Json"].ToString().Equals("1");
+                                IronProxy.DisplayOtherText = result["OtherText"].ToString().Equals("1");
+                                IronProxy.DisplayImg = result["Img"].ToString().Equals("1");
+                                IronProxy.DisplayOtherBinary = result["OtherBinary"].ToString().Equals("1");
+                                IronProxy.Display200 = result["Code200"].ToString().Equals("1");
+                                IronProxy.Display2xx = result["Code2xx"].ToString().Equals("1");
+                                IronProxy.Display301_2 = result["Code301_2"].ToString().Equals("1");
+                                IronProxy.Display3xx = result["Code3xx"].ToString().Equals("1");
+                                IronProxy.Display403 = result["Code403"].ToString().Equals("1");
+                                IronProxy.Display4xx = result["Code4xx"].ToString().Equals("1");
+                                IronProxy.Display500 = result["Code500"].ToString().Equals("1");
+                                IronProxy.Display5xx = result["Code5xx"].ToString().Equals("1");
 
-                    IronProxy.DisplayCheckFileExtensions = result["FileExt"].ToString().Equals("1");
-                    IronProxy.DisplayCheckFileExtensionsPlus = result["FileExtPlus"].ToString().Equals("1");
-                    IronProxy.DisplayCheckFileExtensionsMinus = result["FileExtMinus"].ToString().Equals("1");
+                                IronProxy.DisplayCheckFileExtensions = result["FileExt"].ToString().Equals("1");
+                                IronProxy.DisplayCheckFileExtensionsPlus = result["FileExtPlus"].ToString().Equals("1");
+                                IronProxy.DisplayCheckFileExtensionsMinus = result["FileExtMinus"].ToString().Equals("1");
 
-                    string[] PlusFileExtentions = result["PlusFileExts"].ToString().Split(new char[] { ',' });
-                    lock (IronProxy.DisplayFileExtensions)
-                    {
-                        IronProxy.DisplayFileExtensions.Clear();
-                        IronProxy.DisplayFileExtensions.AddRange(PlusFileExtentions);
-                    }
-                    string[] MinusFileExtentions = result["MinusFileExts"].ToString().Split(new char[] { ',' });
-                    lock (IronProxy.DontDisplayFileExtensions)
-                    {
-                        IronProxy.DontDisplayFileExtensions.Clear();
-                        IronProxy.DontDisplayFileExtensions.AddRange(MinusFileExtentions);
-                    }
-                    
-                    IronProxy.DisplayCheckHostNames = result["Host"].ToString().Equals("1");
-                    IronProxy.DisplayCheckHostNamesPlus = result["HostPlus"].ToString().Equals("1");
-                    IronProxy.DisplayCheckHostNamesMinus = result["HostMinus"].ToString().Equals("1");
-                    string[] PlusHostNames = result["PlusHosts"].ToString().Split(new char[] { ',' });
-                    lock (IronProxy.DisplayHostNames)
-                    {
-                        IronProxy.DisplayHostNames.Clear();
-                        IronProxy.DisplayHostNames.AddRange(PlusHostNames);
-                    }
-                    string[] MinusHostNames = result["MinusHosts"].ToString().Split(new char[] { ',' });
-                    lock (IronProxy.DontDisplayHostNames)
-                    {
-                        IronProxy.DontDisplayHostNames.Clear();
-                        IronProxy.DontDisplayHostNames.AddRange(MinusHostNames);
+                                string[] PlusFileExtentions = result["PlusFileExts"].ToString().Split(new char[] { ',' });
+                                lock (IronProxy.DisplayFileExtensions)
+                                {
+                                    IronProxy.DisplayFileExtensions.Clear();
+                                    IronProxy.DisplayFileExtensions.AddRange(PlusFileExtentions);
+                                }
+                                string[] MinusFileExtentions = result["MinusFileExts"].ToString().Split(new char[] { ',' });
+                                lock (IronProxy.DontDisplayFileExtensions)
+                                {
+                                    IronProxy.DontDisplayFileExtensions.Clear();
+                                    IronProxy.DontDisplayFileExtensions.AddRange(MinusFileExtentions);
+                                }
+
+                                IronProxy.DisplayCheckHostNames = result["Host"].ToString().Equals("1");
+                                IronProxy.DisplayCheckHostNamesPlus = result["HostPlus"].ToString().Equals("1");
+                                IronProxy.DisplayCheckHostNamesMinus = result["HostMinus"].ToString().Equals("1");
+                                string[] PlusHostNames = result["PlusHosts"].ToString().Split(new char[] { ',' });
+                                lock (IronProxy.DisplayHostNames)
+                                {
+                                    IronProxy.DisplayHostNames.Clear();
+                                    IronProxy.DisplayHostNames.AddRange(PlusHostNames);
+                                }
+                                string[] MinusHostNames = result["MinusHosts"].ToString().Split(new char[] { ',' });
+                                lock (IronProxy.DontDisplayHostNames)
+                                {
+                                    IronProxy.DontDisplayHostNames.Clear();
+                                    IronProxy.DontDisplayHostNames.AddRange(MinusHostNames);
+                                }
+                            }
+                        }
                     }
                 }
             }
-            result.Close();
-            DB.Close();
         }
 
         internal static void UpdateJSTaintConfigFromDB()
@@ -3472,143 +3343,158 @@ namespace IronWASP
             List<string> DefaultArgumentAssignedToSinkMethods = new List<string>();
             List<string> DefaultArgumentAssignedASourceMethods = new List<string>() { };
 
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT SourceObjects, SinkObjects, ArgumentAssignedASourceMethods, ArgumentAssignedToSinkMethods, SourceReturningMethods, SinkReturningMethods, ArgumentReturningMethods FROM JSTaintConfig";
-            SQLiteDataReader result = cmd.ExecuteReader();
-            
-            if (result.HasRows)
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
-                while (result.Read())
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
                 {
-                    if (result["SourceObjects"].ToString().Length > 0) DefaultSourceObjects.Add(result["SourceObjects"].ToString());
-                    if (result["SinkObjects"].ToString().Length > 0) DefaultSinkObjects.Add(result["SinkObjects"].ToString());
-                    if (result["ArgumentAssignedASourceMethods"].ToString().Length > 0) DefaultArgumentAssignedASourceMethods.Add(result["ArgumentAssignedASourceMethods"].ToString());
-                    if (result["ArgumentAssignedToSinkMethods"].ToString().Length > 0) DefaultArgumentAssignedToSinkMethods.Add(result["ArgumentAssignedToSinkMethods"].ToString());
-                    if (result["SourceReturningMethods"].ToString().Length > 0) DefaultSourceReturningMethods.Add(result["SourceReturningMethods"].ToString());
-                    if (result["SinkReturningMethods"].ToString().Length > 0) DefaultSinkReturningMethods.Add(result["SinkReturningMethods"].ToString());
-                    if (result["ArgumentReturningMethods"].ToString().Length > 0) DefaultArgumentReturningMethods.Add(result["ArgumentReturningMethods"].ToString());
+                    cmd.CommandText = "SELECT SourceObjects, SinkObjects, ArgumentAssignedASourceMethods, ArgumentAssignedToSinkMethods, SourceReturningMethods, SinkReturningMethods, ArgumentReturningMethods FROM JSTaintConfig";
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+                        if (result.HasRows)
+                        {
+                            while (result.Read())
+                            {
+                                if (result["SourceObjects"].ToString().Length > 0) DefaultSourceObjects.Add(result["SourceObjects"].ToString());
+                                if (result["SinkObjects"].ToString().Length > 0) DefaultSinkObjects.Add(result["SinkObjects"].ToString());
+                                if (result["ArgumentAssignedASourceMethods"].ToString().Length > 0) DefaultArgumentAssignedASourceMethods.Add(result["ArgumentAssignedASourceMethods"].ToString());
+                                if (result["ArgumentAssignedToSinkMethods"].ToString().Length > 0) DefaultArgumentAssignedToSinkMethods.Add(result["ArgumentAssignedToSinkMethods"].ToString());
+                                if (result["SourceReturningMethods"].ToString().Length > 0) DefaultSourceReturningMethods.Add(result["SourceReturningMethods"].ToString());
+                                if (result["SinkReturningMethods"].ToString().Length > 0) DefaultSinkReturningMethods.Add(result["SinkReturningMethods"].ToString());
+                                if (result["ArgumentReturningMethods"].ToString().Length > 0) DefaultArgumentReturningMethods.Add(result["ArgumentReturningMethods"].ToString());
+                            }
+                        }
+                    }
                 }
             }
-            lock (IronJint.DefaultSourceObjects)
-            {
-                IronJint.DefaultSourceObjects = new List<string>(DefaultSourceObjects);
-            }
-            lock (IronJint.DefaultSinkObjects)
-            {
-                IronJint.DefaultSinkObjects = new List<string>(DefaultSinkObjects);
-            }
-            lock (IronJint.DefaultArgumentAssignedASourceMethods)
-            {
-                IronJint.DefaultArgumentAssignedASourceMethods = new List<string>(DefaultArgumentAssignedASourceMethods);
-            }
-            lock (IronJint.DefaultArgumentAssignedToSinkMethods)
-            {
-                IronJint.DefaultArgumentAssignedToSinkMethods = new List<string>(DefaultArgumentAssignedToSinkMethods);
-            }
-            lock (IronJint.DefaultSourceReturningMethods)
-            {
-                IronJint.DefaultSourceReturningMethods = new List<string>(DefaultSourceReturningMethods);
-            }
-            lock (IronJint.DefaultSinkReturningMethods)
-            {
-                IronJint.DefaultSinkReturningMethods = new List<string>(DefaultSinkReturningMethods);
-            }
-            lock (IronJint.DefaultArgumentReturningMethods)
-            {
-                IronJint.DefaultArgumentReturningMethods = new List<string>(DefaultArgumentReturningMethods);
-            }
-            result.Close();
-            DB.Close();
+
+                lock (IronJint.DefaultSourceObjects)
+                {
+                    IronJint.DefaultSourceObjects = new List<string>(DefaultSourceObjects);
+                }
+                lock (IronJint.DefaultSinkObjects)
+                {
+                    IronJint.DefaultSinkObjects = new List<string>(DefaultSinkObjects);
+                }
+                lock (IronJint.DefaultArgumentAssignedASourceMethods)
+                {
+                    IronJint.DefaultArgumentAssignedASourceMethods = new List<string>(DefaultArgumentAssignedASourceMethods);
+                }
+                lock (IronJint.DefaultArgumentAssignedToSinkMethods)
+                {
+                    IronJint.DefaultArgumentAssignedToSinkMethods = new List<string>(DefaultArgumentAssignedToSinkMethods);
+                }
+                lock (IronJint.DefaultSourceReturningMethods)
+                {
+                    IronJint.DefaultSourceReturningMethods = new List<string>(DefaultSourceReturningMethods);
+                }
+                lock (IronJint.DefaultSinkReturningMethods)
+                {
+                    IronJint.DefaultSinkReturningMethods = new List<string>(DefaultSinkReturningMethods);
+                }
+                lock (IronJint.DefaultArgumentReturningMethods)
+                {
+                    IronJint.DefaultArgumentReturningMethods = new List<string>(DefaultArgumentReturningMethods);
+                }
         }
 
         internal static void UpdateScannerSettingsFromDB()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT MaxScannerThreads, MaxCrawlerThreads, UserAgent FROM ScannerSettings";
-            SQLiteDataReader result = cmd.ExecuteReader();
-
-            if (result.HasRows)
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
-                try
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
                 {
-                    Scanner.MaxParallelScanCount = Int32.Parse(result["MaxScannerThreads"].ToString());
+                    cmd.CommandText = "SELECT MaxScannerThreads, MaxCrawlerThreads, UserAgent FROM ScannerSettings";
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+
+                        if (result.HasRows)
+                        {
+                            try
+                            {
+                                Scanner.MaxParallelScanCount = Int32.Parse(result["MaxScannerThreads"].ToString());
+                            }
+                            catch { }
+                            try
+                            {
+                                Crawler.MaxCrawlThreads = Int32.Parse(result["MaxCrawlerThreads"].ToString());
+                            }
+                            catch { }
+                            Crawler.UserAgent = result["UserAgent"].ToString();
+                        }
+                    }
                 }
-                catch { }
-                try
-                {
-                    Crawler.MaxCrawlThreads = Int32.Parse(result["MaxCrawlerThreads"].ToString());
-                }
-                catch { }
-                Crawler.UserAgent = result["UserAgent"].ToString();
             }
-            result.Close();
-            DB.Close();
         }
 
         internal static void UpdatePassiveAnalysisSettingsFromDB()
         {
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT Proxy, Shell, Test, Scan, Probe FROM PassiveAnalysisSettings";
-            SQLiteDataReader result = cmd.ExecuteReader();
-
-            if (result.HasRows)
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
             {
-                try
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
                 {
-                    PassiveChecker.RunOnProxyTraffic =  Int32.Parse(result["Proxy"].ToString()) == 1;
+                    cmd.CommandText = "SELECT Proxy, Shell, Test, Scan, Probe FROM PassiveAnalysisSettings";
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+
+                        if (result.HasRows)
+                        {
+                            try
+                            {
+                                PassiveChecker.RunOnProxyTraffic = Int32.Parse(result["Proxy"].ToString()) == 1;
+                            }
+                            catch { }
+                            try
+                            {
+                                PassiveChecker.RunOnShellTraffic = Int32.Parse(result["Shell"].ToString()) == 1;
+                            }
+                            catch { }
+                            try
+                            {
+                                PassiveChecker.RunOnTestTraffic = Int32.Parse(result["Test"].ToString()) == 1;
+                            }
+                            catch { }
+                            try
+                            {
+                                PassiveChecker.RunOnShellTraffic = Int32.Parse(result["Shell"].ToString()) == 1;
+                            }
+                            catch { }
+                            try
+                            {
+                                PassiveChecker.RunOnProbeTraffic = Int32.Parse(result["Probe"].ToString()) == 1;
+                            }
+                            catch { }
+                        }
+                    }
                 }
-                catch { }
-                try
-                {
-                    PassiveChecker.RunOnShellTraffic = Int32.Parse(result["Shell"].ToString()) == 1;
-                }
-                catch { }
-                try
-                {
-                    PassiveChecker.RunOnTestTraffic = Int32.Parse(result["Test"].ToString()) == 1;
-                }
-                catch { }
-                try
-                {
-                    PassiveChecker.RunOnShellTraffic = Int32.Parse(result["Shell"].ToString()) == 1;
-                }
-                catch { }
-                try
-                {
-                    PassiveChecker.RunOnProbeTraffic = Int32.Parse(result["Probe"].ToString()) == 1;
-                }
-                catch { }
             }
-            result.Close();
-            DB.Close();
         }
 
         internal static void UpdateParametersBlackListFromDB()
         {
             try
             {
-                SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-                DB.Open();
-                SQLiteCommand cmd = DB.CreateCommand();
-                cmd.CommandText = "SELECT ParameterSection, ParameterName FROM ParametersBlackList";
-                SQLiteDataReader result = cmd.ExecuteReader();
-
-                StartScanJobWizard.ParametersBlackList = new List<string>();
-                if (result.HasRows)
+                using (SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
                 {
-                    while (result.Read())
+                    DB.Open();
+                    using (SQLiteCommand cmd = DB.CreateCommand())
                     {
-                        StartScanJobWizard.ParametersBlackList.Add(result["ParameterName"].ToString());
+                        cmd.CommandText = "SELECT ParameterSection, ParameterName FROM ParametersBlackList";
+                        using (SQLiteDataReader result = cmd.ExecuteReader())
+                        {
+                            StartScanJobWizard.ParametersBlackList = new List<string>();
+                            if (result.HasRows)
+                            {
+                                while (result.Read())
+                                {
+                                    StartScanJobWizard.ParametersBlackList.Add(result["ParameterName"].ToString());
+                                }
+                            }
+                        }
                     }
                 }
-                result.Close();
-                DB.Close();
             }
             catch(Exception Exp) 
             {
@@ -3620,22 +3506,25 @@ namespace IronWASP
         {
             try
             {
-                SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile);
-                DB.Open();
-                SQLiteCommand cmd = DB.CreateCommand();
-                cmd.CommandText = "SELECT RawCharacter, EncodedCharacter FROM CharacterEscapingRules";
-                SQLiteDataReader result = cmd.ExecuteReader();
-
-                Scanner.UserSpecifiedEncodingRuleList = new List<string[]>();
-                if (result.HasRows)
+                using (SQLiteConnection DB = new SQLiteConnection("data source=" + ConfigFile))
                 {
-                    while (result.Read())
+                    DB.Open();
+                    using (SQLiteCommand cmd = DB.CreateCommand())
                     {
-                        Scanner.UserSpecifiedEncodingRuleList.Add(new string[] { result["RawCharacter"].ToString(), result["EncodedCharacter"].ToString() });
+                        cmd.CommandText = "SELECT RawCharacter, EncodedCharacter FROM CharacterEscapingRules";
+                        using (SQLiteDataReader result = cmd.ExecuteReader())
+                        {
+                            Scanner.UserSpecifiedEncodingRuleList = new List<string[]>();
+                            if (result.HasRows)
+                            {
+                                while (result.Read())
+                                {
+                                    Scanner.UserSpecifiedEncodingRuleList.Add(new string[] { result["RawCharacter"].ToString(), result["EncodedCharacter"].ToString() });
+                                }
+                            }
+                        }
                     }
                 }
-                result.Close();
-                DB.Close();
             }
             catch (Exception Exp)
             {
@@ -3845,115 +3734,123 @@ namespace IronWASP
         internal static List<string[]> GetScanQueueRecords(int StartID)
         {
             List<string[]> ScanQueueRecords = new List<string[]>();
-            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT ScanID, Status, Method, URL FROM ScanQueue WHERE ScanID > @StartID LIMIT 1000";
-            cmd.Parameters.AddWithValue("@StartID", StartID);
-            SQLiteDataReader result = cmd.ExecuteReader();
-            while (result.Read())
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile))
             {
-                string[] Fields = new string[4];
-                Fields[0] = result["ScanID"].ToString();
-                Fields[1] = result["Status"].ToString();
-                Fields[2] = result["Method"].ToString();
-                Fields[3] = result["URL"].ToString();
-                ScanQueueRecords.Add(Fields);
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT ScanID, Status, Method, URL FROM ScanQueue WHERE ScanID > @StartID LIMIT 1000";
+                    cmd.Parameters.AddWithValue("@StartID", StartID);
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+                        while (result.Read())
+                        {
+                            string[] Fields = new string[4];
+                            Fields[0] = result["ScanID"].ToString();
+                            Fields[1] = result["Status"].ToString();
+                            Fields[2] = result["Method"].ToString();
+                            Fields[3] = result["URL"].ToString();
+                            ScanQueueRecords.Add(Fields);
+                        }
+                    }
+                }
             }
-            result.Close();
-            DB.Close();
             return ScanQueueRecords;
         }
 
         internal static List<Finding > GetPluginResultsLogRecords(int StartID)
         {
             List<Finding> PluginResultsLogRecords = new List<Finding>();
-            SQLiteConnection DB = new SQLiteConnection("data source=" + PluginResultsLogFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT ID, HostName, Title, FinderName, FinderType, Meta, UniquenessString, Severity, Confidence, Type FROM Findings WHERE ID > @StartID LIMIT 1000";
-            cmd.Parameters.AddWithValue("@StartID", StartID);
-            SQLiteDataReader result = cmd.ExecuteReader();
-            while (result.Read())
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + PluginResultsLogFile))
             {
-                Finding PR = new Finding(result["HostName"].ToString());
-                PR.Id = Int32.Parse(result["ID"].ToString());
-                PR.Title = result["Title"].ToString();
-                PR.FinderName = result["FinderName"].ToString();
-                PR.FinderType = result["FinderType"].ToString();
-                try
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
                 {
-                    PR.XmlMeta = result["Meta"].ToString();
+                    cmd.CommandText = "SELECT ID, HostName, Title, FinderName, FinderType, Meta, UniquenessString, Severity, Confidence, Type FROM Findings WHERE ID > @StartID LIMIT 1000";
+                    cmd.Parameters.AddWithValue("@StartID", StartID);
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+                        while (result.Read())
+                        {
+                            Finding PR = new Finding(result["HostName"].ToString());
+                            PR.Id = Int32.Parse(result["ID"].ToString());
+                            PR.Title = result["Title"].ToString();
+                            PR.FinderName = result["FinderName"].ToString();
+                            PR.FinderType = result["FinderType"].ToString();
+                            try
+                            {
+                                PR.XmlMeta = result["Meta"].ToString();
+                            }
+                            catch { }
+                            PR.AffectedHost = result["HostName"].ToString();
+                            PR.Severity = GetSeverity(Int32.Parse(result["Severity"].ToString()));
+                            PR.Confidence = GetConfidence(Int32.Parse(result["Confidence"].ToString()));
+                            PR.Type = GetResultType(Int32.Parse(result["Type"].ToString()));
+                            PR.Signature = result["UniquenessString"].ToString();
+                            PluginResultsLogRecords.Add(PR);
+                        }
+                    }
                 }
-                catch { }
-                PR.AffectedHost = result["HostName"].ToString();
-                PR.Severity = GetSeverity(Int32.Parse(result["Severity"].ToString()));
-                PR.Confidence = GetConfidence(Int32.Parse(result["Confidence"].ToString()));
-                PR.Type = GetResultType(Int32.Parse(result["Type"].ToString()));
-                PR.Signature = result["UniquenessString"].ToString();
-                PluginResultsLogRecords.Add(PR);
             }
-            result.Close();
-            DB.Close();
             return PluginResultsLogRecords;
         }
 
         internal static List<IronException> GetExceptionLogRecords(int StartID)
         {
             List<IronException> ExceptionLogRecords = new List<IronException>();
-            SQLiteConnection DB = new SQLiteConnection("data source=" + ExceptionsLogFile);
-            DB.Open();
-            SQLiteCommand cmd = DB.CreateCommand();
-            cmd.CommandText = "SELECT ID, Title, Message, StackTrace FROM Exceptions WHERE ID > @StartID LIMIT 1000";
-            cmd.Parameters.AddWithValue("@StartID", StartID);
-            SQLiteDataReader result = cmd.ExecuteReader();
-            while (result.Read())
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + ExceptionsLogFile))
             {
-                IronException IrEx = new IronException();
-                IrEx.ID = Int32.Parse(result["ID"].ToString());
-                IrEx.Title = result["Title"].ToString();
-                ExceptionLogRecords.Add(IrEx);
+                DB.Open();
+                using (SQLiteCommand cmd = DB.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT ID, Title, Message, StackTrace FROM Exceptions WHERE ID > @StartID LIMIT 1000";
+                    cmd.Parameters.AddWithValue("@StartID", StartID);
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+                        while (result.Read())
+                        {
+                            IronException IrEx = new IronException();
+                            IrEx.ID = Int32.Parse(result["ID"].ToString());
+                            IrEx.Title = result["Title"].ToString();
+                            ExceptionLogRecords.Add(IrEx);
+                        }
+                    }
+                }
             }
-            result.Close();
-            DB.Close();
             return ExceptionLogRecords;
         }
 
         internal static List<IronTrace> GetTraceRecords(int StartID, int Count)
         {
             List<IronTrace> TraceRecords = new List<IronTrace>();
-            SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile);
-            DB.Open();
-            try
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile))
             {
-                SQLiteCommand cmd = DB.CreateCommand();
-                cmd.CommandText = "SELECT ID, Time, Date, ThreadID, Source, Message FROM Trace WHERE ID > @StartID LIMIT @LIMIT";
-                cmd.Parameters.AddWithValue("@StartID", StartID);
-                cmd.Parameters.AddWithValue("@LIMIT", Count);
-                SQLiteDataReader result = cmd.ExecuteReader();
-                while (result.Read())
-                {
-                    IronTrace Trace = new IronTrace();
-                    try
-                    { Trace.ID = Int32.Parse(result["ID"].ToString()); }
-                    catch { continue; }
-                    try
-                    { Trace.ThreadID = Int32.Parse(result["ThreadID"].ToString()); }
-                    catch { }
-                    Trace.Time = result["Time"].ToString();
-                    Trace.Date = result["Date"].ToString();
-                    Trace.Source = result["Source"].ToString();
-                    Trace.Message = result["Message"].ToString();
-                    TraceRecords.Add(Trace);
+                DB.Open();
+                    using(SQLiteCommand cmd = DB.CreateCommand())
+                    {
+                    cmd.CommandText = "SELECT ID, Time, Date, ThreadID, Source, Message FROM Trace WHERE ID > @StartID LIMIT @LIMIT";
+                    cmd.Parameters.AddWithValue("@StartID", StartID);
+                    cmd.Parameters.AddWithValue("@LIMIT", Count);
+                    using(SQLiteDataReader result = cmd.ExecuteReader())
+                        {
+                    while (result.Read())
+                    {
+                        IronTrace Trace = new IronTrace();
+                        try
+                        { Trace.ID = Int32.Parse(result["ID"].ToString()); }
+                        catch { continue; }
+                        try
+                        { Trace.ThreadID = Int32.Parse(result["ThreadID"].ToString()); }
+                        catch { }
+                        Trace.Time = result["Time"].ToString();
+                        Trace.Date = result["Date"].ToString();
+                        Trace.Source = result["Source"].ToString();
+                        Trace.Message = result["Message"].ToString();
+                        TraceRecords.Add(Trace);
+                    }
+                        }
+                    }
                 }
-                result.Close();
-            }
-            catch(Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
-            }
-            DB.Close();
             return TraceRecords;
         }
 
@@ -3965,47 +3862,43 @@ namespace IronWASP
         internal static List<IronTrace> GetScanTraces(int StartID, int Count)
         {
             List<IronTrace> TraceRecords = new List<IronTrace>();
-            SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile);
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile))
+            {
             DB.Open();
-            try
+            using (SQLiteCommand cmd = DB.CreateCommand())
             {
-                SQLiteCommand cmd = DB.CreateCommand();
                 cmd.CommandText = "SELECT ID, ScanID, PluginName, Section, Parameter, Title, Message, OverviewXml FROM ScanTrace WHERE ID > @StartID ORDER BY ID LIMIT @LIMIT";
-                cmd.Parameters.AddWithValue("@StartID", StartID -1);
+                cmd.Parameters.AddWithValue("@StartID", StartID - 1);
                 cmd.Parameters.AddWithValue("@LIMIT", Count);
-                SQLiteDataReader result = cmd.ExecuteReader();
-                while (result.Read())
+                using (SQLiteDataReader result = cmd.ExecuteReader())
                 {
-                    IronTrace Trace = new IronTrace();
-                    try
-                    { Trace.ID = Int32.Parse(result["ID"].ToString()); }
-                    catch { continue; }
-                    try
-                    { Trace.ScanID = Int32.Parse(result["ScanID"].ToString()); }
-                    catch { }
-                    Trace.PluginName = result["PluginName"].ToString();
-                    Trace.Section = result["Section"].ToString();
-                    Trace.Parameter = result["Parameter"].ToString();
-                    Trace.Title = result["Title"].ToString();
-                    try
+                    while (result.Read())
                     {
-                        Trace.MessageXml = result["Message"].ToString();
+                        IronTrace Trace = new IronTrace();
+                        try
+                        { Trace.ID = Int32.Parse(result["ID"].ToString()); }
+                        catch { continue; }
+                        try
+                        { Trace.ScanID = Int32.Parse(result["ScanID"].ToString()); }
+                        catch { }
+                        Trace.PluginName = result["PluginName"].ToString();
+                        Trace.Section = result["Section"].ToString();
+                        Trace.Parameter = result["Parameter"].ToString();
+                        Trace.Title = result["Title"].ToString();
+                        try
+                        {
+                            Trace.MessageXml = result["Message"].ToString();
+                        }
+                        catch
+                        {
+                            Trace.Message = result["Message"].ToString();
+                        }
+                        Trace.OverviewXml = result["OverviewXml"].ToString();
+                        TraceRecords.Add(Trace);
                     }
-                    catch
-                    {
-                        Trace.Message = result["Message"].ToString();
-                    }
-                    Trace.OverviewXml = result["OverviewXml"].ToString();
-                    TraceRecords.Add(Trace);
                 }
-                result.Close();
             }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
             }
-            DB.Close();
             return TraceRecords;
         }
 
@@ -4013,69 +3906,68 @@ namespace IronWASP
         {
             List<IronTrace> TraceRecords = new List<IronTrace>();
 
-            SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile);
-            DB.Open();
-            try
+            using(SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile))
             {
-                SQLiteCommand cmd = DB.CreateCommand();
+            DB.Open();
+            using (SQLiteCommand cmd = DB.CreateCommand())
+            {
                 cmd.CommandText = "SELECT ID, Message, OverviewXml FROM ScanTrace WHERE ScanID=@ScanID AND PluginName=@PluginName AND Section=@Section AND Parameter=@Parameter ORDER BY ID";
                 cmd.Parameters.AddWithValue("@ScanID", F.ScanId);
                 cmd.Parameters.AddWithValue("@PluginName", F.FinderName);
                 cmd.Parameters.AddWithValue("@Section", F.AffectedSection);
                 cmd.Parameters.AddWithValue("@Parameter", F.AffectedParameter);
 
-                SQLiteDataReader result = cmd.ExecuteReader();
-                while (result.Read())
+                using (SQLiteDataReader result = cmd.ExecuteReader())
                 {
-                    IronTrace Trace = new IronTrace();
-                    try
-                    { Trace.ID = Int32.Parse(result["ID"].ToString()); }
-                    catch { continue; }
-                    try
+                    while (result.Read())
                     {
-                        Trace.MessageXml = result["Message"].ToString();
+                        IronTrace Trace = new IronTrace();
+                        try
+                        { Trace.ID = Int32.Parse(result["ID"].ToString()); }
+                        catch { continue; }
+                        try
+                        {
+                            Trace.MessageXml = result["Message"].ToString();
+                        }
+                        catch
+                        {
+                            Trace.Message = result["Message"].ToString();
+                        }
+                        Trace.OverviewXml = result["OverviewXml"].ToString();
+                        TraceRecords.Add(Trace);
                     }
-                    catch
-                    {
-                        Trace.Message = result["Message"].ToString();
-                    }
-                    Trace.OverviewXml = result["OverviewXml"].ToString();
-                    TraceRecords.Add(Trace);
                 }
-                result.Close();
             }
-            catch (Exception Exp)
-            {
-                DB.Close();
-                throw Exp;
             }
-            DB.Close();
             return TraceRecords;
         }
 
         internal static void InitialiseLogDB()
         {
             CreateLogFilesOnStartUp();
-            SQLiteConnection log = new SQLiteConnection("data source=" + IronProjectFile);
-            log.Open();
-            using (SQLiteTransaction create = log.BeginTransaction())
-            {
-                using (SQLiteCommand cmd = new SQLiteCommand(log))
-                {
-                    cmd.CommandText = "DROP TABLE IF EXISTS ScanQueue";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ScanQueue (ScanID INT PRIMARY KEY, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Status TEXT, Method TEXT, URL TEXT, SessionPlugin TEXT, InjectionPoints TEXT, FormatPlugin TEXT, ScanPlugins TEXT)";
-                    cmd.ExecuteNonQuery();
-                    //cmd.CommandText = "CREATE TABLE IF NOT EXISTS TestGroups (Red INT, Green INT, Blue INT, Gray INT, Brown INT)";
-                    //cmd.CommandText = "CREATE TABLE IF NOT EXISTS NamedTestGroups (Name TEXT, ID INT)";
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS TestGroups (Name TEXT, ID INT)";
-                    cmd.ExecuteNonQuery();
-                }
-                create.Commit();
-            }
-            log.Close();
 
-            log = new SQLiteConnection("data source=" + ProxyLogFile);
+            using (SQLiteConnection log = new SQLiteConnection("data source=" + IronProjectFile))
+            {
+                log.Open();
+                using (SQLiteTransaction create = log.BeginTransaction())
+                {
+                    using (SQLiteCommand cmd = new SQLiteCommand(log))
+                    {
+                        cmd.CommandText = "DROP TABLE IF EXISTS ScanQueue";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS ScanQueue (ScanID INT PRIMARY KEY, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Status TEXT, Method TEXT, URL TEXT, SessionPlugin TEXT, InjectionPoints TEXT, FormatPlugin TEXT, ScanPlugins TEXT)";
+                        cmd.ExecuteNonQuery();
+                        //cmd.CommandText = "CREATE TABLE IF NOT EXISTS TestGroups (Red INT, Green INT, Blue INT, Gray INT, Brown INT)";
+                        //cmd.CommandText = "CREATE TABLE IF NOT EXISTS NamedTestGroups (Name TEXT, ID INT)";
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS TestGroups (Name TEXT, ID INT)";
+                        cmd.ExecuteNonQuery();
+                    }
+                    create.Commit();
+                }
+            }
+
+            using (SQLiteConnection log = new SQLiteConnection("data source=" + ProxyLogFile))
+            {
             log.Open();
             using (SQLiteTransaction create = log.BeginTransaction())
             {
@@ -4088,170 +3980,178 @@ namespace IronWASP
                 }
                 create.Commit();
             }
-            log.Close();
+        }
 
-            log = new SQLiteConnection("data source=" + TestLogFile);
-            log.Open();
-            using (SQLiteTransaction create = log.BeginTransaction())
+            using (SQLiteConnection log = new SQLiteConnection("data source=" + TestLogFile))
             {
-                using (SQLiteCommand cmd = new SQLiteCommand(log))
+                log.Open();
+                using (SQLiteTransaction create = log.BeginTransaction())
                 {
-                    cmd.CommandText = "DROP TABLE IF EXISTS MTLog";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS TestLog (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, RoundTrip INT, Notes TEXT)";
-                    cmd.ExecuteNonQuery();
+                    using (SQLiteCommand cmd = new SQLiteCommand(log))
+                    {
+                        cmd.CommandText = "DROP TABLE IF EXISTS MTLog";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS TestLog (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, RoundTrip INT, Notes TEXT)";
+                        cmd.ExecuteNonQuery();
+                    }
+                    create.Commit();
                 }
-                create.Commit();
             }
-            log.Close();
 
-            log = new SQLiteConnection("data source=" + ShellLogFile);
-            log.Open();
-            using (SQLiteTransaction create = log.BeginTransaction())
+            using (SQLiteConnection log = new SQLiteConnection("data source=" + ShellLogFile))
             {
-                using (SQLiteCommand cmd = new SQLiteCommand(log))
+                log.Open();
+                using (SQLiteTransaction create = log.BeginTransaction())
                 {
-                    cmd.CommandText = "DROP TABLE IF EXISTS ShellLog";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ShellLog (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT,  RoundTrip INT, Notes TEXT)";
-                    cmd.ExecuteNonQuery();
+                    using (SQLiteCommand cmd = new SQLiteCommand(log))
+                    {
+                        cmd.CommandText = "DROP TABLE IF EXISTS ShellLog";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS ShellLog (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT,  RoundTrip INT, Notes TEXT)";
+                        cmd.ExecuteNonQuery();
+                    }
+                    create.Commit();
                 }
-                create.Commit();
             }
-            log.Close();
 
-            log = new SQLiteConnection("data source=" + ProbeLogFile);
-            log.Open();
-            using (SQLiteTransaction create = log.BeginTransaction())
+            using (SQLiteConnection log = new SQLiteConnection("data source=" + ProbeLogFile))
             {
-                using (SQLiteCommand cmd = new SQLiteCommand(log))
+                log.Open();
+                using (SQLiteTransaction create = log.BeginTransaction())
                 {
-                    cmd.CommandText = "DROP TABLE IF EXISTS ProbeLog";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ProbeLog (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT,  RoundTrip INT, Notes TEXT)";
-                    cmd.ExecuteNonQuery();
+                    using (SQLiteCommand cmd = new SQLiteCommand(log))
+                    {
+                        cmd.CommandText = "DROP TABLE IF EXISTS ProbeLog";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS ProbeLog (ID INT PRIMARY KEY, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT,  RoundTrip INT, Notes TEXT)";
+                        cmd.ExecuteNonQuery();
+                    }
+                    create.Commit();
                 }
-                create.Commit();
             }
-            log.Close();
 
-            log = new SQLiteConnection("data source=" + ScanLogFile);
-            log.Open();
-            using (SQLiteTransaction create = log.BeginTransaction())
+            using (SQLiteConnection log = new SQLiteConnection("data source=" + ScanLogFile))
             {
-                using (SQLiteCommand cmd = new SQLiteCommand(log))
+                log.Open();
+                using (SQLiteTransaction create = log.BeginTransaction())
                 {
-                    cmd.CommandText = "DROP TABLE IF EXISTS ScanLog";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ScanLog (ID INT PRIMARY KEY, ScanID INT, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT,  RoundTrip INT, Notes TEXT)";
-                    cmd.ExecuteNonQuery();
+                    using (SQLiteCommand cmd = new SQLiteCommand(log))
+                    {
+                        cmd.CommandText = "DROP TABLE IF EXISTS ScanLog";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS ScanLog (ID INT PRIMARY KEY, ScanID INT, SSL INT, HostName TEXT, Method TEXT, URL TEXT, File TEXT, Parameters TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, Code INT, Length INT, MIME TEXT, SetCookie INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT,  RoundTrip INT, Notes TEXT)";
+                        cmd.ExecuteNonQuery();
+                    }
+                    create.Commit();
                 }
-                create.Commit();
             }
-            log.Close();
 
-            log = new SQLiteConnection("data source=" + PluginResultsLogFile);
-            log.Open();
-            using (SQLiteTransaction create = log.BeginTransaction())
+            using (SQLiteConnection log = new SQLiteConnection("data source=" + PluginResultsLogFile))
             {
-                using (SQLiteCommand cmd = new SQLiteCommand(log))
+                log.Open();
+                using (SQLiteTransaction create = log.BeginTransaction())
                 {
-                    cmd.CommandText = "DROP TABLE IF EXISTS Findings";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS Findings (ID INT, HostName TEXT, Title TEXT, FinderName TEXT, FinderType TEXT, ScanID INT, Meta TEXT, Summary TEXT, Severity INT, Confidence INT, Type INT, UniquenessString TEXT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "DROP TABLE IF EXISTS Triggers";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS Triggers (ID INT, TriggersEncoded INT, RequestTriggerDesc TEXT, RequestTrigger TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, ResponseTriggerDesc TEXT, ResponseTrigger TEXT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, RoundTrip INT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "DROP TABLE IF EXISTS BaseLine";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS BaseLine (FindingID INT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, RoundTrip INT)";
-                    cmd.ExecuteNonQuery();
+                    using (SQLiteCommand cmd = new SQLiteCommand(log))
+                    {
+                        cmd.CommandText = "DROP TABLE IF EXISTS Findings";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS Findings (ID INT, HostName TEXT, Title TEXT, FinderName TEXT, FinderType TEXT, ScanID INT, Meta TEXT, Summary TEXT, Severity INT, Confidence INT, Type INT, UniquenessString TEXT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "DROP TABLE IF EXISTS Triggers";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS Triggers (ID INT, TriggersEncoded INT, RequestTriggerDesc TEXT, RequestTrigger TEXT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, ResponseTriggerDesc TEXT, ResponseTrigger TEXT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, RoundTrip INT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "DROP TABLE IF EXISTS BaseLine";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS BaseLine (FindingID INT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, RoundTrip INT)";
+                        cmd.ExecuteNonQuery();
+                    }
+                    create.Commit();
                 }
-                create.Commit();
             }
-            log.Close();
-            
-            log = new SQLiteConnection("data source=" + ExceptionsLogFile);
-            log.Open();
-            using (SQLiteTransaction create = log.BeginTransaction())
-            {
-                using (SQLiteCommand cmd = new SQLiteCommand(log))
-                {
-                    cmd.CommandText = "DROP TABLE IF EXISTS Exceptions";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS Exceptions (ID INT PRIMARY KEY, Title TEXT, Message TEXT, StackTrace TEXT)";
-                    cmd.ExecuteNonQuery();
-                }
-                create.Commit();
-            }
-            log.Close();
 
-            log = new SQLiteConnection("data source=" + TraceLogFile);
-            log.Open();
-            using (SQLiteTransaction create = log.BeginTransaction())
+            using (SQLiteConnection log = new SQLiteConnection("data source=" + ExceptionsLogFile))
             {
-                using (SQLiteCommand cmd = new SQLiteCommand(log))
+                log.Open();
+                using (SQLiteTransaction create = log.BeginTransaction())
                 {
-                    cmd.CommandText = "DROP TABLE IF EXISTS Trace";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS Trace (ID INT PRIMARY KEY, Time TEXT, Date TEXT, ThreadID INT, Source TEXT, Message TEXT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "DROP TABLE IF EXISTS ScanTrace";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ScanTrace (ID INT PRIMARY KEY, ScanID INT, PluginName TEXT, Section TEXT, Parameter TEXT, Title TEXT, Message TEXT, OverviewXml TEXT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "DROP TABLE IF EXISTS SessionPluginTrace";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS SessionPluginTrace (ID INT PRIMARY KEY, LogId INT, LogSource TEXT, PluginName TEXT, Action TEXT, Message TEXT)";
-                    cmd.ExecuteNonQuery();
+                    using (SQLiteCommand cmd = new SQLiteCommand(log))
+                    {
+                        cmd.CommandText = "DROP TABLE IF EXISTS Exceptions";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS Exceptions (ID INT PRIMARY KEY, Title TEXT, Message TEXT, StackTrace TEXT)";
+                        cmd.ExecuteNonQuery();
+                    }
+                    create.Commit();
                 }
-                create.Commit();
             }
-            log.Close();
+
+            using (SQLiteConnection log = new SQLiteConnection("data source=" + TraceLogFile))
+            {
+                log.Open();
+                using (SQLiteTransaction create = log.BeginTransaction())
+                {
+                    using (SQLiteCommand cmd = new SQLiteCommand(log))
+                    {
+                        cmd.CommandText = "DROP TABLE IF EXISTS Trace";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS Trace (ID INT PRIMARY KEY, Time TEXT, Date TEXT, ThreadID INT, Source TEXT, Message TEXT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "DROP TABLE IF EXISTS ScanTrace";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS ScanTrace (ID INT PRIMARY KEY, ScanID INT, PluginName TEXT, Section TEXT, Parameter TEXT, Title TEXT, Message TEXT, OverviewXml TEXT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "DROP TABLE IF EXISTS SessionPluginTrace";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS SessionPluginTrace (ID INT PRIMARY KEY, LogId INT, LogSource TEXT, PluginName TEXT, Action TEXT, Message TEXT)";
+                        cmd.ExecuteNonQuery();
+                    }
+                    create.Commit();
+                }
+            }
             
             ConfigFile = Config.RootDir + "\\IronConfig.exe";
-            log = new SQLiteConnection("data source=" + ConfigFile);
-            log.Open();
-            using (SQLiteTransaction create = log.BeginTransaction())
+            using (SQLiteConnection log = new SQLiteConnection("data source=" + ConfigFile))
             {
-                using (SQLiteCommand cmd = new SQLiteCommand(log))
+                log.Open();
+                using (SQLiteTransaction create = log.BeginTransaction())
                 {
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS IronProxy (LoopBack INT, SystemProxy INT, Port INT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS UpstreamProxy (Use INT, IP TEXT, Port INT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS PyPath (Path TEXT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS RbPath (Path TEXT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS PyStartCommands (Command TEXT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS RbStartCommands (Command TEXT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS InterceptRules (Get INT, Post INT, OtherMethods INT, Html INT, JS INT, CSS INT, Xml INT, JSON INT, OtherText INT, Img INT, OtherBinary INT, Code200 INT, Code2xx INT, Code301_2 INT, Code3xx INT, Code403 INT, Code4xx INT, Code500 INT, Code5xx INT, FileExt INT, FileExtPlus INT, FileExtMinus INT, PlusFileExts TEXT, MinusFileExts TEXT, Host INT, HostPlus INT, HostMinus INT, PlusHosts TEXT, MinusHosts TEXT, RequestKeyword INT, RequestKeywordPlus INT, RequestKeywordMinus INT, PlusRequestKeyword TEXT, MinusRequestKeyword TEXT, ResponseKeyword INT, ResponseKeywordPlus INT, ResponseKeywordMinus INT, PlusResponseKeyword TEXT, MinusResponseKeyword TEXT, RequestRulesOnResponse INT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS DisplayRules (Get INT, Post INT, OtherMethods INT, Html INT, JS INT, CSS INT, Xml INT, JSON INT, OtherText INT, Img INT, OtherBinary INT, Code200 INT, Code2xx INT, Code301_2 INT, Code3xx INT, Code403 INT, Code4xx INT, Code500 INT, Code5xx INT, FileExt INT, FileExtPlus INT, FileExtMinus INT, PlusFileExts TEXT, MinusFileExts TEXT, Host INT, HostPlus INT, HostMinus INT, PlusHosts TEXT, MinusHosts TEXT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS TextRequestTypes (Type TEXT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS TextResponseTypes (Type TEXT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS JSTaintConfig (SourceObjects TEXT, SinkObjects TEXT, ArgumentAssignedASourceMethods TEXT, ArgumentAssignedToSinkMethods TEXT, SourceReturningMethods TEXT, SinkReturningMethods TEXT, ArgumentReturningMethods TEXT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ScannerSettings (MaxScannerThreads INT, MaxCrawlerThreads INT, UserAgent TEXT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS PassiveAnalysisSettings (Proxy INT, Shell INT, Test INT, Scan INT, Probe INT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS CharacterEscapingRules (RawCharacter TEXT, EncodedCharacter TEXT)";
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "CREATE TABLE IF NOT EXISTS ParametersBlackList (ParameterSection TEXT, ParameterName TEXT)";
-                    cmd.ExecuteNonQuery();
+                    using (SQLiteCommand cmd = new SQLiteCommand(log))
+                    {
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS IronProxy (LoopBack INT, SystemProxy INT, Port INT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS UpstreamProxy (Use INT, IP TEXT, Port INT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS PyPath (Path TEXT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS RbPath (Path TEXT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS PyStartCommands (Command TEXT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS RbStartCommands (Command TEXT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS InterceptRules (Get INT, Post INT, OtherMethods INT, Html INT, JS INT, CSS INT, Xml INT, JSON INT, OtherText INT, Img INT, OtherBinary INT, Code200 INT, Code2xx INT, Code301_2 INT, Code3xx INT, Code403 INT, Code4xx INT, Code500 INT, Code5xx INT, FileExt INT, FileExtPlus INT, FileExtMinus INT, PlusFileExts TEXT, MinusFileExts TEXT, Host INT, HostPlus INT, HostMinus INT, PlusHosts TEXT, MinusHosts TEXT, RequestKeyword INT, RequestKeywordPlus INT, RequestKeywordMinus INT, PlusRequestKeyword TEXT, MinusRequestKeyword TEXT, ResponseKeyword INT, ResponseKeywordPlus INT, ResponseKeywordMinus INT, PlusResponseKeyword TEXT, MinusResponseKeyword TEXT, RequestRulesOnResponse INT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS DisplayRules (Get INT, Post INT, OtherMethods INT, Html INT, JS INT, CSS INT, Xml INT, JSON INT, OtherText INT, Img INT, OtherBinary INT, Code200 INT, Code2xx INT, Code301_2 INT, Code3xx INT, Code403 INT, Code4xx INT, Code500 INT, Code5xx INT, FileExt INT, FileExtPlus INT, FileExtMinus INT, PlusFileExts TEXT, MinusFileExts TEXT, Host INT, HostPlus INT, HostMinus INT, PlusHosts TEXT, MinusHosts TEXT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS TextRequestTypes (Type TEXT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS TextResponseTypes (Type TEXT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS JSTaintConfig (SourceObjects TEXT, SinkObjects TEXT, ArgumentAssignedASourceMethods TEXT, ArgumentAssignedToSinkMethods TEXT, SourceReturningMethods TEXT, SinkReturningMethods TEXT, ArgumentReturningMethods TEXT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS ScannerSettings (MaxScannerThreads INT, MaxCrawlerThreads INT, UserAgent TEXT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS PassiveAnalysisSettings (Proxy INT, Shell INT, Test INT, Scan INT, Probe INT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS CharacterEscapingRules (RawCharacter TEXT, EncodedCharacter TEXT)";
+                        cmd.ExecuteNonQuery();
+                        cmd.CommandText = "CREATE TABLE IF NOT EXISTS ParametersBlackList (ParameterSection TEXT, ParameterName TEXT)";
+                        cmd.ExecuteNonQuery();
+                    }
+                    create.Commit();
                 }
-                create.Commit();
             }
-            log.Close();
         }
 
         internal static void CreateLogFilesOnStartUp()
@@ -4269,250 +4169,284 @@ namespace IronWASP
         internal static void MakeLogFileVersionCompliant()
         {
             #region Manual Testing Groups
-            SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile);
-            DB.Open();
-            try
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + IronProjectFile))
             {
-                SQLiteCommand Cmd = DB.CreateCommand();
-                Cmd.CommandText = "SELECT Name FROM TestGroups WHERE ID=1";
-                SQLiteDataReader result = Cmd.ExecuteReader();
-                result.Close();
-            }
-            catch
-            {
+                DB.Open();
                 try
                 {
-                    SQLiteCommand Cmd = DB.CreateCommand();
-                    Cmd.CommandText = "ALTER TABLE TestGroups ADD COLUMN Name TEXT";
-                    Cmd.ExecuteNonQuery();
-                    Cmd.CommandText = "ALTER TABLE TestGroups ADD COLUMN ID INT";
-                    Cmd.ExecuteNonQuery();
+                    using (SQLiteCommand Cmd = DB.CreateCommand())
+                    {
+                        Cmd.CommandText = "SELECT Name FROM TestGroups WHERE ID=1";
+                        using (SQLiteDataReader result = Cmd.ExecuteReader())
+                        {
+                            bool HasRows = result.HasRows;
+                        }
+                    }
                 }
-                catch { }
+                catch
+                {
+                    try
+                    {
+                        using (SQLiteCommand Cmd = DB.CreateCommand())
+                        {
+                            Cmd.CommandText = "ALTER TABLE TestGroups ADD COLUMN Name TEXT";
+                            Cmd.ExecuteNonQuery();
+                            Cmd.CommandText = "ALTER TABLE TestGroups ADD COLUMN ID INT";
+                            Cmd.ExecuteNonQuery();
+                        }
+                    }
+                    catch { }
+                }
             }
-            DB.Close();
             #endregion
 
             #region Scan Trace Overview
-            DB = new SQLiteConnection("data source=" + TraceLogFile);
-            DB.Open();
-            try
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile))
             {
-                SQLiteCommand cmd = DB.CreateCommand();
-                cmd.CommandText = "SELECT OverviewXml FROM ScanTrace WHERE ID=1";
-                SQLiteDataReader result = cmd.ExecuteReader();
-                result.Close();
-            }
-            catch 
-            {
+                DB.Open();
                 try
                 {
-                    SQLiteCommand Cmd = DB.CreateCommand();
-                    Cmd.CommandText = "ALTER TABLE ScanTrace ADD COLUMN OverviewXml TEXT";
-                    Cmd.ExecuteNonQuery();
+                    using (SQLiteCommand cmd = DB.CreateCommand())
+                    {
+                        cmd.CommandText = "SELECT OverviewXml FROM ScanTrace WHERE ID=1";
+                        using (SQLiteDataReader result = cmd.ExecuteReader())
+                        {
+                            bool HasRows = result.HasRows;
+                        }
+                    }
                 }
-                catch { }
+                catch
+                {
+                    try
+                    {
+                        using (SQLiteCommand Cmd = DB.CreateCommand())
+                        {
+                            Cmd.CommandText = "ALTER TABLE ScanTrace ADD COLUMN OverviewXml TEXT";
+                            Cmd.ExecuteNonQuery();
+                        }
+                    }
+                    catch { }
+                }
             }
-            DB.Close();
             #endregion
 
             #region SessionPlugin Trace Logging
-            DB = new SQLiteConnection("data source=" + TraceLogFile);
-            DB.Open();
-            try
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + TraceLogFile))
             {
-                SQLiteCommand cmd = DB.CreateCommand();
-                cmd.CommandText = "SELECT LogId FROM SessionPluginTrace WHERE ID=1";
-                SQLiteDataReader result = cmd.ExecuteReader();
-                result.Close();
-            }
-            catch
-            {
+                DB.Open();
                 try
                 {
-                    SQLiteCommand Cmd = DB.CreateCommand();
-                    Cmd.CommandText = "CREATE TABLE IF NOT EXISTS SessionPluginTrace (ID INT PRIMARY KEY, LogId INT, LogSource TEXT, PluginName TEXT, Action TEXT, Message TEXT)";
-                    Cmd.ExecuteNonQuery();
+                    using (SQLiteCommand cmd = DB.CreateCommand())
+                    {
+                        cmd.CommandText = "SELECT LogId FROM SessionPluginTrace WHERE ID=1";
+                        using (SQLiteDataReader result = cmd.ExecuteReader())
+                        {
+                            bool HasRows = result.HasRows;
+                        }
+                    }
                 }
-                catch { }
+                catch
+                {
+                    try
+                    {
+                        using (SQLiteCommand Cmd = DB.CreateCommand())
+                        {
+                            Cmd.CommandText = "CREATE TABLE IF NOT EXISTS SessionPluginTrace (ID INT PRIMARY KEY, LogId INT, LogSource TEXT, PluginName TEXT, Action TEXT, Message TEXT)";
+                            Cmd.ExecuteNonQuery();
+                        }
+                    }
+                    catch { }
+                }
             }
-            DB.Close();
             #endregion
 
             #region Finding
-            DB = new SQLiteConnection("data source=" + PluginResultsLogFile);
-            DB.Open();
-            try
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + PluginResultsLogFile))
             {
-                SQLiteCommand cmd = DB.CreateCommand();
-                cmd.CommandText = "SELECT Meta FROM Findings WHERE ID=1";
-                SQLiteDataReader result = cmd.ExecuteReader();
-                result.Close();
+                DB.Open();
+                try
+                {
+                    using (SQLiteCommand cmd = DB.CreateCommand())
+                    {
+                        cmd.CommandText = "SELECT Meta FROM Findings WHERE ID=1";
+                        using (SQLiteDataReader result = cmd.ExecuteReader())
+                        {
+                            bool HasRows = result.HasRows;
+                        }
+                    }
+                }
+                catch
+                {
+                    using (SQLiteTransaction Alter = DB.BeginTransaction())
+                    {
+                        try
+                        {
+                            using (SQLiteCommand Cmd = new SQLiteCommand(DB))
+                            {
+                                Cmd.CommandText = "ALTER TABLE Triggers ADD COLUMN TriggersEncoded INT";
+                                Cmd.ExecuteNonQuery();
+                                Cmd.CommandText = "ALTER TABLE Triggers ADD COLUMN RequestTriggerDesc TEXT";
+                                Cmd.ExecuteNonQuery();
+                                Cmd.CommandText = "ALTER TABLE Triggers ADD COLUMN ResponseTriggerDesc TEXT";
+                                Cmd.ExecuteNonQuery();
+
+                                Cmd.CommandText = "ALTER TABLE PluginResult ADD COLUMN Meta TEXT";
+                                Cmd.ExecuteNonQuery();
+                                Cmd.CommandText = "ALTER TABLE PluginResult ADD COLUMN ScanID INT";
+                                Cmd.ExecuteNonQuery();
+                                Cmd.CommandText = "ALTER TABLE PluginResult ADD COLUMN FinderName TEXT";
+                                Cmd.ExecuteNonQuery();
+                                Cmd.CommandText = "ALTER TABLE PluginResult ADD COLUMN FinderType TEXT";
+                                Cmd.ExecuteNonQuery();
+                                Cmd.CommandText = "UPDATE PluginResult SET FinderName = Plugin";
+                                Cmd.ExecuteNonQuery();
+                                Cmd.CommandText = "ALTER TABLE PluginResult RENAME TO Findings";
+                                Cmd.ExecuteNonQuery();
+                            }
+                            Alter.Commit();
+                        }
+                        catch { }
+                    }
+                }
             }
-            catch
+            #endregion
+
+            #region FindingBaseLine
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + PluginResultsLogFile))
             {
-                using (SQLiteTransaction Alter = DB.BeginTransaction())
+                DB.Open();
+                try
+                {
+                    using (SQLiteCommand cmd = DB.CreateCommand())
+                    {
+                        cmd.CommandText = "SELECT FindingID FROM BaseLine WHERE ID=1";
+                        using (SQLiteDataReader result = cmd.ExecuteReader())
+                        {
+                            bool HasRows = result.HasRows;
+                        }
+                    }
+                }
+                catch
                 {
                     try
                     {
                         using (SQLiteCommand Cmd = new SQLiteCommand(DB))
                         {
-                            Cmd.CommandText = "ALTER TABLE Triggers ADD COLUMN TriggersEncoded INT";
+                            Cmd.CommandText = "CREATE TABLE IF NOT EXISTS BaseLine (FindingID INT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, RoundTrip INT)";
                             Cmd.ExecuteNonQuery();
-                            Cmd.CommandText = "ALTER TABLE Triggers ADD COLUMN RequestTriggerDesc TEXT";
-                            Cmd.ExecuteNonQuery();
-                            Cmd.CommandText = "ALTER TABLE Triggers ADD COLUMN ResponseTriggerDesc TEXT";
-                            Cmd.ExecuteNonQuery();
-                        
-                            Cmd.CommandText = "ALTER TABLE PluginResult ADD COLUMN Meta TEXT";
-                            Cmd.ExecuteNonQuery();
-                            Cmd.CommandText = "ALTER TABLE PluginResult ADD COLUMN ScanID INT";
-                            Cmd.ExecuteNonQuery();
-                            Cmd.CommandText = "ALTER TABLE PluginResult ADD COLUMN FinderName TEXT";
-                            Cmd.ExecuteNonQuery();
-                            Cmd.CommandText = "ALTER TABLE PluginResult ADD COLUMN FinderType TEXT";
-                            Cmd.ExecuteNonQuery();
-                            Cmd.CommandText = "UPDATE PluginResult SET FinderName = Plugin";
-                            Cmd.ExecuteNonQuery();
-                            Cmd.CommandText = "ALTER TABLE PluginResult RENAME TO Findings";
-                            Cmd.ExecuteNonQuery();                        
                         }
-                        Alter.Commit();
                     }
                     catch { }
                 }
             }
-            DB.Close();
-            #endregion
-
-            #region FindingBaseLine
-            DB = new SQLiteConnection("data source=" + PluginResultsLogFile);
-            DB.Open();
-            try
-            {
-                SQLiteCommand cmd = DB.CreateCommand();
-                cmd.CommandText = "SELECT FindingID FROM BaseLine WHERE ID=1";
-                SQLiteDataReader result = cmd.ExecuteReader();
-                result.Close();
-            }
-            catch
-            {
-                try
-                {
-                    SQLiteCommand Cmd = new SQLiteCommand(DB);
-                    Cmd.CommandText = "CREATE TABLE IF NOT EXISTS BaseLine (FindingID INT, RequestHeaders TEXT, RequestBody TEXT, BinaryRequest INT, ResponseHeaders TEXT, ResponseBody TEXT, BinaryResponse INT, RoundTrip INT)";
-                    Cmd.ExecuteNonQuery();                        
-                }
-                catch { }
-            }
-            DB.Close();
             #endregion
 
             #region RoundTrip
-            DB = new SQLiteConnection("data source=" + ProxyLogFile);
+            using (SQLiteConnection DB = new SQLiteConnection("data source=" + ProxyLogFile))
+            {
             DB.Open();
             try
             {
-                SQLiteCommand cmd = DB.CreateCommand();
-                cmd.CommandText = "SELECT RoundTrip FROM ProxyLog WHERE ID=1";
-                SQLiteDataReader result = cmd.ExecuteReader();
-                result.Close();
-                DB.Close();
+                using (SQLiteCommand cmd = DB.CreateCommand())
+                {
+                    cmd.CommandText = "SELECT RoundTrip FROM ProxyLog WHERE ID=1";
+                    using (SQLiteDataReader result = cmd.ExecuteReader())
+                    {
+                        bool HasRows = result.HasRows;
+                    }
+                }
             }
             catch
             {
                 try
                 {
-                    SQLiteCommand Cmd = DB.CreateCommand();
-                    Cmd.CommandText = "ALTER TABLE ProxyLog ADD COLUMN RoundTrip INT";
-                    Cmd.ExecuteNonQuery();
+                    using (SQLiteCommand Cmd = DB.CreateCommand())
+                    {
+                        Cmd.CommandText = "ALTER TABLE ProxyLog ADD COLUMN RoundTrip INT";
+                        Cmd.ExecuteNonQuery();
+                    }
                 }
                 catch { }
-                finally
-                {
-                    DB.Close();
-                }
                 try
                 {
-                    DB = new SQLiteConnection("data source=" + TestLogFile);
-                    DB.Open();
-                    SQLiteCommand Cmd = DB.CreateCommand();
-                    Cmd.CommandText = "ALTER TABLE TestLog ADD COLUMN RoundTrip INT";
-                    Cmd.ExecuteNonQuery();
+                    using (SQLiteConnection NDB = new SQLiteConnection("data source=" + TestLogFile))
+                    {
+                        NDB.Open();
+                        SQLiteCommand Cmd = NDB.CreateCommand();
+                        Cmd.CommandText = "ALTER TABLE TestLog ADD COLUMN RoundTrip INT";
+                        Cmd.ExecuteNonQuery();
+                    }
                 }
                 catch { }
-                finally
-                {
-                    DB.Close();
-                }
                 try
                 {
-                    DB = new SQLiteConnection("data source=" + ShellLogFile);
-                    DB.Open();
-                    SQLiteCommand Cmd = DB.CreateCommand();
-                    Cmd.CommandText = "ALTER TABLE ShellLog ADD COLUMN RoundTrip INT";
-                    Cmd.ExecuteNonQuery();
+                    using (SQLiteConnection NDB = new SQLiteConnection("data source=" + ShellLogFile))
+                    {
+                        NDB.Open();
+                        using (SQLiteCommand Cmd = NDB.CreateCommand())
+                        {
+                            Cmd.CommandText = "ALTER TABLE ShellLog ADD COLUMN RoundTrip INT";
+                            Cmd.ExecuteNonQuery();
+                        }
+                    }
                 }
                 catch { }
-                finally
-                {
-                    DB.Close();
-                }
                 try
                 {
-                    DB = new SQLiteConnection("data source=" + ProbeLogFile);
-                    DB.Open();
-                    SQLiteCommand Cmd = DB.CreateCommand();
-                    Cmd.CommandText = "ALTER TABLE ProbeLog ADD COLUMN RoundTrip INT";
-                    Cmd.ExecuteNonQuery();
+                    using (SQLiteConnection NDB = new SQLiteConnection("data source=" + ProbeLogFile))
+                    {
+                        NDB.Open();
+                        using (SQLiteCommand Cmd = NDB.CreateCommand())
+                        {
+                            Cmd.CommandText = "ALTER TABLE ProbeLog ADD COLUMN RoundTrip INT";
+                            Cmd.ExecuteNonQuery();
+                        }
+                    }
                 }
                 catch { }
-                finally
-                {
-                    DB.Close();
-                }
                 try
                 {
-                    DB = new SQLiteConnection("data source=" + ScanLogFile);
-                    DB.Open();
-                    SQLiteCommand Cmd = DB.CreateCommand();
-                    Cmd.CommandText = "ALTER TABLE ScanLog ADD COLUMN RoundTrip INT";
-                    Cmd.ExecuteNonQuery();
+                    using (SQLiteConnection NDB = new SQLiteConnection("data source=" + ScanLogFile))
+                    {
+                        NDB.Open();
+                        using (SQLiteCommand Cmd = NDB.CreateCommand())
+                        {
+                            Cmd.CommandText = "ALTER TABLE ScanLog ADD COLUMN RoundTrip INT";
+                            Cmd.ExecuteNonQuery();
+                        }
+                    }
                 }
                 catch { }
-                finally
-                {
-                    DB.Close();
-                }
                 try
                 {
-                    DB = new SQLiteConnection("data source=" + PluginResultsLogFile);
-                    DB.Open();
-                    SQLiteCommand Cmd = DB.CreateCommand();
-                    Cmd.CommandText = "ALTER TABLE Triggers ADD COLUMN RoundTrip INT";
-                    Cmd.ExecuteNonQuery();
+                    using (SQLiteConnection NDB = new SQLiteConnection("data source=" + PluginResultsLogFile))
+                    {
+                        NDB.Open();
+                        using (SQLiteCommand Cmd = NDB.CreateCommand())
+                        {
+                            Cmd.CommandText = "ALTER TABLE Triggers ADD COLUMN RoundTrip INT";
+                            Cmd.ExecuteNonQuery();
+                        }
+                    }
                 }
                 catch { }
-                finally
-                {
-                    DB.Close();
-                }
                 foreach (string Source in Config.GetOtherSourceList())
                 {
                     try
                     {
-                        DB = new SQLiteConnection("data source=" + GetOtherSourceLogFileName(Source));
-                        DB.Open();
-                        SQLiteCommand Cmd = DB.CreateCommand();
-                        Cmd.CommandText = "ALTER TABLE Log ADD COLUMN RoundTrip INT";
-                        Cmd.ExecuteNonQuery();
+                        using (SQLiteConnection NDB = new SQLiteConnection("data source=" + GetOtherSourceLogFileName(Source)))
+                        {
+                            NDB.Open();
+                            using (SQLiteCommand Cmd = NDB.CreateCommand())
+                            {
+                                Cmd.CommandText = "ALTER TABLE Log ADD COLUMN RoundTrip INT";
+                                Cmd.ExecuteNonQuery();
+                            }
+                        }
                     }
                     catch { }
-                    finally
-                    {
-                        DB.Close();
-                    }
-                }
+               }
+            }
             }
             
             #endregion
@@ -4600,6 +4534,15 @@ namespace IronWASP
             PluginResultsLogFile = LogPath + "\\Results.ironlog";
             ExceptionsLogFile = LogPath + "\\Exceptions.ironlog";
             TraceLogFile = LogPath + "\\Trace.ironlog";
+            if (CommandsLogFile != null)
+            {
+                try
+                {
+                    CommandsLogFile.Close();
+                }
+                catch { }
+            }
+            CommandsLogFile = new StreamWriter(LogPath + "\\CommandLog.txt", true);
         }
 
         internal static int AsInt(bool Input)

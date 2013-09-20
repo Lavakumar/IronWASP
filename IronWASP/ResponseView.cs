@@ -221,10 +221,10 @@ namespace IronWASP
             }
         }
 
-        public void SetResponse(Response Res)
-        {
-            this.SetResponse(Res, null);
-        }
+        //public void SetResponse(Response Res)
+        //{
+        //    this.SetResponse(Res, null);
+        //}
         
         delegate void SetResponse_d(Response Res, Request Req);
         public void SetResponse(Response Res, Request Req)
@@ -710,6 +710,9 @@ namespace IronWASP
             {
                 BaseTabs.TabPages.RemoveByKey("ReflectionsTab");
             }
+            ToolTip Tips = new ToolTip();
+            Tips.SetToolTip(RenderLbl, "Render using IE's rendering engine");
+            Tips.SetToolTip(ScreenshotBtn, "Screenshot mode");
         }
 
         void CheckAndShowReflection()
@@ -769,8 +772,11 @@ namespace IronWASP
         {
             if (this.DisplayedResponse != null)
             {
-                //Tools.Run(Config.RootDir + "/RenderHtml.exe", Tools.Base64Encode(this.DisplayedResponse.BodyString));
                 this.DisplayedResponse.Render();
+            }
+            else
+            {
+                MessageBox.Show("No response available to render");
             }
         }
 
@@ -814,6 +820,27 @@ namespace IronWASP
             {
                 e.Cancel = true;
                 return;
+            }
+        }
+
+        private void ScreenshotBtn_Click(object sender, EventArgs e)
+        {
+            if (this.DisplayedResponse != null)
+            {
+                if (this.RequestOfDisplayedResponse != null)
+                {
+                    ScreenshotForm SF = new ScreenshotForm();
+                    SF.SetRequestResponse(this.RequestOfDisplayedResponse, this.DisplayedResponse);
+                    SF.Show();
+                }
+                else
+                {
+                    MessageBox.Show("Request information is missing, cannot open in Screenshot mode");
+                }
+            }
+            else
+            {
+                MessageBox.Show("No Response available for taking screenshot");
             }
         }
     }

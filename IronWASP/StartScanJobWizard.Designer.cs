@@ -49,9 +49,9 @@ namespace IronWASP
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StartScanJobWizard));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
             this.BaseTabs = new System.Windows.Forms.TabControl();
             this.RequestTab = new System.Windows.Forms.TabPage();
             this.Step0StatusTB = new System.Windows.Forms.TextBox();
@@ -1772,8 +1772,8 @@ namespace IronWASP
             // 
             // RawCharacterColumn
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.RawCharacterColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.RawCharacterColumn.DefaultCellStyle = dataGridViewCellStyle9;
             this.RawCharacterColumn.FillWeight = 70F;
             this.RawCharacterColumn.HeaderText = "Raw Character";
             this.RawCharacterColumn.Name = "RawCharacterColumn";
@@ -1784,8 +1784,8 @@ namespace IronWASP
             // ArrowColumn
             // 
             this.ArrowColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.ArrowColumn.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.ArrowColumn.DefaultCellStyle = dataGridViewCellStyle10;
             this.ArrowColumn.HeaderText = "";
             this.ArrowColumn.MinimumWidth = 30;
             this.ArrowColumn.Name = "ArrowColumn";
@@ -1793,8 +1793,8 @@ namespace IronWASP
             // 
             // EncodedCharacterColumn
             // 
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.EncodedCharacterColumn.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.EncodedCharacterColumn.DefaultCellStyle = dataGridViewCellStyle11;
             this.EncodedCharacterColumn.FillWeight = 130F;
             this.EncodedCharacterColumn.HeaderText = "Encoded Character";
             this.EncodedCharacterColumn.Name = "EncodedCharacterColumn";
@@ -2183,7 +2183,7 @@ namespace IronWASP
             // StepFourPreviousBtn
             // 
             this.StepFourPreviousBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.StepFourPreviousBtn.Location = new System.Drawing.Point(3, 496);
+            this.StepFourPreviousBtn.Location = new System.Drawing.Point(11, 497);
             this.StepFourPreviousBtn.Name = "StepFourPreviousBtn";
             this.StepFourPreviousBtn.Size = new System.Drawing.Size(105, 23);
             this.StepFourPreviousBtn.TabIndex = 19;
@@ -2207,13 +2207,13 @@ namespace IronWASP
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(884, 561);
-            this.ControlBox = false;
             this.Controls.Add(this.BaseTabs);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(900, 600);
             this.MinimumSize = new System.Drawing.Size(900, 600);
             this.Name = "StartScanJobWizard";
             this.Text = "Scan Job Creation Wizard";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.StartScanJobWizard_FormClosing);
             this.Load += new System.EventHandler(this.StartScanJobWizard_Load);
             this.BaseTabs.ResumeLayout(false);
             this.RequestTab.ResumeLayout(false);

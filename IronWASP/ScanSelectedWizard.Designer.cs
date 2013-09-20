@@ -276,7 +276,7 @@ namespace IronWASP
             this.One.Controls.Add(this.InjectUrlPathPartsCB);
             this.One.Location = new System.Drawing.Point(4, 25);
             this.One.Name = "One";
-            this.One.Size = new System.Drawing.Size(826, 333);
+            this.One.Size = new System.Drawing.Size(826, 332);
             this.One.TabIndex = 2;
             this.One.Text = "            Scan Settings            ";
             this.One.UseVisualStyleBackColor = true;
@@ -473,7 +473,7 @@ namespace IronWASP
             this.Two.Controls.Add(this.groupBox9);
             this.Two.Location = new System.Drawing.Point(4, 25);
             this.Two.Name = "Two";
-            this.Two.Size = new System.Drawing.Size(826, 333);
+            this.Two.Size = new System.Drawing.Size(826, 332);
             this.Two.TabIndex = 5;
             this.Two.Text = "            Scan Filter            ";
             this.Two.UseVisualStyleBackColor = true;
@@ -1034,7 +1034,7 @@ namespace IronWASP
             this.Four.Controls.Add(this.FinalBtn);
             this.Four.Location = new System.Drawing.Point(4, 25);
             this.Four.Name = "Four";
-            this.Four.Size = new System.Drawing.Size(826, 333);
+            this.Four.Size = new System.Drawing.Size(826, 332);
             this.Four.TabIndex = 3;
             this.Four.Text = "            Done            ";
             this.Four.UseVisualStyleBackColor = true;
@@ -1149,7 +1149,6 @@ namespace IronWASP
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(834, 361);
-            this.ControlBox = false;
             this.Controls.Add(this.BaseTabs);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(850, 400);
@@ -1157,6 +1156,7 @@ namespace IronWASP
             this.Name = "ScanSelectedWizard";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ScanSelectedWizard";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScanSelectedWizard_FormClosing);
             this.Load += new System.EventHandler(this.ScanSelectedWizard_Load);
             this.BaseTabs.ResumeLayout(false);
             this.Zero.ResumeLayout(false);

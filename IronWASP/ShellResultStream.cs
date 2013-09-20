@@ -34,7 +34,13 @@ namespace IronWASP
             }
             if (buffer.Length > 0)
             {
-                IronUI.UpdateInteractiveShellOut(Encoding.UTF8.GetString(Output));
+                string ResultString = Encoding.UTF8.GetString(Output);
+                IronUI.UpdateInteractiveShellOut(ResultString);
+                try
+                {
+                    IronDB.CommandsLogFile.WriteLine(ResultString);
+                }
+                catch { }
             }
         }
     }

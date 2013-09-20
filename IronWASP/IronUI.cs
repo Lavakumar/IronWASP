@@ -55,7 +55,9 @@ namespace IronWASP
         internal static ScanBranchWizard SBF;
         internal static StartScanWizard SSW;
         internal static LoadForm LF;
+        internal static LoadInitialConfigurationForm LICF;
         internal static PluginEditor PE;
+        internal static ReportGenerationWizard RGW;
         internal static ModUiDesigner UD;
         internal static DiffWindow DW;
         internal static EncodeDecodeWindow EDW;
@@ -1397,21 +1399,21 @@ namespace IronWASP
             }
         }
 
-        delegate void FillAndShowJavaScriptTester_d(string Input);
-        internal static void FillAndShowJavaScriptTester(string Input)
-        {
-            if (UI.JSTaintTraceInRTB.InvokeRequired)
-            {
-                FillAndShowJavaScriptTester_d FASJT_d = new FillAndShowJavaScriptTester_d(FillAndShowJavaScriptTester);
-                UI.Invoke(FASJT_d, new object[] { Input});
-            }
-            else
-            {
-                UI.JSTaintTraceInRTB.Text = Input;
-                if (!UI.main_tab.SelectedTab.Name.Equals("mt_js")) UI.main_tab.SelectTab("mt_js");
-                if (!UI.JSTaintTabs.SelectedTab.Name.Equals("JSTaintInputTab")) UI.JSTaintTabs.SelectTab("JSTaintInputTab");
-            }
-        }
+        //delegate void FillAndShowJavaScriptTester_d(string Input);
+        //internal static void FillAndShowJavaScriptTester(string Input)
+        //{
+        //    if (UI.JSTaintTraceInRTB.InvokeRequired)
+        //    {
+        //        FillAndShowJavaScriptTester_d FASJT_d = new FillAndShowJavaScriptTester_d(FillAndShowJavaScriptTester);
+        //        UI.Invoke(FASJT_d, new object[] { Input});
+        //    }
+        //    else
+        //    {
+        //        UI.JSTaintTraceInRTB.Text = Input;
+        //        if (!UI.main_tab.SelectedTab.Name.Equals("mt_js")) UI.main_tab.SelectTab("mt_js");
+        //        if (!UI.JSTaintTabs.SelectedTab.Name.Equals("JSTaintInputTab")) UI.JSTaintTabs.SelectTab("JSTaintInputTab");
+        //    }
+        //}
 
         public delegate void UpdatePluginResultTree_d(List<Finding> PRs);
         public static void UpdatePluginResultTree(List<Finding> PRs)
@@ -3699,7 +3701,7 @@ namespace IronWASP
         delegate void UpdateProxyStatusInConfigPanel_d(bool Started);
         internal static void UpdateProxyStatusInConfigPanel(bool Started)
         {
-            if (UI.ConfigProxyRunBtn.InvokeRequired)
+            if (UI.ConfigSetAsSystemProxyCB.InvokeRequired)
             {
                 UpdateProxyStatusInConfigPanel_d UPSICP_d = new UpdateProxyStatusInConfigPanel_d(UpdateProxyStatusInConfigPanel);
                 UI.Invoke(UPSICP_d, new object[] { Started });
@@ -3708,17 +3710,11 @@ namespace IronWASP
             {
                 if (Started)
                 {
-                    IronUI.UI.ConfigProxyListenPortTB.Enabled = false;
-                    IronUI.UI.ConfigLoopBackOnlyCB.Enabled = false;
                     IronUI.UI.ConfigSetAsSystemProxyCB.Enabled = true;
-                    IronUI.UI.ConfigProxyRunBtn.Text = "Stop Proxy";
                 }
                 else
                 {
-                    IronUI.UI.ConfigProxyListenPortTB.Enabled = true;
-                    IronUI.UI.ConfigLoopBackOnlyCB.Enabled = true;
                     IronUI.UI.ConfigSetAsSystemProxyCB.Enabled = false;
-                    IronUI.UI.ConfigProxyRunBtn.Text = "Start Proxy";
                 }
             }
         }
@@ -3726,7 +3722,7 @@ namespace IronWASP
         delegate void ShowProxyStoppedError_d(string Error);
         internal static void ShowProxyStoppedError(string Error)
         {
-            if (UI.ConfigProxyRunBtn.InvokeRequired)
+            if (UI.ConfigSetAsSystemProxyCB.InvokeRequired)
             {
                 ShowProxyStoppedError_d SPSE_d = new ShowProxyStoppedError_d(ShowProxyStoppedError);
                 UI.Invoke(SPSE_d, new object[] { Error });
@@ -3765,20 +3761,49 @@ namespace IronWASP
             }
         }
 
+        delegate void SetProxyPortLabel_d();
+        internal static void SetProxyPortLabel()
+        {
+            if (UI.ProxyPortLbl.InvokeRequired)
+            {
+                SetProxyPortLabel_d CALL_d = new SetProxyPortLabel_d(SetProxyPortLabel);
+                UI.Invoke(CALL_d, new object[] { });
+            }
+            else
+            {
+                UI.ProxyPortLbl.Text = IronProxy.Port.ToString();
+            }
+        }
+
+        delegate void SetProxyLoopbackLabel_d();
+        internal static void SetProxyLoopbackLabel()
+        {
+            if (UI.ProxyLoopbackLbl.InvokeRequired)
+            {
+                SetProxyLoopbackLabel_d CALL_d = new SetProxyLoopbackLabel_d(SetProxyLoopbackLabel);
+                UI.Invoke(CALL_d, new object[] { });
+            }
+            else
+            {
+                if (IronProxy.LoopBackOnly)
+                {
+                    UI.ProxyLoopbackLbl.Text = "No";
+                }
+                else
+                {
+                    UI.ProxyLoopbackLbl.Text = "Yes";
+                }
+            }
+        }
+
         internal static void UpdateProxySettingFromConfig()
         {
-            UI.ConfigProxyListenPortTB.Text = IronProxy.Port.ToString();
-            UI.ConfigLoopBackOnlyCB.Checked = IronProxy.LoopBackOnly;
             UI.ConfigSetAsSystemProxyCB.Checked = IronProxy.SystemProxy;
-
         }
 
         internal static void UpdateUpstreamProxySettingFromConfig()
         {
             bool UseUpStream = IronProxy.UseUpstreamProxy;
-            UI.ConfigUpstreamProxyIPTB.Text = IronProxy.UpstreamProxyIP;
-            UI.ConfigUpstreamProxyPortTB.Text = IronProxy.UpstreamProxyPort.ToString();
-            UI.ConfigUseUpstreamProxyCB.Checked = UseUpStream;
             IronProxy.UseUpstreamProxy = UseUpStream;
         }
 
@@ -5323,10 +5348,10 @@ namespace IronWASP
             if (SelectedTrigger.Request != null)
             {
                 DisplayPluginResultsRequest(SelectedTrigger.Request);
-            }
-            if (SelectedTrigger.Response != null)
-            {
-                DisplayPluginResultsResponse(SelectedTrigger.Response);
+                if (SelectedTrigger.Response != null)
+                {
+                    DisplayPluginResultsResponse(SelectedTrigger.Response, SelectedTrigger.Request);
+                }
             }
             
             if (SelectedTrigger.Request != null || SelectedTrigger.Response != null)
@@ -5356,11 +5381,11 @@ namespace IronWASP
                 UI.ResultsRequestView.SetRequest(Req);
             }
         }
-        internal static void DisplayPluginResultsResponse(Response Res)
+        internal static void DisplayPluginResultsResponse(Response Res, Request Req)
         {
             if (Res != null)
             {
-                UI.ResultsResponseView.SetResponse(Res);
+                UI.ResultsResponseView.SetResponse(Res, Req);
             }
         }
         internal static void ResetPluginResultsFields()
@@ -5642,7 +5667,7 @@ namespace IronWASP
                 if (Progress) IronUI.SBF.ScanBranchProgressBar.PerformStep();
                 IronUI.SBF.ScanBranchProgressLbl.Text = Message;
                 if (ScanDone == TotalScans) IronUI.SBF.FinalBtn.Text = "Close";
-                if (CloseWindow) IronUI.SBF.Close();
+                if (CloseWindow) IronUI.SBF.CloseWindow();
             }
         }
 
@@ -5704,24 +5729,20 @@ namespace IronWASP
         //    }
         //}
 
-        delegate void ShowLoadMessage_d(string Message);
-        internal static void ShowLoadMessage(string Message)
+
+        internal static bool IsReportGenerationWizardOpen()
         {
-            if (LF.InvokeRequired)
+            if (IronUI.RGW == null)
             {
-                ShowLoadMessage_d SLM_d = new ShowLoadMessage_d(ShowLoadMessage);
-                LF.Invoke(SLM_d, new object[] { Message });
+                return false;
+            }
+            else if (IronUI.RGW.IsDisposed)
+            {
+                return false;
             }
             else
             {
-                if (Message.Equals("0"))
-                {
-                    LF.Close();
-                }
-                else
-                {
-                    LF.StatusTB.Text = Message;
-                }
+                return true;
             }
         }
 
@@ -5829,40 +5850,6 @@ namespace IronWASP
             else
             {
                 return true;
-            }
-        }
-
-        static void EnableAllEncodeDecodeCommandButtons()
-        {
-            IronUI.EDW.UrlEncodeBtn.Enabled = true;
-            IronUI.EDW.HtmlEncodeBtn.Enabled = true;
-            IronUI.EDW.HexEncodeBtn.Enabled = true;
-            IronUI.EDW.Base64EncodeBtn.Enabled = true;
-            IronUI.EDW.ToHexBtn.Enabled = true;
-            IronUI.EDW.UrlDecodeBtn.Enabled = true;
-            IronUI.EDW.HtmlDecodeBtn.Enabled = true;
-            IronUI.EDW.HexDecodeBtn.Enabled = true;
-            IronUI.EDW.Base64DecodeBtn.Enabled = true;
-            IronUI.EDW.MD5Btn.Enabled = true;
-            IronUI.EDW.SHA1Btn.Enabled = true;
-            IronUI.EDW.SHA256Btn.Enabled = true;
-            IronUI.EDW.SHA384Btn.Enabled = true;
-            IronUI.EDW.SHA512Btn.Enabled = true;
-        }
-
-        delegate void ShowEncodeDecodeResult_d(string Result, string Message);
-        internal static void ShowEncodeDecodeResult(string Result, string Message)
-        {
-            if (EDW.InvokeRequired)
-            {
-                ShowEncodeDecodeResult_d SEDR_d = new ShowEncodeDecodeResult_d(ShowEncodeDecodeResult);
-                EDW.Invoke(SEDR_d, new object[] { Result, Message });
-            }
-            else
-            {
-                IronUI.EDW.OutputTB.Text = Result;
-                IronUI.EDW.StatusTB.Text = Message;
-                EnableAllEncodeDecodeCommandButtons();
             }
         }
 
@@ -6259,350 +6246,350 @@ namespace IronWASP
             }
         }
 
-        delegate void SetJSTaintTraceCode_d(string Code, bool RichText);
-        internal static void SetJSTaintTraceCode(string Code, bool RichText)
-        {
-            if (UI.JSTaintTraceInRTB.InvokeRequired)
-            {
-                SetJSTaintTraceCode_d SJTTC_d = new SetJSTaintTraceCode_d(SetJSTaintTraceCode);
-                UI.Invoke(SJTTC_d, new object[] { Code, RichText });
-            }
-            else
-            {
-                if (RichText)
-                {
-                    try
-                    {
-                        UI.JSTaintTraceInRTB.Rtf = Code;
-                    }
-                    catch { UI.JSTaintTraceInRTB.Text = Code; }
-                }
-                else
-                {
-                    UI.JSTaintTraceInRTB.Text = Code;
-                }
-                UI.JSTaintResultGrid.Rows.Clear();
-            }
-        }
+        //delegate void SetJSTaintTraceCode_d(string Code, bool RichText);
+        //internal static void SetJSTaintTraceCode(string Code, bool RichText)
+        //{
+        //    if (UI.JSTaintTraceInRTB.InvokeRequired)
+        //    {
+        //        SetJSTaintTraceCode_d SJTTC_d = new SetJSTaintTraceCode_d(SetJSTaintTraceCode);
+        //        UI.Invoke(SJTTC_d, new object[] { Code, RichText });
+        //    }
+        //    else
+        //    {
+        //        if (RichText)
+        //        {
+        //            try
+        //            {
+        //                UI.JSTaintTraceInRTB.Rtf = Code;
+        //            }
+        //            catch { UI.JSTaintTraceInRTB.Text = Code; }
+        //        }
+        //        else
+        //        {
+        //            UI.JSTaintTraceInRTB.Text = Code;
+        //        }
+        //        UI.JSTaintResultGrid.Rows.Clear();
+        //    }
+        //}
 
-        delegate void SetJSTaintTraceResult_d();
-        internal static void SetJSTaintTraceResult()
-        {
-            if (UI.JSTaintResultGrid.InvokeRequired)
-            {
-                SetJSTaintTraceResult_d SJTTR_d = new SetJSTaintTraceResult_d(SetJSTaintTraceResult);
-                UI.Invoke(SJTTR_d, new object[] { });
-            }
-            else
-            {
-                List<string> CodeLines = IronJint.UIIJ.Lines;
-                List<int> Sources = IronJint.UIIJ.SourceLines;
-                List<int> Sinks = IronJint.UIIJ.SinkLines;
-                List<int> SourceToSinks = IronJint.UIIJ.SourceToSinkLines;
+        //delegate void SetJSTaintTraceResult_d();
+        //internal static void SetJSTaintTraceResult()
+        //{
+        //    if (UI.JSTaintResultGrid.InvokeRequired)
+        //    {
+        //        SetJSTaintTraceResult_d SJTTR_d = new SetJSTaintTraceResult_d(SetJSTaintTraceResult);
+        //        UI.Invoke(SJTTR_d, new object[] { });
+        //    }
+        //    else
+        //    {
+        //        List<string> CodeLines = IronJint.UIIJ.Lines;
+        //        List<int> Sources = IronJint.UIIJ.SourceLines;
+        //        List<int> Sinks = IronJint.UIIJ.SinkLines;
+        //        List<int> SourceToSinks = IronJint.UIIJ.SourceToSinkLines;
                 
-                bool ShowCleanLines = UI.JSTaintShowCleanCB.Checked;
-                bool ShowSourceLines = UI.JSTaintShowSourceCB.Checked;
-                bool ShowSinkLines = UI.JSTaintShowSinkCB.Checked;
-                bool ShowSourceToSinkLines = UI.JSTaintShowSourceToSinkCB.Checked;
+        //        bool ShowCleanLines = UI.JSTaintShowCleanCB.Checked;
+        //        bool ShowSourceLines = UI.JSTaintShowSourceCB.Checked;
+        //        bool ShowSinkLines = UI.JSTaintShowSinkCB.Checked;
+        //        bool ShowSourceToSinkLines = UI.JSTaintShowSourceToSinkCB.Checked;
 
-                bool LineAdded = false;
-                bool SourceLine = false;
-                bool SinkLine = false;
-                bool SourceToSinkLine = false;
-                int RowId = 0;
+        //        bool LineAdded = false;
+        //        bool SourceLine = false;
+        //        bool SinkLine = false;
+        //        bool SourceToSinkLine = false;
+        //        int RowId = 0;
 
-                UI.JSTaintResultGrid.Rows.Clear();
-                IronJint.LineNoToGridRowNoMapping.Clear();
+        //        UI.JSTaintResultGrid.Rows.Clear();
+        //        IronJint.LineNoToGridRowNoMapping.Clear();
 
-                for (int i = 0; i <CodeLines.Count; i++)
-                {
-                    SourceLine = Sources.Contains(i + 1);
-                    SinkLine = Sinks.Contains(i + 1);
-                    SourceToSinkLine = SourceToSinks.Contains(i + 1);
-                    LineAdded = false;
+        //        for (int i = 0; i <CodeLines.Count; i++)
+        //        {
+        //            SourceLine = Sources.Contains(i + 1);
+        //            SinkLine = Sinks.Contains(i + 1);
+        //            SourceToSinkLine = SourceToSinks.Contains(i + 1);
+        //            LineAdded = false;
 
-                    if ((ShowSourceLines || ShowSinkLines || ShowSourceToSinkLines) && SourceToSinkLine)
-                    {
-                        if (!LineAdded)
-                        {
-                            RowId = UI.JSTaintResultGrid.Rows.Add(new object[] { i + 1, CodeLines[i] });
-                            IronJint.LineNoToGridRowNoMapping[i + 1] = RowId;
-                            LineAdded = true;
-                        }
-                        UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.BackColor = Color.Red;
-                        UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.SelectionBackColor = Color.Red;
-                        UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.SelectionForeColor = Color.White;
-                    }
-                    else if (SourceLine && (ShowSourceLines || ShowSinkLines))
-                    {
-                        if (!LineAdded)
-                        {
-                            RowId = UI.JSTaintResultGrid.Rows.Add(new object[] { i + 1, CodeLines[i] });
-                            IronJint.LineNoToGridRowNoMapping[i + 1] = RowId;
-                            LineAdded = true;
-                        }
-                        if (SinkLine)
-                        {
-                            UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.BackColor = Color.IndianRed;
-                            UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.SelectionBackColor = Color.IndianRed;
-                            UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.SelectionForeColor = Color.White;
-                        }
-                        else if (ShowSourceLines)
-                        {
-                            UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.BackColor = Color.Orange;
-                            UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.SelectionBackColor = Color.Orange;
-                            UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.SelectionForeColor = Color.White;
-                        }
-                    }
-                    else if (SinkLine && ShowSinkLines)
-                    {
-                        if (!LineAdded)
-                        {
-                            RowId = UI.JSTaintResultGrid.Rows.Add(new object[] { i + 1, CodeLines[i] });
-                            IronJint.LineNoToGridRowNoMapping[i + 1] = RowId;
-                            LineAdded = true;
-                        }
-                        UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.BackColor = Color.HotPink;
-                        UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.SelectionBackColor = Color.HotPink;
-                        UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.SelectionForeColor = Color.White;
-                    }
-                    else if (ShowCleanLines && !(SourceLine || SinkLine || SourceToSinkLine))
-                    {
-                        if (!LineAdded)
-                        {
-                            RowId = UI.JSTaintResultGrid.Rows.Add(new object[] { i + 1, CodeLines[i] });
-                            UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.BackColor = Color.White;
-                            IronJint.LineNoToGridRowNoMapping[i + 1] = RowId;
-                            LineAdded = true;
-                        }                        
-                    }
-                }
-                UI.JSTaintTabs.SelectTab("JSTaintResultTab");
-            }
-        }
+        //            if ((ShowSourceLines || ShowSinkLines || ShowSourceToSinkLines) && SourceToSinkLine)
+        //            {
+        //                if (!LineAdded)
+        //                {
+        //                    RowId = UI.JSTaintResultGrid.Rows.Add(new object[] { i + 1, CodeLines[i] });
+        //                    IronJint.LineNoToGridRowNoMapping[i + 1] = RowId;
+        //                    LineAdded = true;
+        //                }
+        //                UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.BackColor = Color.Red;
+        //                UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.SelectionBackColor = Color.Red;
+        //                UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.SelectionForeColor = Color.White;
+        //            }
+        //            else if (SourceLine && (ShowSourceLines || ShowSinkLines))
+        //            {
+        //                if (!LineAdded)
+        //                {
+        //                    RowId = UI.JSTaintResultGrid.Rows.Add(new object[] { i + 1, CodeLines[i] });
+        //                    IronJint.LineNoToGridRowNoMapping[i + 1] = RowId;
+        //                    LineAdded = true;
+        //                }
+        //                if (SinkLine)
+        //                {
+        //                    UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.BackColor = Color.IndianRed;
+        //                    UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.SelectionBackColor = Color.IndianRed;
+        //                    UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.SelectionForeColor = Color.White;
+        //                }
+        //                else if (ShowSourceLines)
+        //                {
+        //                    UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.BackColor = Color.Orange;
+        //                    UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.SelectionBackColor = Color.Orange;
+        //                    UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.SelectionForeColor = Color.White;
+        //                }
+        //            }
+        //            else if (SinkLine && ShowSinkLines)
+        //            {
+        //                if (!LineAdded)
+        //                {
+        //                    RowId = UI.JSTaintResultGrid.Rows.Add(new object[] { i + 1, CodeLines[i] });
+        //                    IronJint.LineNoToGridRowNoMapping[i + 1] = RowId;
+        //                    LineAdded = true;
+        //                }
+        //                UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.BackColor = Color.HotPink;
+        //                UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.SelectionBackColor = Color.HotPink;
+        //                UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.SelectionForeColor = Color.White;
+        //            }
+        //            else if (ShowCleanLines && !(SourceLine || SinkLine || SourceToSinkLine))
+        //            {
+        //                if (!LineAdded)
+        //                {
+        //                    RowId = UI.JSTaintResultGrid.Rows.Add(new object[] { i + 1, CodeLines[i] });
+        //                    UI.JSTaintResultGrid.Rows[RowId].Cells[1].Style.BackColor = Color.White;
+        //                    IronJint.LineNoToGridRowNoMapping[i + 1] = RowId;
+        //                    LineAdded = true;
+        //                }                        
+        //            }
+        //        }
+        //        UI.JSTaintTabs.SelectTab("JSTaintResultTab");
+        //    }
+        //}
 
 
-        delegate void SetJSTaintTraceLine_d(string Type, int LineNo);
-        internal static void SetJSTaintTraceLine(string Type, int LineNo)
-        {
-            if (UI.JSTaintResultGrid.InvokeRequired)
-            {
-                SetJSTaintTraceLine_d SJTTL_d = new SetJSTaintTraceLine_d(SetJSTaintTraceLine);
-                UI.Invoke(SJTTL_d, new object[] { Type, LineNo });
-            }
-            else
-            {
-                if (UI.JSTaintShowCleanCB.Checked)
-                {
-                    LineNo = IronJint.LineNoToGridRowNoMapping[LineNo];
-                }
-                else
-                {
-                    if (UI.JSTaintResultGrid.Rows.Count > 0)
-                    {
-                        if (UI.JSTaintResultGrid.Rows[UI.JSTaintResultGrid.Rows.Count - 1].Cells[0].Value.ToString().Equals(LineNo.ToString()))
-                        {
-                            LineNo = UI.JSTaintResultGrid.Rows.Count - 1;
-                        }
-                        else
-                        {
-                            LineNo = UI.JSTaintResultGrid.Rows.Add(new object[] { LineNo, IronJint.UIIJ.Lines[LineNo - 1] });
-                        }
-                    }
-                    else
-                    {
-                        LineNo = UI.JSTaintResultGrid.Rows.Add(new object[] { LineNo, IronJint.UIIJ.Lines[LineNo - 1] });
-                    }
-                }
-                if(LineNo > UI.JSTaintResultGrid.Rows.Count) return;
-                switch (Type)
-                {
-                    case("Source"):
-                        UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.BackColor = Color.Orange;
-                        UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.SelectionBackColor = Color.Orange;
-                        UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.SelectionForeColor = Color.White;
-                        break;
-                    case ("Sink"):
-                        UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.BackColor = Color.HotPink;
-                        UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.SelectionBackColor = Color.HotPink;
-                        UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.SelectionForeColor = Color.White;
-                        break;
-                    case ("SourcePlusSink"):
-                        UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.BackColor = Color.IndianRed;
-                        UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.SelectionBackColor = Color.IndianRed;
-                        UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.SelectionForeColor = Color.White;
-                        break;
-                    case ("SourceToSink"):
-                        UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.BackColor = Color.Red;
-                        UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.SelectionBackColor = Color.Red;
-                        UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.SelectionForeColor = Color.White;
-                        break;
-                }
-                UI.JSTaintResultGrid.Rows[LineNo].Cells[0].Style.BackColor = Color.DarkBlue;
-                UI.JSTaintResultGrid.Rows[LineNo].Cells[0].Style.SelectionBackColor = Color.DarkBlue;
-                try
-                {
-                    UI.JSTaintResultGrid.FirstDisplayedScrollingRowIndex = LineNo;
-                }
-                catch { }
-            }
-        }
+        //delegate void SetJSTaintTraceLine_d(string Type, int LineNo);
+        //internal static void SetJSTaintTraceLine(string Type, int LineNo)
+        //{
+        //    if (UI.JSTaintResultGrid.InvokeRequired)
+        //    {
+        //        SetJSTaintTraceLine_d SJTTL_d = new SetJSTaintTraceLine_d(SetJSTaintTraceLine);
+        //        UI.Invoke(SJTTL_d, new object[] { Type, LineNo });
+        //    }
+        //    else
+        //    {
+        //        if (UI.JSTaintShowCleanCB.Checked)
+        //        {
+        //            LineNo = IronJint.LineNoToGridRowNoMapping[LineNo];
+        //        }
+        //        else
+        //        {
+        //            if (UI.JSTaintResultGrid.Rows.Count > 0)
+        //            {
+        //                if (UI.JSTaintResultGrid.Rows[UI.JSTaintResultGrid.Rows.Count - 1].Cells[0].Value.ToString().Equals(LineNo.ToString()))
+        //                {
+        //                    LineNo = UI.JSTaintResultGrid.Rows.Count - 1;
+        //                }
+        //                else
+        //                {
+        //                    LineNo = UI.JSTaintResultGrid.Rows.Add(new object[] { LineNo, IronJint.UIIJ.Lines[LineNo - 1] });
+        //                }
+        //            }
+        //            else
+        //            {
+        //                LineNo = UI.JSTaintResultGrid.Rows.Add(new object[] { LineNo, IronJint.UIIJ.Lines[LineNo - 1] });
+        //            }
+        //        }
+        //        if(LineNo > UI.JSTaintResultGrid.Rows.Count) return;
+        //        switch (Type)
+        //        {
+        //            case("Source"):
+        //                UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.BackColor = Color.Orange;
+        //                UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.SelectionBackColor = Color.Orange;
+        //                UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.SelectionForeColor = Color.White;
+        //                break;
+        //            case ("Sink"):
+        //                UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.BackColor = Color.HotPink;
+        //                UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.SelectionBackColor = Color.HotPink;
+        //                UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.SelectionForeColor = Color.White;
+        //                break;
+        //            case ("SourcePlusSink"):
+        //                UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.BackColor = Color.IndianRed;
+        //                UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.SelectionBackColor = Color.IndianRed;
+        //                UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.SelectionForeColor = Color.White;
+        //                break;
+        //            case ("SourceToSink"):
+        //                UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.BackColor = Color.Red;
+        //                UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.SelectionBackColor = Color.Red;
+        //                UI.JSTaintResultGrid.Rows[LineNo].Cells[1].Style.SelectionForeColor = Color.White;
+        //                break;
+        //        }
+        //        UI.JSTaintResultGrid.Rows[LineNo].Cells[0].Style.BackColor = Color.DarkBlue;
+        //        UI.JSTaintResultGrid.Rows[LineNo].Cells[0].Style.SelectionBackColor = Color.DarkBlue;
+        //        try
+        //        {
+        //            UI.JSTaintResultGrid.FirstDisplayedScrollingRowIndex = LineNo;
+        //        }
+        //        catch { }
+        //    }
+        //}
 
-        delegate void RemoveTaintPauseMarker_d(int LineNo);
-        internal static void RemoveTaintPauseMarker(int LineNo)
-        {
-            if (UI.JSTaintResultGrid.InvokeRequired)
-            {
-                RemoveTaintPauseMarker_d RTPM_d = new RemoveTaintPauseMarker_d(RemoveTaintPauseMarker);
-                UI.Invoke(RTPM_d, new object[] { LineNo});
-            }
-            else
-            {
-                if (!UI.JSTaintShowCleanCB.Checked) LineNo = UI.JSTaintResultGrid.Rows.Count;
-                UI.JSTaintResultGrid.Rows[LineNo - 1].Cells[0].Style.BackColor = Color.White;
-                UI.JSTaintResultGrid.Rows[LineNo - 1].Cells[0].Style.SelectionBackColor = Color.White;
-            }
-        }
+        //delegate void RemoveTaintPauseMarker_d(int LineNo);
+        //internal static void RemoveTaintPauseMarker(int LineNo)
+        //{
+        //    if (UI.JSTaintResultGrid.InvokeRequired)
+        //    {
+        //        RemoveTaintPauseMarker_d RTPM_d = new RemoveTaintPauseMarker_d(RemoveTaintPauseMarker);
+        //        UI.Invoke(RTPM_d, new object[] { LineNo});
+        //    }
+        //    else
+        //    {
+        //        if (!UI.JSTaintShowCleanCB.Checked) LineNo = UI.JSTaintResultGrid.Rows.Count;
+        //        UI.JSTaintResultGrid.Rows[LineNo - 1].Cells[0].Style.BackColor = Color.White;
+        //        UI.JSTaintResultGrid.Rows[LineNo - 1].Cells[0].Style.SelectionBackColor = Color.White;
+        //    }
+        //}
 
-        delegate void ResetTraceStatus_d();
-        internal static void ResetTraceStatus()
-        {
-            if (UI.JSTaintContinueBtn.InvokeRequired)
-            {
-                ResetTraceStatus_d RTS_d = new ResetTraceStatus_d(ResetTraceStatus);
-                UI.Invoke(RTS_d, new object[] { });
-            }
-            else
-            {
-                UI.JSTaintTraceControlBtn.Text = "Start Taint Trace";
-                UI.PauseAtTaintCB.Visible = true;
-                UI.JSTaintContinueBtn.Visible = false;
-            }
-        }
+        //delegate void ResetTraceStatus_d();
+        //internal static void ResetTraceStatus()
+        //{
+        //    if (UI.JSTaintContinueBtn.InvokeRequired)
+        //    {
+        //        ResetTraceStatus_d RTS_d = new ResetTraceStatus_d(ResetTraceStatus);
+        //        UI.Invoke(RTS_d, new object[] { });
+        //    }
+        //    else
+        //    {
+        //        UI.JSTaintTraceControlBtn.Text = "Start Taint Trace";
+        //        UI.PauseAtTaintCB.Visible = true;
+        //        UI.JSTaintContinueBtn.Visible = false;
+        //    }
+        //}
 
-        delegate void ShowTraceStatus_d(string Message, bool Error);
-        internal static void ShowTraceStatus(string Message, bool Error)
-        {
-            if (UI.JSTaintContinueBtn.InvokeRequired)
-            {
-                ShowTraceStatus_d STS_d = new ShowTraceStatus_d(ShowTraceStatus);
-                UI.Invoke(STS_d, new object[] { Message, Error });
-            }
-            else
-            {
-                UI.JSTaintStatusTB.Text = Message;
-                if (Error)
-                    UI.JSTaintStatusTB.ForeColor = Color.Red;
-                else
-                    UI.JSTaintStatusTB.ForeColor = Color.Black;
-            }
-        }
+        //delegate void ShowTraceStatus_d(string Message, bool Error);
+        //internal static void ShowTraceStatus(string Message, bool Error)
+        //{
+        //    if (UI.JSTaintContinueBtn.InvokeRequired)
+        //    {
+        //        ShowTraceStatus_d STS_d = new ShowTraceStatus_d(ShowTraceStatus);
+        //        UI.Invoke(STS_d, new object[] { Message, Error });
+        //    }
+        //    else
+        //    {
+        //        UI.JSTaintStatusTB.Text = Message;
+        //        if (Error)
+        //            UI.JSTaintStatusTB.ForeColor = Color.Red;
+        //        else
+        //            UI.JSTaintStatusTB.ForeColor = Color.Black;
+        //    }
+        //}
 
-        delegate void ShowTraceContinuteButton_d();
-        internal static void ShowTraceContinuteButton()
-        {
-            if (UI.JSTaintContinueBtn.InvokeRequired)
-            {
-                ShowTraceContinuteButton_d STCB_d = new ShowTraceContinuteButton_d(ShowTraceContinuteButton);
-                UI.Invoke(STCB_d, new object[] { });
-            }
-            else
-            {
-                UI.JSTaintContinueBtn.Visible = true;
-            }
-        }
+        //delegate void ShowTraceContinuteButton_d();
+        //internal static void ShowTraceContinuteButton()
+        //{
+        //    if (UI.JSTaintContinueBtn.InvokeRequired)
+        //    {
+        //        ShowTraceContinuteButton_d STCB_d = new ShowTraceContinuteButton_d(ShowTraceContinuteButton);
+        //        UI.Invoke(STCB_d, new object[] { });
+        //    }
+        //    else
+        //    {
+        //        UI.JSTaintContinueBtn.Visible = true;
+        //    }
+        //}
 
-        delegate void SetTaintConfig_d(List<List<string>> Lists, int MaxCount);
-        internal static void SetTaintConfig(List<List<string>> Lists, int MaxCount)
-        {
-            if (UI.JSTaintConfigGrid.InvokeRequired)
-            {
-                SetTaintConfig_d STC_d = new SetTaintConfig_d(SetTaintConfig);
-                UI.Invoke(STC_d, new object[] { Lists, MaxCount });
-            }
-            else
-            {
-                UI.JSTaintConfigGrid.Rows.Clear();
-                for (int i = 0; i < MaxCount; i++)
-                {
-                    UI.JSTaintConfigGrid.Rows.Add(new object[] { Lists[0][i], Lists[1][i], Lists[5][i], Lists[6][i], Lists[2][i], Lists[3][i], Lists[4][i] });
-                }
-            }
-        }
+        //delegate void SetTaintConfig_d(List<List<string>> Lists, int MaxCount);
+        //internal static void SetTaintConfig(List<List<string>> Lists, int MaxCount)
+        //{
+        //    if (UI.JSTaintConfigGrid.InvokeRequired)
+        //    {
+        //        SetTaintConfig_d STC_d = new SetTaintConfig_d(SetTaintConfig);
+        //        UI.Invoke(STC_d, new object[] { Lists, MaxCount });
+        //    }
+        //    else
+        //    {
+        //        UI.JSTaintConfigGrid.Rows.Clear();
+        //        for (int i = 0; i < MaxCount; i++)
+        //        {
+        //            UI.JSTaintConfigGrid.Rows.Add(new object[] { Lists[0][i], Lists[1][i], Lists[5][i], Lists[6][i], Lists[2][i], Lists[3][i], Lists[4][i] });
+        //        }
+        //    }
+        //}
 
-        delegate void SetTaintHighlighting_d(string HighLightedCode);
-        internal static void SetTaintHighlighting(string HighLightedCode)
-        {
-            if (UI.JSTaintTraceInRTB.InvokeRequired)
-            {
-                SetTaintHighlighting_d JSTTIR_d = new SetTaintHighlighting_d(SetTaintHighlighting);
-                UI.Invoke(JSTTIR_d, new object[] { HighLightedCode });
-            }
-            else
-            {
-                StringBuilder Rtf = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;}");
-                Rtf.Append(Tools.RtfSafe(HighLightedCode));
-                UI.JSTaintTraceInRTB.Rtf = Rtf.ToString();
-            }
-        }
+        //delegate void SetTaintHighlighting_d(string HighLightedCode);
+        //internal static void SetTaintHighlighting(string HighLightedCode)
+        //{
+        //    if (UI.JSTaintTraceInRTB.InvokeRequired)
+        //    {
+        //        SetTaintHighlighting_d JSTTIR_d = new SetTaintHighlighting_d(SetTaintHighlighting);
+        //        UI.Invoke(JSTTIR_d, new object[] { HighLightedCode });
+        //    }
+        //    else
+        //    {
+        //        StringBuilder Rtf = new StringBuilder(@"{\rtf1{\colortbl ;\red0\green77\blue187;\red247\green150\blue70;\red255\green0\blue0;\red0\green200\blue50;}");
+        //        Rtf.Append(Tools.RtfSafe(HighLightedCode));
+        //        UI.JSTaintTraceInRTB.Rtf = Rtf.ToString();
+        //    }
+        //}
 
-        delegate void SetTaintTraceStatus_d(string Message, bool Error);
-        internal static void SetTaintTraceStatus(string Message, bool Error)
-        {
-            if (UI.JSTaintStatusTB.InvokeRequired)
-            {
-                SetTaintTraceStatus_d STTS_d = new SetTaintTraceStatus_d(SetTaintTraceStatus);
-                UI.Invoke(STTS_d, new object[] { Message, Error });
-            }
-            else
-            {
-                if (Message.Length == 0)
-                {
-                    UI.JSTaintStatusTB.Visible = false;
-                }
-                else
-                {
-                    UI.JSTaintStatusTB.Text = Message;
-                    if (Error)
-                        UI.JSTaintStatusTB.ForeColor = Color.Red;
-                    else
-                        UI.JSTaintStatusTB.ForeColor = Color.Black;
-                    UI.JSTaintStatusTB.Visible = true;
-                }
-            }
-        }
+        //delegate void SetTaintTraceStatus_d(string Message, bool Error);
+        //internal static void SetTaintTraceStatus(string Message, bool Error)
+        //{
+        //    if (UI.JSTaintStatusTB.InvokeRequired)
+        //    {
+        //        SetTaintTraceStatus_d STTS_d = new SetTaintTraceStatus_d(SetTaintTraceStatus);
+        //        UI.Invoke(STTS_d, new object[] { Message, Error });
+        //    }
+        //    else
+        //    {
+        //        if (Message.Length == 0)
+        //        {
+        //            UI.JSTaintStatusTB.Visible = false;
+        //        }
+        //        else
+        //        {
+        //            UI.JSTaintStatusTB.Text = Message;
+        //            if (Error)
+        //                UI.JSTaintStatusTB.ForeColor = Color.Red;
+        //            else
+        //                UI.JSTaintStatusTB.ForeColor = Color.Black;
+        //            UI.JSTaintStatusTB.Visible = true;
+        //        }
+        //    }
+        //}
 
-        delegate void ShowTaintReasons_d(int LineNo, List<string> SourceReasons, List<string> SinkReasons);
-        internal static void ShowTaintReasons(int LineNo, List<string> SourceReasons, List<string> SinkReasons)
-        {
-            if (UI.JSTaintReasonsRTB.InvokeRequired)
-            {
-                ShowTaintReasons_d STR_d = new ShowTaintReasons_d(ShowTaintReasons);
-                UI.Invoke(STR_d, new object[] { LineNo, SourceReasons, SinkReasons });
-            }
-            else
-            {
-                StringBuilder Message = new StringBuilder();
-                if (SourceReasons.Count > 0)
-                {
-                    Message.AppendLine("Source Reasons:");
-                }
-                foreach (string Reason in SourceReasons)
-                {
-                    Message.AppendLine(Reason);
-                }
-                Message.AppendLine(""); Message.AppendLine("");
-                if (SinkReasons.Count > 0)
-                {
-                    Message.AppendLine("Sink Reasons:");
-                }
-                foreach (string Reason in SinkReasons)
-                {
-                    Message.AppendLine(Reason);
-                }
-                IronUI.UI.JSTaintReasonsRTB.Text = Message.ToString();
-            }
-        }
+        //delegate void ShowTaintReasons_d(int LineNo, List<string> SourceReasons, List<string> SinkReasons);
+        //internal static void ShowTaintReasons(int LineNo, List<string> SourceReasons, List<string> SinkReasons)
+        //{
+        //    if (UI.JSTaintReasonsRTB.InvokeRequired)
+        //    {
+        //        ShowTaintReasons_d STR_d = new ShowTaintReasons_d(ShowTaintReasons);
+        //        UI.Invoke(STR_d, new object[] { LineNo, SourceReasons, SinkReasons });
+        //    }
+        //    else
+        //    {
+        //        StringBuilder Message = new StringBuilder();
+        //        if (SourceReasons.Count > 0)
+        //        {
+        //            Message.AppendLine("Source Reasons:");
+        //        }
+        //        foreach (string Reason in SourceReasons)
+        //        {
+        //            Message.AppendLine(Reason);
+        //        }
+        //        Message.AppendLine(""); Message.AppendLine("");
+        //        if (SinkReasons.Count > 0)
+        //        {
+        //            Message.AppendLine("Sink Reasons:");
+        //        }
+        //        foreach (string Reason in SinkReasons)
+        //        {
+        //            Message.AppendLine(Reason);
+        //        }
+        //        IronUI.UI.JSTaintReasonsRTB.Text = Message.ToString();
+        //    }
+        //}
 
         delegate void ShowConsoleStatus_d(string Message, bool Error);
         internal static void ShowConsoleStatus(string Message, bool Error)

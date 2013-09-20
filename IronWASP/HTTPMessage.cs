@@ -33,7 +33,7 @@ namespace IronWASP
             int EndOfHeaders = HTTPInput.IndexOf("\r\n\r\n");
             if (EndOfHeaders < 0)
             {
-                EndOfHeaders = HTTPInput.Length - 1;
+                EndOfHeaders = HTTPInput.Length;
             }
             string[] MessageParts = new string[] { "", "" };
             MessageParts[0] = HTTPInput.Substring(0, EndOfHeaders);

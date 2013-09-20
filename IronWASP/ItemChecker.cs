@@ -35,6 +35,7 @@ namespace IronWASP
         internal TaintResult Check(List<JintItem> Item)
         {
             TaintResult Result = new TaintResult();
+            if (IJ.IsTimedOut()) return Result;
 
             List<List<JintItem>> ItemParts = GetItemParts(Item);
            
@@ -57,6 +58,7 @@ namespace IronWASP
         TaintResult IsTainted(List<JintItem> Item)
         {
             TaintResult Result = new TaintResult();
+            if (IJ.IsTimedOut()) return Result;
 
             //Check if Item matches any of the SourceObjects
             foreach (List<JintItem> SourceItem in IJ.SourceObjects)
@@ -146,6 +148,7 @@ namespace IronWASP
         internal TaintResult IsMatch(List<JintItem> Item, List<JintItem> Template)
         {
             TaintResult Result = new TaintResult();
+            if (IJ.IsTimedOut()) return Result;
 
             if (Item.Count == 0) return Result;
             if (Template.Count == 0) return Result;
@@ -214,6 +217,7 @@ namespace IronWASP
         internal TaintResult DoItemsMatch(List<JintItem> Item, List<JintItem> Template, bool MethodCall)
         {
             TaintResult Result = new TaintResult();
+            if (IJ.IsTimedOut()) return Result;
             int ItemMatchIndex = 0;
             int TemplateMatchIndex = 0;
 
@@ -542,6 +546,7 @@ namespace IronWASP
         string GetIndexStringValue(JintItem IndexItem)
         {
             string IndexValue = "";
+            if (IJ.IsTimedOut()) return IndexValue;
             switch(IndexItem.State)
             {
                 case (JintState.IdentifierIndex):
@@ -557,6 +562,7 @@ namespace IronWASP
         List<JintItem> GetMethodArguments(List<JintItem> Item)
         {
             List<JintItem> Result = new List<JintItem>();
+            if (IJ.IsTimedOut()) return Result;
             int i=0;
             while(i < Item.Count)
             {
@@ -572,6 +578,7 @@ namespace IronWASP
         internal List<JintItem> GetLastMethodArguments(List<JintItem> Item)
         {
             List<JintItem> Result = new List<JintItem>();
+            if (IJ.IsTimedOut()) return Result;
             int i = Item.Count - 1;
             while (i >= 0)
             {
@@ -588,6 +595,7 @@ namespace IronWASP
         TaintResult IsMethodArgumentsMatch(List<JintItem> ItemArguments, List<JintItem> TemplateArguments)
         {
             TaintResult Result = new TaintResult();
+            if (IJ.IsTimedOut()) return Result;
             if (ItemArguments.Count != TemplateArguments.Count) return Result;
 
             for (int i = 0; i < ItemArguments.Count; i++)

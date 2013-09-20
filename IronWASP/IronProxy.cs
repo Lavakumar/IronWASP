@@ -61,6 +61,7 @@ namespace IronWASP
         internal static bool LoopBackOnly = true;
         internal static bool SystemProxy = false;
 
+        internal static bool UseSystemProxyAsUpStreamProxy = false;
         internal static bool UseUpstreamProxy = false;
         internal static string UpstreamProxyIP = "";
         internal static int UpstreamProxyPort = 0;
@@ -168,8 +169,8 @@ namespace IronWASP
 
         internal static ScriptedInterceptor ScInt = new ScriptedInterceptor();
         internal static bool ScriptedInterceptionEnabled = false;
-
-        internal static void Start()
+        
+        internal static bool Start()
         {
             ProxyRunning = true;
             
@@ -271,8 +272,8 @@ namespace IronWASP
                     if (Args.NotifyString.Contains("Unable to bind to port"))
                     {
                         IronProxy.Stop();
-                        IronException.Report("Proxy could not be stared", "Listening Proxy could not be started. Likely reason could be the use of the port by another process","");
-                        IronUI.ShowProxyStoppedError("Proxy Not Started! All features depend on the proxy, start proxy to activate them.");
+                        //IronException.Report("FiddlerCore Notification", Args.NotifyString, "");
+                        //IronUI.ShowProxyStoppedError("Proxy Not Started! All features depend on the proxy, start proxy to activate them.");
                     }
                 };
 
@@ -282,14 +283,83 @@ namespace IronWASP
             Fiddler.CONFIG.IgnoreServerCertErrors = true;
             //Fiddler.CONFIG.bReuseServerSockets = false;
             IronUI.UpdateProxyStatusInConfigPanel(true);
-            if (IronProxy.LoopBackOnly)
+            
+            if (IronProxy.UseSystemProxyAsUpStreamProxy)
             {
-                Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default & ~ Fiddler.FiddlerCoreStartupFlags.AllowRemoteClients & ~Fiddler.FiddlerCoreStartupFlags.RegisterAsSystemProxy);
-                //Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default);
+                if (IronProxy.SystemProxy)
+                {
+                    if (IronProxy.LoopBackOnly)
+                    {
+                        Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default & ~Fiddler.FiddlerCoreStartupFlags.AllowRemoteClients);
+                    }
+                    else
+                    {
+                        Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default);
+                    }
+                }
+                else
+                {
+                    if (IronProxy.LoopBackOnly)
+                    {
+                        Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default & ~Fiddler.FiddlerCoreStartupFlags.AllowRemoteClients & ~Fiddler.FiddlerCoreStartupFlags.RegisterAsSystemProxy);
+                    }
+                    else
+                    {
+                        Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default & ~Fiddler.FiddlerCoreStartupFlags.RegisterAsSystemProxy);
+                    }
+                }
             }
             else
             {
-                Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default & ~Fiddler.FiddlerCoreStartupFlags.RegisterAsSystemProxy & ~Fiddler.FiddlerCoreStartupFlags.ChainToUpstreamGateway);
+                if (IronProxy.SystemProxy)
+                {
+                    if (IronProxy.LoopBackOnly)
+                    {
+                        Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default & ~Fiddler.FiddlerCoreStartupFlags.AllowRemoteClients & ~Fiddler.FiddlerCoreStartupFlags.ChainToUpstreamGateway);
+                    }
+                    else
+                    {
+                        Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default & ~Fiddler.FiddlerCoreStartupFlags.ChainToUpstreamGateway);
+                    }
+                }
+                else
+                {
+                    if (IronProxy.LoopBackOnly)
+                    {
+                        Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default & ~Fiddler.FiddlerCoreStartupFlags.AllowRemoteClients & ~Fiddler.FiddlerCoreStartupFlags.ChainToUpstreamGateway);
+                    }
+                    else
+                    {
+                        Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default & ~Fiddler.FiddlerCoreStartupFlags.ChainToUpstreamGateway);
+                    }
+
+                    //This is a hack to work around a bug in FiddlerCore v2.4.4.8.
+                    //If both the RegisterAsSystemProxy and ChainToUpstreamGateway flags are removed the proxy doesn't start.
+                    //So we start with the RegisterAsSystemProxy flad set and then call the detach method to remove it
+                    if (Fiddler.FiddlerApplication.IsStarted())
+                    {
+                        Fiddler.FiddlerApplication.oProxy.Detach();
+                    }
+                }
+            }
+
+            //if (IronProxy.LoopBackOnly)
+            //{
+            //    Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default & ~ Fiddler.FiddlerCoreStartupFlags.AllowRemoteClients & ~Fiddler.FiddlerCoreStartupFlags.RegisterAsSystemProxy);
+            //    //Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default);
+            //}
+            //else
+            //{
+            //    Fiddler.FiddlerApplication.Startup(IronProxy.Port, Fiddler.FiddlerCoreStartupFlags.Default & ~Fiddler.FiddlerCoreStartupFlags.RegisterAsSystemProxy & ~Fiddler.FiddlerCoreStartupFlags.ChainToUpstreamGateway);
+            //}
+
+            try
+            {
+                return Fiddler.FiddlerApplication.IsStarted();
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -410,8 +480,8 @@ namespace IronWASP
                                 IronException.Report(string.Format("Error handling '{0}' Response", Sess.oFlags["IronFlag-BuiltBy"]), Exp.Message, Exp.StackTrace);
                             }
                         }
-                        Config.APIResponseDict[DictID].SetResponse(IrSe.Response);
-                        Config.APIResponseDict[DictID].MSR.Set();       
+                        //Config.APIResponseDict[DictID].SetResponse(IrSe.Response);
+                        //Config.APIResponseDict[DictID].MSR.Set();       
                     }
                     catch (Exception MainExp)
                     {
@@ -1723,7 +1793,7 @@ namespace IronWASP
         internal static bool ValidProxyPort(int Port)
         {
 
-            if (Port > 1024 && Port < 65536)
+            if (Port > 0 && Port < 65536)
             {
                 return true;
             }

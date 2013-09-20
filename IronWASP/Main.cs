@@ -106,7 +106,7 @@ namespace IronWASP
             T.Start();
             IronUI.SetUI(this);
 
-            IronUI.ShowLoadMessage("Loading.....");
+            IronUI.LF.ShowLoadMessage("Loading.....");
             try
             {
                 IronUpdater.Start();
@@ -123,7 +123,7 @@ namespace IronWASP
             }
 
 
-            IronUI.ShowLoadMessage("Creating Project Database....");
+            IronUI.LF.ShowLoadMessage("Creating Project Database....");
             try
             {
                 Config.SetRootDir();
@@ -131,10 +131,10 @@ namespace IronWASP
             }
             catch(Exception Exp)
             {
-                IronUI.ShowLoadMessage("Error Creating Project Database - " + Exp.Message);
+                IronUI.LF.ShowLoadMessage("Error Creating Project Database - " + Exp.Message);
             }
 
-            IronUI.ShowLoadMessage("Reading Stored Configuration Information....");
+            IronUI.LF.ShowLoadMessage("Reading Stored Configuration Information....");
             try
             {
                 IronDB.UpdateConfigFromDB();
@@ -143,21 +143,21 @@ namespace IronWASP
             }
             catch (Exception Exp)
             {
-                IronUI.ShowLoadMessage("Error Reading Stored Configuration Information - " + Exp.Message);
+                IronUI.LF.ShowLoadMessage("Error Reading Stored Configuration Information - " + Exp.Message);
             }
 
-            IronUI.ShowLoadMessage("Applying Previous Configuration....");
+            IronUI.LF.ShowLoadMessage("Applying Previous Configuration....");
             try
             {
                 IronUI.UpdateUIFromConfig();
-                IronJint.ShowDefaultTaintConfig();
+                //IronJint.ShowDefaultTaintConfig();
             }
             catch (Exception Exp)
             {
-                IronUI.ShowLoadMessage("Error Applying Previous Configuration - " + Exp.Message);
+                IronUI.LF.ShowLoadMessage("Error Applying Previous Configuration - " + Exp.Message);
             }
 
-            IronUI.ShowLoadMessage("Creating API Documentation Trees....");
+            IronUI.LF.ShowLoadMessage("Creating API Documentation Trees....");
             try
             {
                 APIDoc.Initialise();
@@ -167,7 +167,7 @@ namespace IronWASP
                 IronException.Report("Error creating API Docs", Exp.Message, Exp.StackTrace);
             }
             //Initialise the Scripting Engines and compile the plug-ins
-            IronUI.ShowLoadMessage("Loading All Plugins....");
+            IronUI.LF.ShowLoadMessage("Loading All Plugins....");
             try
             {
                 PluginEngine.StartUp = true;
@@ -181,7 +181,7 @@ namespace IronWASP
                 IronException.Report("Error initialising Plugins", Exp.Message, Exp.StackTrace);
             }
 
-            IronUI.ShowLoadMessage("Reading available Modules....");
+            IronUI.LF.ShowLoadMessage("Reading available Modules....");
             try
             {
                 try
@@ -203,7 +203,7 @@ namespace IronWASP
                 IronUI.BuildPluginTree();
             }
             catch (Exception Exp) { IronException.Report("Error Building PluginTree", Exp); }
-            IronUI.ShowLoadMessage("Starting Internal Analyzers....");
+            IronUI.LF.ShowLoadMessage("Starting Internal Analyzers....");
             try
             {
                 PassiveChecker.Start();
@@ -214,7 +214,7 @@ namespace IronWASP
             }
 
 
-            IronUI.ShowLoadMessage("Preparing the Scripting Shell....");
+            IronUI.LF.ShowLoadMessage("Preparing the Scripting Shell....");
             try
             {
                 IronScripting.InitialiseScriptingEnvironment();
@@ -228,13 +228,26 @@ namespace IronWASP
             }
             catch (Exception Exp)
             {
-                IronUI.ShowLoadMessage("Error Preparing the Scripting Shell - " + Exp.Message);
+                IronUI.LF.ShowLoadMessage("Error Preparing the Scripting Shell - " + Exp.Message);
                 IronException.Report("Error Preparing the Scripting Shell", Exp.Message, Exp.StackTrace);
             }
 
 
-            IronUI.ShowLoadMessage("Starting the Proxy");
-            IronProxy.Start();
+            //IronUI.LF.ShowLoadMessage("Starting the Proxy");
+            //IronProxy.Start();
+
+            IronUI.LF.ShowLoadMessage("Done!");
+            IronUI.LF.ShowLoadMessage("0");
+
+            IronUI.LICF = new LoadInitialConfigurationForm();
+            IronUI.LICF.ShowDialog();
+
+            if (CanShutdown)
+            {
+                this.ShutDown();
+                Application.Exit();
+            }
+
             try
             {
                 CheckUpdate.CheckForUpdates();
@@ -244,8 +257,6 @@ namespace IronWASP
                 IronException.Report("Error Starting New Version Check", Exp.Message, Exp.StackTrace);
             }
 
-            IronUI.ShowLoadMessage("Done!");
-            IronUI.ShowLoadMessage("0");
             SetUiComponentsToInitialState();
             this.Activate();
             PluginEditorInTE.Document.ReadOnly = true;
@@ -592,6 +603,13 @@ namespace IronWASP
                 IronUI.FreezeInteractiveShellUI();
                 //string Command = this.InteractiveShellIn.Text.Replace("\r\n", "");
                 string Command = this.InteractiveShellIn.Text;
+                if(InteractiveShellPythonRB.Checked)
+                {
+                    if (InteractiveShellPromptBox.Text.Contains(">>"))
+                    {
+                        Command = Command.TrimStart();//Remove whitespace before Python commands from the interactive shell when indentation is not required. This is a common newbie mistake.
+                    }
+                }
                 this.InteractiveShellIn.Text = "";
                 if (Command.Length > 0)
                 {
@@ -729,7 +747,7 @@ namespace IronWASP
             this.CopyRequestToolStripMenuItem.Enabled = RowsSelected;
             this.CopyResponseToolStripMenuItem.Enabled = RowsSelected;
             this.RunModulesOnRequestResponseToolStripMenuItem.Enabled = RowsSelected;
-            this.SelectResponseForJavaScriptTestingToolStripMenuItem.Enabled = RowsSelected && ResponseAvailable && JSTaintTraceControlBtn.Text.Equals("Start Taint Trace");
+            this.SelectResponseForJavaScriptTestingToolStripMenuItem.Enabled = RowsSelected && ResponseAvailable;// && JSTaintTraceControlBtn.Text.Equals("Start Taint Trace");
         }
 
         private void MTSendBtn_Click(object sender, EventArgs e)
@@ -857,6 +875,11 @@ namespace IronWASP
             {
                 CheckUpdate.StopUpdateCheck();
             }catch{}
+            try
+            {
+                IronDB.CommandsLogFile.Close();
+            }
+            catch { }
         }
 
         //private void MTIsSSLCB_CheckedChanged(object sender, EventArgs e)
@@ -1960,38 +1983,6 @@ namespace IronWASP
             }
         }
 
-        private void ConfigProxyRunBtn_Click(object sender, EventArgs e)
-        {
-            if (ConfigProxyRunBtn.Text.Equals("Start Proxy"))
-            {
-                IronUI.ResetProxyException();
-                IronProxy.Port = Int32.Parse(ConfigProxyListenPortTB.Text);
-                IronProxy.LoopBackOnly = ConfigLoopBackOnlyCB.Checked;
-                IronProxy.Start();
-                IronDB.StoreProxyConfig();
-            }
-            else
-            {
-                IronProxy.Stop();
-            }
-        }
-
-        private void ConfigProxyListenPortTB_TextChanged(object sender, EventArgs e)
-        {
-            int PortNumber=0;
-            if (IronProxy.ValidProxyPort(ConfigProxyListenPortTB.Text))
-            {
-                PortNumber = Int32.Parse(ConfigProxyListenPortTB.Text);
-                ConfigProxyListenPortTB.BackColor = Color.White;
-                ConfigProxyRunBtn.Enabled = true;
-            }
-            else
-            {
-                ConfigProxyListenPortTB.BackColor = Color.Red;
-                ConfigProxyRunBtn.Enabled = false;
-            }
-        }
-
         private void ConfigRuleFileExtensionsCB_CheckedChanged(object sender, EventArgs e)
         {
             bool Status = ConfigRuleFileExtensionsCB.Checked;
@@ -2039,54 +2030,6 @@ namespace IronWASP
             IronUI.UpdateInterceptionRulesInUIFromConfig();
         }
 
-        private void ConfigUpstreamProxyPortTB_TextChanged(object sender, EventArgs e)
-        {
-            ConfigUseUpstreamProxyCB.Checked = false;
-            IronProxy.UseUpstreamProxy = false;
-            int PortNumber = 0;
-            if (Int32.TryParse(ConfigUpstreamProxyPortTB.Text, out PortNumber))
-            {
-                if (PortNumber > 0 && PortNumber < 65536)
-                {
-                    ConfigUpstreamProxyPortTB.BackColor = Color.White;
-                    ConfigUseUpstreamProxyCB.Enabled = true;
-                }
-                else
-                {
-                    ConfigUpstreamProxyPortTB.BackColor = Color.Red;
-                    if (!ConfigUseUpstreamProxyCB.Checked) ConfigUseUpstreamProxyCB.Enabled = false;
-                }
-            }
-            else
-            {
-                ConfigUpstreamProxyPortTB.BackColor = Color.Red;
-                if(!ConfigUseUpstreamProxyCB.Checked) ConfigUseUpstreamProxyCB.Enabled = false;
-            }
-        }
-
-        private void ConfigUpstreamProxyIPTB_TextChanged(object sender, EventArgs e)
-        {
-            ConfigUseUpstreamProxyCB.Checked = false;
-            IronProxy.UseUpstreamProxy = false;
-            if (ConfigUpstreamProxyIPTB.Text.Length > 0)
-            {
-                ConfigUpstreamProxyIPTB.BackColor = Color.White;
-                if (ConfigUpstreamProxyPortTB.Text.Length > 0 && ConfigUpstreamProxyPortTB.BackColor != Color.Red)
-                {
-                    ConfigUseUpstreamProxyCB.Enabled = true;
-                }
-                else
-                {
-                    if (!ConfigUseUpstreamProxyCB.Checked) ConfigUseUpstreamProxyCB.Enabled = false;
-                }
-            }
-            else
-            {
-                ConfigUpstreamProxyIPTB.BackColor = Color.Red;
-                if (!ConfigUseUpstreamProxyCB.Checked) ConfigUseUpstreamProxyCB.Enabled = false;
-            }
-        }
-
         private void OpenProjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string LogFilesDirectory = "";
@@ -2106,10 +2049,17 @@ namespace IronWASP
             }
             if (LogFilesDirectory.Length > 0)
             {
+                CloseCurrentProjectAndPrepareForReload();
                 IronDB.UpdateLogFilePaths(LogFilesDirectory);
                 LoadSelectedTraceBtn.Enabled = false;
                 IronUI.StartUpdatingFullUIFromDB();
             }
+        }
+
+        void CloseCurrentProjectAndPrepareForReload()
+        {
+            try { IronUI.RGW.Close(); }
+            catch { }
         }
 
         private void ProxyRequestHeadersIDV_IDVTextChanged()
@@ -2368,7 +2318,11 @@ namespace IronWASP
                                 break;
                         }
                         PluginDetails[1] = P.Description;
-                        if (P.FileName.Length > 0)
+                        if (P.FileName == "Internal")
+                        {
+                            PluginDetails[3] = "This plugin is implemented inside the core of IronWASP.\r\nTo view the source code of this plugin visit - https://github.com/lavakumar/ironwasp ";
+                        }
+                        else if (P.FileName.Length > 0)
                         {
                             if (P.FileName.EndsWith(".py"))
                                 PluginDetails[4] = "Python";
@@ -2958,17 +2912,6 @@ namespace IronWASP
             ConfigDisplayRuleHostNamesPlusTB.Enabled = Status;
             ConfigDisplayRuleHostNamesMinusRB.Enabled = Status;
             ConfigDisplayRuleHostNamesMinusTB.Enabled = Status;
-        }
-
-        private void ConfigUseUpstreamProxyCB_Click(object sender, EventArgs e)
-        {
-            IronProxy.UseUpstreamProxy = ConfigUseUpstreamProxyCB.Checked;
-            if (IronProxy.UseUpstreamProxy)
-            {
-                IronProxy.UpstreamProxyIP = ConfigUpstreamProxyIPTB.Text;
-                IronProxy.UpstreamProxyPort = Int32.Parse(ConfigUpstreamProxyPortTB.Text);
-            }
-            IronDB.StoreUpstreamProxyConfig();
         }
 
         private void SiteMapLogGrid_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -3627,7 +3570,7 @@ namespace IronWASP
             {
                 if (IronUI.IsStartScanWizardOpen())
                 {
-                    IronUI.SSW.Close();
+                    IronUI.SSW.CloseWindow();
                 }
             }
             catch { }
@@ -3659,215 +3602,215 @@ namespace IronWASP
             IronUI.LogGridStatus(true);
         }
 
-        private void JSTaintTraceControlBtn_Click(object sender, EventArgs e)
-        {
-            if (JSTaintTraceControlBtn.Text.Equals("Start Taint Trace"))
-            {
-                JSTaintResultGrid.Rows.Clear();
-                IronJint.PauseAtTaint = PauseAtTaintCB.Checked;
-                JSTaintTraceControlBtn.Text = "Stop Trace";
-                PauseAtTaintCB.Visible = PauseAtTaintCB.Checked;
+        //private void JSTaintTraceControlBtn_Click(object sender, EventArgs e)
+        //{
+        //    if (JSTaintTraceControlBtn.Text.Equals("Start Taint Trace"))
+        //    {
+        //        JSTaintResultGrid.Rows.Clear();
+        //        IronJint.PauseAtTaint = PauseAtTaintCB.Checked;
+        //        JSTaintTraceControlBtn.Text = "Stop Trace";
+        //        PauseAtTaintCB.Visible = PauseAtTaintCB.Checked;
                 
-                List<string> SourceObjects = new List<string>();
-                List<string> SinkObjects = new List<string>();
-                List<string> SourceReturningMethods = new List<string>();
-                List<string> SinkReturningMethods = new List<string>();
-                List<string> ArgumentReturningMethods = new List<string>();
-                List<string> ArgumentAssignedASourceMethods = new List<string>();
-                List<string> ArgumentAssignedToSinkMethods = new List<string>();
+        //        List<string> SourceObjects = new List<string>();
+        //        List<string> SinkObjects = new List<string>();
+        //        List<string> SourceReturningMethods = new List<string>();
+        //        List<string> SinkReturningMethods = new List<string>();
+        //        List<string> ArgumentReturningMethods = new List<string>();
+        //        List<string> ArgumentAssignedASourceMethods = new List<string>();
+        //        List<string> ArgumentAssignedToSinkMethods = new List<string>();
 
-                foreach (DataGridViewRow Row in JSTaintConfigGrid.Rows)
-                {
-                    if (Row == null) continue;
-                    if (Row.Cells == null) continue;
-                    if (Row.Cells.Count < 7) continue;
-                    if (Row.Cells["JSTaintDefaultSourceObjectsColumn"].Value != null)
-                    {
-                        string SourceObject = Row.Cells["JSTaintDefaultSourceObjectsColumn"].Value.ToString().Trim();
-                        if (SourceObject.Length > 0) SourceObjects.Add(SourceObject);
-                    }
-                    if (Row.Cells["JSTaintDefaultSinkObjectsColumn"].Value != null)
-                    {
-                        string SinkObject = Row.Cells["JSTaintDefaultSinkObjectsColumn"].Value.ToString().Trim();
-                        if (SinkObject.Length > 0) SinkObjects.Add(SinkObject);
-                    }
-                    if (Row.Cells["JSTaintDefaultArgumentAssignedASourceMethodsColumn"].Value != null)
-                    {
-                        string ArgumentAssignedASourceMethod = Row.Cells["JSTaintDefaultArgumentAssignedASourceMethodsColumn"].Value.ToString().Trim();
-                        if (ArgumentAssignedASourceMethod.Length > 0) ArgumentAssignedASourceMethods.Add(ArgumentAssignedASourceMethod);
-                    }
-                    if (Row.Cells["JSTaintDefaultArgumentAssignedToSinkMethodsColumn"].Value != null)
-                    {
-                        string ArgumentAssignedToSinkMethod = Row.Cells["JSTaintDefaultArgumentAssignedToSinkMethodsColumn"].Value.ToString().Trim();
-                        if (ArgumentAssignedToSinkMethod.Length > 0) ArgumentAssignedToSinkMethods.Add(ArgumentAssignedToSinkMethod);
-                    }
-                    if (Row.Cells["JSTaintDefaultSourceReturningMethodsColumn"].Value != null)
-                    {
-                        string SourceReturningMethod = Row.Cells["JSTaintDefaultSourceReturningMethodsColumn"].Value.ToString().Trim();
-                        if (SourceReturningMethod.Length > 0) SourceReturningMethods.Add(SourceReturningMethod);
-                    }
-                    if (Row.Cells["JSTaintDefaultSinkReturningMethodsColumn"].Value != null)
-                    {
-                        string SinkReturningMethod = Row.Cells["JSTaintDefaultSinkReturningMethodsColumn"].Value.ToString().Trim();
-                        if (SinkReturningMethod.Length > 0) SinkReturningMethods.Add(SinkReturningMethod);
-                    }
-                    if (Row.Cells["JSTaintDefaultArgumentReturningMethodsColumn"].Value != null)
-                    {
-                        string ArgumentReturningMethod = Row.Cells["JSTaintDefaultArgumentReturningMethodsColumn"].Value.ToString().Trim();
-                        if (ArgumentReturningMethod.Length > 0) ArgumentReturningMethods.Add(ArgumentReturningMethod);
-                    }
-                }
+        //        foreach (DataGridViewRow Row in JSTaintConfigGrid.Rows)
+        //        {
+        //            if (Row == null) continue;
+        //            if (Row.Cells == null) continue;
+        //            if (Row.Cells.Count < 7) continue;
+        //            if (Row.Cells["JSTaintDefaultSourceObjectsColumn"].Value != null)
+        //            {
+        //                string SourceObject = Row.Cells["JSTaintDefaultSourceObjectsColumn"].Value.ToString().Trim();
+        //                if (SourceObject.Length > 0) SourceObjects.Add(SourceObject);
+        //            }
+        //            if (Row.Cells["JSTaintDefaultSinkObjectsColumn"].Value != null)
+        //            {
+        //                string SinkObject = Row.Cells["JSTaintDefaultSinkObjectsColumn"].Value.ToString().Trim();
+        //                if (SinkObject.Length > 0) SinkObjects.Add(SinkObject);
+        //            }
+        //            if (Row.Cells["JSTaintDefaultArgumentAssignedASourceMethodsColumn"].Value != null)
+        //            {
+        //                string ArgumentAssignedASourceMethod = Row.Cells["JSTaintDefaultArgumentAssignedASourceMethodsColumn"].Value.ToString().Trim();
+        //                if (ArgumentAssignedASourceMethod.Length > 0) ArgumentAssignedASourceMethods.Add(ArgumentAssignedASourceMethod);
+        //            }
+        //            if (Row.Cells["JSTaintDefaultArgumentAssignedToSinkMethodsColumn"].Value != null)
+        //            {
+        //                string ArgumentAssignedToSinkMethod = Row.Cells["JSTaintDefaultArgumentAssignedToSinkMethodsColumn"].Value.ToString().Trim();
+        //                if (ArgumentAssignedToSinkMethod.Length > 0) ArgumentAssignedToSinkMethods.Add(ArgumentAssignedToSinkMethod);
+        //            }
+        //            if (Row.Cells["JSTaintDefaultSourceReturningMethodsColumn"].Value != null)
+        //            {
+        //                string SourceReturningMethod = Row.Cells["JSTaintDefaultSourceReturningMethodsColumn"].Value.ToString().Trim();
+        //                if (SourceReturningMethod.Length > 0) SourceReturningMethods.Add(SourceReturningMethod);
+        //            }
+        //            if (Row.Cells["JSTaintDefaultSinkReturningMethodsColumn"].Value != null)
+        //            {
+        //                string SinkReturningMethod = Row.Cells["JSTaintDefaultSinkReturningMethodsColumn"].Value.ToString().Trim();
+        //                if (SinkReturningMethod.Length > 0) SinkReturningMethods.Add(SinkReturningMethod);
+        //            }
+        //            if (Row.Cells["JSTaintDefaultArgumentReturningMethodsColumn"].Value != null)
+        //            {
+        //                string ArgumentReturningMethod = Row.Cells["JSTaintDefaultArgumentReturningMethodsColumn"].Value.ToString().Trim();
+        //                if (ArgumentReturningMethod.Length > 0) ArgumentReturningMethods.Add(ArgumentReturningMethod);
+        //            }
+        //        }
 
-                IronJint.StartTraceFromUI(JSTaintTraceInRTB.Text, SourceObjects, SinkObjects, SourceReturningMethods, SinkReturningMethods, ArgumentReturningMethods, ArgumentAssignedASourceMethods, ArgumentAssignedToSinkMethods);
-            }
-            else
-            {
-                IronJint.StopUITrace();
-                IronUI.ResetTraceStatus();
-                IronUI.ShowTraceStatus("Trace Stopped", false);
-            }
-        }
+        //        IronJint.StartTraceFromUI(JSTaintTraceInRTB.Text, SourceObjects, SinkObjects, SourceReturningMethods, SinkReturningMethods, ArgumentReturningMethods, ArgumentAssignedASourceMethods, ArgumentAssignedToSinkMethods);
+        //    }
+        //    else
+        //    {
+        //        IronJint.StopUITrace();
+        //        IronUI.ResetTraceStatus();
+        //        IronUI.ShowTraceStatus("Trace Stopped", false);
+        //    }
+        //}
 
-        private void JSTaintTabs_Selected(object sender, TabControlEventArgs e)
-        {
-            if (e.TabPage == null) return;
-            if (e.TabPage.Name.Equals("JSTaintResultTab"))
-            {
-                TaintTraceResultSinkLegendTB.Visible = true;
-                TaintTraceResultSourceLegendTB.Visible = true;
-                TaintTraceResultSourcePlusSinkLegendTB.Visible = true;
-                TaintTraceResultSourceToSinkLegendTB.Visible = true;
-                JSTaintShowLinesLbl.Visible = true;
-                JSTaintShowCleanCB.Visible = true;
-                JSTaintShowSourceCB.Visible = true;
-                JSTaintShowSinkCB.Visible = true;
-                JSTaintShowSourceToSinkCB.Visible = true;
-            }
-            else
-            {
-                TaintTraceResultSinkLegendTB.Visible = false;
-                TaintTraceResultSourceLegendTB.Visible = false;
-                TaintTraceResultSourcePlusSinkLegendTB.Visible = false;
-                TaintTraceResultSourceToSinkLegendTB.Visible = false;
-                JSTaintShowLinesLbl.Visible = false;
-                JSTaintShowCleanCB.Visible = false;
-                JSTaintShowSourceCB.Visible = false;
-                JSTaintShowSinkCB.Visible = false;
-                JSTaintShowSourceToSinkCB.Visible = false;
-            }
-        }
+        //private void JSTaintTabs_Selected(object sender, TabControlEventArgs e)
+        //{
+        //    if (e.TabPage == null) return;
+        //    if (e.TabPage.Name.Equals("JSTaintResultTab"))
+        //    {
+        //        TaintTraceResultSinkLegendTB.Visible = true;
+        //        TaintTraceResultSourceLegendTB.Visible = true;
+        //        TaintTraceResultSourcePlusSinkLegendTB.Visible = true;
+        //        TaintTraceResultSourceToSinkLegendTB.Visible = true;
+        //        JSTaintShowLinesLbl.Visible = true;
+        //        JSTaintShowCleanCB.Visible = true;
+        //        JSTaintShowSourceCB.Visible = true;
+        //        JSTaintShowSinkCB.Visible = true;
+        //        JSTaintShowSourceToSinkCB.Visible = true;
+        //    }
+        //    else
+        //    {
+        //        TaintTraceResultSinkLegendTB.Visible = false;
+        //        TaintTraceResultSourceLegendTB.Visible = false;
+        //        TaintTraceResultSourcePlusSinkLegendTB.Visible = false;
+        //        TaintTraceResultSourceToSinkLegendTB.Visible = false;
+        //        JSTaintShowLinesLbl.Visible = false;
+        //        JSTaintShowCleanCB.Visible = false;
+        //        JSTaintShowSourceCB.Visible = false;
+        //        JSTaintShowSinkCB.Visible = false;
+        //        JSTaintShowSourceToSinkCB.Visible = false;
+        //    }
+        //}
 
-        private void JSTainTraceEditMenu_Opening(object sender, CancelEventArgs e)
-        {
-            AddSourceTaintToolStripMenuItem.Visible = false;
-            AddSinkTaintToolStripMenuItem.Visible = false;
-            RemoveSourceTaintToolStripMenuItem.Visible = false;
-            RemoveSinkTaintToolStripMenuItem.Visible = false;
+        //private void JSTainTraceEditMenu_Opening(object sender, CancelEventArgs e)
+        //{
+        //    AddSourceTaintToolStripMenuItem.Visible = false;
+        //    AddSinkTaintToolStripMenuItem.Visible = false;
+        //    RemoveSourceTaintToolStripMenuItem.Visible = false;
+        //    RemoveSinkTaintToolStripMenuItem.Visible = false;
 
-            if (JSTaintResultGrid.SelectedCells.Count < 1 || JSTaintResultGrid.SelectedCells[0].Value == null) return;
+        //    if (JSTaintResultGrid.SelectedCells.Count < 1 || JSTaintResultGrid.SelectedCells[0].Value == null) return;
 
-            if (JSTaintResultGrid.SelectedRows[0].Cells[1].Style.BackColor == Color.Orange)
-            {
-                RemoveSourceTaintToolStripMenuItem.Visible = true;
-                AddSinkTaintToolStripMenuItem.Visible = true;
-            }
-            else if (JSTaintResultGrid.SelectedRows[0].Cells[1].Style.BackColor == Color.HotPink)
-            {
-                RemoveSinkTaintToolStripMenuItem.Visible = true;
-                AddSourceTaintToolStripMenuItem.Visible = true;
-            }
-            else if (JSTaintResultGrid.SelectedRows[0].Cells[1].Style.BackColor == Color.IndianRed)
-            {
-                RemoveSinkTaintToolStripMenuItem.Visible = true;
-                RemoveSourceTaintToolStripMenuItem.Visible = true;
-            }
-            else if (JSTaintResultGrid.SelectedRows[0].Cells[1].Style.BackColor == Color.Red)
-            {
-                RemoveSinkTaintToolStripMenuItem.Visible = true;
-                RemoveSourceTaintToolStripMenuItem.Visible = true;
-            }
-            else
-            {
-                AddSinkTaintToolStripMenuItem.Visible = true;
-                AddSourceTaintToolStripMenuItem.Visible = true;
-            }
-        }
+        //    if (JSTaintResultGrid.SelectedRows[0].Cells[1].Style.BackColor == Color.Orange)
+        //    {
+        //        RemoveSourceTaintToolStripMenuItem.Visible = true;
+        //        AddSinkTaintToolStripMenuItem.Visible = true;
+        //    }
+        //    else if (JSTaintResultGrid.SelectedRows[0].Cells[1].Style.BackColor == Color.HotPink)
+        //    {
+        //        RemoveSinkTaintToolStripMenuItem.Visible = true;
+        //        AddSourceTaintToolStripMenuItem.Visible = true;
+        //    }
+        //    else if (JSTaintResultGrid.SelectedRows[0].Cells[1].Style.BackColor == Color.IndianRed)
+        //    {
+        //        RemoveSinkTaintToolStripMenuItem.Visible = true;
+        //        RemoveSourceTaintToolStripMenuItem.Visible = true;
+        //    }
+        //    else if (JSTaintResultGrid.SelectedRows[0].Cells[1].Style.BackColor == Color.Red)
+        //    {
+        //        RemoveSinkTaintToolStripMenuItem.Visible = true;
+        //        RemoveSourceTaintToolStripMenuItem.Visible = true;
+        //    }
+        //    else
+        //    {
+        //        AddSinkTaintToolStripMenuItem.Visible = true;
+        //        AddSourceTaintToolStripMenuItem.Visible = true;
+        //    }
+        //}
 
-        private void AddSourceTaintToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            int LineNo = GetLineFromTaintGrid();
-            if (LineNo == 0) return;
-            if (!IronJint.SourceLinesToInclude.Contains(LineNo))IronJint.SourceLinesToInclude.Add(LineNo);
-            if (IronJint.SourceLinesToIgnore.Contains(LineNo)) IronJint.SourceLinesToIgnore.Remove(LineNo);
-            IronJint.ReDoTraceFromUI();
-        }
+        //private void AddSourceTaintToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    int LineNo = GetLineFromTaintGrid();
+        //    if (LineNo == 0) return;
+        //    if (!IronJint.SourceLinesToInclude.Contains(LineNo))IronJint.SourceLinesToInclude.Add(LineNo);
+        //    if (IronJint.SourceLinesToIgnore.Contains(LineNo)) IronJint.SourceLinesToIgnore.Remove(LineNo);
+        //    IronJint.ReDoTraceFromUI();
+        //}
 
-        private void AddSinkTaintToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            int LineNo = GetLineFromTaintGrid();
-            if (LineNo == 0) return;
-            if (!IronJint.SinkLinesToInclude.Contains(LineNo)) IronJint.SinkLinesToInclude.Add(LineNo);
-            if (IronJint.SinkLinesToIgnore.Contains(LineNo)) IronJint.SinkLinesToIgnore.Remove(LineNo);
-            IronJint.ReDoTraceFromUI();
-        }
+        //private void AddSinkTaintToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    int LineNo = GetLineFromTaintGrid();
+        //    if (LineNo == 0) return;
+        //    if (!IronJint.SinkLinesToInclude.Contains(LineNo)) IronJint.SinkLinesToInclude.Add(LineNo);
+        //    if (IronJint.SinkLinesToIgnore.Contains(LineNo)) IronJint.SinkLinesToIgnore.Remove(LineNo);
+        //    IronJint.ReDoTraceFromUI();
+        //}
 
-        private void RemoveSourceTaintToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            int LineNo = GetLineFromTaintGrid();
-            if (LineNo == 0) return;
-            if(!IronJint.SourceLinesToIgnore.Contains(LineNo)) IronJint.SourceLinesToIgnore.Add(LineNo);
-            if (IronJint.SourceLinesToInclude.Contains(LineNo)) IronJint.SourceLinesToInclude.Remove(LineNo);
-            IronJint.ReDoTraceFromUI();
-        }
+        //private void RemoveSourceTaintToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    int LineNo = GetLineFromTaintGrid();
+        //    if (LineNo == 0) return;
+        //    if(!IronJint.SourceLinesToIgnore.Contains(LineNo)) IronJint.SourceLinesToIgnore.Add(LineNo);
+        //    if (IronJint.SourceLinesToInclude.Contains(LineNo)) IronJint.SourceLinesToInclude.Remove(LineNo);
+        //    IronJint.ReDoTraceFromUI();
+        //}
 
-        private void RemoveSinkTaintToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            int LineNo = GetLineFromTaintGrid();
-            if (LineNo == 0) return;
-            if (!IronJint.SinkLinesToIgnore.Contains(LineNo)) IronJint.SinkLinesToIgnore.Add(LineNo);
-            if (IronJint.SinkLinesToInclude.Contains(LineNo)) IronJint.SinkLinesToInclude.Remove(LineNo);
-            IronJint.ReDoTraceFromUI();
-        }
+        //private void RemoveSinkTaintToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    int LineNo = GetLineFromTaintGrid();
+        //    if (LineNo == 0) return;
+        //    if (!IronJint.SinkLinesToIgnore.Contains(LineNo)) IronJint.SinkLinesToIgnore.Add(LineNo);
+        //    if (IronJint.SinkLinesToInclude.Contains(LineNo)) IronJint.SinkLinesToInclude.Remove(LineNo);
+        //    IronJint.ReDoTraceFromUI();
+        //}
 
-        private int GetLineFromTaintGrid()
-        {
-            if (JSTaintResultGrid.SelectedCells.Count < 1 || JSTaintResultGrid.SelectedCells[0].Value == null) return 0;
+        //private int GetLineFromTaintGrid()
+        //{
+        //    if (JSTaintResultGrid.SelectedCells.Count < 1 || JSTaintResultGrid.SelectedCells[0].Value == null) return 0;
 
-            try
-            {
-                int LineNo = Int32.Parse(JSTaintResultGrid.SelectedCells[0].Value.ToString());
-                return LineNo;
-            }
-            catch
-            {
-                return 0;
-            }
-        }
+        //    try
+        //    {
+        //        int LineNo = Int32.Parse(JSTaintResultGrid.SelectedCells[0].Value.ToString());
+        //        return LineNo;
+        //    }
+        //    catch
+        //    {
+        //        return 0;
+        //    }
+        //}
 
-        private void PauseAtTaintCB_Click(object sender, EventArgs e)
-        {
-            IronJint.PauseAtTaint = PauseAtTaintCB.Checked;
-        }
+        //private void PauseAtTaintCB_Click(object sender, EventArgs e)
+        //{
+        //    IronJint.PauseAtTaint = PauseAtTaintCB.Checked;
+        //}
 
-        private void JSTaintContinueBtn_Click(object sender, EventArgs e)
-        {
-            IronJint.UIIJ.MSR.Set();
-            JSTaintContinueBtn.Visible = false;
-            JSTaintResultGrid.Focus();
-        }
+        //private void JSTaintContinueBtn_Click(object sender, EventArgs e)
+        //{
+        //    IronJint.UIIJ.MSR.Set();
+        //    JSTaintContinueBtn.Visible = false;
+        //    JSTaintResultGrid.Focus();
+        //}
 
-        private void JSTaintResultGrid_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (JSTaintResultGrid.SelectedCells.Count < 1 || JSTaintResultGrid.SelectedCells[0].Value == null)
-            {
-                return;
-            }
-            try
-            {
-                int LineNo = Int32.Parse(JSTaintResultGrid.SelectedCells[0].Value.ToString());
-                IronUI.ShowTaintReasons(LineNo, IronJint.UIIJ.GetSourceReasons(LineNo), IronJint.UIIJ.GetSinkReasons(LineNo));
-            }catch{}
-        }
+        //private void JSTaintResultGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        //{
+        //    if (JSTaintResultGrid.SelectedCells.Count < 1 || JSTaintResultGrid.SelectedCells[0].Value == null)
+        //    {
+        //        return;
+        //    }
+        //    try
+        //    {
+        //        int LineNo = Int32.Parse(JSTaintResultGrid.SelectedCells[0].Value.ToString());
+        //        IronUI.ShowTaintReasons(LineNo, IronJint.UIIJ.GetSourceReasons(LineNo), IronJint.UIIJ.GetSinkReasons(LineNo));
+        //    }catch{}
+        //}
 
         private void ConfigViewHideLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
@@ -3884,27 +3827,27 @@ namespace IronWASP
             }
         }
 
-        private void JSTaintConfigShowHideBtn_Click(object sender, EventArgs e)
-        {
-            JSTaintShowLinesLbl.Visible = JSTaintShowCleanCB.Visible = JSTaintShowSourceCB.Visible = JSTaintShowSinkCB.Visible = JSTaintShowSourceToSinkCB.Visible = JSTaintConfigPanel.Visible;
-            if (JSTaintConfigPanel.Visible == true)
-            {
-                JSTaintConfigPanel.Visible = false;
-                JSTaintConfigShowHideBtn.Text = "Show Taint Config";
-            }
-            else
-            {
-                JSTaintConfigPanel.Height = 450;
-                JSTaintConfigGrid.Height = 400;
-                JSTaintConfigPanel.Visible = true;
-                JSTaintConfigShowHideBtn.Text = "Hide Taint Config";
-            }
-        }
+        //private void JSTaintConfigShowHideBtn_Click(object sender, EventArgs e)
+        //{
+        //    JSTaintShowLinesLbl.Visible = JSTaintShowCleanCB.Visible = JSTaintShowSourceCB.Visible = JSTaintShowSinkCB.Visible = JSTaintShowSourceToSinkCB.Visible = JSTaintConfigPanel.Visible;
+        //    if (JSTaintConfigPanel.Visible == true)
+        //    {
+        //        JSTaintConfigPanel.Visible = false;
+        //        JSTaintConfigShowHideBtn.Text = "Show Taint Config";
+        //    }
+        //    else
+        //    {
+        //        JSTaintConfigPanel.Height = 450;
+        //        JSTaintConfigGrid.Height = 400;
+        //        JSTaintConfigPanel.Visible = true;
+        //        JSTaintConfigShowHideBtn.Text = "Hide Taint Config";
+        //    }
+        //}
 
-        private void TaintTraceResetTaintConfigBtn_Click(object sender, EventArgs e)
-        {
-            IronJint.ShowDefaultTaintConfig();
-        }
+        //private void TaintTraceResetTaintConfigBtn_Click(object sender, EventArgs e)
+        //{
+        //    IronJint.ShowDefaultTaintConfig();
+        //}
 
         private void ConsoleStatusTB_Enter(object sender, EventArgs e)
         {
@@ -3921,21 +3864,21 @@ namespace IronWASP
             return;
         }
 
-        private void ConfigJSTaintConfigApplyChangesLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Config.UpdateJSTaintConfigFromUI();
-            IronDB.StoreJSTaintConfig();
-        }
+        //private void ConfigJSTaintConfigApplyChangesLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        //{
+        //    Config.UpdateJSTaintConfigFromUI();
+        //    IronDB.StoreJSTaintConfig();
+        //}
 
-        private void ConfigJSTaintConfigCancelChangesLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            IronUI.UpdateJSTaintConfigInUIFromConfig();
-        }
+        //private void ConfigJSTaintConfigCancelChangesLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        //{
+        //    IronUI.UpdateJSTaintConfigInUIFromConfig();
+        //}
 
-        private void TaintTraceClearTaintConfigBtn_Click(object sender, EventArgs e)
-        {
-            JSTaintConfigGrid.Rows.Clear();
-        }
+        //private void TaintTraceClearTaintConfigBtn_Click(object sender, EventArgs e)
+        //{
+        //    JSTaintConfigGrid.Rows.Clear();
+        //}
 
         private void ConfigScannerThreadMaxCountTB_Scroll(object sender, EventArgs e)
         {
@@ -3945,7 +3888,8 @@ namespace IronWASP
 
         private void SelectResponseForJavaScriptTestingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            IronLog.MarkForJavaScriptTesting(GetSource(), GetID());
+            MessageBox.Show("This feature has been temporarily disabled. It will be reintroduced in a future version.");
+            //IronLog.MarkForJavaScriptTesting(GetSource(), GetID());
         }
 
         private void ConfigScannerSettingsApplyChangesLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -3976,46 +3920,46 @@ namespace IronWASP
             catch (Exception Exp) { IronException.Report("Unable to Open RenderHtml", Exp); }
         }
 
-        private void JSTaintShowCleanCB_CheckedChanged(object sender, EventArgs e)
-        {
-            IronUI.SetJSTaintTraceResult();
-        }
+        //private void JSTaintShowCleanCB_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    IronUI.SetJSTaintTraceResult();
+        //}
 
-        private void JSTaintShowSourceCB_CheckedChanged(object sender, EventArgs e)
-        {
-            IronUI.SetJSTaintTraceResult();
-        }
+        //private void JSTaintShowSourceCB_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    IronUI.SetJSTaintTraceResult();
+        //}
 
-        private void JSTaintShowSinkCB_CheckedChanged(object sender, EventArgs e)
-        {
-            IronUI.SetJSTaintTraceResult();
-        }
+        //private void JSTaintShowSinkCB_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    IronUI.SetJSTaintTraceResult();
+        //}
 
-        private void JSTaintShowSourceToSinkCB_CheckedChanged(object sender, EventArgs e)
-        {
-            IronUI.SetJSTaintTraceResult();
-        }
+        //private void JSTaintShowSourceToSinkCB_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    IronUI.SetJSTaintTraceResult();
+        //}
 
-        private void CopyLineTaintToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (JSTaintResultGrid.SelectedCells.Count < 1 || JSTaintResultGrid.SelectedCells[0].Value == null) return;
-            try
-            {
-                try
-                {
-                    Clipboard.SetText("Copy Failed!");
-                }
-                catch { }
-                string Line = JSTaintResultGrid.SelectedCells[1].Value.ToString();
-                try
-                {
-                    Clipboard.SetText(Line);
-                }
-                catch { }
-            }
-            catch
-            {}
-        }
+        //private void CopyLineTaintToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    if (JSTaintResultGrid.SelectedCells.Count < 1 || JSTaintResultGrid.SelectedCells[0].Value == null) return;
+        //    try
+        //    {
+        //        try
+        //        {
+        //            Clipboard.SetText("Copy Failed!");
+        //        }
+        //        catch { }
+        //        string Line = JSTaintResultGrid.SelectedCells[1].Value.ToString();
+        //        try
+        //        {
+        //            Clipboard.SetText(Line);
+        //        }
+        //        catch { }
+        //    }
+        //    catch
+        //    {}
+        //}
 
         private void LogOptionsBtn_Click(object sender, EventArgs e)
         {
@@ -4027,13 +3971,13 @@ namespace IronWASP
             ProxyOptionsBtn.ContextMenuStrip.Show(ProxyOptionsBtn, new Point(0, LogOptionsBtn.Height));
         }
 
-        private void PauseAtTaintCB_CheckedChanged(object sender, EventArgs e)
-        {
-            JSTaintShowCleanCB.Enabled = !PauseAtTaintCB.Checked;
-            JSTaintShowSourceCB.Enabled = !PauseAtTaintCB.Checked;
-            JSTaintShowSinkCB.Enabled = !PauseAtTaintCB.Checked;
-            JSTaintShowSourceToSinkCB.Enabled = !PauseAtTaintCB.Checked;
-        }
+        //private void PauseAtTaintCB_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    JSTaintShowCleanCB.Enabled = !PauseAtTaintCB.Checked;
+        //    JSTaintShowSourceCB.Enabled = !PauseAtTaintCB.Checked;
+        //    JSTaintShowSinkCB.Enabled = !PauseAtTaintCB.Checked;
+        //    JSTaintShowSourceToSinkCB.Enabled = !PauseAtTaintCB.Checked;
+        //}
 
         private void ConfigPanelTabs_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -5229,6 +5173,37 @@ namespace IronWASP
         private void TraceMsgRTB_LinkClicked(object sender, LinkClickedEventArgs e)
         {
             MessageBox.Show(e.LinkText);
+        }
+
+        private void generateReportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (IronUI.IsReportGenerationWizardOpen())
+            {
+                IronUI.RGW.Activate();
+            }
+            else
+            {
+                IronUI.RGW = new ReportGenerationWizard();
+                TreeNode TopNode = IronUI.RGW.FindingsTree.Nodes.Add("All", "All");
+                TopNode.Checked = true;
+                CopyTree(IronTree.TopNode, TopNode);
+                IronUI.RGW.Show();
+            }            
+        }
+
+        void CopyTree(TreeNode FromNode, TreeNode ToNode)
+        {
+            if (FromNode.Level == 1 && FromNode.Index > 2) return;
+            foreach (TreeNode Node in FromNode.Nodes)
+            {
+                if (Node.Level == 1 && Node.Index > 2) continue;
+                TreeNode NewNode = ToNode.Nodes.Add(Node.Name, Node.Name);
+                NewNode.Checked = true;
+                if (Node.Nodes.Count > 0)
+                {
+                    CopyTree(Node, NewNode);
+                }
+            }
         }
     }
 }

@@ -48,33 +48,32 @@ namespace IronWASP
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle28 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle44 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle45 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle46 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle47 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle48 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle49 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle50 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle51 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle52 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle36 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle53 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle16 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle17 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle54 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle18 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle55 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle39 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle56 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle57 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle58 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle59 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle21 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle22 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle23 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle24 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle25 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle26 = new System.Windows.Forms.DataGridViewCellStyle();
             this.split_main = new System.Windows.Forms.SplitContainer();
             this.IronTree = new System.Windows.Forms.TreeView();
             this.IronTreeMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -279,6 +278,7 @@ namespace IronWASP
             this.MTFollowRedirectBtn = new System.Windows.Forms.Button();
             this.MTGroupHistoryTab = new System.Windows.Forms.TabPage();
             this.TestGroupHistoryBaseSplit = new System.Windows.Forms.SplitContainer();
+            this.label6 = new System.Windows.Forms.Label();
             this.TestGroupHistoryDoDiffBtn = new System.Windows.Forms.Button();
             this.TestGroupLogGrid = new System.Windows.Forms.DataGridView();
             this.TestGroupLogGridForSelect = new System.Windows.Forms.DataGridViewCheckBoxColumn();
@@ -333,20 +333,20 @@ namespace IronWASP
             this.ShellAPIDetailsRTB = new System.Windows.Forms.RichTextBox();
             this.mt_proxy = new System.Windows.Forms.TabPage();
             this.ProxyBaseSplit = new System.Windows.Forms.SplitContainer();
+            this.ProxyLoopbackLbl = new System.Windows.Forms.Label();
+            this.label33 = new System.Windows.Forms.Label();
+            this.ProxyPortLbl = new System.Windows.Forms.Label();
             this.ViewProxyInterceptionConfigLink = new System.Windows.Forms.LinkLabel();
             this.label3 = new System.Windows.Forms.Label();
-            this.ConfigLoopBackOnlyCB = new System.Windows.Forms.CheckBox();
             this.ProxyExceptionTB = new System.Windows.Forms.TextBox();
             this.ConfigSetAsSystemProxyCB = new System.Windows.Forms.CheckBox();
             this.ProxyOptionsBtn = new System.Windows.Forms.Button();
-            this.ConfigProxyRunBtn = new System.Windows.Forms.Button();
             this.InterceptRequestCB = new System.Windows.Forms.CheckBox();
             this.ProxyDropBtn = new System.Windows.Forms.Button();
             this.InterceptResponseCB = new System.Windows.Forms.CheckBox();
             this.label7 = new System.Windows.Forms.Label();
             this.ViewProxyLogLink = new System.Windows.Forms.LinkLabel();
             this.ProxySendBtn = new System.Windows.Forms.Button();
-            this.ConfigProxyListenPortTB = new System.Windows.Forms.TextBox();
             this.ProxyBottomPanel = new System.Windows.Forms.Panel();
             this.ProxyInterceptTabs = new System.Windows.Forms.TabControl();
             this.ProxyInterceptRequestTab = new System.Windows.Forms.TabPage();
@@ -529,49 +529,7 @@ namespace IronWASP
             this.label32 = new System.Windows.Forms.Label();
             this.ResultsHelpTab = new System.Windows.Forms.TabPage();
             this.textBox7 = new System.Windows.Forms.TextBox();
-            this.mt_js = new System.Windows.Forms.TabPage();
-            this.JSTaintBaseSplit = new System.Windows.Forms.SplitContainer();
-            this.JSTaintStatusTB = new System.Windows.Forms.TextBox();
-            this.JSTaintConfigShowHideBtn = new System.Windows.Forms.Button();
-            this.TaintTraceResultSinkLegendTB = new System.Windows.Forms.TextBox();
-            this.JSTaintConfigPanel = new System.Windows.Forms.Panel();
-            this.TaintTraceClearTaintConfigBtn = new System.Windows.Forms.Button();
-            this.JSTaintConfigGrid = new System.Windows.Forms.DataGridView();
-            this.JSTaintDefaultSourceObjectsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.JSTaintDefaultSinkObjectsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.JSTaintDefaultArgumentAssignedASourceMethodsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.JSTaintDefaultArgumentAssignedToSinkMethodsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.JSTaintDefaultSourceReturningMethodsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.JSTaintDefaultSinkReturningMethodsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.JSTaintDefaultArgumentReturningMethodsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TaintTraceResetTaintConfigBtn = new System.Windows.Forms.Button();
-            this.TaintTraceResultSourceToSinkLegendTB = new System.Windows.Forms.TextBox();
-            this.JSTaintShowSourceToSinkCB = new System.Windows.Forms.CheckBox();
-            this.TaintTraceResultSourceLegendTB = new System.Windows.Forms.TextBox();
-            this.JSTaintContinueBtn = new System.Windows.Forms.Button();
-            this.TaintTraceResultSourcePlusSinkLegendTB = new System.Windows.Forms.TextBox();
-            this.JSTaintShowCleanCB = new System.Windows.Forms.CheckBox();
-            this.JSTaintShowLinesLbl = new System.Windows.Forms.Label();
-            this.PauseAtTaintCB = new System.Windows.Forms.CheckBox();
-            this.JSTaintShowSourceCB = new System.Windows.Forms.CheckBox();
-            this.JSTaintShowSinkCB = new System.Windows.Forms.CheckBox();
-            this.JSTaintTraceControlBtn = new System.Windows.Forms.Button();
-            this.JSTaintTabs = new System.Windows.Forms.TabControl();
-            this.JSTaintInputTab = new System.Windows.Forms.TabPage();
-            this.JSTaintTraceInRTB = new System.Windows.Forms.RichTextBox();
-            this.TaintTraceMsgTB = new System.Windows.Forms.TextBox();
-            this.JSTaintResultTab = new System.Windows.Forms.TabPage();
-            this.JSTaintResultSplit = new System.Windows.Forms.SplitContainer();
-            this.JSTaintResultGrid = new System.Windows.Forms.DataGridView();
-            this.JSTaintResultLineColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.JSTaintResultCodeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.JSTainTraceEditMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.AddSourceTaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddSinkTaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.RemoveSourceTaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.RemoveSinkTaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.CopyLineTaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.JSTaintReasonsRTB = new System.Windows.Forms.RichTextBox();
+            this.mt_hawas = new System.Windows.Forms.TabPage();
             this.mt_dev = new System.Windows.Forms.TabPage();
             this.DevMainTabs = new System.Windows.Forms.TabControl();
             this.DevModulesAndPluginsTab = new System.Windows.Forms.TabPage();
@@ -643,6 +601,12 @@ namespace IronWASP
             this.TraceMsgRTB = new System.Windows.Forms.RichTextBox();
             this.DevHelpTab = new System.Windows.Forms.TabPage();
             this.DevHelpTB = new System.Windows.Forms.TextBox();
+            this.JSTainTraceEditMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.AddSourceTaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.AddSinkTaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.RemoveSourceTaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.RemoveSinkTaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.CopyLineTaintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MTRequestFormatPluginsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.MTRequestDeSerObjectToXmlMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MTRequestSerXmlToObjectMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -654,12 +618,6 @@ namespace IronWASP
             this.ProxyRequestSerXmlToObjectMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ConfigPanel = new System.Windows.Forms.Panel();
             this.ConfigPanelTabs = new System.Windows.Forms.TabControl();
-            this.ConfigIronProxyTab = new System.Windows.Forms.TabPage();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.ConfigUpstreamProxyPortTB = new System.Windows.Forms.TextBox();
-            this.ConfigUseUpstreamProxyCB = new System.Windows.Forms.CheckBox();
-            this.ConfigUpstreamProxyIPTB = new System.Windows.Forms.TextBox();
             this.ConfigInterceptRulesTab = new System.Windows.Forms.TabPage();
             this.ConfigRuleRequestOnResponseRulesCB = new System.Windows.Forms.CheckBox();
             this.label25 = new System.Windows.Forms.Label();
@@ -804,6 +762,7 @@ namespace IronWASP
             this.OpenProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ImportBurpLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generateReportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EncodeDecodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DiffTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -824,7 +783,7 @@ namespace IronWASP
             this.ConfigViewHideLL = new System.Windows.Forms.LinkLabel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.PromptBlinkTimer = new System.Windows.Forms.Timer(this.components);
-            this.label6 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.split_main.Panel1.SuspendLayout();
             this.split_main.Panel2.SuspendLayout();
             this.split_main.SuspendLayout();
@@ -1006,20 +965,7 @@ namespace IronWASP
             this.ResultsTriggersComparePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SelectForDiffTriggersGrid)).BeginInit();
             this.ResultsHelpTab.SuspendLayout();
-            this.mt_js.SuspendLayout();
-            this.JSTaintBaseSplit.Panel1.SuspendLayout();
-            this.JSTaintBaseSplit.Panel2.SuspendLayout();
-            this.JSTaintBaseSplit.SuspendLayout();
-            this.JSTaintConfigPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.JSTaintConfigGrid)).BeginInit();
-            this.JSTaintTabs.SuspendLayout();
-            this.JSTaintInputTab.SuspendLayout();
-            this.JSTaintResultTab.SuspendLayout();
-            this.JSTaintResultSplit.Panel1.SuspendLayout();
-            this.JSTaintResultSplit.Panel2.SuspendLayout();
-            this.JSTaintResultSplit.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.JSTaintResultGrid)).BeginInit();
-            this.JSTainTraceEditMenu.SuspendLayout();
+            this.mt_hawas.SuspendLayout();
             this.mt_dev.SuspendLayout();
             this.DevMainTabs.SuspendLayout();
             this.DevModulesAndPluginsTab.SuspendLayout();
@@ -1061,12 +1007,12 @@ namespace IronWASP
             this.TraceBaseSplit.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TraceGrid)).BeginInit();
             this.DevHelpTab.SuspendLayout();
+            this.JSTainTraceEditMenu.SuspendLayout();
             this.MTRequestFormatPluginsMenu.SuspendLayout();
             this.ProxyResponseFormatPluginsMenu.SuspendLayout();
             this.ProxyRequestFormatPluginsMenu.SuspendLayout();
             this.ConfigPanel.SuspendLayout();
             this.ConfigPanelTabs.SuspendLayout();
-            this.ConfigIronProxyTab.SuspendLayout();
             this.ConfigInterceptRulesTab.SuspendLayout();
             this.ConfigRuleKeywordInResponseGB.SuspendLayout();
             this.ConfigRuleKeywordInRequestGB.SuspendLayout();
@@ -1112,7 +1058,7 @@ namespace IronWASP
             // split_main.Panel2
             // 
             this.split_main.Panel2.Controls.Add(this.main_tab);
-            this.split_main.Size = new System.Drawing.Size(883, 538);
+            this.split_main.Size = new System.Drawing.Size(883, 537);
             this.split_main.SplitterDistance = 166;
             this.split_main.TabIndex = 0;
             // 
@@ -1125,7 +1071,7 @@ namespace IronWASP
             this.IronTree.Margin = new System.Windows.Forms.Padding(0);
             this.IronTree.Name = "IronTree";
             this.IronTree.ShowRootLines = false;
-            this.IronTree.Size = new System.Drawing.Size(166, 538);
+            this.IronTree.Size = new System.Drawing.Size(166, 537);
             this.IronTree.TabIndex = 1;
             this.IronTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.IronTree_AfterSelect);
             // 
@@ -1170,14 +1116,14 @@ namespace IronWASP
             this.main_tab.Controls.Add(this.mt_proxy);
             this.main_tab.Controls.Add(this.mt_logs);
             this.main_tab.Controls.Add(this.mt_results);
-            this.main_tab.Controls.Add(this.mt_js);
+            this.main_tab.Controls.Add(this.mt_hawas);
             this.main_tab.Controls.Add(this.mt_dev);
             this.main_tab.Location = new System.Drawing.Point(0, 0);
             this.main_tab.Margin = new System.Windows.Forms.Padding(0);
             this.main_tab.Name = "main_tab";
             this.main_tab.Padding = new System.Drawing.Point(0, 0);
             this.main_tab.SelectedIndex = 0;
-            this.main_tab.Size = new System.Drawing.Size(713, 538);
+            this.main_tab.Size = new System.Drawing.Size(713, 537);
             this.main_tab.TabIndex = 0;
             this.main_tab.SelectedIndexChanged += new System.EventHandler(this.main_tab_SelectedIndexChanged);
             // 
@@ -1195,7 +1141,7 @@ namespace IronWASP
             this.mt_console.Controls.Add(this.ConsoleScanUrlTB);
             this.mt_console.Location = new System.Drawing.Point(4, 22);
             this.mt_console.Name = "mt_console";
-            this.mt_console.Size = new System.Drawing.Size(705, 512);
+            this.mt_console.Size = new System.Drawing.Size(705, 511);
             this.mt_console.TabIndex = 8;
             this.mt_console.Text = "   Console   ";
             // 
@@ -1287,7 +1233,7 @@ namespace IronWASP
             this.richTextBox2.Margin = new System.Windows.Forms.Padding(0);
             this.richTextBox2.Name = "richTextBox2";
             this.richTextBox2.ReadOnly = true;
-            this.richTextBox2.Size = new System.Drawing.Size(705, 200);
+            this.richTextBox2.Size = new System.Drawing.Size(705, 199);
             this.richTextBox2.TabIndex = 6;
             this.richTextBox2.Text = "";
             this.richTextBox2.Visible = false;
@@ -1317,7 +1263,7 @@ namespace IronWASP
             this.mt_auto.Location = new System.Drawing.Point(4, 22);
             this.mt_auto.Margin = new System.Windows.Forms.Padding(0);
             this.mt_auto.Name = "mt_auto";
-            this.mt_auto.Size = new System.Drawing.Size(705, 512);
+            this.mt_auto.Size = new System.Drawing.Size(705, 511);
             this.mt_auto.TabIndex = 3;
             this.mt_auto.Text = "   Automated Scanning   ";
             this.mt_auto.UseVisualStyleBackColor = true;
@@ -1332,7 +1278,7 @@ namespace IronWASP
             this.ASMainTabs.Name = "ASMainTabs";
             this.ASMainTabs.Padding = new System.Drawing.Point(0, 0);
             this.ASMainTabs.SelectedIndex = 0;
-            this.ASMainTabs.Size = new System.Drawing.Size(705, 512);
+            this.ASMainTabs.Size = new System.Drawing.Size(705, 511);
             this.ASMainTabs.TabIndex = 0;
             // 
             // ASConfigureTab
@@ -1341,7 +1287,7 @@ namespace IronWASP
             this.ASConfigureTab.Location = new System.Drawing.Point(4, 22);
             this.ASConfigureTab.Margin = new System.Windows.Forms.Padding(0);
             this.ASConfigureTab.Name = "ASConfigureTab";
-            this.ASConfigureTab.Size = new System.Drawing.Size(697, 486);
+            this.ASConfigureTab.Size = new System.Drawing.Size(697, 485);
             this.ASConfigureTab.TabIndex = 0;
             this.ASConfigureTab.Text = "    Scan Jobs    ";
             this.ASConfigureTab.UseVisualStyleBackColor = true;
@@ -1362,8 +1308,8 @@ namespace IronWASP
             // ScanJobsBaseSplit.Panel2
             // 
             this.ScanJobsBaseSplit.Panel2.Controls.Add(this.ScanJobsBottomSplit);
-            this.ScanJobsBaseSplit.Size = new System.Drawing.Size(697, 486);
-            this.ScanJobsBaseSplit.SplitterDistance = 290;
+            this.ScanJobsBaseSplit.Size = new System.Drawing.Size(697, 485);
+            this.ScanJobsBaseSplit.SplitterDistance = 289;
             this.ScanJobsBaseSplit.SplitterWidth = 2;
             this.ScanJobsBaseSplit.TabIndex = 0;
             // 
@@ -1382,7 +1328,7 @@ namespace IronWASP
             this.ScanDisplayPanel.Location = new System.Drawing.Point(0, 0);
             this.ScanDisplayPanel.Margin = new System.Windows.Forms.Padding(0);
             this.ScanDisplayPanel.Name = "ScanDisplayPanel";
-            this.ScanDisplayPanel.Size = new System.Drawing.Size(697, 290);
+            this.ScanDisplayPanel.Size = new System.Drawing.Size(697, 289);
             this.ScanDisplayPanel.TabIndex = 16;
             // 
             // ASBaseTabs
@@ -1397,7 +1343,7 @@ namespace IronWASP
             this.ASBaseTabs.Name = "ASBaseTabs";
             this.ASBaseTabs.Padding = new System.Drawing.Point(0, 0);
             this.ASBaseTabs.SelectedIndex = 0;
-            this.ASBaseTabs.Size = new System.Drawing.Size(561, 234);
+            this.ASBaseTabs.Size = new System.Drawing.Size(561, 233);
             this.ASBaseTabs.TabIndex = 13;
             // 
             // ASRequestTab
@@ -1407,7 +1353,7 @@ namespace IronWASP
             this.ASRequestTab.Location = new System.Drawing.Point(4, 22);
             this.ASRequestTab.Margin = new System.Windows.Forms.Padding(0);
             this.ASRequestTab.Name = "ASRequestTab";
-            this.ASRequestTab.Size = new System.Drawing.Size(553, 208);
+            this.ASRequestTab.Size = new System.Drawing.Size(553, 207);
             this.ASRequestTab.TabIndex = 0;
             this.ASRequestTab.Text = "   Request To Scan   ";
             // 
@@ -1434,7 +1380,7 @@ namespace IronWASP
             this.ScanJobsTopSplit.Panel2.Controls.Add(this.ASRequestScanCookieCB);
             this.ScanJobsTopSplit.Panel2.Controls.Add(this.ASRequestScanURLCB);
             this.ScanJobsTopSplit.Panel2.Controls.Add(this.ASInjectHeaderLbl);
-            this.ScanJobsTopSplit.Size = new System.Drawing.Size(553, 208);
+            this.ScanJobsTopSplit.Size = new System.Drawing.Size(553, 207);
             this.ScanJobsTopSplit.SplitterDistance = 526;
             this.ScanJobsTopSplit.SplitterWidth = 2;
             this.ScanJobsTopSplit.TabIndex = 7;
@@ -1450,7 +1396,7 @@ namespace IronWASP
             this.ASRequestScanFullTabs.Name = "ASRequestScanFullTabs";
             this.ASRequestScanFullTabs.Padding = new System.Drawing.Point(0, 0);
             this.ASRequestScanFullTabs.SelectedIndex = 0;
-            this.ASRequestScanFullTabs.Size = new System.Drawing.Size(526, 208);
+            this.ASRequestScanFullTabs.Size = new System.Drawing.Size(526, 207);
             this.ASRequestScanFullTabs.TabIndex = 0;
             // 
             // tabPage20
@@ -1459,7 +1405,7 @@ namespace IronWASP
             this.tabPage20.Location = new System.Drawing.Point(4, 22);
             this.tabPage20.Margin = new System.Windows.Forms.Padding(0);
             this.tabPage20.Name = "tabPage20";
-            this.tabPage20.Size = new System.Drawing.Size(518, 182);
+            this.tabPage20.Size = new System.Drawing.Size(518, 181);
             this.tabPage20.TabIndex = 0;
             this.tabPage20.Text = "Raw Headers";
             this.tabPage20.UseVisualStyleBackColor = true;
@@ -1472,7 +1418,7 @@ namespace IronWASP
             this.ASRequestRawHeadersIDV.Margin = new System.Windows.Forms.Padding(0);
             this.ASRequestRawHeadersIDV.Name = "ASRequestRawHeadersIDV";
             this.ASRequestRawHeadersIDV.ReadOnly = true;
-            this.ASRequestRawHeadersIDV.Size = new System.Drawing.Size(518, 182);
+            this.ASRequestRawHeadersIDV.Size = new System.Drawing.Size(518, 181);
             this.ASRequestRawHeadersIDV.TabIndex = 0;
             this.ASRequestRawHeadersIDV.IDVTextChanged += new IronDataView.IronDataView.TextChanged(this.ASRequestRawHeadersIDV_IDVTextChanged);
             // 
@@ -1482,7 +1428,7 @@ namespace IronWASP
             this.tabPage21.Location = new System.Drawing.Point(4, 22);
             this.tabPage21.Margin = new System.Windows.Forms.Padding(0);
             this.tabPage21.Name = "tabPage21";
-            this.tabPage21.Size = new System.Drawing.Size(518, 182);
+            this.tabPage21.Size = new System.Drawing.Size(518, 181);
             this.tabPage21.TabIndex = 1;
             this.tabPage21.Text = "Raw Body";
             this.tabPage21.UseVisualStyleBackColor = true;
@@ -1495,7 +1441,7 @@ namespace IronWASP
             this.ASRequestRawBodyIDV.Margin = new System.Windows.Forms.Padding(0);
             this.ASRequestRawBodyIDV.Name = "ASRequestRawBodyIDV";
             this.ASRequestRawBodyIDV.ReadOnly = true;
-            this.ASRequestRawBodyIDV.Size = new System.Drawing.Size(518, 182);
+            this.ASRequestRawBodyIDV.Size = new System.Drawing.Size(518, 181);
             this.ASRequestRawBodyIDV.TabIndex = 1;
             this.ASRequestRawBodyIDV.IDVTextChanged += new IronDataView.IronDataView.TextChanged(this.ASRequestRawBodyIDV_IDVTextChanged);
             // 
@@ -1613,7 +1559,7 @@ namespace IronWASP
             this.ASInjectionPointTab.Location = new System.Drawing.Point(4, 22);
             this.ASInjectionPointTab.Margin = new System.Windows.Forms.Padding(0);
             this.ASInjectionPointTab.Name = "ASInjectionPointTab";
-            this.ASInjectionPointTab.Size = new System.Drawing.Size(553, 208);
+            this.ASInjectionPointTab.Size = new System.Drawing.Size(553, 207);
             this.ASInjectionPointTab.TabIndex = 1;
             this.ASInjectionPointTab.Text = "   Injection Points   ";
             // 
@@ -1631,7 +1577,7 @@ namespace IronWASP
             this.ASRequestTabs.Name = "ASRequestTabs";
             this.ASRequestTabs.Padding = new System.Drawing.Point(0, 0);
             this.ASRequestTabs.SelectedIndex = 0;
-            this.ASRequestTabs.Size = new System.Drawing.Size(553, 208);
+            this.ASRequestTabs.Size = new System.Drawing.Size(553, 207);
             this.ASRequestTabs.TabIndex = 0;
             // 
             // ASRequestURLTab
@@ -1640,7 +1586,7 @@ namespace IronWASP
             this.ASRequestURLTab.Location = new System.Drawing.Point(4, 22);
             this.ASRequestURLTab.Margin = new System.Windows.Forms.Padding(0);
             this.ASRequestURLTab.Name = "ASRequestURLTab";
-            this.ASRequestURLTab.Size = new System.Drawing.Size(545, 182);
+            this.ASRequestURLTab.Size = new System.Drawing.Size(545, 181);
             this.ASRequestURLTab.TabIndex = 0;
             this.ASRequestURLTab.Text = "URL";
             this.ASRequestURLTab.UseVisualStyleBackColor = true;
@@ -1666,7 +1612,7 @@ namespace IronWASP
             this.ASRequestScanURLGrid.Name = "ASRequestScanURLGrid";
             this.ASRequestScanURLGrid.RowHeadersVisible = false;
             this.ASRequestScanURLGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ASRequestScanURLGrid.Size = new System.Drawing.Size(545, 182);
+            this.ASRequestScanURLGrid.Size = new System.Drawing.Size(545, 181);
             this.ASRequestScanURLGrid.TabIndex = 0;
             // 
             // ASRequestURLSelectColumn
@@ -1697,7 +1643,7 @@ namespace IronWASP
             this.ASRequestQueryTab.Location = new System.Drawing.Point(4, 22);
             this.ASRequestQueryTab.Margin = new System.Windows.Forms.Padding(0);
             this.ASRequestQueryTab.Name = "ASRequestQueryTab";
-            this.ASRequestQueryTab.Size = new System.Drawing.Size(545, 182);
+            this.ASRequestQueryTab.Size = new System.Drawing.Size(545, 181);
             this.ASRequestQueryTab.TabIndex = 1;
             this.ASRequestQueryTab.Text = "Query";
             this.ASRequestQueryTab.UseVisualStyleBackColor = true;
@@ -1722,7 +1668,7 @@ namespace IronWASP
             this.ASRequestScanQueryGrid.Name = "ASRequestScanQueryGrid";
             this.ASRequestScanQueryGrid.RowHeadersVisible = false;
             this.ASRequestScanQueryGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ASRequestScanQueryGrid.Size = new System.Drawing.Size(545, 182);
+            this.ASRequestScanQueryGrid.Size = new System.Drawing.Size(545, 181);
             this.ASRequestScanQueryGrid.TabIndex = 1;
             // 
             // ASRequestQuerySelectColumn
@@ -1753,7 +1699,7 @@ namespace IronWASP
             this.ASRequestBodyTab.Location = new System.Drawing.Point(4, 22);
             this.ASRequestBodyTab.Margin = new System.Windows.Forms.Padding(0);
             this.ASRequestBodyTab.Name = "ASRequestBodyTab";
-            this.ASRequestBodyTab.Size = new System.Drawing.Size(545, 182);
+            this.ASRequestBodyTab.Size = new System.Drawing.Size(545, 181);
             this.ASRequestBodyTab.TabIndex = 2;
             this.ASRequestBodyTab.Text = "Body";
             this.ASRequestBodyTab.UseVisualStyleBackColor = true;
@@ -1770,7 +1716,7 @@ namespace IronWASP
             this.ASBodyInjectTypeTabs.Name = "ASBodyInjectTypeTabs";
             this.ASBodyInjectTypeTabs.Padding = new System.Drawing.Point(0, 0);
             this.ASBodyInjectTypeTabs.SelectedIndex = 0;
-            this.ASBodyInjectTypeTabs.Size = new System.Drawing.Size(545, 182);
+            this.ASBodyInjectTypeTabs.Size = new System.Drawing.Size(545, 181);
             this.ASBodyInjectTypeTabs.TabIndex = 1;
             this.ASBodyInjectTypeTabs.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.ASBodyInjectTypeTabs_Selecting);
             // 
@@ -1780,7 +1726,7 @@ namespace IronWASP
             this.ASBodyTypeNormalTab.Location = new System.Drawing.Point(4, 22);
             this.ASBodyTypeNormalTab.Margin = new System.Windows.Forms.Padding(0);
             this.ASBodyTypeNormalTab.Name = "ASBodyTypeNormalTab";
-            this.ASBodyTypeNormalTab.Size = new System.Drawing.Size(537, 156);
+            this.ASBodyTypeNormalTab.Size = new System.Drawing.Size(537, 155);
             this.ASBodyTypeNormalTab.TabIndex = 0;
             this.ASBodyTypeNormalTab.Text = "Normal Format";
             this.ASBodyTypeNormalTab.UseVisualStyleBackColor = true;
@@ -1805,7 +1751,7 @@ namespace IronWASP
             this.ASRequestScanBodyTypeNormalGrid.Name = "ASRequestScanBodyTypeNormalGrid";
             this.ASRequestScanBodyTypeNormalGrid.RowHeadersVisible = false;
             this.ASRequestScanBodyTypeNormalGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ASRequestScanBodyTypeNormalGrid.Size = new System.Drawing.Size(537, 156);
+            this.ASRequestScanBodyTypeNormalGrid.Size = new System.Drawing.Size(537, 155);
             this.ASRequestScanBodyTypeNormalGrid.TabIndex = 2;
             // 
             // dataGridViewCheckBoxColumn1
@@ -1836,7 +1782,7 @@ namespace IronWASP
             this.ASBodyTypeFormatPluginTab.Location = new System.Drawing.Point(4, 22);
             this.ASBodyTypeFormatPluginTab.Margin = new System.Windows.Forms.Padding(0);
             this.ASBodyTypeFormatPluginTab.Name = "ASBodyTypeFormatPluginTab";
-            this.ASBodyTypeFormatPluginTab.Size = new System.Drawing.Size(537, 156);
+            this.ASBodyTypeFormatPluginTab.Size = new System.Drawing.Size(537, 155);
             this.ASBodyTypeFormatPluginTab.TabIndex = 1;
             this.ASBodyTypeFormatPluginTab.Text = "Known Formats (Eg: JSON, XML etc)";
             this.ASBodyTypeFormatPluginTab.UseVisualStyleBackColor = true;
@@ -1855,7 +1801,7 @@ namespace IronWASP
             // ASRequestBodyTabSplit.Panel2
             // 
             this.ASRequestBodyTabSplit.Panel2.Controls.Add(this.ASRequestScanBodyTabs);
-            this.ASRequestBodyTabSplit.Size = new System.Drawing.Size(537, 156);
+            this.ASRequestBodyTabSplit.Size = new System.Drawing.Size(537, 155);
             this.ASRequestBodyTabSplit.SplitterDistance = 99;
             this.ASRequestBodyTabSplit.SplitterWidth = 2;
             this.ASRequestBodyTabSplit.TabIndex = 0;
@@ -1880,7 +1826,7 @@ namespace IronWASP
             this.ConfigureScanRequestFormatPluginsGrid.Name = "ConfigureScanRequestFormatPluginsGrid";
             this.ConfigureScanRequestFormatPluginsGrid.RowHeadersVisible = false;
             this.ConfigureScanRequestFormatPluginsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ConfigureScanRequestFormatPluginsGrid.Size = new System.Drawing.Size(99, 156);
+            this.ConfigureScanRequestFormatPluginsGrid.Size = new System.Drawing.Size(99, 155);
             this.ConfigureScanRequestFormatPluginsGrid.TabIndex = 0;
             // 
             // ASRequestBodyDataFormatSelectColumn
@@ -1910,7 +1856,7 @@ namespace IronWASP
             this.ASRequestScanBodyTabs.Name = "ASRequestScanBodyTabs";
             this.ASRequestScanBodyTabs.Padding = new System.Drawing.Point(0, 0);
             this.ASRequestScanBodyTabs.SelectedIndex = 0;
-            this.ASRequestScanBodyTabs.Size = new System.Drawing.Size(436, 156);
+            this.ASRequestScanBodyTabs.Size = new System.Drawing.Size(436, 155);
             this.ASRequestScanBodyTabs.TabIndex = 0;
             // 
             // ASRequestScanBodyGridTab
@@ -1919,7 +1865,7 @@ namespace IronWASP
             this.ASRequestScanBodyGridTab.Location = new System.Drawing.Point(4, 22);
             this.ASRequestScanBodyGridTab.Margin = new System.Windows.Forms.Padding(0);
             this.ASRequestScanBodyGridTab.Name = "ASRequestScanBodyGridTab";
-            this.ASRequestScanBodyGridTab.Size = new System.Drawing.Size(428, 130);
+            this.ASRequestScanBodyGridTab.Size = new System.Drawing.Size(428, 129);
             this.ASRequestScanBodyGridTab.TabIndex = 0;
             this.ASRequestScanBodyGridTab.Text = "Format Specific Injection Points";
             this.ASRequestScanBodyGridTab.UseVisualStyleBackColor = true;
@@ -1944,7 +1890,7 @@ namespace IronWASP
             this.ConfigureScanRequestBodyTypeFormatPluginGrid.ReadOnly = true;
             this.ConfigureScanRequestBodyTypeFormatPluginGrid.RowHeadersVisible = false;
             this.ConfigureScanRequestBodyTypeFormatPluginGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ConfigureScanRequestBodyTypeFormatPluginGrid.Size = new System.Drawing.Size(428, 130);
+            this.ConfigureScanRequestBodyTypeFormatPluginGrid.Size = new System.Drawing.Size(428, 129);
             this.ConfigureScanRequestBodyTypeFormatPluginGrid.TabIndex = 2;
             // 
             // ASRequestBodySelectColumn
@@ -1978,7 +1924,7 @@ namespace IronWASP
             this.ASRequestScanBodyXMLTab.Location = new System.Drawing.Point(4, 22);
             this.ASRequestScanBodyXMLTab.Margin = new System.Windows.Forms.Padding(0);
             this.ASRequestScanBodyXMLTab.Name = "ASRequestScanBodyXMLTab";
-            this.ASRequestScanBodyXMLTab.Size = new System.Drawing.Size(428, 130);
+            this.ASRequestScanBodyXMLTab.Size = new System.Drawing.Size(428, 129);
             this.ASRequestScanBodyXMLTab.TabIndex = 1;
             this.ASRequestScanBodyXMLTab.Text = "Normalized XML from Body Data (for reference)";
             this.ASRequestScanBodyXMLTab.UseVisualStyleBackColor = true;
@@ -1995,7 +1941,7 @@ namespace IronWASP
             this.ConfigureScanRequestFormatXMLTB.Name = "ConfigureScanRequestFormatXMLTB";
             this.ConfigureScanRequestFormatXMLTB.ReadOnly = true;
             this.ConfigureScanRequestFormatXMLTB.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.ConfigureScanRequestFormatXMLTB.Size = new System.Drawing.Size(428, 130);
+            this.ConfigureScanRequestFormatXMLTB.Size = new System.Drawing.Size(428, 129);
             this.ConfigureScanRequestFormatXMLTB.TabIndex = 0;
             // 
             // ASBodyTypeCustomTab
@@ -2009,7 +1955,7 @@ namespace IronWASP
             this.ASBodyTypeCustomTab.Controls.Add(this.label39);
             this.ASBodyTypeCustomTab.Location = new System.Drawing.Point(4, 22);
             this.ASBodyTypeCustomTab.Name = "ASBodyTypeCustomTab";
-            this.ASBodyTypeCustomTab.Size = new System.Drawing.Size(537, 156);
+            this.ASBodyTypeCustomTab.Size = new System.Drawing.Size(537, 155);
             this.ASBodyTypeCustomTab.TabIndex = 2;
             this.ASBodyTypeCustomTab.Text = "Custom Format";
             this.ASBodyTypeCustomTab.UseVisualStyleBackColor = true;
@@ -2025,7 +1971,7 @@ namespace IronWASP
             this.ASRequestCustomInjectionPointsHighlightTB.Margin = new System.Windows.Forms.Padding(0);
             this.ASRequestCustomInjectionPointsHighlightTB.Name = "ASRequestCustomInjectionPointsHighlightTB";
             this.ASRequestCustomInjectionPointsHighlightTB.ReadOnly = true;
-            this.ASRequestCustomInjectionPointsHighlightTB.Size = new System.Drawing.Size(537, 130);
+            this.ASRequestCustomInjectionPointsHighlightTB.Size = new System.Drawing.Size(537, 129);
             this.ASRequestCustomInjectionPointsHighlightTB.TabIndex = 0;
             this.ASRequestCustomInjectionPointsHighlightTB.Text = "";
             // 
@@ -2034,7 +1980,7 @@ namespace IronWASP
             this.ASRequestCustomInjectionPointsHighlightLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ASRequestCustomInjectionPointsHighlightLbl.AutoSize = true;
             this.ASRequestCustomInjectionPointsHighlightLbl.ForeColor = System.Drawing.Color.Blue;
-            this.ASRequestCustomInjectionPointsHighlightLbl.Location = new System.Drawing.Point(375, 136);
+            this.ASRequestCustomInjectionPointsHighlightLbl.Location = new System.Drawing.Point(375, 135);
             this.ASRequestCustomInjectionPointsHighlightLbl.Name = "ASRequestCustomInjectionPointsHighlightLbl";
             this.ASRequestCustomInjectionPointsHighlightLbl.Size = new System.Drawing.Size(126, 13);
             this.ASRequestCustomInjectionPointsHighlightLbl.TabIndex = 1;
@@ -2044,7 +1990,7 @@ namespace IronWASP
             // 
             this.label37.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(6, 136);
+            this.label37.Location = new System.Drawing.Point(6, 135);
             this.label37.Name = "label37";
             this.label37.Size = new System.Drawing.Size(118, 13);
             this.label37.TabIndex = 3;
@@ -2054,7 +2000,7 @@ namespace IronWASP
             // 
             this.ASCustomEndMarkerTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ASCustomEndMarkerTB.BackColor = System.Drawing.Color.White;
-            this.ASCustomEndMarkerTB.Location = new System.Drawing.Point(325, 133);
+            this.ASCustomEndMarkerTB.Location = new System.Drawing.Point(325, 132);
             this.ASCustomEndMarkerTB.Name = "ASCustomEndMarkerTB";
             this.ASCustomEndMarkerTB.ReadOnly = true;
             this.ASCustomEndMarkerTB.Size = new System.Drawing.Size(45, 20);
@@ -2065,7 +2011,7 @@ namespace IronWASP
             // 
             this.ASCustomStartMarkerTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ASCustomStartMarkerTB.BackColor = System.Drawing.Color.White;
-            this.ASCustomStartMarkerTB.Location = new System.Drawing.Point(201, 133);
+            this.ASCustomStartMarkerTB.Location = new System.Drawing.Point(201, 132);
             this.ASCustomStartMarkerTB.Name = "ASCustomStartMarkerTB";
             this.ASCustomStartMarkerTB.ReadOnly = true;
             this.ASCustomStartMarkerTB.Size = new System.Drawing.Size(52, 20);
@@ -2076,7 +2022,7 @@ namespace IronWASP
             // 
             this.label38.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label38.AutoSize = true;
-            this.label38.Location = new System.Drawing.Point(130, 136);
+            this.label38.Location = new System.Drawing.Point(130, 135);
             this.label38.Margin = new System.Windows.Forms.Padding(0);
             this.label38.Name = "label38";
             this.label38.Size = new System.Drawing.Size(68, 13);
@@ -2087,7 +2033,7 @@ namespace IronWASP
             // 
             this.label39.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(257, 136);
+            this.label39.Location = new System.Drawing.Point(257, 135);
             this.label39.Margin = new System.Windows.Forms.Padding(0);
             this.label39.Name = "label39";
             this.label39.Size = new System.Drawing.Size(65, 13);
@@ -2100,7 +2046,7 @@ namespace IronWASP
             this.ASRequestCookieTab.Location = new System.Drawing.Point(4, 22);
             this.ASRequestCookieTab.Margin = new System.Windows.Forms.Padding(0);
             this.ASRequestCookieTab.Name = "ASRequestCookieTab";
-            this.ASRequestCookieTab.Size = new System.Drawing.Size(545, 182);
+            this.ASRequestCookieTab.Size = new System.Drawing.Size(545, 181);
             this.ASRequestCookieTab.TabIndex = 3;
             this.ASRequestCookieTab.Text = "Cookie";
             this.ASRequestCookieTab.UseVisualStyleBackColor = true;
@@ -2125,7 +2071,7 @@ namespace IronWASP
             this.ASRequestScanCookieGrid.Name = "ASRequestScanCookieGrid";
             this.ASRequestScanCookieGrid.RowHeadersVisible = false;
             this.ASRequestScanCookieGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ASRequestScanCookieGrid.Size = new System.Drawing.Size(545, 182);
+            this.ASRequestScanCookieGrid.Size = new System.Drawing.Size(545, 181);
             this.ASRequestScanCookieGrid.TabIndex = 2;
             // 
             // ASRequestCookieSelectColumn
@@ -2156,7 +2102,7 @@ namespace IronWASP
             this.ASRequestHeadersTab.Location = new System.Drawing.Point(4, 22);
             this.ASRequestHeadersTab.Margin = new System.Windows.Forms.Padding(0);
             this.ASRequestHeadersTab.Name = "ASRequestHeadersTab";
-            this.ASRequestHeadersTab.Size = new System.Drawing.Size(545, 182);
+            this.ASRequestHeadersTab.Size = new System.Drawing.Size(545, 181);
             this.ASRequestHeadersTab.TabIndex = 4;
             this.ASRequestHeadersTab.Text = "Headers";
             this.ASRequestHeadersTab.UseVisualStyleBackColor = true;
@@ -2181,7 +2127,7 @@ namespace IronWASP
             this.ASRequestScanHeadersGrid.Name = "ASRequestScanHeadersGrid";
             this.ASRequestScanHeadersGrid.RowHeadersVisible = false;
             this.ASRequestScanHeadersGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ASRequestScanHeadersGrid.Size = new System.Drawing.Size(545, 182);
+            this.ASRequestScanHeadersGrid.Size = new System.Drawing.Size(545, 181);
             this.ASRequestScanHeadersGrid.TabIndex = 3;
             // 
             // ASRequestHeadersSelectColumn
@@ -2216,7 +2162,7 @@ namespace IronWASP
             this.ASRequestParameterNamesTab.Location = new System.Drawing.Point(4, 22);
             this.ASRequestParameterNamesTab.Margin = new System.Windows.Forms.Padding(0);
             this.ASRequestParameterNamesTab.Name = "ASRequestParameterNamesTab";
-            this.ASRequestParameterNamesTab.Size = new System.Drawing.Size(545, 182);
+            this.ASRequestParameterNamesTab.Size = new System.Drawing.Size(545, 181);
             this.ASRequestParameterNamesTab.TabIndex = 5;
             this.ASRequestParameterNamesTab.Text = "Names";
             this.ASRequestParameterNamesTab.UseVisualStyleBackColor = true;
@@ -2311,14 +2257,14 @@ namespace IronWASP
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ASScanPluginsGrid.BackgroundColor = System.Drawing.Color.White;
             this.ASScanPluginsGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle28.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle28.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle28.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle28.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle28.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle28.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle28.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ASScanPluginsGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle28;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ASScanPluginsGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.ASScanPluginsGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ASScanPluginsGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewCheckBoxColumn9,
@@ -2330,7 +2276,7 @@ namespace IronWASP
             this.ASScanPluginsGrid.ReadOnly = true;
             this.ASScanPluginsGrid.RowHeadersVisible = false;
             this.ASScanPluginsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ASScanPluginsGrid.Size = new System.Drawing.Size(133, 222);
+            this.ASScanPluginsGrid.Size = new System.Drawing.Size(133, 221);
             this.ASScanPluginsGrid.TabIndex = 5;
             // 
             // dataGridViewCheckBoxColumn9
@@ -2460,14 +2406,14 @@ namespace IronWASP
             this.ASQueueGrid.AllowUserToResizeRows = false;
             this.ASQueueGrid.BackgroundColor = System.Drawing.Color.White;
             this.ASQueueGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle44.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle44.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle44.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle44.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle44.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle44.SelectionForeColor = System.Drawing.Color.Blue;
-            dataGridViewCellStyle44.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ASQueueGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle44;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.Blue;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ASQueueGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.ASQueueGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ASQueueGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ASQueueGridScanID,
@@ -2658,7 +2604,7 @@ namespace IronWASP
             this.ASTraceTab.Location = new System.Drawing.Point(4, 22);
             this.ASTraceTab.Margin = new System.Windows.Forms.Padding(0);
             this.ASTraceTab.Name = "ASTraceTab";
-            this.ASTraceTab.Size = new System.Drawing.Size(697, 486);
+            this.ASTraceTab.Size = new System.Drawing.Size(697, 485);
             this.ASTraceTab.TabIndex = 2;
             this.ASTraceTab.Text = "    Scan Trace    ";
             this.ASTraceTab.UseVisualStyleBackColor = true;
@@ -2678,8 +2624,8 @@ namespace IronWASP
             // ScanTraceBaseSplit.Panel2
             // 
             this.ScanTraceBaseSplit.Panel2.Controls.Add(this.ScanTraceBottomSplit);
-            this.ScanTraceBaseSplit.Size = new System.Drawing.Size(697, 486);
-            this.ScanTraceBaseSplit.SplitterDistance = 192;
+            this.ScanTraceBaseSplit.Size = new System.Drawing.Size(697, 485);
+            this.ScanTraceBaseSplit.SplitterDistance = 191;
             this.ScanTraceBaseSplit.TabIndex = 1;
             // 
             // ScanTraceTopSplit
@@ -2709,7 +2655,7 @@ namespace IronWASP
             // ScanTraceTopSplit.Panel2
             // 
             this.ScanTraceTopSplit.Panel2.Controls.Add(this.ScanTraceGrid);
-            this.ScanTraceTopSplit.Size = new System.Drawing.Size(697, 192);
+            this.ScanTraceTopSplit.Size = new System.Drawing.Size(697, 191);
             this.ScanTraceTopSplit.SplitterDistance = 66;
             this.ScanTraceTopSplit.SplitterWidth = 2;
             this.ScanTraceTopSplit.TabIndex = 18;
@@ -2831,14 +2777,14 @@ namespace IronWASP
             this.ScanTraceGrid.AllowUserToResizeRows = false;
             this.ScanTraceGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ScanTraceGrid.BackgroundColor = System.Drawing.Color.White;
-            dataGridViewCellStyle45.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle45.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle45.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle45.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle45.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle45.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle45.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ScanTraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle45;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ScanTraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.ScanTraceGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ScanTraceGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn32,
@@ -2858,7 +2804,7 @@ namespace IronWASP
             this.ScanTraceGrid.RowHeadersVisible = false;
             this.ScanTraceGrid.RowHeadersWidth = 10;
             this.ScanTraceGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ScanTraceGrid.Size = new System.Drawing.Size(697, 124);
+            this.ScanTraceGrid.Size = new System.Drawing.Size(697, 123);
             this.ScanTraceGrid.TabIndex = 8;
             this.ScanTraceGrid.SelectionChanged += new System.EventHandler(this.ScanTraceGrid_SelectionChanged);
             // 
@@ -2992,14 +2938,14 @@ namespace IronWASP
             this.ScanTraceOverviewGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ScanTraceOverviewGrid.BackgroundColor = System.Drawing.Color.White;
             this.ScanTraceOverviewGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle46.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle46.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle46.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle46.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle46.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle46.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle46.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ScanTraceOverviewGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle46;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ScanTraceOverviewGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.ScanTraceOverviewGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ScanTraceOverviewGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column4,
@@ -3054,8 +3000,8 @@ namespace IronWASP
             // dataGridViewTextBoxColumn19
             // 
             this.dataGridViewTextBoxColumn19.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle47.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn19.DefaultCellStyle = dataGridViewCellStyle47;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn19.DefaultCellStyle = dataGridViewCellStyle5;
             this.dataGridViewTextBoxColumn19.HeaderText = "Code";
             this.dataGridViewTextBoxColumn19.MinimumWidth = 50;
             this.dataGridViewTextBoxColumn19.Name = "dataGridViewTextBoxColumn19";
@@ -3065,8 +3011,8 @@ namespace IronWASP
             // dataGridViewTextBoxColumn20
             // 
             this.dataGridViewTextBoxColumn20.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle48.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn20.DefaultCellStyle = dataGridViewCellStyle48;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn20.DefaultCellStyle = dataGridViewCellStyle6;
             this.dataGridViewTextBoxColumn20.HeaderText = "Body Length";
             this.dataGridViewTextBoxColumn20.MinimumWidth = 80;
             this.dataGridViewTextBoxColumn20.Name = "dataGridViewTextBoxColumn20";
@@ -3076,8 +3022,8 @@ namespace IronWASP
             // dataGridViewTextBoxColumn21
             // 
             this.dataGridViewTextBoxColumn21.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle49.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn21.DefaultCellStyle = dataGridViewCellStyle49;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn21.DefaultCellStyle = dataGridViewCellStyle7;
             this.dataGridViewTextBoxColumn21.HeaderText = "MIME Type";
             this.dataGridViewTextBoxColumn21.MinimumWidth = 80;
             this.dataGridViewTextBoxColumn21.Name = "dataGridViewTextBoxColumn21";
@@ -3087,8 +3033,8 @@ namespace IronWASP
             // Column5
             // 
             this.Column5.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle50.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Column5.DefaultCellStyle = dataGridViewCellStyle50;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Column5.DefaultCellStyle = dataGridViewCellStyle8;
             this.Column5.HeaderText = "Time(ms)";
             this.Column5.MinimumWidth = 50;
             this.Column5.Name = "Column5";
@@ -3098,8 +3044,8 @@ namespace IronWASP
             // dataGridViewTextBoxColumn22
             // 
             this.dataGridViewTextBoxColumn22.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle51.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn22.DefaultCellStyle = dataGridViewCellStyle51;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn22.DefaultCellStyle = dataGridViewCellStyle9;
             this.dataGridViewTextBoxColumn22.HeaderText = "Response Signature";
             this.dataGridViewTextBoxColumn22.MinimumWidth = 200;
             this.dataGridViewTextBoxColumn22.Name = "dataGridViewTextBoxColumn22";
@@ -3136,7 +3082,7 @@ namespace IronWASP
             this.mt_manual.Location = new System.Drawing.Point(4, 22);
             this.mt_manual.Margin = new System.Windows.Forms.Padding(0);
             this.mt_manual.Name = "mt_manual";
-            this.mt_manual.Size = new System.Drawing.Size(705, 512);
+            this.mt_manual.Size = new System.Drawing.Size(705, 511);
             this.mt_manual.TabIndex = 2;
             this.mt_manual.Text = "   Manual Testing   ";
             this.mt_manual.UseVisualStyleBackColor = true;
@@ -3158,7 +3104,7 @@ namespace IronWASP
             // MTFirstBaseSplit.Panel2
             // 
             this.MTFirstBaseSplit.Panel2.Controls.Add(this.MTBaseSplit);
-            this.MTFirstBaseSplit.Size = new System.Drawing.Size(705, 512);
+            this.MTFirstBaseSplit.Size = new System.Drawing.Size(705, 511);
             this.MTFirstBaseSplit.SplitterDistance = 135;
             this.MTFirstBaseSplit.SplitterWidth = 2;
             this.MTFirstBaseSplit.TabIndex = 14;
@@ -3265,8 +3211,8 @@ namespace IronWASP
             // MTBaseSplit.Panel2
             // 
             this.MTBaseSplit.Panel2.Controls.Add(this.MTResponseSideTabs);
-            this.MTBaseSplit.Size = new System.Drawing.Size(705, 375);
-            this.MTBaseSplit.SplitterDistance = 191;
+            this.MTBaseSplit.Size = new System.Drawing.Size(705, 374);
+            this.MTBaseSplit.SplitterDistance = 190;
             this.MTBaseSplit.SplitterWidth = 2;
             this.MTBaseSplit.TabIndex = 0;
             this.MTBaseSplit.Visible = false;
@@ -3300,7 +3246,7 @@ namespace IronWASP
             this.TestBaseRequestSplit.Panel2.Controls.Add(this.TestRequestView);
             this.TestBaseRequestSplit.Panel2.Controls.Add(this.panel4);
             this.TestBaseRequestSplit.Panel2.Controls.Add(this.MTSendBtn);
-            this.TestBaseRequestSplit.Size = new System.Drawing.Size(705, 191);
+            this.TestBaseRequestSplit.Size = new System.Drawing.Size(705, 190);
             this.TestBaseRequestSplit.SplitterDistance = 49;
             this.TestBaseRequestSplit.SplitterWidth = 2;
             this.TestBaseRequestSplit.TabIndex = 24;
@@ -3417,7 +3363,7 @@ namespace IronWASP
             // 
             this.MTMaximizeRequestViewBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.MTMaximizeRequestViewBtn.ContextMenuStrip = this.LogMenu;
-            this.MTMaximizeRequestViewBtn.Location = new System.Drawing.Point(633, 118);
+            this.MTMaximizeRequestViewBtn.Location = new System.Drawing.Point(633, 117);
             this.MTMaximizeRequestViewBtn.Name = "MTMaximizeRequestViewBtn";
             this.MTMaximizeRequestViewBtn.Size = new System.Drawing.Size(47, 19);
             this.MTMaximizeRequestViewBtn.TabIndex = 23;
@@ -3489,7 +3435,7 @@ namespace IronWASP
             this.TestRequestView.Margin = new System.Windows.Forms.Padding(0);
             this.TestRequestView.Name = "TestRequestView";
             this.TestRequestView.ReadOnly = false;
-            this.TestRequestView.Size = new System.Drawing.Size(588, 140);
+            this.TestRequestView.Size = new System.Drawing.Size(588, 139);
             this.TestRequestView.TabIndex = 22;
             // 
             // panel4
@@ -3683,6 +3629,16 @@ namespace IronWASP
             this.TestGroupHistoryBaseSplit.SplitterWidth = 2;
             this.TestGroupHistoryBaseSplit.TabIndex = 24;
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(3, 10);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(429, 13);
+            this.label6.TabIndex = 47;
+            this.label6.Text = "Click on Checkbox to select log. Click anywhere else to view the Request and Resp" +
+    "onse.";
+            // 
             // TestGroupHistoryDoDiffBtn
             // 
             this.TestGroupHistoryDoDiffBtn.Location = new System.Drawing.Point(438, 5);
@@ -3844,7 +3800,7 @@ namespace IronWASP
             this.mt_scripting.Location = new System.Drawing.Point(4, 22);
             this.mt_scripting.Margin = new System.Windows.Forms.Padding(0);
             this.mt_scripting.Name = "mt_scripting";
-            this.mt_scripting.Size = new System.Drawing.Size(705, 512);
+            this.mt_scripting.Size = new System.Drawing.Size(705, 511);
             this.mt_scripting.TabIndex = 10;
             this.mt_scripting.Text = "   Scripting   ";
             this.mt_scripting.UseVisualStyleBackColor = true;
@@ -3870,7 +3826,7 @@ namespace IronWASP
             // ScriptingShellSplit.Panel2
             // 
             this.ScriptingShellSplit.Panel2.Controls.Add(this.ScriptingShellAPISplit);
-            this.ScriptingShellSplit.Size = new System.Drawing.Size(705, 512);
+            this.ScriptingShellSplit.Size = new System.Drawing.Size(705, 511);
             this.ScriptingShellSplit.SplitterDistance = 533;
             this.ScriptingShellSplit.SplitterWidth = 2;
             this.ScriptingShellSplit.TabIndex = 7;
@@ -3980,7 +3936,7 @@ namespace IronWASP
             this.ScriptingShellTabs.Name = "ScriptingShellTabs";
             this.ScriptingShellTabs.Padding = new System.Drawing.Point(0, 0);
             this.ScriptingShellTabs.SelectedIndex = 0;
-            this.ScriptingShellTabs.Size = new System.Drawing.Size(533, 435);
+            this.ScriptingShellTabs.Size = new System.Drawing.Size(533, 434);
             this.ScriptingShellTabs.TabIndex = 3;
             this.ScriptingShellTabs.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.ScriptingShellTabs_Selecting);
             // 
@@ -3992,7 +3948,7 @@ namespace IronWASP
             this.InteractiveShellTP.Location = new System.Drawing.Point(4, 22);
             this.InteractiveShellTP.Margin = new System.Windows.Forms.Padding(0);
             this.InteractiveShellTP.Name = "InteractiveShellTP";
-            this.InteractiveShellTP.Size = new System.Drawing.Size(525, 409);
+            this.InteractiveShellTP.Size = new System.Drawing.Size(525, 408);
             this.InteractiveShellTP.TabIndex = 0;
             this.InteractiveShellTP.Text = "   Interactive Shell   ";
             // 
@@ -4004,7 +3960,7 @@ namespace IronWASP
             this.ShellInPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.ShellInPanel.Controls.Add(this.InteractiveShellPromptBox);
             this.ShellInPanel.Controls.Add(this.InteractiveShellIn);
-            this.ShellInPanel.Location = new System.Drawing.Point(0, 391);
+            this.ShellInPanel.Location = new System.Drawing.Point(0, 390);
             this.ShellInPanel.Margin = new System.Windows.Forms.Padding(0);
             this.ShellInPanel.Name = "ShellInPanel";
             this.ShellInPanel.Size = new System.Drawing.Size(525, 19);
@@ -4061,7 +4017,7 @@ namespace IronWASP
             this.InteractiveShellOut.Name = "InteractiveShellOut";
             this.InteractiveShellOut.ReadOnly = true;
             this.InteractiveShellOut.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.InteractiveShellOut.Size = new System.Drawing.Size(525, 392);
+            this.InteractiveShellOut.Size = new System.Drawing.Size(525, 391);
             this.InteractiveShellOut.TabIndex = 1;
             // 
             // MultiLineShellTP
@@ -4070,7 +4026,7 @@ namespace IronWASP
             this.MultiLineShellTP.Location = new System.Drawing.Point(4, 22);
             this.MultiLineShellTP.Margin = new System.Windows.Forms.Padding(0);
             this.MultiLineShellTP.Name = "MultiLineShellTP";
-            this.MultiLineShellTP.Size = new System.Drawing.Size(525, 409);
+            this.MultiLineShellTP.Size = new System.Drawing.Size(525, 408);
             this.MultiLineShellTP.TabIndex = 1;
             this.MultiLineShellTP.Text = "   Multi-Line Shell   ";
             this.MultiLineShellTP.UseVisualStyleBackColor = true;
@@ -4087,7 +4043,7 @@ namespace IronWASP
             this.MultiLineShellInTE.ShowSpaces = true;
             this.MultiLineShellInTE.ShowTabs = true;
             this.MultiLineShellInTE.ShowVRuler = true;
-            this.MultiLineShellInTE.Size = new System.Drawing.Size(525, 409);
+            this.MultiLineShellInTE.Size = new System.Drawing.Size(525, 408);
             this.MultiLineShellInTE.TabIndent = 2;
             this.MultiLineShellInTE.TabIndex = 4;
             // 
@@ -4106,7 +4062,7 @@ namespace IronWASP
             this.ScriptedSendTP.Location = new System.Drawing.Point(4, 22);
             this.ScriptedSendTP.Margin = new System.Windows.Forms.Padding(0);
             this.ScriptedSendTP.Name = "ScriptedSendTP";
-            this.ScriptedSendTP.Size = new System.Drawing.Size(525, 409);
+            this.ScriptedSendTP.Size = new System.Drawing.Size(525, 408);
             this.ScriptedSendTP.TabIndex = 2;
             this.ScriptedSendTP.Text = "   Scripted Send   ";
             // 
@@ -4126,7 +4082,7 @@ namespace IronWASP
             this.CustomSendErrorTB.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
             this.CustomSendErrorTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.CustomSendErrorTB.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.CustomSendErrorTB.Location = new System.Drawing.Point(0, 345);
+            this.CustomSendErrorTB.Location = new System.Drawing.Point(0, 344);
             this.CustomSendErrorTB.Multiline = true;
             this.CustomSendErrorTB.Name = "CustomSendErrorTB";
             this.CustomSendErrorTB.ReadOnly = true;
@@ -4149,7 +4105,7 @@ namespace IronWASP
             this.CustomSendTE.ShowSpaces = true;
             this.CustomSendTE.ShowTabs = true;
             this.CustomSendTE.ShowVRuler = true;
-            this.CustomSendTE.Size = new System.Drawing.Size(530, 193);
+            this.CustomSendTE.Size = new System.Drawing.Size(530, 192);
             this.CustomSendTE.TabIndent = 2;
             this.CustomSendTE.TabIndex = 14;
             // 
@@ -4159,7 +4115,7 @@ namespace IronWASP
             | System.Windows.Forms.AnchorStyles.Right)));
             this.CustomSendBottomRtb.BackColor = System.Drawing.SystemColors.Window;
             this.CustomSendBottomRtb.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.CustomSendBottomRtb.Location = new System.Drawing.Point(0, 267);
+            this.CustomSendBottomRtb.Location = new System.Drawing.Point(0, 266);
             this.CustomSendBottomRtb.Margin = new System.Windows.Forms.Padding(0);
             this.CustomSendBottomRtb.Name = "CustomSendBottomRtb";
             this.CustomSendBottomRtb.ReadOnly = true;
@@ -4231,7 +4187,7 @@ namespace IronWASP
             this.ScriptingHelpTP.Controls.Add(this.ScriptingHelpTB);
             this.ScriptingHelpTP.Location = new System.Drawing.Point(4, 22);
             this.ScriptingHelpTP.Name = "ScriptingHelpTP";
-            this.ScriptingHelpTP.Size = new System.Drawing.Size(525, 409);
+            this.ScriptingHelpTP.Size = new System.Drawing.Size(525, 408);
             this.ScriptingHelpTP.TabIndex = 3;
             this.ScriptingHelpTP.Text = "  Help  ";
             this.ScriptingHelpTP.UseVisualStyleBackColor = true;
@@ -4246,7 +4202,7 @@ namespace IronWASP
             this.ScriptingHelpTB.Name = "ScriptingHelpTB";
             this.ScriptingHelpTB.ReadOnly = true;
             this.ScriptingHelpTB.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.ScriptingHelpTB.Size = new System.Drawing.Size(525, 409);
+            this.ScriptingHelpTB.Size = new System.Drawing.Size(525, 408);
             this.ScriptingHelpTB.TabIndex = 1;
             this.ScriptingHelpTB.TabStop = false;
             this.ScriptingHelpTB.Text = resources.GetString("ScriptingHelpTB.Text");
@@ -4299,8 +4255,8 @@ namespace IronWASP
             // ScriptingShellAPISplit.Panel2
             // 
             this.ScriptingShellAPISplit.Panel2.Controls.Add(this.ShellAPIDetailsRTB);
-            this.ScriptingShellAPISplit.Size = new System.Drawing.Size(170, 512);
-            this.ScriptingShellAPISplit.SplitterDistance = 214;
+            this.ScriptingShellAPISplit.Size = new System.Drawing.Size(170, 511);
+            this.ScriptingShellAPISplit.SplitterDistance = 212;
             this.ScriptingShellAPISplit.SplitterWidth = 2;
             this.ScriptingShellAPISplit.TabIndex = 0;
             // 
@@ -4314,7 +4270,7 @@ namespace IronWASP
             this.ScriptingShellAPITreeTabs.Name = "ScriptingShellAPITreeTabs";
             this.ScriptingShellAPITreeTabs.Padding = new System.Drawing.Point(0, 0);
             this.ScriptingShellAPITreeTabs.SelectedIndex = 0;
-            this.ScriptingShellAPITreeTabs.Size = new System.Drawing.Size(170, 214);
+            this.ScriptingShellAPITreeTabs.Size = new System.Drawing.Size(170, 212);
             this.ScriptingShellAPITreeTabs.TabIndex = 0;
             // 
             // ScriptingShellAPITreePythonTab
@@ -4323,7 +4279,7 @@ namespace IronWASP
             this.ScriptingShellAPITreePythonTab.Location = new System.Drawing.Point(4, 22);
             this.ScriptingShellAPITreePythonTab.Margin = new System.Windows.Forms.Padding(0);
             this.ScriptingShellAPITreePythonTab.Name = "ScriptingShellAPITreePythonTab";
-            this.ScriptingShellAPITreePythonTab.Size = new System.Drawing.Size(162, 188);
+            this.ScriptingShellAPITreePythonTab.Size = new System.Drawing.Size(162, 186);
             this.ScriptingShellAPITreePythonTab.TabIndex = 0;
             this.ScriptingShellAPITreePythonTab.Text = "Python";
             this.ScriptingShellAPITreePythonTab.UseVisualStyleBackColor = true;
@@ -4335,7 +4291,7 @@ namespace IronWASP
             this.ScriptingShellPythonAPITree.Location = new System.Drawing.Point(0, 0);
             this.ScriptingShellPythonAPITree.Margin = new System.Windows.Forms.Padding(0);
             this.ScriptingShellPythonAPITree.Name = "ScriptingShellPythonAPITree";
-            this.ScriptingShellPythonAPITree.Size = new System.Drawing.Size(162, 188);
+            this.ScriptingShellPythonAPITree.Size = new System.Drawing.Size(162, 186);
             this.ScriptingShellPythonAPITree.TabIndex = 0;
             this.ScriptingShellPythonAPITree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ScriptingShellPythonAPITree_AfterSelect);
             // 
@@ -4345,7 +4301,7 @@ namespace IronWASP
             this.ScriptingShellAPITreeRubyTab.Location = new System.Drawing.Point(4, 22);
             this.ScriptingShellAPITreeRubyTab.Margin = new System.Windows.Forms.Padding(0);
             this.ScriptingShellAPITreeRubyTab.Name = "ScriptingShellAPITreeRubyTab";
-            this.ScriptingShellAPITreeRubyTab.Size = new System.Drawing.Size(162, 188);
+            this.ScriptingShellAPITreeRubyTab.Size = new System.Drawing.Size(162, 186);
             this.ScriptingShellAPITreeRubyTab.TabIndex = 1;
             this.ScriptingShellAPITreeRubyTab.Text = "Ruby";
             this.ScriptingShellAPITreeRubyTab.UseVisualStyleBackColor = true;
@@ -4357,7 +4313,7 @@ namespace IronWASP
             this.ScriptingShellRubyAPITree.Location = new System.Drawing.Point(0, 0);
             this.ScriptingShellRubyAPITree.Margin = new System.Windows.Forms.Padding(0);
             this.ScriptingShellRubyAPITree.Name = "ScriptingShellRubyAPITree";
-            this.ScriptingShellRubyAPITree.Size = new System.Drawing.Size(162, 188);
+            this.ScriptingShellRubyAPITree.Size = new System.Drawing.Size(162, 186);
             this.ScriptingShellRubyAPITree.TabIndex = 1;
             this.ScriptingShellRubyAPITree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ScriptingShellRubyAPITree_AfterSelect);
             // 
@@ -4369,7 +4325,7 @@ namespace IronWASP
             this.ShellAPIDetailsRTB.Margin = new System.Windows.Forms.Padding(0);
             this.ShellAPIDetailsRTB.Name = "ShellAPIDetailsRTB";
             this.ShellAPIDetailsRTB.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.ShellAPIDetailsRTB.Size = new System.Drawing.Size(170, 296);
+            this.ShellAPIDetailsRTB.Size = new System.Drawing.Size(170, 297);
             this.ShellAPIDetailsRTB.TabIndex = 0;
             this.ShellAPIDetailsRTB.Text = "";
             // 
@@ -4379,7 +4335,7 @@ namespace IronWASP
             this.mt_proxy.Location = new System.Drawing.Point(4, 22);
             this.mt_proxy.Margin = new System.Windows.Forms.Padding(0);
             this.mt_proxy.Name = "mt_proxy";
-            this.mt_proxy.Size = new System.Drawing.Size(705, 512);
+            this.mt_proxy.Size = new System.Drawing.Size(705, 511);
             this.mt_proxy.TabIndex = 1;
             this.mt_proxy.Text = "   Proxy   ";
             this.mt_proxy.UseVisualStyleBackColor = true;
@@ -4397,28 +4353,62 @@ namespace IronWASP
             // ProxyBaseSplit.Panel1
             // 
             this.ProxyBaseSplit.Panel1.BackColor = System.Drawing.Color.White;
+            this.ProxyBaseSplit.Panel1.Controls.Add(this.ProxyLoopbackLbl);
+            this.ProxyBaseSplit.Panel1.Controls.Add(this.label33);
+            this.ProxyBaseSplit.Panel1.Controls.Add(this.ProxyPortLbl);
             this.ProxyBaseSplit.Panel1.Controls.Add(this.ViewProxyInterceptionConfigLink);
             this.ProxyBaseSplit.Panel1.Controls.Add(this.label3);
-            this.ProxyBaseSplit.Panel1.Controls.Add(this.ConfigLoopBackOnlyCB);
             this.ProxyBaseSplit.Panel1.Controls.Add(this.ProxyExceptionTB);
             this.ProxyBaseSplit.Panel1.Controls.Add(this.ConfigSetAsSystemProxyCB);
             this.ProxyBaseSplit.Panel1.Controls.Add(this.ProxyOptionsBtn);
-            this.ProxyBaseSplit.Panel1.Controls.Add(this.ConfigProxyRunBtn);
             this.ProxyBaseSplit.Panel1.Controls.Add(this.InterceptRequestCB);
             this.ProxyBaseSplit.Panel1.Controls.Add(this.ProxyDropBtn);
             this.ProxyBaseSplit.Panel1.Controls.Add(this.InterceptResponseCB);
             this.ProxyBaseSplit.Panel1.Controls.Add(this.label7);
             this.ProxyBaseSplit.Panel1.Controls.Add(this.ViewProxyLogLink);
             this.ProxyBaseSplit.Panel1.Controls.Add(this.ProxySendBtn);
-            this.ProxyBaseSplit.Panel1.Controls.Add(this.ConfigProxyListenPortTB);
             // 
             // ProxyBaseSplit.Panel2
             // 
             this.ProxyBaseSplit.Panel2.Controls.Add(this.ProxyBottomPanel);
-            this.ProxyBaseSplit.Size = new System.Drawing.Size(705, 512);
+            this.ProxyBaseSplit.Size = new System.Drawing.Size(705, 511);
             this.ProxyBaseSplit.SplitterDistance = 80;
             this.ProxyBaseSplit.SplitterWidth = 2;
             this.ProxyBaseSplit.TabIndex = 19;
+            // 
+            // ProxyLoopbackLbl
+            // 
+            this.ProxyLoopbackLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ProxyLoopbackLbl.AutoSize = true;
+            this.ProxyLoopbackLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ProxyLoopbackLbl.ForeColor = System.Drawing.Color.SteelBlue;
+            this.ProxyLoopbackLbl.Location = new System.Drawing.Point(667, 25);
+            this.ProxyLoopbackLbl.Name = "ProxyLoopbackLbl";
+            this.ProxyLoopbackLbl.Size = new System.Drawing.Size(23, 13);
+            this.ProxyLoopbackLbl.TabIndex = 21;
+            this.ProxyLoopbackLbl.Text = "No";
+            // 
+            // label33
+            // 
+            this.label33.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(511, 23);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(154, 13);
+            this.label33.TabIndex = 20;
+            this.label33.Text = "Accepting remote connections:";
+            // 
+            // ProxyPortLbl
+            // 
+            this.ProxyPortLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ProxyPortLbl.AutoSize = true;
+            this.ProxyPortLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ProxyPortLbl.ForeColor = System.Drawing.Color.SteelBlue;
+            this.ProxyPortLbl.Location = new System.Drawing.Point(631, 8);
+            this.ProxyPortLbl.Name = "ProxyPortLbl";
+            this.ProxyPortLbl.Size = new System.Drawing.Size(31, 13);
+            this.ProxyPortLbl.TabIndex = 19;
+            this.ProxyPortLbl.Text = "      ";
             // 
             // ViewProxyInterceptionConfigLink
             // 
@@ -4442,19 +4432,6 @@ namespace IronWASP
             this.label3.Text = "Requests/Responses that don\'t match the interception filter will not be intercept" +
     "ed. To adjust the filter";
             // 
-            // ConfigLoopBackOnlyCB
-            // 
-            this.ConfigLoopBackOnlyCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ConfigLoopBackOnlyCB.AutoSize = true;
-            this.ConfigLoopBackOnlyCB.Checked = true;
-            this.ConfigLoopBackOnlyCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ConfigLoopBackOnlyCB.Location = new System.Drawing.Point(507, 45);
-            this.ConfigLoopBackOnlyCB.Name = "ConfigLoopBackOnlyCB";
-            this.ConfigLoopBackOnlyCB.Size = new System.Drawing.Size(169, 17);
-            this.ConfigLoopBackOnlyCB.TabIndex = 1;
-            this.ConfigLoopBackOnlyCB.Text = "Accept LoopBack Traffic Only";
-            this.ConfigLoopBackOnlyCB.UseVisualStyleBackColor = true;
-            // 
             // ProxyExceptionTB
             // 
             this.ProxyExceptionTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -4465,44 +4442,33 @@ namespace IronWASP
             this.ProxyExceptionTB.Location = new System.Drawing.Point(10, 45);
             this.ProxyExceptionTB.Name = "ProxyExceptionTB";
             this.ProxyExceptionTB.ReadOnly = true;
-            this.ProxyExceptionTB.Size = new System.Drawing.Size(360, 13);
+            this.ProxyExceptionTB.Size = new System.Drawing.Size(480, 13);
             this.ProxyExceptionTB.TabIndex = 12;
             this.ProxyExceptionTB.Visible = false;
             // 
             // ConfigSetAsSystemProxyCB
             // 
-            this.ConfigSetAsSystemProxyCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ConfigSetAsSystemProxyCB.AutoSize = true;
+            this.ConfigSetAsSystemProxyCB.BackColor = System.Drawing.Color.Orange;
             this.ConfigSetAsSystemProxyCB.Enabled = false;
-            this.ConfigSetAsSystemProxyCB.Location = new System.Drawing.Point(378, 44);
+            this.ConfigSetAsSystemProxyCB.Location = new System.Drawing.Point(383, 7);
             this.ConfigSetAsSystemProxyCB.Name = "ConfigSetAsSystemProxyCB";
             this.ConfigSetAsSystemProxyCB.Size = new System.Drawing.Size(122, 17);
             this.ConfigSetAsSystemProxyCB.TabIndex = 5;
             this.ConfigSetAsSystemProxyCB.Text = "Set as System Proxy";
-            this.ConfigSetAsSystemProxyCB.UseVisualStyleBackColor = true;
+            this.ConfigSetAsSystemProxyCB.UseVisualStyleBackColor = false;
             this.ConfigSetAsSystemProxyCB.Click += new System.EventHandler(this.ConfigSetAsSystemProxyCB_Click);
             // 
             // ProxyOptionsBtn
             // 
             this.ProxyOptionsBtn.ContextMenuStrip = this.LogMenu;
-            this.ProxyOptionsBtn.Location = new System.Drawing.Point(323, 19);
+            this.ProxyOptionsBtn.Location = new System.Drawing.Point(324, 21);
             this.ProxyOptionsBtn.Name = "ProxyOptionsBtn";
             this.ProxyOptionsBtn.Size = new System.Drawing.Size(47, 19);
             this.ProxyOptionsBtn.TabIndex = 16;
             this.ProxyOptionsBtn.Text = "\\/";
             this.ProxyOptionsBtn.UseVisualStyleBackColor = true;
             this.ProxyOptionsBtn.Click += new System.EventHandler(this.ProxyOptionsBtn_Click);
-            // 
-            // ConfigProxyRunBtn
-            // 
-            this.ConfigProxyRunBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ConfigProxyRunBtn.Location = new System.Drawing.Point(596, 8);
-            this.ConfigProxyRunBtn.Name = "ConfigProxyRunBtn";
-            this.ConfigProxyRunBtn.Size = new System.Drawing.Size(93, 23);
-            this.ConfigProxyRunBtn.TabIndex = 0;
-            this.ConfigProxyRunBtn.Text = "Start Proxy";
-            this.ConfigProxyRunBtn.UseVisualStyleBackColor = true;
-            this.ConfigProxyRunBtn.Click += new System.EventHandler(this.ConfigProxyRunBtn_Click);
             // 
             // InterceptRequestCB
             // 
@@ -4544,16 +4510,16 @@ namespace IronWASP
             // 
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(382, 12);
+            this.label7.Location = new System.Drawing.Point(511, 7);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(126, 13);
+            this.label7.Size = new System.Drawing.Size(111, 13);
             this.label7.TabIndex = 3;
-            this.label7.Text = "Listen on Port ( > 1024 ) :";
+            this.label7.Text = "Proxy running on Port:";
             // 
             // ViewProxyLogLink
             // 
             this.ViewProxyLogLink.AutoSize = true;
-            this.ViewProxyLogLink.Location = new System.Drawing.Point(320, 3);
+            this.ViewProxyLogLink.Location = new System.Drawing.Point(321, 5);
             this.ViewProxyLogLink.Name = "ViewProxyLogLink";
             this.ViewProxyLogLink.Size = new System.Drawing.Size(56, 13);
             this.ViewProxyLogLink.TabIndex = 13;
@@ -4577,15 +4543,6 @@ namespace IronWASP
             this.ProxySendBtn.UseVisualStyleBackColor = true;
             this.ProxySendBtn.Click += new System.EventHandler(this.ProxySendBtn_Click);
             // 
-            // ConfigProxyListenPortTB
-            // 
-            this.ConfigProxyListenPortTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ConfigProxyListenPortTB.Location = new System.Drawing.Point(515, 9);
-            this.ConfigProxyListenPortTB.Name = "ConfigProxyListenPortTB";
-            this.ConfigProxyListenPortTB.Size = new System.Drawing.Size(68, 20);
-            this.ConfigProxyListenPortTB.TabIndex = 2;
-            this.ConfigProxyListenPortTB.TextChanged += new System.EventHandler(this.ConfigProxyListenPortTB_TextChanged);
-            // 
             // ProxyBottomPanel
             // 
             this.ProxyBottomPanel.Controls.Add(this.ProxyInterceptTabs);
@@ -4593,7 +4550,7 @@ namespace IronWASP
             this.ProxyBottomPanel.Location = new System.Drawing.Point(0, 0);
             this.ProxyBottomPanel.Margin = new System.Windows.Forms.Padding(0);
             this.ProxyBottomPanel.Name = "ProxyBottomPanel";
-            this.ProxyBottomPanel.Size = new System.Drawing.Size(705, 430);
+            this.ProxyBottomPanel.Size = new System.Drawing.Size(705, 429);
             this.ProxyBottomPanel.TabIndex = 18;
             // 
             // ProxyInterceptTabs
@@ -4608,7 +4565,7 @@ namespace IronWASP
             this.ProxyInterceptTabs.Name = "ProxyInterceptTabs";
             this.ProxyInterceptTabs.Padding = new System.Drawing.Point(0, 0);
             this.ProxyInterceptTabs.SelectedIndex = 0;
-            this.ProxyInterceptTabs.Size = new System.Drawing.Size(705, 430);
+            this.ProxyInterceptTabs.Size = new System.Drawing.Size(705, 429);
             this.ProxyInterceptTabs.TabIndex = 1;
             this.ProxyInterceptTabs.SelectedIndexChanged += new System.EventHandler(this.ProxyInterceptTabs_SelectedIndexChanged);
             this.ProxyInterceptTabs.Deselecting += new System.Windows.Forms.TabControlCancelEventHandler(this.ProxyInterceptTabs_Deselecting);
@@ -4619,7 +4576,7 @@ namespace IronWASP
             this.ProxyInterceptRequestTab.Location = new System.Drawing.Point(4, 22);
             this.ProxyInterceptRequestTab.Margin = new System.Windows.Forms.Padding(0);
             this.ProxyInterceptRequestTab.Name = "ProxyInterceptRequestTab";
-            this.ProxyInterceptRequestTab.Size = new System.Drawing.Size(697, 404);
+            this.ProxyInterceptRequestTab.Size = new System.Drawing.Size(697, 403);
             this.ProxyInterceptRequestTab.TabIndex = 0;
             this.ProxyInterceptRequestTab.Text = "  Request  ";
             this.ProxyInterceptRequestTab.UseVisualStyleBackColor = true;
@@ -4632,7 +4589,7 @@ namespace IronWASP
             this.ProxyRequestView.Margin = new System.Windows.Forms.Padding(0);
             this.ProxyRequestView.Name = "ProxyRequestView";
             this.ProxyRequestView.ReadOnly = true;
-            this.ProxyRequestView.Size = new System.Drawing.Size(697, 404);
+            this.ProxyRequestView.Size = new System.Drawing.Size(697, 403);
             this.ProxyRequestView.TabIndex = 0;
             this.ProxyRequestView.RequestChanged += new IronWASP.RequestView.RequestChangedEvent(this.ProxyRequestView_RequestChanged);
             // 
@@ -4642,7 +4599,7 @@ namespace IronWASP
             this.ProxyInterceptResponseTab.Location = new System.Drawing.Point(4, 22);
             this.ProxyInterceptResponseTab.Margin = new System.Windows.Forms.Padding(0);
             this.ProxyInterceptResponseTab.Name = "ProxyInterceptResponseTab";
-            this.ProxyInterceptResponseTab.Size = new System.Drawing.Size(697, 404);
+            this.ProxyInterceptResponseTab.Size = new System.Drawing.Size(697, 403);
             this.ProxyInterceptResponseTab.TabIndex = 1;
             this.ProxyInterceptResponseTab.Text = "  Response  ";
             this.ProxyInterceptResponseTab.UseVisualStyleBackColor = true;
@@ -4656,7 +4613,7 @@ namespace IronWASP
             this.ProxyResponseView.Margin = new System.Windows.Forms.Padding(0);
             this.ProxyResponseView.Name = "ProxyResponseView";
             this.ProxyResponseView.ReadOnly = true;
-            this.ProxyResponseView.Size = new System.Drawing.Size(697, 404);
+            this.ProxyResponseView.Size = new System.Drawing.Size(697, 403);
             this.ProxyResponseView.TabIndex = 0;
             this.ProxyResponseView.ResponseChanged += new IronWASP.ResponseView.ResponseChangedEvent(this.ProxyResponseView_ResponseChanged);
             // 
@@ -4665,7 +4622,7 @@ namespace IronWASP
             this.ProxyScriptedInterceptTab.Controls.Add(this.ScriptedInterceptionBaseSplit);
             this.ProxyScriptedInterceptTab.Location = new System.Drawing.Point(4, 22);
             this.ProxyScriptedInterceptTab.Name = "ProxyScriptedInterceptTab";
-            this.ProxyScriptedInterceptTab.Size = new System.Drawing.Size(697, 404);
+            this.ProxyScriptedInterceptTab.Size = new System.Drawing.Size(697, 403);
             this.ProxyScriptedInterceptTab.TabIndex = 2;
             this.ProxyScriptedInterceptTab.Text = "  Scripted Interception  ";
             this.ProxyScriptedInterceptTab.UseVisualStyleBackColor = true;
@@ -4694,7 +4651,7 @@ namespace IronWASP
             // ScriptedInterceptionBaseSplit.Panel2
             // 
             this.ScriptedInterceptionBaseSplit.Panel2.Controls.Add(this.ScriptedInterceptionBottomSplit);
-            this.ScriptedInterceptionBaseSplit.Size = new System.Drawing.Size(697, 404);
+            this.ScriptedInterceptionBaseSplit.Size = new System.Drawing.Size(697, 403);
             this.ScriptedInterceptionBaseSplit.SplitterDistance = 130;
             this.ScriptedInterceptionBaseSplit.SplitterWidth = 2;
             this.ScriptedInterceptionBaseSplit.TabIndex = 25;
@@ -4815,8 +4772,8 @@ namespace IronWASP
             // 
             this.ScriptedInterceptionBottomSplit.Panel2.Controls.Add(this.ScriptedInterceptionScriptBottomRTB);
             this.ScriptedInterceptionBottomSplit.Panel2.Controls.Add(this.ScriptedInterceptionErrorTB);
-            this.ScriptedInterceptionBottomSplit.Size = new System.Drawing.Size(697, 272);
-            this.ScriptedInterceptionBottomSplit.SplitterDistance = 245;
+            this.ScriptedInterceptionBottomSplit.Size = new System.Drawing.Size(697, 271);
+            this.ScriptedInterceptionBottomSplit.SplitterDistance = 244;
             this.ScriptedInterceptionBottomSplit.SplitterWidth = 2;
             this.ScriptedInterceptionBottomSplit.TabIndex = 24;
             // 
@@ -4830,7 +4787,7 @@ namespace IronWASP
             this.ScriptedInterceptionCTB.ReadOnly = false;
             this.ScriptedInterceptionCTB.ShowLineNumbers = false;
             this.ScriptedInterceptionCTB.ShowSpacesAndTabs = false;
-            this.ScriptedInterceptionCTB.Size = new System.Drawing.Size(697, 245);
+            this.ScriptedInterceptionCTB.Size = new System.Drawing.Size(697, 244);
             this.ScriptedInterceptionCTB.TabIndex = 23;
             this.ScriptedInterceptionCTB.ValueChanged += new IronWASP.CodeTextBox.ValueChangedEvent(this.ScriptedInterceptionCTB_ValueChanged);
             // 
@@ -4867,7 +4824,7 @@ namespace IronWASP
             this.ProxyHelpTab.Controls.Add(this.ProxyHelpTB);
             this.ProxyHelpTab.Location = new System.Drawing.Point(4, 22);
             this.ProxyHelpTab.Name = "ProxyHelpTab";
-            this.ProxyHelpTab.Size = new System.Drawing.Size(697, 404);
+            this.ProxyHelpTab.Size = new System.Drawing.Size(697, 403);
             this.ProxyHelpTab.TabIndex = 3;
             this.ProxyHelpTab.Text = "  Help  ";
             this.ProxyHelpTab.UseVisualStyleBackColor = true;
@@ -4882,7 +4839,7 @@ namespace IronWASP
             this.ProxyHelpTB.Name = "ProxyHelpTB";
             this.ProxyHelpTB.ReadOnly = true;
             this.ProxyHelpTB.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.ProxyHelpTB.Size = new System.Drawing.Size(697, 404);
+            this.ProxyHelpTB.Size = new System.Drawing.Size(697, 403);
             this.ProxyHelpTB.TabIndex = 1;
             this.ProxyHelpTB.TabStop = false;
             this.ProxyHelpTB.Text = resources.GetString("ProxyHelpTB.Text");
@@ -4893,7 +4850,7 @@ namespace IronWASP
             this.mt_logs.Location = new System.Drawing.Point(4, 22);
             this.mt_logs.Margin = new System.Windows.Forms.Padding(0);
             this.mt_logs.Name = "mt_logs";
-            this.mt_logs.Size = new System.Drawing.Size(705, 512);
+            this.mt_logs.Size = new System.Drawing.Size(705, 511);
             this.mt_logs.TabIndex = 9;
             this.mt_logs.Text = "   Logs   ";
             this.mt_logs.UseVisualStyleBackColor = true;
@@ -4912,8 +4869,8 @@ namespace IronWASP
             // LogBaseSplit.Panel2
             // 
             this.LogBaseSplit.Panel2.Controls.Add(this.LogsBottomSplit);
-            this.LogBaseSplit.Size = new System.Drawing.Size(705, 512);
-            this.LogBaseSplit.SplitterDistance = 256;
+            this.LogBaseSplit.Size = new System.Drawing.Size(705, 511);
+            this.LogBaseSplit.SplitterDistance = 255;
             this.LogBaseSplit.TabIndex = 3;
             // 
             // LogsTopSplit
@@ -4942,7 +4899,7 @@ namespace IronWASP
             // LogsTopSplit.Panel2
             // 
             this.LogsTopSplit.Panel2.Controls.Add(this.LogDisplayTabs);
-            this.LogsTopSplit.Size = new System.Drawing.Size(705, 256);
+            this.LogsTopSplit.Size = new System.Drawing.Size(705, 255);
             this.LogsTopSplit.SplitterDistance = 57;
             this.LogsTopSplit.SplitterWidth = 2;
             this.LogsTopSplit.TabIndex = 17;
@@ -5072,7 +5029,7 @@ namespace IronWASP
             this.LogDisplayTabs.Name = "LogDisplayTabs";
             this.LogDisplayTabs.Padding = new System.Drawing.Point(0, 0);
             this.LogDisplayTabs.SelectedIndex = 0;
-            this.LogDisplayTabs.Size = new System.Drawing.Size(705, 197);
+            this.LogDisplayTabs.Size = new System.Drawing.Size(705, 196);
             this.LogDisplayTabs.TabIndex = 2;
             // 
             // tabPage7
@@ -5081,7 +5038,7 @@ namespace IronWASP
             this.tabPage7.Location = new System.Drawing.Point(4, 22);
             this.tabPage7.Margin = new System.Windows.Forms.Padding(0);
             this.tabPage7.Name = "tabPage7";
-            this.tabPage7.Size = new System.Drawing.Size(697, 171);
+            this.tabPage7.Size = new System.Drawing.Size(697, 170);
             this.tabPage7.TabIndex = 0;
             this.tabPage7.Text = "  Request  ";
             this.tabPage7.UseVisualStyleBackColor = true;
@@ -5094,7 +5051,7 @@ namespace IronWASP
             this.LogRequestView.Margin = new System.Windows.Forms.Padding(0);
             this.LogRequestView.Name = "LogRequestView";
             this.LogRequestView.ReadOnly = true;
-            this.LogRequestView.Size = new System.Drawing.Size(697, 171);
+            this.LogRequestView.Size = new System.Drawing.Size(697, 170);
             this.LogRequestView.TabIndex = 0;
             // 
             // tabPage29
@@ -5103,7 +5060,7 @@ namespace IronWASP
             this.tabPage29.Location = new System.Drawing.Point(4, 22);
             this.tabPage29.Margin = new System.Windows.Forms.Padding(0);
             this.tabPage29.Name = "tabPage29";
-            this.tabPage29.Size = new System.Drawing.Size(697, 171);
+            this.tabPage29.Size = new System.Drawing.Size(697, 170);
             this.tabPage29.TabIndex = 1;
             this.tabPage29.Text = "  Response  ";
             this.tabPage29.UseVisualStyleBackColor = true;
@@ -5117,7 +5074,7 @@ namespace IronWASP
             this.LogResponseView.Margin = new System.Windows.Forms.Padding(0);
             this.LogResponseView.Name = "LogResponseView";
             this.LogResponseView.ReadOnly = true;
-            this.LogResponseView.Size = new System.Drawing.Size(697, 171);
+            this.LogResponseView.Size = new System.Drawing.Size(697, 170);
             this.LogResponseView.TabIndex = 0;
             // 
             // tabPage1
@@ -5125,7 +5082,7 @@ namespace IronWASP
             this.tabPage1.Controls.Add(this.LogsHelpTB);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(697, 171);
+            this.tabPage1.Size = new System.Drawing.Size(697, 170);
             this.tabPage1.TabIndex = 2;
             this.tabPage1.Text = "  Help  ";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -5140,7 +5097,7 @@ namespace IronWASP
             this.LogsHelpTB.Name = "LogsHelpTB";
             this.LogsHelpTB.ReadOnly = true;
             this.LogsHelpTB.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.LogsHelpTB.Size = new System.Drawing.Size(697, 171);
+            this.LogsHelpTB.Size = new System.Drawing.Size(697, 170);
             this.LogsHelpTB.TabIndex = 1;
             this.LogsHelpTB.TabStop = false;
             this.LogsHelpTB.Text = resources.GetString("LogsHelpTB.Text");
@@ -5338,14 +5295,14 @@ namespace IronWASP
             this.ProxyLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ProxyLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.ProxyLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle52.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle52.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle52.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle52.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle52.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle52.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle52.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ProxyLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle52;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ProxyLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle10;
             this.ProxyLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ProxyLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ProxyLogGridColumnForID,
@@ -5505,14 +5462,14 @@ namespace IronWASP
             this.ScanLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ScanLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.ScanLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle36.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle36.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle36.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle36.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle36.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle36.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle36.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ScanLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle36;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle11.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle11.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ScanLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle11;
             this.ScanLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ScanLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ScanLogGridColumnForID,
@@ -5653,14 +5610,14 @@ namespace IronWASP
             this.TestLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.TestLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.TestLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle10.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle10.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.TestLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.TestLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle12;
             this.TestLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.TestLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.MTLogGridColumnForID,
@@ -5800,14 +5757,14 @@ namespace IronWASP
             this.ShellLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ShellLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.ShellLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle11.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle11.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ShellLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle13.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle13.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ShellLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle13;
             this.ShellLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ShellLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ScriptingLogGridColumnForID,
@@ -5938,14 +5895,14 @@ namespace IronWASP
             this.ProbeLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.ProbeLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.ProbeLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ProbeLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle14.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle14.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ProbeLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle14;
             this.ProbeLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.ProbeLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ProbeLogGridColumnForID,
@@ -6096,14 +6053,14 @@ namespace IronWASP
             this.OtherLogSourceGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.OtherLogSourceGrid.BackgroundColor = System.Drawing.Color.White;
             this.OtherLogSourceGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle13.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle13.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.OtherLogSourceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle15.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle15.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle15.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle15.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle15.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.OtherLogSourceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle15;
             this.OtherLogSourceGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.OtherLogSourceGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.LogSource});
@@ -6126,8 +6083,8 @@ namespace IronWASP
             // LogSource
             // 
             this.LogSource.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle53.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.LogSource.DefaultCellStyle = dataGridViewCellStyle53;
+            dataGridViewCellStyle16.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.LogSource.DefaultCellStyle = dataGridViewCellStyle16;
             this.LogSource.HeaderText = "Select Log Source";
             this.LogSource.Name = "LogSource";
             this.LogSource.ReadOnly = true;
@@ -6141,14 +6098,14 @@ namespace IronWASP
             this.OtherLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.OtherLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.OtherLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle14.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle14.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.OtherLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle17.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle17.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle17.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle17.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle17.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.OtherLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle17;
             this.OtherLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.OtherLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.LogGridColumnForID,
@@ -6279,14 +6236,14 @@ namespace IronWASP
             this.SiteMapLogGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.SiteMapLogGrid.BackgroundColor = System.Drawing.Color.White;
             this.SiteMapLogGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle15.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle15.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle15.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle15.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle15.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.SiteMapLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle15;
+            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle18.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle18.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle18.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle18.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle18.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle18.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.SiteMapLogGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle18;
             this.SiteMapLogGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.SiteMapLogGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.SiteMapLogGridColumnForID,
@@ -6413,7 +6370,7 @@ namespace IronWASP
             this.mt_results.Location = new System.Drawing.Point(4, 22);
             this.mt_results.Margin = new System.Windows.Forms.Padding(0);
             this.mt_results.Name = "mt_results";
-            this.mt_results.Size = new System.Drawing.Size(705, 512);
+            this.mt_results.Size = new System.Drawing.Size(705, 511);
             this.mt_results.TabIndex = 6;
             this.mt_results.Text = "   Results   ";
             this.mt_results.UseVisualStyleBackColor = true;
@@ -6434,8 +6391,8 @@ namespace IronWASP
             // ResultsTabMainSplit.Panel2
             // 
             this.ResultsTabMainSplit.Panel2.Controls.Add(this.ResultsTriggersMainSplit);
-            this.ResultsTabMainSplit.Size = new System.Drawing.Size(705, 512);
-            this.ResultsTabMainSplit.SplitterDistance = 270;
+            this.ResultsTabMainSplit.Size = new System.Drawing.Size(705, 511);
+            this.ResultsTabMainSplit.SplitterDistance = 269;
             this.ResultsTabMainSplit.TabIndex = 0;
             // 
             // ResultsDisplayRTB
@@ -6450,7 +6407,7 @@ namespace IronWASP
             this.ResultsDisplayRTB.Name = "ResultsDisplayRTB";
             this.ResultsDisplayRTB.ReadOnly = true;
             this.ResultsDisplayRTB.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.ResultsDisplayRTB.Size = new System.Drawing.Size(703, 268);
+            this.ResultsDisplayRTB.Size = new System.Drawing.Size(703, 267);
             this.ResultsDisplayRTB.TabIndex = 0;
             this.ResultsDisplayRTB.TabStop = false;
             this.ResultsDisplayRTB.Text = "";
@@ -6483,14 +6440,14 @@ namespace IronWASP
             this.ResultsTriggersGrid.BackgroundColor = System.Drawing.SystemColors.Window;
             this.ResultsTriggersGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.ResultsTriggersGrid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle17.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle17.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle17.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle17.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle17.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.ResultsTriggersGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle17;
+            dataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle19.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle19.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle19.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle19.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle19.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.ResultsTriggersGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle19;
             this.ResultsTriggersGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ResultsTriggersGrid.ColumnHeadersVisible = false;
             this.ResultsTriggersGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -6514,8 +6471,8 @@ namespace IronWASP
             // ResultsTriggerGridNumberColumn
             // 
             this.ResultsTriggerGridNumberColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle54.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.ResultsTriggerGridNumberColumn.DefaultCellStyle = dataGridViewCellStyle54;
+            dataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.ResultsTriggerGridNumberColumn.DefaultCellStyle = dataGridViewCellStyle20;
             this.ResultsTriggerGridNumberColumn.HeaderText = "Triggers:";
             this.ResultsTriggerGridNumberColumn.Name = "ResultsTriggerGridNumberColumn";
             this.ResultsTriggerGridNumberColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -6727,14 +6684,14 @@ namespace IronWASP
             this.SelectForDiffTriggersGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.SelectForDiffTriggersGrid.BackgroundColor = System.Drawing.Color.White;
             this.SelectForDiffTriggersGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle18.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle18.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle18.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle18.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle18.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle18.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.SelectForDiffTriggersGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle18;
+            dataGridViewCellStyle21.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle21.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle21.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle21.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle21.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle21.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.SelectForDiffTriggersGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle21;
             this.SelectForDiffTriggersGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.SelectForDiffTriggersGrid.ColumnHeadersVisible = false;
             this.SelectForDiffTriggersGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -6804,531 +6761,15 @@ namespace IronWASP
             this.textBox7.TabStop = false;
             this.textBox7.Text = resources.GetString("textBox7.Text");
             // 
-            // mt_js
-            // 
-            this.mt_js.Controls.Add(this.JSTaintBaseSplit);
-            this.mt_js.Location = new System.Drawing.Point(4, 22);
-            this.mt_js.Name = "mt_js";
-            this.mt_js.Size = new System.Drawing.Size(705, 512);
-            this.mt_js.TabIndex = 12;
-            this.mt_js.Text = "   JavaScript Analysis   ";
-            this.mt_js.UseVisualStyleBackColor = true;
-            // 
-            // JSTaintBaseSplit
-            // 
-            this.JSTaintBaseSplit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.JSTaintBaseSplit.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.JSTaintBaseSplit.IsSplitterFixed = true;
-            this.JSTaintBaseSplit.Location = new System.Drawing.Point(0, 0);
-            this.JSTaintBaseSplit.Margin = new System.Windows.Forms.Padding(0);
-            this.JSTaintBaseSplit.Name = "JSTaintBaseSplit";
-            this.JSTaintBaseSplit.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // JSTaintBaseSplit.Panel1
-            // 
-            this.JSTaintBaseSplit.Panel1.Controls.Add(this.JSTaintStatusTB);
-            this.JSTaintBaseSplit.Panel1.Controls.Add(this.JSTaintConfigShowHideBtn);
-            this.JSTaintBaseSplit.Panel1.Controls.Add(this.TaintTraceResultSinkLegendTB);
-            this.JSTaintBaseSplit.Panel1.Controls.Add(this.JSTaintConfigPanel);
-            this.JSTaintBaseSplit.Panel1.Controls.Add(this.TaintTraceResultSourceToSinkLegendTB);
-            this.JSTaintBaseSplit.Panel1.Controls.Add(this.JSTaintShowSourceToSinkCB);
-            this.JSTaintBaseSplit.Panel1.Controls.Add(this.TaintTraceResultSourceLegendTB);
-            this.JSTaintBaseSplit.Panel1.Controls.Add(this.JSTaintContinueBtn);
-            this.JSTaintBaseSplit.Panel1.Controls.Add(this.TaintTraceResultSourcePlusSinkLegendTB);
-            this.JSTaintBaseSplit.Panel1.Controls.Add(this.JSTaintShowCleanCB);
-            this.JSTaintBaseSplit.Panel1.Controls.Add(this.JSTaintShowLinesLbl);
-            this.JSTaintBaseSplit.Panel1.Controls.Add(this.PauseAtTaintCB);
-            this.JSTaintBaseSplit.Panel1.Controls.Add(this.JSTaintShowSourceCB);
-            this.JSTaintBaseSplit.Panel1.Controls.Add(this.JSTaintShowSinkCB);
-            this.JSTaintBaseSplit.Panel1.Controls.Add(this.JSTaintTraceControlBtn);
-            // 
-            // JSTaintBaseSplit.Panel2
-            // 
-            this.JSTaintBaseSplit.Panel2.Controls.Add(this.JSTaintTabs);
-            this.JSTaintBaseSplit.Size = new System.Drawing.Size(705, 512);
-            this.JSTaintBaseSplit.SplitterDistance = 91;
-            this.JSTaintBaseSplit.SplitterWidth = 2;
-            this.JSTaintBaseSplit.TabIndex = 33;
-            // 
-            // JSTaintStatusTB
-            // 
-            this.JSTaintStatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.JSTaintStatusTB.BackColor = System.Drawing.SystemColors.Window;
-            this.JSTaintStatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.JSTaintStatusTB.Location = new System.Drawing.Point(360, 47);
-            this.JSTaintStatusTB.Margin = new System.Windows.Forms.Padding(0);
-            this.JSTaintStatusTB.Multiline = true;
-            this.JSTaintStatusTB.Name = "JSTaintStatusTB";
-            this.JSTaintStatusTB.ReadOnly = true;
-            this.JSTaintStatusTB.Size = new System.Drawing.Size(327, 36);
-            this.JSTaintStatusTB.TabIndex = 19;
-            // 
-            // JSTaintConfigShowHideBtn
-            // 
-            this.JSTaintConfigShowHideBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.JSTaintConfigShowHideBtn.Location = new System.Drawing.Point(595, 8);
-            this.JSTaintConfigShowHideBtn.Name = "JSTaintConfigShowHideBtn";
-            this.JSTaintConfigShowHideBtn.Size = new System.Drawing.Size(105, 23);
-            this.JSTaintConfigShowHideBtn.TabIndex = 20;
-            this.JSTaintConfigShowHideBtn.Text = "Show Taint Config";
-            this.JSTaintConfigShowHideBtn.UseVisualStyleBackColor = true;
-            this.JSTaintConfigShowHideBtn.Click += new System.EventHandler(this.JSTaintConfigShowHideBtn_Click);
-            // 
-            // TaintTraceResultSinkLegendTB
-            // 
-            this.TaintTraceResultSinkLegendTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.TaintTraceResultSinkLegendTB.BackColor = System.Drawing.Color.HotPink;
-            this.TaintTraceResultSinkLegendTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.TaintTraceResultSinkLegendTB.Location = new System.Drawing.Point(397, 14);
-            this.TaintTraceResultSinkLegendTB.Name = "TaintTraceResultSinkLegendTB";
-            this.TaintTraceResultSinkLegendTB.ReadOnly = true;
-            this.TaintTraceResultSinkLegendTB.Size = new System.Drawing.Size(27, 13);
-            this.TaintTraceResultSinkLegendTB.TabIndex = 21;
-            this.TaintTraceResultSinkLegendTB.Text = "Sink";
-            this.TaintTraceResultSinkLegendTB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.TaintTraceResultSinkLegendTB.Visible = false;
-            // 
-            // JSTaintConfigPanel
-            // 
-            this.JSTaintConfigPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.JSTaintConfigPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.JSTaintConfigPanel.Controls.Add(this.TaintTraceClearTaintConfigBtn);
-            this.JSTaintConfigPanel.Controls.Add(this.JSTaintConfigGrid);
-            this.JSTaintConfigPanel.Controls.Add(this.TaintTraceResetTaintConfigBtn);
-            this.JSTaintConfigPanel.Location = new System.Drawing.Point(4, 40);
-            this.JSTaintConfigPanel.Name = "JSTaintConfigPanel";
-            this.JSTaintConfigPanel.Size = new System.Drawing.Size(697, 10);
-            this.JSTaintConfigPanel.TabIndex = 27;
-            this.JSTaintConfigPanel.Visible = false;
-            // 
-            // TaintTraceClearTaintConfigBtn
-            // 
-            this.TaintTraceClearTaintConfigBtn.Location = new System.Drawing.Point(114, 8);
-            this.TaintTraceClearTaintConfigBtn.Name = "TaintTraceClearTaintConfigBtn";
-            this.TaintTraceClearTaintConfigBtn.Size = new System.Drawing.Size(55, 23);
-            this.TaintTraceClearTaintConfigBtn.TabIndex = 10;
-            this.TaintTraceClearTaintConfigBtn.Text = "Clear All";
-            this.TaintTraceClearTaintConfigBtn.UseVisualStyleBackColor = true;
-            this.TaintTraceClearTaintConfigBtn.Click += new System.EventHandler(this.TaintTraceClearTaintConfigBtn_Click);
-            // 
-            // JSTaintConfigGrid
-            // 
-            this.JSTaintConfigGrid.AllowUserToResizeRows = false;
-            this.JSTaintConfigGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.JSTaintConfigGrid.BackgroundColor = System.Drawing.Color.White;
-            this.JSTaintConfigGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.JSTaintConfigGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.JSTaintConfigGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.JSTaintDefaultSourceObjectsColumn,
-            this.JSTaintDefaultSinkObjectsColumn,
-            this.JSTaintDefaultArgumentAssignedASourceMethodsColumn,
-            this.JSTaintDefaultArgumentAssignedToSinkMethodsColumn,
-            this.JSTaintDefaultSourceReturningMethodsColumn,
-            this.JSTaintDefaultSinkReturningMethodsColumn,
-            this.JSTaintDefaultArgumentReturningMethodsColumn});
-            this.JSTaintConfigGrid.GridColor = System.Drawing.Color.White;
-            this.JSTaintConfigGrid.Location = new System.Drawing.Point(0, 45);
-            this.JSTaintConfigGrid.Name = "JSTaintConfigGrid";
-            this.JSTaintConfigGrid.Size = new System.Drawing.Size(735, 0);
-            this.JSTaintConfigGrid.TabIndex = 9;
-            // 
-            // JSTaintDefaultSourceObjectsColumn
-            // 
-            this.JSTaintDefaultSourceObjectsColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.JSTaintDefaultSourceObjectsColumn.HeaderText = "Source Objects";
-            this.JSTaintDefaultSourceObjectsColumn.Name = "JSTaintDefaultSourceObjectsColumn";
-            // 
-            // JSTaintDefaultSinkObjectsColumn
-            // 
-            this.JSTaintDefaultSinkObjectsColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.JSTaintDefaultSinkObjectsColumn.HeaderText = "Sink Objects";
-            this.JSTaintDefaultSinkObjectsColumn.Name = "JSTaintDefaultSinkObjectsColumn";
-            // 
-            // JSTaintDefaultArgumentAssignedASourceMethodsColumn
-            // 
-            this.JSTaintDefaultArgumentAssignedASourceMethodsColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.JSTaintDefaultArgumentAssignedASourceMethodsColumn.HeaderText = "Argument Assigned A Source Methods";
-            this.JSTaintDefaultArgumentAssignedASourceMethodsColumn.Name = "JSTaintDefaultArgumentAssignedASourceMethodsColumn";
-            // 
-            // JSTaintDefaultArgumentAssignedToSinkMethodsColumn
-            // 
-            this.JSTaintDefaultArgumentAssignedToSinkMethodsColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.JSTaintDefaultArgumentAssignedToSinkMethodsColumn.HeaderText = "Argument Assigned To Sink Methods";
-            this.JSTaintDefaultArgumentAssignedToSinkMethodsColumn.Name = "JSTaintDefaultArgumentAssignedToSinkMethodsColumn";
-            // 
-            // JSTaintDefaultSourceReturningMethodsColumn
-            // 
-            this.JSTaintDefaultSourceReturningMethodsColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.JSTaintDefaultSourceReturningMethodsColumn.HeaderText = "Source Returning Methods";
-            this.JSTaintDefaultSourceReturningMethodsColumn.Name = "JSTaintDefaultSourceReturningMethodsColumn";
-            // 
-            // JSTaintDefaultSinkReturningMethodsColumn
-            // 
-            this.JSTaintDefaultSinkReturningMethodsColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.JSTaintDefaultSinkReturningMethodsColumn.HeaderText = "Sink Returning Methods";
-            this.JSTaintDefaultSinkReturningMethodsColumn.Name = "JSTaintDefaultSinkReturningMethodsColumn";
-            // 
-            // JSTaintDefaultArgumentReturningMethodsColumn
-            // 
-            this.JSTaintDefaultArgumentReturningMethodsColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.JSTaintDefaultArgumentReturningMethodsColumn.HeaderText = "Argument Returning Methods";
-            this.JSTaintDefaultArgumentReturningMethodsColumn.Name = "JSTaintDefaultArgumentReturningMethodsColumn";
-            // 
-            // TaintTraceResetTaintConfigBtn
-            // 
-            this.TaintTraceResetTaintConfigBtn.Location = new System.Drawing.Point(3, 8);
-            this.TaintTraceResetTaintConfigBtn.Name = "TaintTraceResetTaintConfigBtn";
-            this.TaintTraceResetTaintConfigBtn.Size = new System.Drawing.Size(105, 23);
-            this.TaintTraceResetTaintConfigBtn.TabIndex = 3;
-            this.TaintTraceResetTaintConfigBtn.Text = "Reset To Default";
-            this.TaintTraceResetTaintConfigBtn.UseVisualStyleBackColor = true;
-            this.TaintTraceResetTaintConfigBtn.Click += new System.EventHandler(this.TaintTraceResetTaintConfigBtn_Click);
-            // 
-            // TaintTraceResultSourceToSinkLegendTB
-            // 
-            this.TaintTraceResultSourceToSinkLegendTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.TaintTraceResultSourceToSinkLegendTB.BackColor = System.Drawing.Color.Red;
-            this.TaintTraceResultSourceToSinkLegendTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.TaintTraceResultSourceToSinkLegendTB.Location = new System.Drawing.Point(505, 14);
-            this.TaintTraceResultSourceToSinkLegendTB.Name = "TaintTraceResultSourceToSinkLegendTB";
-            this.TaintTraceResultSourceToSinkLegendTB.ReadOnly = true;
-            this.TaintTraceResultSourceToSinkLegendTB.Size = new System.Drawing.Size(79, 13);
-            this.TaintTraceResultSourceToSinkLegendTB.TabIndex = 24;
-            this.TaintTraceResultSourceToSinkLegendTB.Text = "Source To Sink";
-            this.TaintTraceResultSourceToSinkLegendTB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.TaintTraceResultSourceToSinkLegendTB.Visible = false;
-            // 
-            // JSTaintShowSourceToSinkCB
-            // 
-            this.JSTaintShowSourceToSinkCB.AutoSize = true;
-            this.JSTaintShowSourceToSinkCB.Checked = true;
-            this.JSTaintShowSourceToSinkCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.JSTaintShowSourceToSinkCB.Location = new System.Drawing.Point(245, 63);
-            this.JSTaintShowSourceToSinkCB.Name = "JSTaintShowSourceToSinkCB";
-            this.JSTaintShowSourceToSinkCB.Size = new System.Drawing.Size(100, 17);
-            this.JSTaintShowSourceToSinkCB.TabIndex = 32;
-            this.JSTaintShowSourceToSinkCB.Text = "Source To Sink";
-            this.JSTaintShowSourceToSinkCB.UseVisualStyleBackColor = true;
-            this.JSTaintShowSourceToSinkCB.Visible = false;
-            this.JSTaintShowSourceToSinkCB.CheckedChanged += new System.EventHandler(this.JSTaintShowSourceToSinkCB_CheckedChanged);
-            // 
-            // TaintTraceResultSourceLegendTB
-            // 
-            this.TaintTraceResultSourceLegendTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.TaintTraceResultSourceLegendTB.BackColor = System.Drawing.Color.Orange;
-            this.TaintTraceResultSourceLegendTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.TaintTraceResultSourceLegendTB.Location = new System.Drawing.Point(354, 14);
-            this.TaintTraceResultSourceLegendTB.Name = "TaintTraceResultSourceLegendTB";
-            this.TaintTraceResultSourceLegendTB.ReadOnly = true;
-            this.TaintTraceResultSourceLegendTB.Size = new System.Drawing.Size(39, 13);
-            this.TaintTraceResultSourceLegendTB.TabIndex = 22;
-            this.TaintTraceResultSourceLegendTB.Text = "Source";
-            this.TaintTraceResultSourceLegendTB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.TaintTraceResultSourceLegendTB.Visible = false;
-            // 
-            // JSTaintContinueBtn
-            // 
-            this.JSTaintContinueBtn.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("JSTaintContinueBtn.BackgroundImage")));
-            this.JSTaintContinueBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.JSTaintContinueBtn.Location = new System.Drawing.Point(240, 10);
-            this.JSTaintContinueBtn.Name = "JSTaintContinueBtn";
-            this.JSTaintContinueBtn.Size = new System.Drawing.Size(22, 23);
-            this.JSTaintContinueBtn.TabIndex = 26;
-            this.JSTaintContinueBtn.UseVisualStyleBackColor = true;
-            this.JSTaintContinueBtn.Visible = false;
-            this.JSTaintContinueBtn.Click += new System.EventHandler(this.JSTaintContinueBtn_Click);
-            // 
-            // TaintTraceResultSourcePlusSinkLegendTB
-            // 
-            this.TaintTraceResultSourcePlusSinkLegendTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.TaintTraceResultSourcePlusSinkLegendTB.BackColor = System.Drawing.Color.IndianRed;
-            this.TaintTraceResultSourcePlusSinkLegendTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.TaintTraceResultSourcePlusSinkLegendTB.Location = new System.Drawing.Point(428, 14);
-            this.TaintTraceResultSourcePlusSinkLegendTB.Name = "TaintTraceResultSourcePlusSinkLegendTB";
-            this.TaintTraceResultSourcePlusSinkLegendTB.ReadOnly = true;
-            this.TaintTraceResultSourcePlusSinkLegendTB.Size = new System.Drawing.Size(74, 13);
-            this.TaintTraceResultSourcePlusSinkLegendTB.TabIndex = 23;
-            this.TaintTraceResultSourcePlusSinkLegendTB.Text = "Source & Sink";
-            this.TaintTraceResultSourcePlusSinkLegendTB.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.TaintTraceResultSourcePlusSinkLegendTB.Visible = false;
-            // 
-            // JSTaintShowCleanCB
-            // 
-            this.JSTaintShowCleanCB.AutoSize = true;
-            this.JSTaintShowCleanCB.Checked = true;
-            this.JSTaintShowCleanCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.JSTaintShowCleanCB.Location = new System.Drawing.Point(73, 63);
-            this.JSTaintShowCleanCB.Name = "JSTaintShowCleanCB";
-            this.JSTaintShowCleanCB.Size = new System.Drawing.Size(53, 17);
-            this.JSTaintShowCleanCB.TabIndex = 28;
-            this.JSTaintShowCleanCB.Text = "Clean";
-            this.JSTaintShowCleanCB.UseVisualStyleBackColor = true;
-            this.JSTaintShowCleanCB.Visible = false;
-            this.JSTaintShowCleanCB.CheckedChanged += new System.EventHandler(this.JSTaintShowCleanCB_CheckedChanged);
-            // 
-            // JSTaintShowLinesLbl
-            // 
-            this.JSTaintShowLinesLbl.AutoSize = true;
-            this.JSTaintShowLinesLbl.Location = new System.Drawing.Point(8, 62);
-            this.JSTaintShowLinesLbl.Name = "JSTaintShowLinesLbl";
-            this.JSTaintShowLinesLbl.Size = new System.Drawing.Size(65, 13);
-            this.JSTaintShowLinesLbl.TabIndex = 31;
-            this.JSTaintShowLinesLbl.Text = "Show Lines:";
-            this.JSTaintShowLinesLbl.Visible = false;
-            // 
-            // PauseAtTaintCB
-            // 
-            this.PauseAtTaintCB.AutoSize = true;
-            this.PauseAtTaintCB.Location = new System.Drawing.Point(140, 14);
-            this.PauseAtTaintCB.Name = "PauseAtTaintCB";
-            this.PauseAtTaintCB.Size = new System.Drawing.Size(95, 17);
-            this.PauseAtTaintCB.TabIndex = 25;
-            this.PauseAtTaintCB.Text = "Pause at Taint";
-            this.PauseAtTaintCB.UseVisualStyleBackColor = true;
-            this.PauseAtTaintCB.CheckedChanged += new System.EventHandler(this.PauseAtTaintCB_CheckedChanged);
-            this.PauseAtTaintCB.Click += new System.EventHandler(this.PauseAtTaintCB_Click);
-            // 
-            // JSTaintShowSourceCB
-            // 
-            this.JSTaintShowSourceCB.AutoSize = true;
-            this.JSTaintShowSourceCB.Checked = true;
-            this.JSTaintShowSourceCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.JSTaintShowSourceCB.Location = new System.Drawing.Point(130, 63);
-            this.JSTaintShowSourceCB.Name = "JSTaintShowSourceCB";
-            this.JSTaintShowSourceCB.Size = new System.Drawing.Size(60, 17);
-            this.JSTaintShowSourceCB.TabIndex = 29;
-            this.JSTaintShowSourceCB.Text = "Source";
-            this.JSTaintShowSourceCB.UseVisualStyleBackColor = true;
-            this.JSTaintShowSourceCB.Visible = false;
-            this.JSTaintShowSourceCB.CheckedChanged += new System.EventHandler(this.JSTaintShowSourceCB_CheckedChanged);
-            // 
-            // JSTaintShowSinkCB
-            // 
-            this.JSTaintShowSinkCB.AutoSize = true;
-            this.JSTaintShowSinkCB.Checked = true;
-            this.JSTaintShowSinkCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.JSTaintShowSinkCB.Location = new System.Drawing.Point(194, 63);
-            this.JSTaintShowSinkCB.Name = "JSTaintShowSinkCB";
-            this.JSTaintShowSinkCB.Size = new System.Drawing.Size(47, 17);
-            this.JSTaintShowSinkCB.TabIndex = 30;
-            this.JSTaintShowSinkCB.Text = "Sink";
-            this.JSTaintShowSinkCB.UseVisualStyleBackColor = true;
-            this.JSTaintShowSinkCB.Visible = false;
-            this.JSTaintShowSinkCB.CheckedChanged += new System.EventHandler(this.JSTaintShowSinkCB_CheckedChanged);
-            // 
-            // JSTaintTraceControlBtn
-            // 
-            this.JSTaintTraceControlBtn.Location = new System.Drawing.Point(5, 11);
-            this.JSTaintTraceControlBtn.Name = "JSTaintTraceControlBtn";
-            this.JSTaintTraceControlBtn.Size = new System.Drawing.Size(105, 23);
-            this.JSTaintTraceControlBtn.TabIndex = 17;
-            this.JSTaintTraceControlBtn.Text = "Start Taint Trace";
-            this.JSTaintTraceControlBtn.UseVisualStyleBackColor = true;
-            this.JSTaintTraceControlBtn.Click += new System.EventHandler(this.JSTaintTraceControlBtn_Click);
-            // 
-            // JSTaintTabs
-            // 
-            this.JSTaintTabs.Controls.Add(this.JSTaintInputTab);
-            this.JSTaintTabs.Controls.Add(this.JSTaintResultTab);
-            this.JSTaintTabs.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.JSTaintTabs.Location = new System.Drawing.Point(0, 0);
-            this.JSTaintTabs.Margin = new System.Windows.Forms.Padding(0);
-            this.JSTaintTabs.Multiline = true;
-            this.JSTaintTabs.Name = "JSTaintTabs";
-            this.JSTaintTabs.Padding = new System.Drawing.Point(0, 0);
-            this.JSTaintTabs.SelectedIndex = 0;
-            this.JSTaintTabs.Size = new System.Drawing.Size(705, 419);
-            this.JSTaintTabs.TabIndex = 18;
-            this.JSTaintTabs.Selected += new System.Windows.Forms.TabControlEventHandler(this.JSTaintTabs_Selected);
-            // 
-            // JSTaintInputTab
-            // 
-            this.JSTaintInputTab.Controls.Add(this.JSTaintTraceInRTB);
-            this.JSTaintInputTab.Controls.Add(this.TaintTraceMsgTB);
-            this.JSTaintInputTab.Location = new System.Drawing.Point(4, 22);
-            this.JSTaintInputTab.Margin = new System.Windows.Forms.Padding(0);
-            this.JSTaintInputTab.Name = "JSTaintInputTab";
-            this.JSTaintInputTab.Size = new System.Drawing.Size(697, 393);
-            this.JSTaintInputTab.TabIndex = 0;
-            this.JSTaintInputTab.Text = "    JavaScript Input    ";
-            this.JSTaintInputTab.UseVisualStyleBackColor = true;
-            // 
-            // JSTaintTraceInRTB
-            // 
-            this.JSTaintTraceInRTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.JSTaintTraceInRTB.BackColor = System.Drawing.Color.White;
-            this.JSTaintTraceInRTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.JSTaintTraceInRTB.DetectUrls = false;
-            this.JSTaintTraceInRTB.Location = new System.Drawing.Point(0, 14);
-            this.JSTaintTraceInRTB.Margin = new System.Windows.Forms.Padding(0);
-            this.JSTaintTraceInRTB.Name = "JSTaintTraceInRTB";
-            this.JSTaintTraceInRTB.Size = new System.Drawing.Size(697, 393);
-            this.JSTaintTraceInRTB.TabIndex = 0;
-            this.JSTaintTraceInRTB.Text = "";
-            // 
-            // TaintTraceMsgTB
-            // 
-            this.TaintTraceMsgTB.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            this.TaintTraceMsgTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.TaintTraceMsgTB.Dock = System.Windows.Forms.DockStyle.Top;
-            this.TaintTraceMsgTB.Location = new System.Drawing.Point(0, 0);
-            this.TaintTraceMsgTB.Margin = new System.Windows.Forms.Padding(0);
-            this.TaintTraceMsgTB.Name = "TaintTraceMsgTB";
-            this.TaintTraceMsgTB.ReadOnly = true;
-            this.TaintTraceMsgTB.Size = new System.Drawing.Size(697, 13);
-            this.TaintTraceMsgTB.TabIndex = 1;
-            this.TaintTraceMsgTB.Text = "Enter JavaScript/HTML with inline JS below and hit \'Start Taint Trace\'";
-            // 
-            // JSTaintResultTab
-            // 
-            this.JSTaintResultTab.Controls.Add(this.JSTaintResultSplit);
-            this.JSTaintResultTab.Location = new System.Drawing.Point(4, 22);
-            this.JSTaintResultTab.Margin = new System.Windows.Forms.Padding(0);
-            this.JSTaintResultTab.Name = "JSTaintResultTab";
-            this.JSTaintResultTab.Size = new System.Drawing.Size(697, 393);
-            this.JSTaintResultTab.TabIndex = 1;
-            this.JSTaintResultTab.Text = "    Taint Trace Result    ";
-            this.JSTaintResultTab.UseVisualStyleBackColor = true;
-            // 
-            // JSTaintResultSplit
-            // 
-            this.JSTaintResultSplit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.JSTaintResultSplit.Location = new System.Drawing.Point(0, 0);
-            this.JSTaintResultSplit.Margin = new System.Windows.Forms.Padding(0);
-            this.JSTaintResultSplit.Name = "JSTaintResultSplit";
-            this.JSTaintResultSplit.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // JSTaintResultSplit.Panel1
-            // 
-            this.JSTaintResultSplit.Panel1.Controls.Add(this.JSTaintResultGrid);
-            // 
-            // JSTaintResultSplit.Panel2
-            // 
-            this.JSTaintResultSplit.Panel2.Controls.Add(this.JSTaintReasonsRTB);
-            this.JSTaintResultSplit.Size = new System.Drawing.Size(697, 393);
-            this.JSTaintResultSplit.SplitterDistance = 181;
-            this.JSTaintResultSplit.SplitterWidth = 2;
-            this.JSTaintResultSplit.TabIndex = 0;
-            // 
-            // JSTaintResultGrid
-            // 
-            this.JSTaintResultGrid.AllowUserToAddRows = false;
-            this.JSTaintResultGrid.AllowUserToDeleteRows = false;
-            this.JSTaintResultGrid.AllowUserToOrderColumns = true;
-            this.JSTaintResultGrid.AllowUserToResizeRows = false;
-            this.JSTaintResultGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.JSTaintResultGrid.BackgroundColor = System.Drawing.Color.White;
-            this.JSTaintResultGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.JSTaintResultGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.JSTaintResultGrid.ColumnHeadersVisible = false;
-            this.JSTaintResultGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.JSTaintResultLineColumn,
-            this.JSTaintResultCodeColumn});
-            this.JSTaintResultGrid.ContextMenuStrip = this.JSTainTraceEditMenu;
-            dataGridViewCellStyle55.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle55.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle55.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle55.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle55.SelectionBackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle55.SelectionForeColor = System.Drawing.Color.LimeGreen;
-            dataGridViewCellStyle55.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.JSTaintResultGrid.DefaultCellStyle = dataGridViewCellStyle55;
-            this.JSTaintResultGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.JSTaintResultGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.JSTaintResultGrid.GridColor = System.Drawing.Color.White;
-            this.JSTaintResultGrid.Location = new System.Drawing.Point(0, 0);
-            this.JSTaintResultGrid.Margin = new System.Windows.Forms.Padding(0);
-            this.JSTaintResultGrid.MultiSelect = false;
-            this.JSTaintResultGrid.Name = "JSTaintResultGrid";
-            this.JSTaintResultGrid.ReadOnly = true;
-            this.JSTaintResultGrid.RowHeadersVisible = false;
-            this.JSTaintResultGrid.RowHeadersWidth = 10;
-            this.JSTaintResultGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.JSTaintResultGrid.Size = new System.Drawing.Size(697, 181);
-            this.JSTaintResultGrid.TabIndex = 3;
-            this.JSTaintResultGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.JSTaintResultGrid_CellClick);
-            // 
-            // JSTaintResultLineColumn
-            // 
-            this.JSTaintResultLineColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.JSTaintResultLineColumn.HeaderText = "LINE";
-            this.JSTaintResultLineColumn.MinimumWidth = 50;
-            this.JSTaintResultLineColumn.Name = "JSTaintResultLineColumn";
-            this.JSTaintResultLineColumn.ReadOnly = true;
-            this.JSTaintResultLineColumn.Width = 50;
-            // 
-            // JSTaintResultCodeColumn
-            // 
-            this.JSTaintResultCodeColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.JSTaintResultCodeColumn.HeaderText = "CODE";
-            this.JSTaintResultCodeColumn.Name = "JSTaintResultCodeColumn";
-            this.JSTaintResultCodeColumn.ReadOnly = true;
-            this.JSTaintResultCodeColumn.Width = 5;
-            // 
-            // JSTainTraceEditMenu
-            // 
-            this.JSTainTraceEditMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.AddSourceTaintToolStripMenuItem,
-            this.AddSinkTaintToolStripMenuItem,
-            this.RemoveSourceTaintToolStripMenuItem,
-            this.RemoveSinkTaintToolStripMenuItem,
-            this.CopyLineTaintToolStripMenuItem});
-            this.JSTainTraceEditMenu.Name = "JSTainTraceEditMenu";
-            this.JSTainTraceEditMenu.Size = new System.Drawing.Size(187, 114);
-            this.JSTainTraceEditMenu.Opening += new System.ComponentModel.CancelEventHandler(this.JSTainTraceEditMenu_Opening);
-            // 
-            // AddSourceTaintToolStripMenuItem
-            // 
-            this.AddSourceTaintToolStripMenuItem.Name = "AddSourceTaintToolStripMenuItem";
-            this.AddSourceTaintToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.AddSourceTaintToolStripMenuItem.Text = "Set Source Taint";
-            this.AddSourceTaintToolStripMenuItem.Click += new System.EventHandler(this.AddSourceTaintToolStripMenuItem_Click);
-            // 
-            // AddSinkTaintToolStripMenuItem
-            // 
-            this.AddSinkTaintToolStripMenuItem.Name = "AddSinkTaintToolStripMenuItem";
-            this.AddSinkTaintToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.AddSinkTaintToolStripMenuItem.Text = "Set Sink Taint";
-            this.AddSinkTaintToolStripMenuItem.Click += new System.EventHandler(this.AddSinkTaintToolStripMenuItem_Click);
-            // 
-            // RemoveSourceTaintToolStripMenuItem
-            // 
-            this.RemoveSourceTaintToolStripMenuItem.Name = "RemoveSourceTaintToolStripMenuItem";
-            this.RemoveSourceTaintToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.RemoveSourceTaintToolStripMenuItem.Text = "Remove Source Taint";
-            this.RemoveSourceTaintToolStripMenuItem.Click += new System.EventHandler(this.RemoveSourceTaintToolStripMenuItem_Click);
-            // 
-            // RemoveSinkTaintToolStripMenuItem
-            // 
-            this.RemoveSinkTaintToolStripMenuItem.Name = "RemoveSinkTaintToolStripMenuItem";
-            this.RemoveSinkTaintToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.RemoveSinkTaintToolStripMenuItem.Text = "Remove Sink Taint";
-            this.RemoveSinkTaintToolStripMenuItem.Click += new System.EventHandler(this.RemoveSinkTaintToolStripMenuItem_Click);
-            // 
-            // CopyLineTaintToolStripMenuItem
-            // 
-            this.CopyLineTaintToolStripMenuItem.Name = "CopyLineTaintToolStripMenuItem";
-            this.CopyLineTaintToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
-            this.CopyLineTaintToolStripMenuItem.Text = "Copy Line";
-            this.CopyLineTaintToolStripMenuItem.Click += new System.EventHandler(this.CopyLineTaintToolStripMenuItem_Click);
-            // 
-            // JSTaintReasonsRTB
-            // 
-            this.JSTaintReasonsRTB.BackColor = System.Drawing.Color.White;
-            this.JSTaintReasonsRTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.JSTaintReasonsRTB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.JSTaintReasonsRTB.Location = new System.Drawing.Point(0, 0);
-            this.JSTaintReasonsRTB.Name = "JSTaintReasonsRTB";
-            this.JSTaintReasonsRTB.ReadOnly = true;
-            this.JSTaintReasonsRTB.Size = new System.Drawing.Size(697, 210);
-            this.JSTaintReasonsRTB.TabIndex = 0;
-            this.JSTaintReasonsRTB.Text = "";
+            // mt_hawas
+            // 
+            this.mt_hawas.Controls.Add(this.label8);
+            this.mt_hawas.Location = new System.Drawing.Point(4, 22);
+            this.mt_hawas.Name = "mt_hawas";
+            this.mt_hawas.Size = new System.Drawing.Size(705, 511);
+            this.mt_hawas.TabIndex = 12;
+            this.mt_hawas.Text = "   HAWAS   ";
+            this.mt_hawas.UseVisualStyleBackColor = true;
             // 
             // mt_dev
             // 
@@ -7336,7 +6777,7 @@ namespace IronWASP
             this.mt_dev.Location = new System.Drawing.Point(4, 22);
             this.mt_dev.Margin = new System.Windows.Forms.Padding(0);
             this.mt_dev.Name = "mt_dev";
-            this.mt_dev.Size = new System.Drawing.Size(705, 512);
+            this.mt_dev.Size = new System.Drawing.Size(705, 511);
             this.mt_dev.TabIndex = 11;
             this.mt_dev.Text = "  Dev  ";
             this.mt_dev.UseVisualStyleBackColor = true;
@@ -7352,7 +6793,7 @@ namespace IronWASP
             this.DevMainTabs.Name = "DevMainTabs";
             this.DevMainTabs.Padding = new System.Drawing.Point(0, 0);
             this.DevMainTabs.SelectedIndex = 0;
-            this.DevMainTabs.Size = new System.Drawing.Size(705, 512);
+            this.DevMainTabs.Size = new System.Drawing.Size(705, 511);
             this.DevMainTabs.TabIndex = 0;
             // 
             // DevModulesAndPluginsTab
@@ -7361,7 +6802,7 @@ namespace IronWASP
             this.DevModulesAndPluginsTab.Location = new System.Drawing.Point(4, 22);
             this.DevModulesAndPluginsTab.Margin = new System.Windows.Forms.Padding(0);
             this.DevModulesAndPluginsTab.Name = "DevModulesAndPluginsTab";
-            this.DevModulesAndPluginsTab.Size = new System.Drawing.Size(697, 486);
+            this.DevModulesAndPluginsTab.Size = new System.Drawing.Size(697, 485);
             this.DevModulesAndPluginsTab.TabIndex = 0;
             this.DevModulesAndPluginsTab.Text = "    Plugins & Modules    ";
             this.DevModulesAndPluginsTab.UseVisualStyleBackColor = true;
@@ -7380,7 +6821,7 @@ namespace IronWASP
             // PluginsMainSplit.Panel2
             // 
             this.PluginsMainSplit.Panel2.Controls.Add(this.PluginEditorSplit);
-            this.PluginsMainSplit.Size = new System.Drawing.Size(697, 486);
+            this.PluginsMainSplit.Size = new System.Drawing.Size(697, 485);
             this.PluginsMainSplit.SplitterDistance = 125;
             this.PluginsMainSplit.SplitterWidth = 2;
             this.PluginsMainSplit.TabIndex = 2;
@@ -7394,7 +6835,7 @@ namespace IronWASP
             this.PluginAndModuleTree.Margin = new System.Windows.Forms.Padding(0);
             this.PluginAndModuleTree.Name = "PluginAndModuleTree";
             this.PluginAndModuleTree.ShowRootLines = false;
-            this.PluginAndModuleTree.Size = new System.Drawing.Size(125, 486);
+            this.PluginAndModuleTree.Size = new System.Drawing.Size(125, 485);
             this.PluginAndModuleTree.TabIndex = 0;
             this.PluginAndModuleTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.PluginTree_AfterSelect);
             // 
@@ -7563,7 +7004,7 @@ namespace IronWASP
             // PluginEditorSplit.Panel2
             // 
             this.PluginEditorSplit.Panel2.Controls.Add(this.PluginEditorAPISplit);
-            this.PluginEditorSplit.Size = new System.Drawing.Size(570, 486);
+            this.PluginEditorSplit.Size = new System.Drawing.Size(570, 485);
             this.PluginEditorSplit.SplitterDistance = 386;
             this.PluginEditorSplit.SplitterWidth = 2;
             this.PluginEditorSplit.TabIndex = 1;
@@ -7583,8 +7024,8 @@ namespace IronWASP
             // PluginsCentreSplit.Panel2
             // 
             this.PluginsCentreSplit.Panel2.Controls.Add(this.PluginEditorInTE);
-            this.PluginsCentreSplit.Size = new System.Drawing.Size(386, 486);
-            this.PluginsCentreSplit.SplitterDistance = 224;
+            this.PluginsCentreSplit.Size = new System.Drawing.Size(386, 485);
+            this.PluginsCentreSplit.SplitterDistance = 223;
             this.PluginsCentreSplit.SplitterWidth = 2;
             this.PluginsCentreSplit.TabIndex = 4;
             // 
@@ -7599,7 +7040,7 @@ namespace IronWASP
             this.PluginDetailsRTB.Name = "PluginDetailsRTB";
             this.PluginDetailsRTB.ReadOnly = true;
             this.PluginDetailsRTB.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.PluginDetailsRTB.Size = new System.Drawing.Size(386, 224);
+            this.PluginDetailsRTB.Size = new System.Drawing.Size(386, 223);
             this.PluginDetailsRTB.TabIndex = 1;
             this.PluginDetailsRTB.Text = "";
             // 
@@ -7632,8 +7073,8 @@ namespace IronWASP
             // PluginEditorAPISplit.Panel2
             // 
             this.PluginEditorAPISplit.Panel2.Controls.Add(this.PluginEditorAPIDetailsRTB);
-            this.PluginEditorAPISplit.Size = new System.Drawing.Size(182, 486);
-            this.PluginEditorAPISplit.SplitterDistance = 224;
+            this.PluginEditorAPISplit.Size = new System.Drawing.Size(182, 485);
+            this.PluginEditorAPISplit.SplitterDistance = 223;
             this.PluginEditorAPISplit.SplitterWidth = 2;
             this.PluginEditorAPISplit.TabIndex = 1;
             // 
@@ -7647,7 +7088,7 @@ namespace IronWASP
             this.PluginEditorAPITreeTabs.Name = "PluginEditorAPITreeTabs";
             this.PluginEditorAPITreeTabs.Padding = new System.Drawing.Point(0, 0);
             this.PluginEditorAPITreeTabs.SelectedIndex = 0;
-            this.PluginEditorAPITreeTabs.Size = new System.Drawing.Size(182, 224);
+            this.PluginEditorAPITreeTabs.Size = new System.Drawing.Size(182, 223);
             this.PluginEditorAPITreeTabs.TabIndex = 0;
             // 
             // PluginEditorPythonAPITreeTab
@@ -7656,7 +7097,7 @@ namespace IronWASP
             this.PluginEditorPythonAPITreeTab.Location = new System.Drawing.Point(4, 22);
             this.PluginEditorPythonAPITreeTab.Margin = new System.Windows.Forms.Padding(0);
             this.PluginEditorPythonAPITreeTab.Name = "PluginEditorPythonAPITreeTab";
-            this.PluginEditorPythonAPITreeTab.Size = new System.Drawing.Size(174, 198);
+            this.PluginEditorPythonAPITreeTab.Size = new System.Drawing.Size(174, 197);
             this.PluginEditorPythonAPITreeTab.TabIndex = 0;
             this.PluginEditorPythonAPITreeTab.Text = "Python";
             this.PluginEditorPythonAPITreeTab.UseVisualStyleBackColor = true;
@@ -7668,7 +7109,7 @@ namespace IronWASP
             this.PluginEditorPythonAPITree.Location = new System.Drawing.Point(0, 0);
             this.PluginEditorPythonAPITree.Margin = new System.Windows.Forms.Padding(0);
             this.PluginEditorPythonAPITree.Name = "PluginEditorPythonAPITree";
-            this.PluginEditorPythonAPITree.Size = new System.Drawing.Size(174, 198);
+            this.PluginEditorPythonAPITree.Size = new System.Drawing.Size(174, 197);
             this.PluginEditorPythonAPITree.TabIndex = 0;
             this.PluginEditorPythonAPITree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.PluginEditorPythonAPITree_AfterSelect);
             // 
@@ -7678,7 +7119,7 @@ namespace IronWASP
             this.PluginEditorRubyAPITreeTab.Location = new System.Drawing.Point(4, 22);
             this.PluginEditorRubyAPITreeTab.Margin = new System.Windows.Forms.Padding(0);
             this.PluginEditorRubyAPITreeTab.Name = "PluginEditorRubyAPITreeTab";
-            this.PluginEditorRubyAPITreeTab.Size = new System.Drawing.Size(174, 198);
+            this.PluginEditorRubyAPITreeTab.Size = new System.Drawing.Size(174, 197);
             this.PluginEditorRubyAPITreeTab.TabIndex = 1;
             this.PluginEditorRubyAPITreeTab.Text = "Ruby";
             this.PluginEditorRubyAPITreeTab.UseVisualStyleBackColor = true;
@@ -7690,7 +7131,7 @@ namespace IronWASP
             this.PluginEditorRubyAPITree.Location = new System.Drawing.Point(0, 0);
             this.PluginEditorRubyAPITree.Margin = new System.Windows.Forms.Padding(0);
             this.PluginEditorRubyAPITree.Name = "PluginEditorRubyAPITree";
-            this.PluginEditorRubyAPITree.Size = new System.Drawing.Size(174, 198);
+            this.PluginEditorRubyAPITree.Size = new System.Drawing.Size(174, 197);
             this.PluginEditorRubyAPITree.TabIndex = 1;
             this.PluginEditorRubyAPITree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.PluginEditorRubyAPITree_AfterSelect);
             // 
@@ -7712,7 +7153,7 @@ namespace IronWASP
             this.DevTraceTab.Location = new System.Drawing.Point(4, 22);
             this.DevTraceTab.Margin = new System.Windows.Forms.Padding(0);
             this.DevTraceTab.Name = "DevTraceTab";
-            this.DevTraceTab.Size = new System.Drawing.Size(697, 486);
+            this.DevTraceTab.Size = new System.Drawing.Size(697, 485);
             this.DevTraceTab.TabIndex = 1;
             this.DevTraceTab.Text = "    Trace    ";
             this.DevTraceTab.UseVisualStyleBackColor = true;
@@ -7727,7 +7168,7 @@ namespace IronWASP
             this.TraceMainTabs.Name = "TraceMainTabs";
             this.TraceMainTabs.Padding = new System.Drawing.Point(0, 0);
             this.TraceMainTabs.SelectedIndex = 0;
-            this.TraceMainTabs.Size = new System.Drawing.Size(697, 486);
+            this.TraceMainTabs.Size = new System.Drawing.Size(697, 485);
             this.TraceMainTabs.TabIndex = 2;
             // 
             // SessionPluginTraceTab
@@ -7736,7 +7177,7 @@ namespace IronWASP
             this.SessionPluginTraceTab.Location = new System.Drawing.Point(4, 22);
             this.SessionPluginTraceTab.Margin = new System.Windows.Forms.Padding(0);
             this.SessionPluginTraceTab.Name = "SessionPluginTraceTab";
-            this.SessionPluginTraceTab.Size = new System.Drawing.Size(689, 460);
+            this.SessionPluginTraceTab.Size = new System.Drawing.Size(689, 459);
             this.SessionPluginTraceTab.TabIndex = 1;
             this.SessionPluginTraceTab.Text = "    Session Plugin Trace    ";
             this.SessionPluginTraceTab.UseVisualStyleBackColor = true;
@@ -7756,8 +7197,8 @@ namespace IronWASP
             // SessionPluginTraceBaseSplit.Panel2
             // 
             this.SessionPluginTraceBaseSplit.Panel2.Controls.Add(this.SessionPluginTraceBottomTabs);
-            this.SessionPluginTraceBaseSplit.Size = new System.Drawing.Size(689, 460);
-            this.SessionPluginTraceBaseSplit.SplitterDistance = 229;
+            this.SessionPluginTraceBaseSplit.Size = new System.Drawing.Size(689, 459);
+            this.SessionPluginTraceBaseSplit.SplitterDistance = 228;
             this.SessionPluginTraceBaseSplit.SplitterWidth = 2;
             this.SessionPluginTraceBaseSplit.TabIndex = 0;
             // 
@@ -7770,14 +7211,14 @@ namespace IronWASP
             this.SessionPluginTraceGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.SessionPluginTraceGrid.BackgroundColor = System.Drawing.Color.White;
             this.SessionPluginTraceGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle39.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle39.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle39.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle39.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle39.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle39.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle39.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.SessionPluginTraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle39;
+            dataGridViewCellStyle22.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle22.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle22.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle22.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle22.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle22.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle22.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.SessionPluginTraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle22;
             this.SessionPluginTraceGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.SessionPluginTraceGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.SessionPluginTraceIdClmn,
@@ -7797,7 +7238,7 @@ namespace IronWASP
             this.SessionPluginTraceGrid.RowHeadersVisible = false;
             this.SessionPluginTraceGrid.RowHeadersWidth = 10;
             this.SessionPluginTraceGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.SessionPluginTraceGrid.Size = new System.Drawing.Size(689, 229);
+            this.SessionPluginTraceGrid.Size = new System.Drawing.Size(689, 228);
             this.SessionPluginTraceGrid.TabIndex = 10;
             this.SessionPluginTraceGrid.SelectionChanged += new System.EventHandler(this.SessionPluginTraceGrid_SelectionChanged);
             // 
@@ -7833,8 +7274,8 @@ namespace IronWASP
             // SessionPluginTracePluginNameClmn
             // 
             this.SessionPluginTracePluginNameClmn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle56.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.SessionPluginTracePluginNameClmn.DefaultCellStyle = dataGridViewCellStyle56;
+            dataGridViewCellStyle23.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.SessionPluginTracePluginNameClmn.DefaultCellStyle = dataGridViewCellStyle23;
             this.SessionPluginTracePluginNameClmn.HeaderText = "Session Plugin Name";
             this.SessionPluginTracePluginNameClmn.MinimumWidth = 100;
             this.SessionPluginTracePluginNameClmn.Name = "SessionPluginTracePluginNameClmn";
@@ -7844,8 +7285,8 @@ namespace IronWASP
             // SessionPluginTraceActionClmn
             // 
             this.SessionPluginTraceActionClmn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle57.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.SessionPluginTraceActionClmn.DefaultCellStyle = dataGridViewCellStyle57;
+            dataGridViewCellStyle24.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.SessionPluginTraceActionClmn.DefaultCellStyle = dataGridViewCellStyle24;
             this.SessionPluginTraceActionClmn.HeaderText = "Action";
             this.SessionPluginTraceActionClmn.MinimumWidth = 80;
             this.SessionPluginTraceActionClmn.Name = "SessionPluginTraceActionClmn";
@@ -7854,8 +7295,8 @@ namespace IronWASP
             // SessionPluginTraceMessageClmn
             // 
             this.SessionPluginTraceMessageClmn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle58.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.SessionPluginTraceMessageClmn.DefaultCellStyle = dataGridViewCellStyle58;
+            dataGridViewCellStyle25.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.SessionPluginTraceMessageClmn.DefaultCellStyle = dataGridViewCellStyle25;
             this.SessionPluginTraceMessageClmn.HeaderText = "Message";
             this.SessionPluginTraceMessageClmn.MinimumWidth = 2;
             this.SessionPluginTraceMessageClmn.Name = "SessionPluginTraceMessageClmn";
@@ -8041,7 +7482,7 @@ namespace IronWASP
             this.DebugTraceTab.Location = new System.Drawing.Point(4, 22);
             this.DebugTraceTab.Margin = new System.Windows.Forms.Padding(0);
             this.DebugTraceTab.Name = "DebugTraceTab";
-            this.DebugTraceTab.Size = new System.Drawing.Size(689, 460);
+            this.DebugTraceTab.Size = new System.Drawing.Size(689, 459);
             this.DebugTraceTab.TabIndex = 0;
             this.DebugTraceTab.Text = "    Debug Trace    ";
             this.DebugTraceTab.UseVisualStyleBackColor = true;
@@ -8061,8 +7502,8 @@ namespace IronWASP
             // TraceBaseSplit.Panel2
             // 
             this.TraceBaseSplit.Panel2.Controls.Add(this.TraceMsgRTB);
-            this.TraceBaseSplit.Size = new System.Drawing.Size(689, 460);
-            this.TraceBaseSplit.SplitterDistance = 211;
+            this.TraceBaseSplit.Size = new System.Drawing.Size(689, 459);
+            this.TraceBaseSplit.SplitterDistance = 210;
             this.TraceBaseSplit.TabIndex = 1;
             // 
             // TraceGrid
@@ -8074,14 +7515,14 @@ namespace IronWASP
             this.TraceGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.TraceGrid.BackgroundColor = System.Drawing.Color.White;
             this.TraceGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle59.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle59.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle59.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle59.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle59.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle59.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle59.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.TraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle59;
+            dataGridViewCellStyle26.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle26.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle26.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle26.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle26.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle26.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle26.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.TraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle26;
             this.TraceGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.TraceGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn26,
@@ -8101,7 +7542,7 @@ namespace IronWASP
             this.TraceGrid.RowHeadersVisible = false;
             this.TraceGrid.RowHeadersWidth = 10;
             this.TraceGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.TraceGrid.Size = new System.Drawing.Size(689, 211);
+            this.TraceGrid.Size = new System.Drawing.Size(689, 210);
             this.TraceGrid.TabIndex = 8;
             this.TraceGrid.SelectionChanged += new System.EventHandler(this.TraceGrid_SelectionChanged);
             // 
@@ -8176,7 +7617,7 @@ namespace IronWASP
             this.DevHelpTab.Controls.Add(this.DevHelpTB);
             this.DevHelpTab.Location = new System.Drawing.Point(4, 22);
             this.DevHelpTab.Name = "DevHelpTab";
-            this.DevHelpTab.Size = new System.Drawing.Size(697, 486);
+            this.DevHelpTab.Size = new System.Drawing.Size(697, 485);
             this.DevHelpTab.TabIndex = 2;
             this.DevHelpTab.Text = "    Help    ";
             this.DevHelpTab.UseVisualStyleBackColor = true;
@@ -8191,10 +7632,51 @@ namespace IronWASP
             this.DevHelpTB.Name = "DevHelpTB";
             this.DevHelpTB.ReadOnly = true;
             this.DevHelpTB.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.DevHelpTB.Size = new System.Drawing.Size(697, 486);
+            this.DevHelpTB.Size = new System.Drawing.Size(697, 485);
             this.DevHelpTB.TabIndex = 2;
             this.DevHelpTB.TabStop = false;
             this.DevHelpTB.Text = resources.GetString("DevHelpTB.Text");
+            // 
+            // JSTainTraceEditMenu
+            // 
+            this.JSTainTraceEditMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.AddSourceTaintToolStripMenuItem,
+            this.AddSinkTaintToolStripMenuItem,
+            this.RemoveSourceTaintToolStripMenuItem,
+            this.RemoveSinkTaintToolStripMenuItem,
+            this.CopyLineTaintToolStripMenuItem});
+            this.JSTainTraceEditMenu.Name = "JSTainTraceEditMenu";
+            this.JSTainTraceEditMenu.Size = new System.Drawing.Size(187, 114);
+            // 
+            // AddSourceTaintToolStripMenuItem
+            // 
+            this.AddSourceTaintToolStripMenuItem.Name = "AddSourceTaintToolStripMenuItem";
+            this.AddSourceTaintToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.AddSourceTaintToolStripMenuItem.Text = "Set Source Taint";
+            // 
+            // AddSinkTaintToolStripMenuItem
+            // 
+            this.AddSinkTaintToolStripMenuItem.Name = "AddSinkTaintToolStripMenuItem";
+            this.AddSinkTaintToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.AddSinkTaintToolStripMenuItem.Text = "Set Sink Taint";
+            // 
+            // RemoveSourceTaintToolStripMenuItem
+            // 
+            this.RemoveSourceTaintToolStripMenuItem.Name = "RemoveSourceTaintToolStripMenuItem";
+            this.RemoveSourceTaintToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.RemoveSourceTaintToolStripMenuItem.Text = "Remove Source Taint";
+            // 
+            // RemoveSinkTaintToolStripMenuItem
+            // 
+            this.RemoveSinkTaintToolStripMenuItem.Name = "RemoveSinkTaintToolStripMenuItem";
+            this.RemoveSinkTaintToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.RemoveSinkTaintToolStripMenuItem.Text = "Remove Sink Taint";
+            // 
+            // CopyLineTaintToolStripMenuItem
+            // 
+            this.CopyLineTaintToolStripMenuItem.Name = "CopyLineTaintToolStripMenuItem";
+            this.CopyLineTaintToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.CopyLineTaintToolStripMenuItem.Text = "Copy Line";
             // 
             // MTRequestFormatPluginsMenu
             // 
@@ -8271,7 +7753,6 @@ namespace IronWASP
             // 
             // ConfigPanelTabs
             // 
-            this.ConfigPanelTabs.Controls.Add(this.ConfigIronProxyTab);
             this.ConfigPanelTabs.Controls.Add(this.ConfigInterceptRulesTab);
             this.ConfigPanelTabs.Controls.Add(this.ConfigDisplayRulesTab);
             this.ConfigPanelTabs.Controls.Add(this.ConfigScriptingTab);
@@ -8287,68 +7768,6 @@ namespace IronWASP
             this.ConfigPanelTabs.Size = new System.Drawing.Size(881, 8);
             this.ConfigPanelTabs.TabIndex = 0;
             this.ConfigPanelTabs.SelectedIndexChanged += new System.EventHandler(this.ConfigPanelTabs_SelectedIndexChanged);
-            // 
-            // ConfigIronProxyTab
-            // 
-            this.ConfigIronProxyTab.AutoScroll = true;
-            this.ConfigIronProxyTab.Controls.Add(this.label11);
-            this.ConfigIronProxyTab.Controls.Add(this.label8);
-            this.ConfigIronProxyTab.Controls.Add(this.ConfigUpstreamProxyPortTB);
-            this.ConfigIronProxyTab.Controls.Add(this.ConfigUseUpstreamProxyCB);
-            this.ConfigIronProxyTab.Controls.Add(this.ConfigUpstreamProxyIPTB);
-            this.ConfigIronProxyTab.Location = new System.Drawing.Point(4, 22);
-            this.ConfigIronProxyTab.Margin = new System.Windows.Forms.Padding(0);
-            this.ConfigIronProxyTab.Name = "ConfigIronProxyTab";
-            this.ConfigIronProxyTab.Size = new System.Drawing.Size(873, 0);
-            this.ConfigIronProxyTab.TabIndex = 0;
-            this.ConfigIronProxyTab.Text = "Proxy Settings";
-            this.ConfigIronProxyTab.UseVisualStyleBackColor = true;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(196, 41);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(58, 13);
-            this.label11.TabIndex = 60;
-            this.label11.Text = "Proxy Port:";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 40);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(49, 13);
-            this.label8.TabIndex = 58;
-            this.label8.Text = "Proxy IP:";
-            // 
-            // ConfigUpstreamProxyPortTB
-            // 
-            this.ConfigUpstreamProxyPortTB.Location = new System.Drawing.Point(264, 37);
-            this.ConfigUpstreamProxyPortTB.Name = "ConfigUpstreamProxyPortTB";
-            this.ConfigUpstreamProxyPortTB.Size = new System.Drawing.Size(78, 20);
-            this.ConfigUpstreamProxyPortTB.TabIndex = 61;
-            this.ConfigUpstreamProxyPortTB.TextChanged += new System.EventHandler(this.ConfigUpstreamProxyPortTB_TextChanged);
-            // 
-            // ConfigUseUpstreamProxyCB
-            // 
-            this.ConfigUseUpstreamProxyCB.AutoSize = true;
-            this.ConfigUseUpstreamProxyCB.Enabled = false;
-            this.ConfigUseUpstreamProxyCB.Location = new System.Drawing.Point(6, 11);
-            this.ConfigUseUpstreamProxyCB.Name = "ConfigUseUpstreamProxyCB";
-            this.ConfigUseUpstreamProxyCB.Size = new System.Drawing.Size(122, 17);
-            this.ConfigUseUpstreamProxyCB.TabIndex = 62;
-            this.ConfigUseUpstreamProxyCB.Text = "Use Upstream Proxy";
-            this.ConfigUseUpstreamProxyCB.UseVisualStyleBackColor = true;
-            this.ConfigUseUpstreamProxyCB.Click += new System.EventHandler(this.ConfigUseUpstreamProxyCB_Click);
-            // 
-            // ConfigUpstreamProxyIPTB
-            // 
-            this.ConfigUpstreamProxyIPTB.Location = new System.Drawing.Point(62, 37);
-            this.ConfigUpstreamProxyIPTB.Name = "ConfigUpstreamProxyIPTB";
-            this.ConfigUpstreamProxyIPTB.Size = new System.Drawing.Size(121, 20);
-            this.ConfigUpstreamProxyIPTB.TabIndex = 59;
-            this.ConfigUpstreamProxyIPTB.TextChanged += new System.EventHandler(this.ConfigUpstreamProxyIPTB_TextChanged);
             // 
             // ConfigInterceptRulesTab
             // 
@@ -9853,7 +9272,6 @@ namespace IronWASP
             this.ConfigJSTaintConfigCancelChangesLL.TabIndex = 68;
             this.ConfigJSTaintConfigCancelChangesLL.TabStop = true;
             this.ConfigJSTaintConfigCancelChangesLL.Text = "Cancel";
-            this.ConfigJSTaintConfigCancelChangesLL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ConfigJSTaintConfigCancelChangesLL_LinkClicked);
             // 
             // ConfigJSTaintConfigApplyChangesLL
             // 
@@ -9869,7 +9287,6 @@ namespace IronWASP
             this.ConfigJSTaintConfigApplyChangesLL.TabStop = true;
             this.ConfigJSTaintConfigApplyChangesLL.Text = "Save";
             this.ConfigJSTaintConfigApplyChangesLL.VisitedLinkColor = System.Drawing.Color.Blue;
-            this.ConfigJSTaintConfigApplyChangesLL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ConfigJSTaintConfigApplyChangesLL_LinkClicked);
             // 
             // ConfigDefaultJSTaintConfigGrid
             // 
@@ -9890,7 +9307,7 @@ namespace IronWASP
             this.ConfigDefaultJSTaintConfigGrid.Location = new System.Drawing.Point(0, 30);
             this.ConfigDefaultJSTaintConfigGrid.Margin = new System.Windows.Forms.Padding(0);
             this.ConfigDefaultJSTaintConfigGrid.Name = "ConfigDefaultJSTaintConfigGrid";
-            this.ConfigDefaultJSTaintConfigGrid.Size = new System.Drawing.Size(873, 884);
+            this.ConfigDefaultJSTaintConfigGrid.Size = new System.Drawing.Size(873, 1256);
             this.ConfigDefaultJSTaintConfigGrid.TabIndex = 0;
             // 
             // ConfigDefaultSourceObjectsColumn
@@ -10045,6 +9462,7 @@ namespace IronWASP
             // 
             this.TopMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.projectToolStripMenuItem,
+            this.generateReportToolStripMenuItem,
             this.toolsToolStripMenuItem,
             this.modulesToolStripMenuItem,
             this.devToolsToolStripMenuItem,
@@ -10085,6 +9503,13 @@ namespace IronWASP
             this.ImportBurpLogToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.ImportBurpLogToolStripMenuItem.Text = "Burp Log";
             this.ImportBurpLogToolStripMenuItem.Click += new System.EventHandler(this.ImportBurpLogToolStripMenuItem_Click);
+            // 
+            // generateReportToolStripMenuItem
+            // 
+            this.generateReportToolStripMenuItem.Name = "generateReportToolStripMenuItem";
+            this.generateReportToolStripMenuItem.Size = new System.Drawing.Size(104, 20);
+            this.generateReportToolStripMenuItem.Text = "Generate Report";
+            this.generateReportToolStripMenuItem.Click += new System.EventHandler(this.generateReportToolStripMenuItem_Click);
             // 
             // toolsToolStripMenuItem
             // 
@@ -10235,21 +9660,23 @@ namespace IronWASP
             this.PromptBlinkTimer.Interval = 400;
             this.PromptBlinkTimer.Tick += new System.EventHandler(this.PromptBlinkTimer_Tick);
             // 
-            // label6
+            // label8
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 10);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(429, 13);
-            this.label6.TabIndex = 47;
-            this.label6.Text = "Click on Checkbox to select log. Click anywhere else to view the Request and Resp" +
-    "onse.";
+            this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label8.AutoSize = true;
+            this.label8.ForeColor = System.Drawing.Color.Gray;
+            this.label8.Location = new System.Drawing.Point(254, 23);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(126, 13);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "Coming in version 0.9.8.0";
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(884, 562);
+            this.ClientSize = new System.Drawing.Size(884, 561);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.ConfigPanel);
             this.Controls.Add(this.split_main);
@@ -10477,22 +9904,8 @@ namespace IronWASP
             ((System.ComponentModel.ISupportInitialize)(this.SelectForDiffTriggersGrid)).EndInit();
             this.ResultsHelpTab.ResumeLayout(false);
             this.ResultsHelpTab.PerformLayout();
-            this.mt_js.ResumeLayout(false);
-            this.JSTaintBaseSplit.Panel1.ResumeLayout(false);
-            this.JSTaintBaseSplit.Panel1.PerformLayout();
-            this.JSTaintBaseSplit.Panel2.ResumeLayout(false);
-            this.JSTaintBaseSplit.ResumeLayout(false);
-            this.JSTaintConfigPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.JSTaintConfigGrid)).EndInit();
-            this.JSTaintTabs.ResumeLayout(false);
-            this.JSTaintInputTab.ResumeLayout(false);
-            this.JSTaintInputTab.PerformLayout();
-            this.JSTaintResultTab.ResumeLayout(false);
-            this.JSTaintResultSplit.Panel1.ResumeLayout(false);
-            this.JSTaintResultSplit.Panel2.ResumeLayout(false);
-            this.JSTaintResultSplit.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.JSTaintResultGrid)).EndInit();
-            this.JSTainTraceEditMenu.ResumeLayout(false);
+            this.mt_hawas.ResumeLayout(false);
+            this.mt_hawas.PerformLayout();
             this.mt_dev.ResumeLayout(false);
             this.DevMainTabs.ResumeLayout(false);
             this.DevModulesAndPluginsTab.ResumeLayout(false);
@@ -10536,13 +9949,12 @@ namespace IronWASP
             ((System.ComponentModel.ISupportInitialize)(this.TraceGrid)).EndInit();
             this.DevHelpTab.ResumeLayout(false);
             this.DevHelpTab.PerformLayout();
+            this.JSTainTraceEditMenu.ResumeLayout(false);
             this.MTRequestFormatPluginsMenu.ResumeLayout(false);
             this.ProxyResponseFormatPluginsMenu.ResumeLayout(false);
             this.ProxyRequestFormatPluginsMenu.ResumeLayout(false);
             this.ConfigPanel.ResumeLayout(false);
             this.ConfigPanelTabs.ResumeLayout(false);
-            this.ConfigIronProxyTab.ResumeLayout(false);
-            this.ConfigIronProxyTab.PerformLayout();
             this.ConfigInterceptRulesTab.ResumeLayout(false);
             this.ConfigInterceptRulesTab.PerformLayout();
             this.ConfigRuleKeywordInResponseGB.ResumeLayout(false);
@@ -10649,11 +10061,7 @@ namespace IronWASP
         private System.Windows.Forms.DataGridViewTextBoxColumn ResultsTriggerGridNumberColumn;
         private System.Windows.Forms.Panel ConfigPanel;
         private System.Windows.Forms.TabControl ConfigPanelTabs;
-        private System.Windows.Forms.TabPage ConfigIronProxyTab;
         private System.Windows.Forms.Label label7;
-        internal System.Windows.Forms.TextBox ConfigProxyListenPortTB;
-        internal System.Windows.Forms.CheckBox ConfigLoopBackOnlyCB;
-        internal System.Windows.Forms.Button ConfigProxyRunBtn;
         internal System.Windows.Forms.CheckBox ConfigSetAsSystemProxyCB;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
@@ -10700,9 +10108,6 @@ namespace IronWASP
         internal System.Windows.Forms.TextBox ConfigRuleKeywordInResponseMinusTB;
         internal System.Windows.Forms.RadioButton ConfigRuleKeywordInResponsePlusRB;
         internal System.Windows.Forms.RadioButton ConfigRuleKeywordInResponseMinusRB;
-        internal System.Windows.Forms.CheckBox ConfigUseUpstreamProxyCB;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ToolStripMenuItem EncodeDecodeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem DiffTextToolStripMenuItem;
         internal System.Windows.Forms.OpenFileDialog ProjectFileOpenDialog;
@@ -10798,8 +10203,6 @@ namespace IronWASP
         private System.Windows.Forms.LinkLabel ConfigScriptCommandCancelChangesLL;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label14;
-        internal System.Windows.Forms.TextBox ConfigUpstreamProxyIPTB;
-        internal System.Windows.Forms.TextBox ConfigUpstreamProxyPortTB;
         internal System.Windows.Forms.TextBox ConfigScriptPyPathsTB;
         internal System.Windows.Forms.TextBox ConfigScriptRbPathsTB;
         internal System.Windows.Forms.TextBox ConfigScriptPyCommandsTB;
@@ -11142,42 +10545,7 @@ namespace IronWASP
         internal System.Windows.Forms.CheckBox ASRequestScanParameterNamesCB;
         private System.Windows.Forms.TabPage ASRequestParameterNamesTab;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TabPage mt_js;
-        internal System.Windows.Forms.CheckBox JSTaintShowSourceToSinkCB;
-        private System.Windows.Forms.Label JSTaintShowLinesLbl;
-        internal System.Windows.Forms.CheckBox JSTaintShowSinkCB;
-        internal System.Windows.Forms.CheckBox JSTaintShowSourceCB;
-        internal System.Windows.Forms.CheckBox JSTaintShowCleanCB;
-        private System.Windows.Forms.Panel JSTaintConfigPanel;
-        private System.Windows.Forms.Button TaintTraceClearTaintConfigBtn;
-        internal System.Windows.Forms.DataGridView JSTaintConfigGrid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn JSTaintDefaultSourceObjectsColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn JSTaintDefaultSinkObjectsColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn JSTaintDefaultArgumentAssignedASourceMethodsColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn JSTaintDefaultArgumentAssignedToSinkMethodsColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn JSTaintDefaultSourceReturningMethodsColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn JSTaintDefaultSinkReturningMethodsColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn JSTaintDefaultArgumentReturningMethodsColumn;
-        private System.Windows.Forms.Button TaintTraceResetTaintConfigBtn;
-        internal System.Windows.Forms.Button JSTaintContinueBtn;
-        private System.Windows.Forms.Button JSTaintConfigShowHideBtn;
-        internal System.Windows.Forms.CheckBox PauseAtTaintCB;
-        internal System.Windows.Forms.TextBox JSTaintStatusTB;
-        private System.Windows.Forms.TextBox TaintTraceResultSinkLegendTB;
-        internal System.Windows.Forms.TabControl JSTaintTabs;
-        private System.Windows.Forms.TabPage JSTaintInputTab;
-        internal System.Windows.Forms.RichTextBox JSTaintTraceInRTB;
-        internal System.Windows.Forms.TextBox TaintTraceMsgTB;
-        private System.Windows.Forms.TabPage JSTaintResultTab;
-        private System.Windows.Forms.SplitContainer JSTaintResultSplit;
-        internal System.Windows.Forms.DataGridView JSTaintResultGrid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn JSTaintResultLineColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn JSTaintResultCodeColumn;
-        internal System.Windows.Forms.RichTextBox JSTaintReasonsRTB;
-        internal System.Windows.Forms.Button JSTaintTraceControlBtn;
-        private System.Windows.Forms.TextBox TaintTraceResultSourceToSinkLegendTB;
-        private System.Windows.Forms.TextBox TaintTraceResultSourceLegendTB;
-        private System.Windows.Forms.TextBox TaintTraceResultSourcePlusSinkLegendTB;
+        private System.Windows.Forms.TabPage mt_hawas;
         private System.Windows.Forms.Button CreateNewTestRequestBtn;
         private System.Windows.Forms.TextBox textBox2;
         internal System.Windows.Forms.ListView TestGroupsLV;
@@ -11230,7 +10598,6 @@ namespace IronWASP
         private System.Windows.Forms.SplitContainer TestBaseRequestSplit;
         private System.Windows.Forms.SplitContainer ScanJobsBottomSplit;
         private System.Windows.Forms.SplitContainer ScanJobsTopSplit;
-        private System.Windows.Forms.SplitContainer JSTaintBaseSplit;
         internal ResponseView ProxyResponseView;
         internal ResponseView TestResponseView;
         internal RequestView TestRequestView;
@@ -11347,6 +10714,11 @@ namespace IronWASP
         internal ResponseView ResultsResponseView;
         private System.Windows.Forms.SplitContainer TrigggerAnalysisToolsSplit;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label33;
+        internal System.Windows.Forms.Label ProxyPortLbl;
+        internal System.Windows.Forms.Label ProxyLoopbackLbl;
+        private System.Windows.Forms.ToolStripMenuItem generateReportToolStripMenuItem;
+        private System.Windows.Forms.Label label8;
     }
 }
 

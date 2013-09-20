@@ -62,6 +62,8 @@ namespace IronWASP
         bool isXml = false;
         bool isCss = false;
 
+        bool BodyFormatChecked = false;
+
         internal int TTL = 0;
         internal string Source = "Shell";
 
@@ -188,6 +190,7 @@ namespace IronWASP
         {
             get
             {
+                CheckBodyFormatAndHandleIt();
                 return isHtml;
             }
         }
@@ -196,6 +199,7 @@ namespace IronWASP
         {
             get
             {
+                CheckBodyFormatAndHandleIt();
                 return isJavaScript;
             }
         }
@@ -204,6 +208,7 @@ namespace IronWASP
         {
             get
             {
+                CheckBodyFormatAndHandleIt();
                 return isJson;
             }
         }
@@ -212,6 +217,7 @@ namespace IronWASP
         {
             get
             {
+                CheckBodyFormatAndHandleIt();
                 return isXml;
             }
         }
@@ -220,6 +226,7 @@ namespace IronWASP
         {
             get
             {
+                CheckBodyFormatAndHandleIt();
                 return isCss;
             }
         }
@@ -274,6 +281,7 @@ namespace IronWASP
         {
             get
             {
+                CheckBodyFormatAndHandleIt();
                 return this.html;
             }
         }
@@ -283,6 +291,14 @@ namespace IronWASP
             get
             {
                 return this.bodyEncoding;
+            }
+        }
+
+        public string ParsedBodyEncoding
+        {
+            get
+            {
+                return this.ParseOutEncoding(false);
             }
         }
 
@@ -417,6 +433,7 @@ namespace IronWASP
 
         internal void SetBody(string BodyString)
         {
+            this.BodyFormatChecked = false;
             this.html = new HTML();
             if (BodyString == null)
             {
@@ -431,26 +448,28 @@ namespace IronWASP
             this.bodyString = BodyString;
             this.bodyArray = Encoding.GetEncoding(this.GetEncoding()).GetBytes(this.bodyString);
             this.Headers.Set("Content-Length", this.bodyArray.Length.ToString());
-            this.CheckBodyFormatAndHandleIt();
+            //this.CheckBodyFormatAndHandleIt();
         }
 
-        internal void SetBody(byte[] BodyArray)
+        internal void SetBody(byte[] NewBodyArray)
         {
+            this.BodyFormatChecked = false;
             this.html = new HTML();
-            if (BodyArray == null)
+            if (NewBodyArray == null)
             {
                 this.SetEmptyBody();
                 return;
             }
-            else if (BodyArray.Length == 0)
+            else if (NewBodyArray.Length == 0)
             {
                 this.SetEmptyBody();
                 return;
             }
-            this.bodyArray = BodyArray;
-            this.bodyString = Encoding.GetEncoding(this.GetEncoding(BodyArray)).GetString(this.bodyArray);
+            this.bodyArray = new byte[NewBodyArray.Length];
+            NewBodyArray.CopyTo(this.bodyArray, 0);
+            this.bodyString = Encoding.GetEncoding(this.GetEncoding(NewBodyArray)).GetString(this.bodyArray);
             this.Headers.Set("Content-Length", this.bodyArray.Length.ToString());
-            this.CheckBodyFormatAndHandleIt();
+            //this.CheckBodyFormatAndHandleIt();
         }
 
         void SetEmptyBody()
@@ -499,10 +518,20 @@ namespace IronWASP
 
         public string ParseOutEncoding()
         {
-            return this.ParseOutEncoding(this.BodyString);
+            return this.ParseOutEncoding(true);
+        }
+
+        public string ParseOutEncoding(bool ValidCharsetOnly)
+        {
+            return this.ParseOutEncoding(this.BodyString, ValidCharsetOnly);
         }
 
         string ParseOutEncoding(string BodyString)
+        {
+            return ParseOutEncoding(BodyString, true);
+        }
+
+        string ParseOutEncoding(string BodyString, bool ValidCharsetOnly)
         {
             try
             {
@@ -514,7 +543,10 @@ namespace IronWASP
                         Encoding.GetEncoding(Charset);
                         return Charset;
                     }
-                    catch{}
+                    catch
+                    {
+                        if (!ValidCharsetOnly) return Charset;
+                    }
                 }
                 //http://www.w3.org/International/questions/qa-html-encoding-declarations
                 //HTML4
@@ -530,7 +562,10 @@ namespace IronWASP
                             Encoding.GetEncoding(M.Groups[1].Value);
                             return M.Groups[1].Value;
                         }
-                        catch { }
+                        catch
+                        {
+                            if (!ValidCharsetOnly) return M.Groups[1].Value;
+                        }
                     }
                 }
                 //HTML5
@@ -545,7 +580,10 @@ namespace IronWASP
                             Encoding.GetEncoding(M.Groups[1].Value);
                             return M.Groups[1].Value;
                         }
-                        catch { }
+                        catch
+                        {
+                            if (!ValidCharsetOnly) return M.Groups[1].Value;
+                        }
                     }
                 }
                 //XHTML 1 as XML
@@ -560,7 +598,10 @@ namespace IronWASP
                             Encoding.GetEncoding(M.Groups[1].Value);
                             return M.Groups[1].Value;
                         }
-                        catch { }
+                        catch
+                        {
+                            if (!ValidCharsetOnly) return M.Groups[1].Value;
+                        }
                     }
                 }
             }
@@ -601,33 +642,30 @@ namespace IronWASP
 
         void CheckBodyFormatAndHandleIt()
         {
+            if (this.BodyFormatChecked)
+            {
+                return;
+            }
+            this.BodyFormatChecked = true;
+
             this.isJson = false;
             this.isHtml = false;
             this.isJavaScript = false;
             this.isXml = false;
             this.isCss = false;
 
-            string LowerCaseBodyString = this.BodyString.Trim().ToLower();
+            if (this.IsBinary) return;
 
-            if (LowerCaseBodyString.StartsWith("<") || LowerCaseBodyString.EndsWith(">"))
+            if (HTML.DoesHaveAngleBracketsAsBoundary(this.BodyString))
             {
-                if (LowerCaseBodyString.StartsWith("<!doctype html") || 
-                    LowerCaseBodyString.Contains("<html ") || LowerCaseBodyString.Contains("<html>") ||
-                    LowerCaseBodyString.Contains("</html>") || LowerCaseBodyString.Contains("<a ") ||
-                    LowerCaseBodyString.Contains("<div ") || LowerCaseBodyString.Contains("<div>") ||
-                    LowerCaseBodyString.Contains("<form ") || LowerCaseBodyString.Contains("<form>") ||
-                    LowerCaseBodyString.Contains("<span ") || LowerCaseBodyString.Contains("<span>") ||
-                    LowerCaseBodyString.Contains("<textarea ") || LowerCaseBodyString.Contains("<textarea>") ||
-                    LowerCaseBodyString.Contains("<style ") || LowerCaseBodyString.Contains("<style>") ||
-                    LowerCaseBodyString.Contains("<script ") || LowerCaseBodyString.Contains("<script>") ||
-                    LowerCaseBodyString.Contains("<input ") || LowerCaseBodyString.Contains("<input>"))
+                if (HTML.DoesHaveHtmlDocType(this.BodyString) || HTML.DoesHaveHtmlTags(this.BodyString))
                 {
                     if (this.ProcessHtml())
                     {
                         this.isHtml = true;
                     }
                 }
-                if (!LowerCaseBodyString.StartsWith("<!doctype html") && Tools.IsXml(this.BodyString))
+                if (!HTML.DoesHaveHtmlDocType(this.BodyString) && Tools.IsXml(this.BodyString))
                 {
                     this.isXml = true;
                     return;

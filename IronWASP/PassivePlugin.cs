@@ -96,7 +96,10 @@ namespace IronWASP
                 if (PP.Name.Equals(Name))
                 {
                     PassivePlugin NewInstance = PP.GetInstance();
-                    NewInstance.FileName = PP.FileName;
+                    if (PP.FileName != "Internal")
+                    {
+                        NewInstance.FileName = PP.FileName;
+                    }
                     return NewInstance;
                 }
             }

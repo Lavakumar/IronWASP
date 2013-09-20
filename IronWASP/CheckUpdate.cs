@@ -29,7 +29,7 @@ namespace IronWASP
 {
     class CheckUpdate
     {
-        static string CurrentVersion = "0.9.6.5";
+        static string CurrentVersion = "0.9.7.1";
 
         //static string PluginManifestUrl = "https://ironwasp.org/update/plugin.manifest";
         //static string IronWASPManifestUrl = "https://ironwasp.org/update/ironwasp.manifest";
@@ -171,9 +171,10 @@ namespace IronWASP
             XmlDoc.XmlResolver = null;
             try
             {
-                MemoryStream MS = new MemoryStream(Encoding.UTF8.GetBytes(ModuleManifestFile));
-                XmlDoc.Load(MS);
-                MS.Close();
+                using (MemoryStream MS = new MemoryStream(Encoding.UTF8.GetBytes(ModuleManifestFile)))
+                {
+                    XmlDoc.Load(MS);
+                }
             }
             catch { throw new Exception("Invalid IronWASP update manifest file recieved."); }
 
@@ -287,9 +288,10 @@ namespace IronWASP
             XmlDoc.XmlResolver = null;
             try
             {
-                MemoryStream MS = new MemoryStream(Encoding.UTF8.GetBytes(PluginManifestFile));
-                XmlDoc.Load(MS);
-                MS.Close();
+                using (MemoryStream MS = new MemoryStream(Encoding.UTF8.GetBytes(PluginManifestFile)))
+                {
+                    XmlDoc.Load(MS);
+                }
             }
             catch { throw new Exception("Invalid IronWASP update manifest file recieved."); }
             
@@ -530,9 +532,10 @@ namespace IronWASP
             XmlDoc.XmlResolver = null;
             try
             {
-                MemoryStream MS = new MemoryStream(Encoding.UTF8.GetBytes(IronWASPManifestFile));
-                XmlDoc.Load(MS);
-                MS.Close();
+                using (MemoryStream MS = new MemoryStream(Encoding.UTF8.GetBytes(IronWASPManifestFile)))
+                {
+                    XmlDoc.Load(MS);
+                }
             }
             catch { throw new Exception("Invalid IronWASP update manifest file recieved."); }
             

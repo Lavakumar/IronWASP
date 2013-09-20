@@ -980,7 +980,7 @@ namespace IronWASP
             this.Three.Controls.Add(this.label5);
             this.Three.Location = new System.Drawing.Point(4, 25);
             this.Three.Name = "Three";
-            this.Three.Size = new System.Drawing.Size(826, 333);
+            this.Three.Size = new System.Drawing.Size(826, 332);
             this.Three.TabIndex = 6;
             this.Three.Text = "            Customization            ";
             this.Three.UseVisualStyleBackColor = true;
@@ -1154,7 +1154,7 @@ namespace IronWASP
             this.Four.Controls.Add(this.FinalBtn);
             this.Four.Location = new System.Drawing.Point(4, 25);
             this.Four.Name = "Four";
-            this.Four.Size = new System.Drawing.Size(826, 333);
+            this.Four.Size = new System.Drawing.Size(826, 332);
             this.Four.TabIndex = 3;
             this.Four.Text = "            Done            ";
             this.Four.UseVisualStyleBackColor = true;
@@ -1263,7 +1263,6 @@ namespace IronWASP
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(834, 361);
-            this.ControlBox = false;
             this.Controls.Add(this.BaseTabs);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(850, 400);
@@ -1271,6 +1270,7 @@ namespace IronWASP
             this.Name = "ScanBranchWizard";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Scan Branch Wizard";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScanBranchWizard_FormClosing);
             this.Load += new System.EventHandler(this.ScanBranchWizard_Load);
             this.ScanBranchStatsPanel.ResumeLayout(false);
             this.ScanBranchStatsPanel.PerformLayout();

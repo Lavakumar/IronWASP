@@ -89,6 +89,8 @@ namespace IronWASP
 
         internal Dictionary<string, List<List<JintItem>>> InterestingStringHolders = new Dictionary<string, List<List<JintItem>>>();
 
+        long AnalyzeCallStartTime = 0;
+
         //Used by the UI
         internal static Dictionary<int, int> LineNoToGridRowNoMapping = new Dictionary<int, int>();
 
@@ -120,99 +122,99 @@ namespace IronWASP
             return BeautifiedCode;
         }
         
-        internal static void StartTraceFromUI(string Code, List<string> SourceObjs, List<string> SinkObjs, List<string> SourceRetMets, List<string> SinkRetMets, List<string> ArgRetMets, List<string> ArgAssASourceMets, List<string> ArgAssToSinkMets)
-        {
-            StopUITrace();
-            SourceLinesToIgnore.Clear();
-            SinkLinesToIgnore.Clear();
-            SourceLinesToInclude.Clear();
-            SinkLinesToInclude.Clear();
+        //internal static void StartTraceFromUI(string Code, List<string> SourceObjs, List<string> SinkObjs, List<string> SourceRetMets, List<string> SinkRetMets, List<string> ArgRetMets, List<string> ArgAssASourceMets, List<string> ArgAssToSinkMets)
+        //{
+        //    StopUITrace();
+        //    SourceLinesToIgnore.Clear();
+        //    SinkLinesToIgnore.Clear();
+        //    SourceLinesToInclude.Clear();
+        //    SinkLinesToInclude.Clear();
 
-            InputCodeString = Code;
-            ConfiguredSourceObjects = SourceObjs;
-            ConfiguredSinkObjects = SinkObjs;
-            ConfiguredSourceReturningMethods = SourceRetMets;
-            ConfiguredSinkReturningMethods = SinkRetMets;
-            ConfiguredArgumentReturningMethods = ArgRetMets;
-            ConfiguredArgumentAssignedASourceMethods = ArgAssASourceMets;
-            ConfiguredArgumentAssignedToSinkMethods = ArgAssToSinkMets;
+        //    InputCodeString = Code;
+        //    ConfiguredSourceObjects = SourceObjs;
+        //    ConfiguredSinkObjects = SinkObjs;
+        //    ConfiguredSourceReturningMethods = SourceRetMets;
+        //    ConfiguredSinkReturningMethods = SinkRetMets;
+        //    ConfiguredArgumentReturningMethods = ArgRetMets;
+        //    ConfiguredArgumentAssignedASourceMethods = ArgAssASourceMets;
+        //    ConfiguredArgumentAssignedToSinkMethods = ArgAssToSinkMets;
 
-            UITraceThread = new Thread(TraceFromUI);
-            UITraceThread.Start();
-        }
+        //    UITraceThread = new Thread(TraceFromUI);
+        //    UITraceThread.Start();
+        //}
 
-        internal static void ReDoTraceFromUI()
-        {
-            UITraceThread = new Thread(TraceFromUI);
-            UITraceThread.Start();
-        }
+        //internal static void ReDoTraceFromUI()
+        //{
+        //    UITraceThread = new Thread(TraceFromUI);
+        //    UITraceThread.Start();
+        //}
 
-        internal static void StopUITrace()
-        {
-            try
-            {
-                UITraceThread.Abort();
-            }
-            catch { }
-        }
+        //internal static void StopUITrace()
+        //{
+        //    try
+        //    {
+        //        UITraceThread.Abort();
+        //    }
+        //    catch { }
+        //}
 
-        internal static void TraceFromUI()
-        {
-            try
-            {
-                IronUI.ShowTraceStatus("Trace in progress...", false);
-                IronJint IJ = new IronJint();
-                UIIJ = IJ;
-                IJ.SetSourcesAndSinks(ConfiguredSourceObjects, ConfiguredSinkObjects, ConfiguredSourceReturningMethods, ConfiguredSinkReturningMethods, ConfiguredArgumentReturningMethods, ConfiguredArgumentAssignedASourceMethods, ConfiguredArgumentAssignedToSinkMethods);
-                IJ.ClearAllTaint();
-                IJ.JintStack.Clear();
-                string DirtyJS = "";
-                if (Tools.IsJavaScript(InputCodeString))
-                {
-                    DirtyJS = InputCodeString;
-                }
-                else
-                {
-                    try
-                    {
-                        HTML H = new HTML(InputCodeString);
-                        List<string> Scripts = H.GetJavaScript();
-                        StringBuilder ScriptString = new StringBuilder();
-                        foreach (string Script in Scripts)
-                        {
-                            ScriptString.AppendLine(Script);
-                        }
-                        DirtyJS = ScriptString.ToString();
-                    }
-                    catch
-                    {
-                        throw new Exception("Entered text does not contain valid JavaScript");
-                    }
-                }
-                if (DirtyJS.Length == 0)
-                {
-                    throw new Exception("No valid JavaScript input available to trace");
-                }
-                string CleanCode = Beautify(DirtyJS);
-                IronUI.SetJSTaintTraceCode(CleanCode, false);
-                IJ.Lines = SplitCodeLines(CleanCode);
-                if (PauseAtTaint) IronUI.SetJSTaintTraceResult();
-                IJ.StartedFromUI = true;
-                IJ.Analyze(CleanCode);
-                if (!PauseAtTaint) IronUI.SetJSTaintTraceResult();
-                IronUI.ShowTraceStatus("Trace Completed", false);
-                IronUI.ResetTraceStatus();
-            }
-            catch(ThreadAbortException)
-            {}
-            catch(Exception Exp)
-            {
-                StopUITrace();
-                IronUI.ResetTraceStatus();
-                IronUI.ShowTraceStatus("Trace Stopped due to error: " + Exp.Message, true);
-                IronException.Report("Error performing JS Taint Trace", Exp.Message, Exp.StackTrace);
-            }
-        }
+        //internal static void TraceFromUI()
+        //{
+        //    try
+        //    {
+        //        IronUI.ShowTraceStatus("Trace in progress...", false);
+        //        IronJint IJ = new IronJint();
+        //        UIIJ = IJ;
+        //        IJ.SetSourcesAndSinks(ConfiguredSourceObjects, ConfiguredSinkObjects, ConfiguredSourceReturningMethods, ConfiguredSinkReturningMethods, ConfiguredArgumentReturningMethods, ConfiguredArgumentAssignedASourceMethods, ConfiguredArgumentAssignedToSinkMethods);
+        //        IJ.ClearAllTaint();
+        //        IJ.JintStack.Clear();
+        //        string DirtyJS = "";
+        //        if (Tools.IsJavaScript(InputCodeString))
+        //        {
+        //            DirtyJS = InputCodeString;
+        //        }
+        //        else
+        //        {
+        //            try
+        //            {
+        //                HTML H = new HTML(InputCodeString);
+        //                List<string> Scripts = H.GetJavaScript();
+        //                StringBuilder ScriptString = new StringBuilder();
+        //                foreach (string Script in Scripts)
+        //                {
+        //                    ScriptString.AppendLine(Script);
+        //                }
+        //                DirtyJS = ScriptString.ToString();
+        //            }
+        //            catch
+        //            {
+        //                throw new Exception("Entered text does not contain valid JavaScript");
+        //            }
+        //        }
+        //        if (DirtyJS.Length == 0)
+        //        {
+        //            throw new Exception("No valid JavaScript input available to trace");
+        //        }
+        //        string CleanCode = Beautify(DirtyJS);
+        //        IronUI.SetJSTaintTraceCode(CleanCode, false);
+        //        IJ.Lines = SplitCodeLines(CleanCode);
+        //        if (PauseAtTaint) IronUI.SetJSTaintTraceResult();
+        //        IJ.StartedFromUI = true;
+        //        IJ.Analyze(CleanCode);
+        //        if (!PauseAtTaint) IronUI.SetJSTaintTraceResult();
+        //        IronUI.ShowTraceStatus("Trace Completed", false);
+        //        IronUI.ResetTraceStatus();
+        //    }
+        //    catch(ThreadAbortException)
+        //    {}
+        //    catch(Exception Exp)
+        //    {
+        //        StopUITrace();
+        //        IronUI.ResetTraceStatus();
+        //        IronUI.ShowTraceStatus("Trace Stopped due to error: " + Exp.Message, true);
+        //        IronException.Report("Error performing JS Taint Trace", Exp.Message, Exp.StackTrace);
+        //    }
+        //}
 
         public static List<string> SplitCodeLines(string Code)
         {
@@ -231,62 +233,76 @@ namespace IronWASP
 
         public static TraceResult Trace(string Code)
         {
-            IronJint IJ = new IronJint();
-            IJ.SetSourcesAndSinks(DefaultSourceObjects, DefaultSinkObjects, DefaultSourceReturningMethods, DefaultSinkReturningMethods, DefaultArgumentReturningMethods, DefaultArgumentAssignedASourceMethods, DefaultArgumentAssignedToSinkMethods);
-            IJ.ClearAllTaint();
-            IJ.JintStack.Clear();
-            string CleanCode = Beautify(Code);
-            IJ.Analyze(CleanCode);
             TraceResult TR = new TraceResult();
-            TR.Lines.AddRange(IJ.RawLines);
-            TR.SourceLineNos.AddRange(IJ.SourceLines);
-            TR.SinkLineNos.AddRange(IJ.SinkLines);
-            TR.SourceToSinkLineNos.AddRange(IJ.SourceToSinkLines);
-            foreach (int LineNo in TR.SourceLineNos)
+            try
             {
-                TR.SourceLines.Add(IJ.RawLines[LineNo - 1]);
+                IronJint IJ = new IronJint();
+                IJ.AnalyzeCallStartTime = 0;
+                IJ.SetSourcesAndSinks(DefaultSourceObjects, DefaultSinkObjects, DefaultSourceReturningMethods, DefaultSinkReturningMethods, DefaultArgumentReturningMethods, DefaultArgumentAssignedASourceMethods, DefaultArgumentAssignedToSinkMethods);
+                IJ.ClearAllTaint();
+                IJ.JintStack.Clear();
+                string CleanCode = Beautify(Code);
+            
+                IJ.Analyze(CleanCode);
+            
+                TR.Lines.AddRange(IJ.RawLines);
+                TR.SourceLineNos.AddRange(IJ.SourceLines);
+                TR.SinkLineNos.AddRange(IJ.SinkLines);
+                TR.SourceToSinkLineNos.AddRange(IJ.SourceToSinkLines);
+                foreach (int LineNo in TR.SourceLineNos)
+                {
+                    TR.SourceLines.Add(IJ.RawLines[LineNo - 1]);
+                }
+                foreach (int LineNo in TR.SinkLineNos)
+                {
+                    TR.SinkLines.Add(IJ.RawLines[LineNo - 1]);
+                }
+                foreach (int LineNo in TR.SourceToSinkLineNos)
+                {
+                    TR.SourceToSinkLines.Add(IJ.RawLines[LineNo - 1]);
+                }
             }
-            foreach (int LineNo in TR.SinkLineNos)
-            {
-                TR.SinkLines.Add(IJ.RawLines[LineNo - 1]);
-            }
-            foreach (int LineNo in TR.SourceToSinkLineNos)
-            {
-                TR.SourceToSinkLines.Add(IJ.RawLines[LineNo - 1]);
-            }
+            catch (TimeoutException){}
             return TR;
         }
 
         public static TraceResult Trace(string Code, string Keyword)
         {
-            IronJint IJ = new IronJint();
-            IJ.SetSourcesAndSinks(new List<string>() { Keyword }, DefaultSinkObjects, new List<string>(), DefaultSinkReturningMethods, DefaultArgumentReturningMethods, DefaultArgumentAssignedASourceMethods, DefaultArgumentAssignedToSinkMethods);
-            IJ.ClearAllTaint();
-            IJ.JintStack.Clear();
-            IJ.KeywordToTrace = Keyword;
-            IJ.TraceKeyword = true;
-            string CleanCode = Beautify(Code);
-            //List<string> Lines = new List<string>(CleanCode.Split(new string[] { "\r\n" }, StringSplitOptions.None));
-            IJ.Analyze(CleanCode);
-            //return IJ;
             TraceResult TR = new TraceResult();
-            TR.Lines.AddRange(IJ.RawLines);
-            TR.SourceLineNos.AddRange(IJ.SourceLines);
-            TR.SinkLineNos.AddRange(IJ.SinkLines);
-            TR.SourceToSinkLineNos.AddRange(IJ.SourceToSinkLines);
-            foreach (int LineNo in TR.SourceLineNos)
+            try
             {
-                TR.SourceLines.Add(IJ.RawLines[LineNo - 1]);
+                IronJint IJ = new IronJint();
+                IJ.AnalyzeCallStartTime = 0;
+                IJ.SetSourcesAndSinks(new List<string>() { Keyword }, DefaultSinkObjects, new List<string>(), DefaultSinkReturningMethods, DefaultArgumentReturningMethods, DefaultArgumentAssignedASourceMethods, DefaultArgumentAssignedToSinkMethods);
+                IJ.ClearAllTaint();
+                IJ.JintStack.Clear();
+                IJ.KeywordToTrace = Keyword;
+                IJ.TraceKeyword = true;
+                string CleanCode = Beautify(Code);
+                //List<string> Lines = new List<string>(CleanCode.Split(new string[] { "\r\n" }, StringSplitOptions.None));
+
+                IJ.Analyze(CleanCode);
+                //return IJ;
+
+                TR.Lines.AddRange(IJ.RawLines);
+                TR.SourceLineNos.AddRange(IJ.SourceLines);
+                TR.SinkLineNos.AddRange(IJ.SinkLines);
+                TR.SourceToSinkLineNos.AddRange(IJ.SourceToSinkLines);
+                foreach (int LineNo in TR.SourceLineNos)
+                {
+                    TR.SourceLines.Add(IJ.RawLines[LineNo - 1]);
+                }
+                foreach (int LineNo in TR.SinkLineNos)
+                {
+                    TR.SinkLines.Add(IJ.RawLines[LineNo - 1]);
+                }
+                foreach (int LineNo in TR.SourceToSinkLineNos)
+                {
+                    TR.SourceToSinkLines.Add(IJ.RawLines[LineNo - 1]);
+                }
+                TR.KeywordContexts.AddRange(IJ.KeywordContexts);
             }
-            foreach (int LineNo in TR.SinkLineNos)
-            {
-                TR.SinkLines.Add(IJ.RawLines[LineNo - 1]);
-            }
-            foreach (int LineNo in TR.SourceToSinkLineNos)
-            {
-                TR.SourceToSinkLines.Add(IJ.RawLines[LineNo - 1]);
-            }
-            TR.KeywordContexts.AddRange(IJ.KeywordContexts);
+            catch(TimeoutException) { }
             return TR;
         }
 
@@ -314,12 +330,14 @@ namespace IronWASP
 
         internal void Analyze(string Code)
         {
+            if (IsTimedOut()) return;
             RawLines.Clear();
             Analyze(new List<string>() { Code });
         }
 
         internal void Analyze(List<string> Codes)
         {
+            if (IsTimedOut()) return;
             RawLines.Clear();
             foreach (string C in Codes)
             {
@@ -374,6 +392,8 @@ namespace IronWASP
 
         void Analyze(LinkedList<Statement> Statements)
         {
+            if (IsTimedOut()) return;
+
             foreach (Statement Stmt in Statements)
             {
                 if (Stmt != null) Analyze(Stmt);
@@ -389,6 +409,7 @@ namespace IronWASP
 
         void Analyze(List<Statement> Statements)
         {
+            if (IsTimedOut()) return;
             for (int i = 0; i < Statements.Count; i++)
             {
                 if (Statements[i] != null) Analyze(Statements[i]);
@@ -397,6 +418,7 @@ namespace IronWASP
 
         void Analyze(Jint.Expressions.Statement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             Type T = Stmt.GetType();
             switch (T.Name)
@@ -575,6 +597,7 @@ namespace IronWASP
 
         void Analyze(List<Expression> Statements)
         {
+            if (IsTimedOut()) return;
             for (int i = 0; i < Statements.Count; i++)
             {
                 bool IsMethodArgument = false;
@@ -605,6 +628,7 @@ namespace IronWASP
 
         void Analyze(ArrayDeclaration Stmt)
         {
+            if (IsTimedOut()) return;
             if (Stmt.Parameters != null)
             {
                 int StatusIndex = AddToJintStack(Stmt.Source, JintState.ArrayDeclaration);
@@ -615,6 +639,7 @@ namespace IronWASP
 
         void Analyze(AssignmentExpression Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             List<JintItem> LeftItems = new List<JintItem>();
             List<List<JintItem>> LeftItemParts = new List<List<JintItem>>();
@@ -716,6 +741,7 @@ namespace IronWASP
 
         void Analyze(BinaryExpression Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.LeftExpression != null) Analyze(Stmt.LeftExpression);
             AddToJintStack(Stmt.Source, JintState.BinaryOperator, "");
@@ -724,46 +750,54 @@ namespace IronWASP
 
         void Analyze(BlockStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if(Stmt.Statements != null) Analyze(Stmt.Statements);
         }
 
         void Analyze(BreakStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
         }
 
         void Analyze(CaseClause Stmt)
         {
+            if (IsTimedOut()) return;
             if (Stmt.Statements != null) Analyze(Stmt.Statements);
             if (Stmt.Expression != null) Analyze(Stmt.Expression);
         }
 
         void Analyze(CatchClause Stmt)
         {
+            if (IsTimedOut()) return;
             //if (Stmt.Identifier != null) Analyze(Stmt.Identifier);
             if (Stmt.Statement != null) Analyze(Stmt.Statement);
         }
 
         void Analyze(ClrIdentifier Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             //if (Stmt.Text != null) Analyzer.CheckIdentifier(Stmt.Text);
         }
 
         void Analyze(CommaOperatorStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Statements != null) Analyze(Stmt.Statements);
         }
 
         void Analyze(ContinueStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
         }
 
         void Analyze(DoWhileStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if(Stmt.Condition != null) Analyze(Stmt.Condition);
             if (Stmt.Statement != null) Analyze(Stmt.Statement);
@@ -771,11 +805,13 @@ namespace IronWASP
 
         void Analyze(EmptyStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
         }
 
         void Analyze(ExpressionStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Expression != null) Analyze(Stmt.Expression);
             if (TraceKeyword)
@@ -793,11 +829,13 @@ namespace IronWASP
 
         void Analyze(FinallyClause Stmt)
         {
+            if (IsTimedOut()) return;
             if (Stmt.Statement != null) Analyze(Stmt.Statement);
         }
 
         void Analyze(ForEachInStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Expression != null) Analyze(Stmt.Expression);
             if (Stmt.InitialisationStatement != null) Analyze(Stmt.InitialisationStatement);
@@ -806,6 +844,7 @@ namespace IronWASP
 
         void Analyze(ForStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.ConditionExpression != null) Analyze(Stmt.ConditionExpression);
             if (Stmt.IncrementExpression != null) Analyze(Stmt.IncrementExpression);
@@ -815,6 +854,7 @@ namespace IronWASP
 
         void Analyze(FunctionDeclarationStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Name != null)
             {
@@ -841,12 +881,14 @@ namespace IronWASP
 
         void Analyze(FunctionExpression Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Statement != null) Analyze(Stmt.Statement);
         }
 
         void Analyze(Identifier Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Text != null)
             {
@@ -882,6 +924,7 @@ namespace IronWASP
 
         void Analyze(IfStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Expression != null) Analyze(Stmt.Expression);
             if (Stmt.Then != null) Analyze(Stmt.Then);
@@ -890,6 +933,7 @@ namespace IronWASP
 
         void Analyze(Indexer Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Index != null)
             {
@@ -926,6 +970,7 @@ namespace IronWASP
 
         void Analyze(JsonExpression Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Values != null)
             {
@@ -939,6 +984,7 @@ namespace IronWASP
 
         void Analyze(MemberExpression Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Previous != null) Analyze(Stmt.Previous);
             if (Stmt.Member != null) Analyze(Stmt.Member);
@@ -946,6 +992,7 @@ namespace IronWASP
 
         void Analyze(MethodCall Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             int LineNo = CurrentLineNo;
             JintItem LastItem;
@@ -1064,6 +1111,7 @@ namespace IronWASP
 
         void Analyze(NewExpression Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Arguments != null) Analyze(Stmt.Arguments);
             if (Stmt.Expression != null) Analyze(Stmt.Expression);
@@ -1072,12 +1120,14 @@ namespace IronWASP
 
         void Analyze(Jint.Expressions.Program Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Statements != null) Analyze(Stmt.Statements);
         }
 
         void Analyze(PropertyDeclarationExpression Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Expression != null) Analyze(Stmt.Expression);
             if (Stmt.GetExpression != null) Analyze(Stmt.GetExpression);
@@ -1087,6 +1137,7 @@ namespace IronWASP
 
         void Analyze(PropertyExpression Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Text != null)
             {
@@ -1096,6 +1147,7 @@ namespace IronWASP
 
         void Analyze(RegexpExpression Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             //if (Stmt.Options != null) Analyzer.CheckIdentifier(Stmt.Options);
             //if (Stmt.Regexp != null) Analyzer.CheckIdentifier(Stmt.Regexp);
@@ -1103,6 +1155,7 @@ namespace IronWASP
 
         void Analyze(ReturnStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Expression != null)
             {
@@ -1126,6 +1179,7 @@ namespace IronWASP
 
         void Analyze(SwitchStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.CaseClauses != null)
             {
@@ -1140,6 +1194,7 @@ namespace IronWASP
 
         void Analyze(TernaryExpression Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.LeftExpression != null) Analyze(Stmt.LeftExpression);
             if (Stmt.MiddleExpression != null) Analyze(Stmt.MiddleExpression);
@@ -1148,12 +1203,14 @@ namespace IronWASP
 
         void Analyze(ThrowStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Expression != null) Analyze(Stmt.Expression);
         }
 
         void Analyze(TryStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Catch != null) Analyze(Stmt.Catch);
             if (Stmt.Finally != null) Analyze(Stmt.Finally);
@@ -1162,6 +1219,7 @@ namespace IronWASP
 
         void Analyze(UnaryExpression Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             
             if (Stmt.Type == UnaryExpressionType.Not && Stmt.Expression == null)
@@ -1183,6 +1241,7 @@ namespace IronWASP
 
         void Analyze(ValueExpression Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (JintStack.Count == 0)
             {
@@ -1222,6 +1281,7 @@ namespace IronWASP
 
         void Analyze(VariableDeclarationStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             ItemChecker TC = new ItemChecker(this);
             if (Stmt.Identifier != null)
@@ -1280,6 +1340,7 @@ namespace IronWASP
 
         void Analyze(WhileStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Condition != null) Analyze(Stmt.Condition);
             if (Stmt.Statement != null) Analyze(Stmt.Statement);
@@ -1287,6 +1348,7 @@ namespace IronWASP
 
         void Analyze(WithStatement Stmt)
         {
+            if (IsTimedOut()) return;
             SetCurrentLineAndCharNos(Stmt);
             if (Stmt.Expression != null)
             {
@@ -1304,23 +1366,23 @@ namespace IronWASP
             if (Stmt.Statement != null) Analyze(Stmt.Statement);
         }
 
-        internal static void ShowDefaultTaintConfig()
-        {
-            List<List<string>> AllLists = new List<List<string>>() { new List<string>(DefaultSourceObjects), new List<string>(DefaultSinkObjects), new List<string>(DefaultSourceReturningMethods), new List<string>(DefaultSinkReturningMethods), new List<string>(DefaultArgumentReturningMethods), new List<string>(DefaultArgumentAssignedASourceMethods), new List<string>(DefaultArgumentAssignedToSinkMethods)};
-            int MaxCount = 0;
-            foreach (List<string> List in AllLists)
-            {
-                if (List.Count > MaxCount) MaxCount = List.Count;
-            }
-            foreach (List<string> List in AllLists)
-            {
-                while (List.Count < MaxCount) 
-                {
-                    List.Add(""); 
-                }
-            }
-            IronUI.SetTaintConfig(AllLists, MaxCount);
-        }
+        //internal static void ShowDefaultTaintConfig()
+        //{
+        //    List<List<string>> AllLists = new List<List<string>>() { new List<string>(DefaultSourceObjects), new List<string>(DefaultSinkObjects), new List<string>(DefaultSourceReturningMethods), new List<string>(DefaultSinkReturningMethods), new List<string>(DefaultArgumentReturningMethods), new List<string>(DefaultArgumentAssignedASourceMethods), new List<string>(DefaultArgumentAssignedToSinkMethods)};
+        //    int MaxCount = 0;
+        //    foreach (List<string> List in AllLists)
+        //    {
+        //        if (List.Count > MaxCount) MaxCount = List.Count;
+        //    }
+        //    foreach (List<string> List in AllLists)
+        //    {
+        //        while (List.Count < MaxCount) 
+        //        {
+        //            List.Add(""); 
+        //        }
+        //    }
+        //    //IronUI.SetTaintConfig(AllLists, MaxCount);
+        //}
 
         internal void SetSourcesAndSinks(List<string> SourceObjs, List<string> SinkObjs, List<string> SourceRetMets, List<string> SinkRetMets, List<string> ArgRetMets, List<string> ArgAssASourceMets, List<string> ArgAssToSinkMets)
         {
@@ -1650,18 +1712,18 @@ namespace IronWASP
             else
                 SourceReasons.Add(LineNo, SourceReaons);
 
-            if (StartedFromUI && PauseAtTaint)
-            {
-                if (SourceToSinkLines.Contains(LineNo))
-                    IronUI.SetJSTaintTraceLine("SourceToSink", LineNo);
-                else if(SinkLines.Contains(LineNo))
-                    IronUI.SetJSTaintTraceLine("SourcePlusSink", LineNo);
-                else
-                    IronUI.SetJSTaintTraceLine("Source", LineNo);
-                IronUI.ShowTaintReasons(LineNo, IronJint.UIIJ.GetSourceReasons(LineNo), IronJint.UIIJ.GetSinkReasons(LineNo));
-                PauseAtTaintLine(LineNo);
-                IronUI.ShowTaintReasons(LineNo, new List<string>(), new List<string>());
-            }
+            //if (StartedFromUI && PauseAtTaint)
+            //{
+            //    if (SourceToSinkLines.Contains(LineNo))
+            //        IronUI.SetJSTaintTraceLine("SourceToSink", LineNo);
+            //    else if(SinkLines.Contains(LineNo))
+            //        IronUI.SetJSTaintTraceLine("SourcePlusSink", LineNo);
+            //    else
+            //        IronUI.SetJSTaintTraceLine("Source", LineNo);
+            //    IronUI.ShowTaintReasons(LineNo, IronJint.UIIJ.GetSourceReasons(LineNo), IronJint.UIIJ.GetSinkReasons(LineNo));
+            //    PauseAtTaintLine(LineNo);
+            //    IronUI.ShowTaintReasons(LineNo, new List<string>(), new List<string>());
+            //}
         }
         void AddSinkLine(int LineNo, List<string>SinkReaons)
         {
@@ -1674,42 +1736,42 @@ namespace IronWASP
             else
                 SinkReasons.Add(LineNo,SinkReaons);
 
-            if (StartedFromUI && PauseAtTaint)
-            {
-                if (SourceToSinkLines.Contains(LineNo))
-                    IronUI.SetJSTaintTraceLine("SourceToSink", LineNo);
-                else if (SourceLines.Contains(LineNo))
-                    IronUI.SetJSTaintTraceLine("SourcePlusSink", LineNo);
-                else
-                    IronUI.SetJSTaintTraceLine("Sink", LineNo);
-                IronUI.ShowTaintReasons(LineNo, IronJint.UIIJ.GetSourceReasons(LineNo), IronJint.UIIJ.GetSinkReasons(LineNo));
-                PauseAtTaintLine(LineNo);
-                IronUI.ShowTaintReasons(LineNo, new List<string>(), new List<string>());
-            }
+            //if (StartedFromUI && PauseAtTaint)
+            //{
+            //    if (SourceToSinkLines.Contains(LineNo))
+            //        IronUI.SetJSTaintTraceLine("SourceToSink", LineNo);
+            //    else if (SourceLines.Contains(LineNo))
+            //        IronUI.SetJSTaintTraceLine("SourcePlusSink", LineNo);
+            //    else
+            //        IronUI.SetJSTaintTraceLine("Sink", LineNo);
+            //    IronUI.ShowTaintReasons(LineNo, IronJint.UIIJ.GetSourceReasons(LineNo), IronJint.UIIJ.GetSinkReasons(LineNo));
+            //    PauseAtTaintLine(LineNo);
+            //    IronUI.ShowTaintReasons(LineNo, new List<string>(), new List<string>());
+            //}
         }
         void AddSourceToSinkLine(int LineNo)
         {
             if (LineNo == 0) LineNo = CurrentLineNo;
             if (SourceLinesToIgnore.Contains(LineNo) || SinkLinesToIgnore.Contains(LineNo)) return;
             if (!SourceToSinkLines.Contains(LineNo)) SourceToSinkLines.Add(LineNo);
-            if (StartedFromUI && PauseAtTaint)
-            {
-                IronUI.SetJSTaintTraceLine("SourceToSink", LineNo);
-                IronUI.ShowTaintReasons(LineNo, IronJint.UIIJ.GetSourceReasons(LineNo), IronJint.UIIJ.GetSinkReasons(LineNo));
-                PauseAtTaintLine(LineNo);
-                IronUI.ShowTaintReasons(LineNo, new List<string>(), new List<string>());
-            }
+            //if (StartedFromUI && PauseAtTaint)
+            //{
+            //    IronUI.SetJSTaintTraceLine("SourceToSink", LineNo);
+            //    IronUI.ShowTaintReasons(LineNo, IronJint.UIIJ.GetSourceReasons(LineNo), IronJint.UIIJ.GetSinkReasons(LineNo));
+            //    PauseAtTaintLine(LineNo);
+            //    IronUI.ShowTaintReasons(LineNo, new List<string>(), new List<string>());
+            //}
         }
 
-        void PauseAtTaintLine(int LineNo)
-        {
-            MSR.Reset();
-            IronUI.ShowTraceContinuteButton();
-            IronUI.ShowTraceStatus("Paused at Taint. Line No: " + LineNo.ToString(), false);
-            MSR.WaitOne();
-            IronUI.RemoveTaintPauseMarker(LineNo);
-            IronUI.ShowTraceStatus("Trace in progress...", false);
-        }
+        //void PauseAtTaintLine(int LineNo)
+        //{
+        //    MSR.Reset();
+        //    IronUI.ShowTraceContinuteButton();
+        //    IronUI.ShowTraceStatus("Paused at Taint. Line No: " + LineNo.ToString(), false);
+        //    MSR.WaitOne();
+        //    IronUI.RemoveTaintPauseMarker(LineNo);
+        //    IronUI.ShowTraceStatus("Trace in progress...", false);
+        //}
 
         string GetPropertyValue(List<JintItem> Item)
         {
@@ -1952,6 +2014,26 @@ namespace IronWASP
                             if (Item.Value.Equals(Value)) return true;
                             break;
                     }
+                }
+            }
+            return false;
+        }
+
+        internal bool IsTimedOut()
+        {
+            if (AnalyzeCallStartTime == 0)
+            {
+                AnalyzeCallStartTime = DateTime.Now.Ticks;
+            }
+            else
+            {
+                if (TimeSpan.FromTicks(DateTime.Now.Ticks - AnalyzeCallStartTime).TotalMilliseconds > 2000)
+                {
+                    throw new TimeoutException();
+                }
+                else if (TimeSpan.FromTicks(DateTime.Now.Ticks - AnalyzeCallStartTime).TotalMilliseconds > 1000)
+                {
+                    return true;
                 }
             }
             return false;

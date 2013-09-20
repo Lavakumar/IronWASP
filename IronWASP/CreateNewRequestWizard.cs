@@ -138,7 +138,11 @@ namespace IronWASP
 
         private void BaseTabs_Selecting(object sender, TabControlCancelEventArgs e)
         {
-            if (BaseTabs.SelectedIndex != CurrentStep) BaseTabs.SelectTab(CurrentStep);
+            if (BaseTabs.SelectedIndex != CurrentStep)
+            {
+                BaseTabs.SelectTab(CurrentStep);
+                MessageBox.Show("Use the 'Next Step ->' and '<- Previous Step' buttons on the bottom right and left corners of this window for navigation.");
+            }
         }
 
         private void Step0NextBtn_Click(object sender, EventArgs e)

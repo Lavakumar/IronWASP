@@ -74,4 +74,84 @@ namespace IronWASP
             Add("", Reflection);
         }
     }
+
+    public class Reflections
+    {
+        public List<Reflection> Url = new List<Reflection>();
+        public List<Reflection> UrlPathPart = new List<Reflection>();
+        public List<Reflection> Query = new List<Reflection>();
+        public List<Reflection> Body = new List<Reflection>();
+        public List<Reflection> Cookie = new List<Reflection>();
+        public List<Reflection> Header = new List<Reflection>();
+
+        public int Count
+        {
+            get
+            {
+                return Url.Count + UrlPathPart.Count + Query.Count + Body.Count + Cookie.Count + Header.Count;
+            }
+        }
+
+        public List<List<Reflection>> GetList()
+        {
+            return new List<List<Reflection>> { Url, UrlPathPart, Query, Body, Cookie, Header };
+        }
+
+        public bool HasUrlPathPartMatch(int Position)
+        {
+            string PositionName = string.Format("UrlPathPart : {0}", Position);
+            foreach (Reflection Ref in UrlPathPart)
+            {
+                if (Ref.Name == PositionName)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public bool HasQueryMatch(string Name)
+        {
+            foreach (Reflection Ref in Query)
+            {
+                if (Ref.Name == Name)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public bool HasBodyMatch(string Name)
+        {
+            foreach (Reflection Ref in Body)
+            {
+                if (Ref.Name == Name)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public bool HasCookieMatch(string Name)
+        {
+            foreach (Reflection Ref in Cookie)
+            {
+                if (Ref.Name == Name)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public bool HasHeaderMatch(string Name)
+        {
+            foreach (Reflection Ref in Header)
+            {
+                if (Ref.Name == Name)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 }

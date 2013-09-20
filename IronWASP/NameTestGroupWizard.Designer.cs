@@ -101,13 +101,13 @@ namespace IronWASP
             this.textBox4.TabIndex = 6;
             this.textBox4.TabStop = false;
             this.textBox4.Text = "The Manual Testing section can contain multiple requests and so naming requests m" +
-                "akes it easy to identify them.\r\n\r\nEnter a name and click \'Done\'";
+    "akes it easy to identify them.\r\n\r\nEnter a name and click \'Done\'";
             // 
             // Step0StatusTB
             // 
-            this.Step0StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.Step0StatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.Step0StatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.Step0StatusTB.Location = new System.Drawing.Point(17, 161);
             this.Step0StatusTB.Multiline = true;
@@ -147,7 +147,6 @@ namespace IronWASP
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(489, 256);
-            this.ControlBox = false;
             this.Controls.Add(this.Step0StatusTB);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);

@@ -30,17 +30,56 @@ namespace IronWASP
 
         static List<string> EventAttributes = new List<string>() { "onload", "onunload", "onabort", "onbeforeunload", "onhashchange", "onmessage", "onoffline", "ononline", "onpagehide", "onpageshow", "onpopstate", "onredo", "onresize", "onstorage", "onundo", "onunload", "onkeypress", "onkeydown", "onkeyup", "onmouseover", "onmousemove", "onmouseout", "onclick", "ondblclick", "onmousedown", "onmouseup", "onmousewheel", "ondrag", "ondragover", "ondragenter", "ondragleave", "ondrop", "ondragend", "onfocus", "onblur", "onchange", "oncontextmenu", "onformchange", "onforminput", "oninput", "oninvalid", "onselect", "onsubmit", "onreset", "onbeforeprint", "onafterprint", "onerror" };
 
+        static Regex CompiledHtmlDocTypeRegex = new Regex(@"^\s<\!doctype\s+html", RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.IgnoreCase);
+        
+        static Regex[] CompiledAngleBracketsRegex = new Regex[] { 
+            new Regex(@"^\s*<", RegexOptions.Compiled | RegexOptions.Multiline),
+            new Regex(@">\s*$", RegexOptions.Compiled | RegexOptions.Multiline)};
+            
+        static Regex[] CompiledHtmlTagRegexes = new Regex[] {
+            new Regex(@"<html", RegexOptions.Compiled | RegexOptions.Multiline),
+            new Regex(@"</html>", RegexOptions.Compiled | RegexOptions.Multiline),
+            new Regex(@"<div", RegexOptions.Compiled | RegexOptions.Multiline),
+            new Regex(@"<form", RegexOptions.Compiled | RegexOptions.Multiline),
+            new Regex(@"<span", RegexOptions.Compiled | RegexOptions.Multiline),
+            new Regex(@"<textarea", RegexOptions.Compiled | RegexOptions.Multiline),
+            new Regex(@"<style", RegexOptions.Compiled | RegexOptions.Multiline),
+            new Regex(@"<script", RegexOptions.Compiled | RegexOptions.Multiline),
+            new Regex(@"<input", RegexOptions.Compiled | RegexOptions.Multiline)
+            };
+
         public string Title
         {
             get
             {
                 try
                 {
-                    string TitleWithTag = this.Get("title")[0];
+                    string TitleWithTag = this.Get("title")[0].Trim();
                     return TitleWithTag.Substring(7, TitleWithTag.Length - 15);
                 }
                 catch { return ""; }
             }
+        }
+
+        public static bool DoesHaveHtmlTags(string Input)
+        {
+            foreach (Regex Re in CompiledHtmlTagRegexes)
+            {
+                if(Re.IsMatch(Input)) return true;
+            }
+            return false;
+        }
+        public static bool DoesHaveAngleBracketsAsBoundary(string Input)
+        {
+            foreach (Regex Re in CompiledAngleBracketsRegex)
+            {
+                if (Re.IsMatch(Input)) return true;
+            }
+            return false;
+        }
+        public static bool DoesHaveHtmlDocType(string Input)
+        {
+            return CompiledHtmlDocTypeRegex.IsMatch(Input);
         }
 
         public HTML(string HtmlString)
@@ -64,17 +103,21 @@ namespace IronWASP
         {
             get
             {
-                List<string> RawLinks = this.GetValues("a", "href");
-                List<string> ProcessedLinks = new List<string>();
-                foreach (string RawLink in RawLinks)
+                List<string> LinkValues = new List<string>();
+                foreach (string RawLinkValue in this.GetValues("a", "href"))
                 {
-                    string DecodedRawLink = Tools.HtmlDecode(RawLink);
-                    if (DecodedRawLink.StartsWith("%2f") || DecodedRawLink.StartsWith("%2F"))
-                        ProcessedLinks.Add(Tools.UrlDecode(DecodedRawLink));
+                    string DecodedLinkValue = Tools.HtmlEncode(RawLinkValue);
+                    if ((!DecodedLinkValue.Contains("/") || !DecodedLinkValue.Contains("?") || !DecodedLinkValue.Contains("="))
+                        && (DecodedLinkValue.IndexOf("%2f", StringComparison.OrdinalIgnoreCase) > -1 || DecodedLinkValue.IndexOf("%3f", StringComparison.OrdinalIgnoreCase) > -1 || DecodedLinkValue.IndexOf("%3d", StringComparison.OrdinalIgnoreCase) > -1))
+                    {
+                        LinkValues.Add(Tools.UrlDecode(DecodedLinkValue));
+                    }
                     else
-                        ProcessedLinks.Add(DecodedRawLink);
+                    {
+                        LinkValues.Add(DecodedLinkValue);
+                    }
                 }
-                return ProcessedLinks;
+                return LinkValues;
             }
         }
 
@@ -215,13 +258,38 @@ namespace IronWASP
 
             foreach (HtmlNode Form in Forms)
             {
-                string FormString = Form.OuterHtml;
-                HTML FormHtml = new HTML(FormString);
-                List<string> InputElements = GetInputNodeStrings(FormHtml.Html.DocumentNode.FirstChild);
-                ProcessedForms.Add(GetStrippedForm(FormHtml.Html.DocumentNode.FirstChild, InputElements));
+                HtmlNode StrippedFormNode = CopyNodeTopElement(Form);
+                CopyInputElementsIntoForm(Form, StrippedFormNode);
+                ProcessedForms.Add(StrippedFormNode);
             }
             return ProcessedForms;
         }
+
+        HtmlNode CopyNodeTopElement(HtmlNode InputNode, HtmlDocument HDoc)
+        {
+            HtmlNode NewNode = new HtmlNode(InputNode.NodeType, HDoc, 0);
+            NewNode.Name = InputNode.Name;
+            if (InputNode.HasAttributes)
+            {
+                foreach (HtmlAttribute Attr in InputNode.Attributes)
+                {
+                    NewNode.Attributes.Add(Attr.Name, Attr.Value);
+                }
+            }
+            if (InputNode.HasClosingAttributes)
+            {
+                foreach (HtmlAttribute Attr in InputNode.ClosingAttributes)
+                {
+                    NewNode.ClosingAttributes.Add(Attr.Name, Attr.Value);
+                }
+            }
+            return NewNode;
+        }
+        HtmlNode CopyNodeTopElement(HtmlNode InputNode)
+        {
+            return CopyNodeTopElement(InputNode, new HtmlDocument());
+        }
+
 
         List<string> GetInputNodeStrings(HtmlNode InputNode)
         {
@@ -247,9 +315,24 @@ namespace IronWASP
             return OriginalForm;
         }
 
-        public List<string> GetContext(string Parameter)
+        void CopyInputElementsIntoForm(HtmlNode SourceForm, HtmlNode DestinationForm)
         {
-            List<string> Contexts = new List<string>();
+            foreach (HtmlNode Node in SourceForm.ChildNodes)
+            {
+                if (Node.Name.Equals("input"))
+                {
+                    DestinationForm.AppendChild(CopyNodeTopElement(Node, DestinationForm.OwnerDocument));
+                }
+                else if (Node.ChildNodes.Count > 0)
+                {
+                    CopyInputElementsIntoForm(Node, DestinationForm);
+                }
+            }
+        }
+
+        public List<ReflectionContext> GetContext(string Parameter)
+        {
+            List<ReflectionContext> Contexts = new List<ReflectionContext>();
             if (Html == null) return Contexts;
 
             foreach (HtmlNode Node in Html.DocumentNode.ChildNodes)
@@ -262,14 +345,14 @@ namespace IronWASP
             return Contexts;
         }
 
-        List<string> GetContextInNode(string Parameter, HtmlNode Node)
+        List<ReflectionContext> GetContextInNode(string Parameter, HtmlNode Node)
         {
-            List<string> Contexts = new List<string>();
+            List<ReflectionContext> Contexts = new List<ReflectionContext>();
             if (Node.NodeType == HtmlNodeType.Comment)
             {
                 if (Node.InnerText.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    Contexts.Add("Comment");
+                    Contexts.Add(ReflectionContext.HtmlComment);
                 }
             }
             else if (Node.NodeType == HtmlNodeType.Text)
@@ -279,72 +362,72 @@ namespace IronWASP
                     if (Node.ParentNode.Name.Equals("script", StringComparison.OrdinalIgnoreCase))
                     {
                         bool IsJS = true;
-                        if(Node.ParentNode.Attributes.Contains("type"))
+                        if (Node.ParentNode.Attributes.Contains("type"))
                         {
-                            if(Node.ParentNode.Attributes["type"].Value.IndexOf("vbscript", StringComparison.OrdinalIgnoreCase) > -1)
+                            if (Node.ParentNode.Attributes["type"].Value.IndexOf("vbscript", StringComparison.OrdinalIgnoreCase) > -1)
                             {
                                 IsJS = false;
                             }
                         }
-                        else if(Node.ParentNode.Attributes.Contains("language"))
+                        else if (Node.ParentNode.Attributes.Contains("language"))
                         {
-                            if(Node.ParentNode.Attributes["language"].Value.IndexOf("vbscript", StringComparison.OrdinalIgnoreCase) > -1)
+                            if (Node.ParentNode.Attributes["language"].Value.IndexOf("vbscript", StringComparison.OrdinalIgnoreCase) > -1)
                             {
                                 IsJS = false;
                             }
                         }
                         if (IsJS)
                         {
-                            Contexts.Add("InLineJS"); 
+                            Contexts.Add(ReflectionContext.InLineJS);
                         }
                         else
                         {
-                            Contexts.Add("InLineVB");
+                            Contexts.Add(ReflectionContext.InLineVB);
                         }
                     }
                     else if (Node.ParentNode.Name.Equals("style", StringComparison.OrdinalIgnoreCase))
                     {
-                        Contexts.Add("InLineCSS");
+                        Contexts.Add(ReflectionContext.InLineCSS);
                     }
                     else if (Node.ParentNode.Name.Equals("textarea"))
                     {
-                        Contexts.Add("Textarea");
+                        Contexts.Add(ReflectionContext.Textarea);
                     }
                     else
                     {
-                        Contexts.Add("Html");
+                        Contexts.Add(ReflectionContext.Html);
                     }
                 }
             }
             else if (Node.NodeType == HtmlNodeType.Element)
             {
-                if(Node.OuterHtml.Equals(Parameter, StringComparison.OrdinalIgnoreCase))
+                if (Node.OuterHtml.Equals(Parameter, StringComparison.OrdinalIgnoreCase))
                 {
-                    Contexts.Add("Html");
+                    Contexts.Add(ReflectionContext.Html);
                 }
                 else if (Node.InnerHtml.Equals(Parameter, StringComparison.OrdinalIgnoreCase))
                 {
-                    Contexts.Add("Html");
+                    Contexts.Add(ReflectionContext.Html);
                 }
                 else if (Node.Name.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    Contexts.Add("ElementName");
+                    Contexts.Add(ReflectionContext.ElementName);
                 }
                 foreach (HtmlAttribute Attribute in Node.Attributes)
                 {
                     if (Attribute.Name.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
                     {
-                        Contexts.Add("AttributeName");
+                        Contexts.Add(ReflectionContext.AttributeName);
                     }
                     if (Attribute.Value.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
                     {
                         if (Attribute.QuoteType == AttributeValueQuote.SingleQuote)
                         {
-                            Contexts.Add("AttributeValueWithSingleQuote");
+                            Contexts.Add(ReflectionContext.AttributeValueWithSingleQuote);
                         }
                         else
                         {
-                            Contexts.Add("AttributeValueWithDoubleQuote");
+                            Contexts.Add(ReflectionContext.AttributeValueWithDoubleQuote);
                         }
                         if (IsUrlAttribute(Node.Name, Attribute.Name))
                         {
@@ -353,11 +436,11 @@ namespace IronWASP
                                 string JSAttributeValue = Attribute.Value.Substring(11);
                                 if (JSAttributeValue.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
                                 {
-                                    Contexts.Add("JSUrl");
+                                    Contexts.Add(ReflectionContext.JSUrl);
                                 }
                                 else
                                 {
-                                    Contexts.Add("UrlAttribute");
+                                    Contexts.Add(ReflectionContext.UrlAttribute);
                                 }
                             }
                             else if (Attribute.Value.StartsWith("vbscript:", StringComparison.OrdinalIgnoreCase))
@@ -365,31 +448,31 @@ namespace IronWASP
                                 string VBAttributeValue = Attribute.Value.Substring(9);
                                 if (VBAttributeValue.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
                                 {
-                                    Contexts.Add("VBUrl");
+                                    Contexts.Add(ReflectionContext.VBUrl);
                                 }
                                 else
                                 {
-                                    Contexts.Add("UrlAttribute");
+                                    Contexts.Add(ReflectionContext.UrlAttribute);
                                 }
                             }
                             else
                             {
-                                Contexts.Add("UrlAttribute");
+                                Contexts.Add(ReflectionContext.UrlAttribute);
                             }
                         }
                         else if (Attribute.Name.Equals("style", StringComparison.OrdinalIgnoreCase))
                         {
-                            Contexts.Add("AttributeCSS");
+                            Contexts.Add(ReflectionContext.AttributeCSS);
                         }
                         else if (EventAttributes.Contains(Attribute.Name.ToLower()))
                         {
-                            Contexts.Add("EventAttribute");
+                            Contexts.Add(ReflectionContext.EventAttribute);
                         }
 
-                        if(Node.Name.Equals("meta", StringComparison.OrdinalIgnoreCase))
+                        if (Node.Name.Equals("meta", StringComparison.OrdinalIgnoreCase))
                         {
-                            Contexts.Add("MetaAttribute");
-                            if(Attribute.Name.Equals("content", StringComparison.OrdinalIgnoreCase))
+                            Contexts.Add(ReflectionContext.MetaAttribute);
+                            if (Attribute.Name.Equals("content", StringComparison.OrdinalIgnoreCase))
                             {
                                 if (Node.Attributes.Contains("http-equiv"))
                                 {
@@ -406,11 +489,11 @@ namespace IronWASP
                                                 string JSAttributeValue = RedirectUrl.Substring(11);
                                                 if (JSAttributeValue.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
                                                 {
-                                                    Contexts.Add("JSUrl");
+                                                    Contexts.Add(ReflectionContext.JSUrl);
                                                 }
                                                 else if (RedirectUrl.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
                                                 {
-                                                    Contexts.Add("UrlAttribute");
+                                                    Contexts.Add(ReflectionContext.UrlAttribute);
                                                 }
                                             }
                                             else if (RedirectUrl.StartsWith("vbscript:", StringComparison.OrdinalIgnoreCase))
@@ -418,16 +501,16 @@ namespace IronWASP
                                                 string VBAttributeValue = RedirectUrl.Substring(9);
                                                 if (VBAttributeValue.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
                                                 {
-                                                    Contexts.Add("VBUrl");
+                                                    Contexts.Add(ReflectionContext.VBUrl);
                                                 }
                                                 else if (RedirectUrl.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
                                                 {
-                                                    Contexts.Add("UrlAttribute");
+                                                    Contexts.Add(ReflectionContext.UrlAttribute);
                                                 }
                                             }
                                             else if (RedirectUrl.IndexOf(Parameter, StringComparison.OrdinalIgnoreCase) >= 0)
                                             {
-                                                Contexts.Add("UrlAttribute");
+                                                Contexts.Add(ReflectionContext.UrlAttribute);
                                             }
                                         }
                                     }

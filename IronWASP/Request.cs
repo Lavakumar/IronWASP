@@ -54,7 +54,7 @@ namespace IronWASP
 
         //internal properties
         internal int ID=0;
-        internal ManualResetEvent MSR;
+        //internal ManualResetEvent MSR;
         internal bool FreezeURL = false;
         internal bool FreezeBodyString = false;
         internal bool FreezeCookieString = false;
@@ -79,7 +79,7 @@ namespace IronWASP
         //private properties
         string bodyString = "";
         byte[] bodyArray = new byte[0];
-        Response response;
+        //Response response;
         string url = "";
         int scanID = 0;//to be used only by the Active Plugins
         QueryParameters query;//must instantiate in the constructor = new Parameters();
@@ -90,6 +90,7 @@ namespace IronWASP
 
         string DefaultBodyCharset = "ISO-8859-1";
 
+        Response ResponseStoredForSendWithTimeout;
 
         Exception SendWithoutAReturnException = null;//To be used to store the exception from the SendWithReturn method
 
@@ -387,13 +388,13 @@ namespace IronWASP
                 //return true;
             }
         }
-        public Response Response
-        {
-            get
-            {
-                return this.response;
-            }
-        }
+        //public Response Response
+        //{
+        //    get
+        //    {
+        //        return this.response;
+        //    }
+        //}
         public string Time
         {
             get
@@ -674,20 +675,21 @@ namespace IronWASP
             this.FreezeBodyString = false;
         }
 
-        public void SetBody(byte[] BodyArray)
+        public void SetBody(byte[] NewBodyArray)
         {
             this.FreezeBodyString = true;
-            if (BodyArray == null)
+            if (NewBodyArray == null)
             {
                 this.SetEmptyBody();
                 return;
             }
-            else if(BodyArray.Length == 0)
+            else if(NewBodyArray.Length == 0)
             {
                 this.SetEmptyBody();
                 return;
             }
-            this.bodyArray = BodyArray;
+            this.bodyArray = new byte[NewBodyArray.Length];
+            NewBodyArray.CopyTo(this.bodyArray, 0);
             this.bodyString = this.GetBodyArrayAsString(this.bodyArray);
             this.body = new BodyParameters(this, this.bodyString);
             this.headers.Set("Content-Length", this.bodyArray.Length.ToString());
@@ -783,7 +785,7 @@ namespace IronWASP
             }
 
 
-            this.response = null;
+            //this.response = null;
             StringDictionary Flags = new StringDictionary();
             string BuiltBy;
             if(this.Source == RequestSource.Scan)
@@ -837,39 +839,54 @@ namespace IronWASP
                     ReqHeaders.Add(Name, Value);
                 }
             }
-            this.MSR = new ManualResetEvent(false);
+            //this.MSR = new ManualResetEvent(false);
             string DictID = string.Format("{0}-{1}", this.ID, BuiltBy);
             this.TimeObject = DateTime.Now;
-            lock (Config.APIResponseDict)
-            {
-                Config.APIResponseDict.Add(DictID, this);
-            }
+            //lock (Config.APIResponseDict)
+            //{
+            //    Config.APIResponseDict.Add(DictID, this);
+            //}
+            Fiddler.Session Sess;
             if (this.HasBody)
             {
-                Fiddler.FiddlerApplication.oProxy.InjectCustomRequest(ReqHeaders, this.bodyArray, Flags);
+                //Fiddler.FiddlerApplication.oProxy.InjectCustomRequest(ReqHeaders, this.bodyArray, Flags);
+                Sess = Fiddler.FiddlerApplication.oProxy.SendRequestAndWait(ReqHeaders, this.BodyArray, Flags, null);
             }
             else
             {
-                string RequestStringForFiddler = this.GetHeadersAsString();
-                Fiddler.FiddlerApplication.oProxy.InjectCustomRequest(RequestStringForFiddler, Flags);
+                //string RequestStringForFiddler = this.GetHeadersAsString();
+                //Fiddler.FiddlerApplication.oProxy.InjectCustomRequest(RequestStringForFiddler, Flags);
+                Sess = Fiddler.FiddlerApplication.oProxy.SendRequestAndWait(ReqHeaders, new byte[] { }, Flags, null);
             }
-            this.MSR.WaitOne();
-            lock (Config.APIResponseDict)
+            Response Res = new Response(Sess);
+
+            //this.SetResponse(IrSe.Response);
+            
+            //this.MSR.WaitOne();
+            //lock (Config.APIResponseDict)
+            //{
+            //    Config.APIResponseDict.Remove(DictID);
+            //}
+            
+            //if (this.response.Code == 502 && this.response.Status.StartsWith("Fiddler - "))
+            //{
+            //    throw new Exception(this.response.Status.Replace("Fiddler - ",""));
+            //}
+            //return this.response;
+
+            if (Res.Code == 502 && Res.Status.StartsWith("Fiddler - "))
             {
-                Config.APIResponseDict.Remove(DictID);
+                throw new Exception(Res.Status.Replace("Fiddler - ", ""));
             }
-            if (this.response.Code == 502 && this.response.Status.StartsWith("Fiddler - "))
-            {
-                throw new Exception(this.response.Status.Replace("Fiddler - ",""));
-            }
-            return this.response;
+            return Res;
         }
 
         public void SendWithoutAReturn()
         {
             try
             {
-                this.Send();
+                this.ResponseStoredForSendWithTimeout = null;
+                this.ResponseStoredForSendWithTimeout = this.Send();
             }
             catch(Exception Exp)
             {
@@ -891,10 +908,20 @@ namespace IronWASP
             while (((DateTime.Now.Ticks - StartTime) / 10000) < TimeOut)
             {
                 Thread.Sleep(50);
-                if (this.response != null)
+                if (this.ResponseStoredForSendWithTimeout != null)
                 {
-                    return this.response;
+                    if (this.ResponseStoredForSendWithTimeout.ID == this.ID)
+                    {
+                        Response Res = this.ResponseStoredForSendWithTimeout;
+                        this.ResponseStoredForSendWithTimeout = null;
+                        return Res;
+                    }
+                    else
+                    {
+                        this.ResponseStoredForSendWithTimeout = null;
+                    }
                 }
+
                 if (this.SendWithoutAReturnException != null)
                 {
                     throw this.SendWithoutAReturnException;
@@ -1136,10 +1163,10 @@ namespace IronWASP
             this.cookie = new CookieParameters(this, CookieString);
             this.FreezeCookieHeader = false;
         }
-        internal void SetResponse(Response Res)
-        {
-            this.response = Res;
-        }
+        //internal void SetResponse(Response Res)
+        //{
+        //    this.response = Res;
+        //}
         internal Fiddler.Session ReturnAsFiddlerSession()
         {
             Fiddler.HTTPRequestHeaders HRH = this.GetFiddlerHTTPRequestHeaders();

@@ -30,6 +30,8 @@ namespace IronWASP
 {
     public partial class ScanBranchWizard : Form
     {
+        bool CanClose = false;
+
         internal Request BaseRequest;
         
         int CurrentStep = 0;
@@ -62,6 +64,7 @@ namespace IronWASP
                     //
                 }
             }
+            this.CanClose = true;
             ScanBranchWizard.ActiveForm.Close();
         }
 
@@ -608,19 +611,39 @@ namespace IronWASP
             switch (BaseTabs.SelectedTab.Name)
             {
                 case ("Zero"):
-                    if (this.CurrentStep != 0) this.BaseTabs.SelectTab(this.CurrentStep);
+                    if (this.CurrentStep != 0)
+                    {
+                        this.BaseTabs.SelectTab(this.CurrentStep);
+                        MessageBox.Show("Use the 'Next Step ->' and 'Previous Step ->' buttons on the bottom left and right corners of this window for navigation.");
+                    }
                     break;
                 case ("One"):
-                    if (this.CurrentStep != 1) this.BaseTabs.SelectTab(this.CurrentStep);
+                    if (this.CurrentStep != 1)
+                    {
+                        this.BaseTabs.SelectTab(this.CurrentStep);
+                        MessageBox.Show("Use the 'Next Step ->' and 'Previous Step ->' buttons on the bottom left and right corners of this window for navigation.");
+                    }
                     break;
                 case ("Two"):
-                    if (this.CurrentStep != 2) this.BaseTabs.SelectTab(this.CurrentStep);
+                    if (this.CurrentStep != 2)
+                    {
+                        this.BaseTabs.SelectTab(this.CurrentStep);
+                        MessageBox.Show("Use the 'Next Step ->' and 'Previous Step ->' buttons on the bottom left and right corners of this window for navigation.");
+                    }
                     break;
                 case ("Three"):
-                    if (this.CurrentStep != 3) this.BaseTabs.SelectTab(this.CurrentStep);
+                    if (this.CurrentStep != 3)
+                    {
+                        this.BaseTabs.SelectTab(this.CurrentStep);
+                        MessageBox.Show("Use the 'Next Step ->' and 'Previous Step ->' buttons on the bottom left and right corners of this window for navigation.");
+                    }
                     break;
                 case ("Four"):
-                    if (this.CurrentStep != 4) this.BaseTabs.SelectTab(this.CurrentStep);
+                    if (this.CurrentStep != 4)
+                    {
+                        this.BaseTabs.SelectTab(this.CurrentStep);
+                        MessageBox.Show("Use the 'Next Step ->' and 'Previous Step ->' buttons on the bottom left and right corners of this window for navigation.");
+                    }
                     break;
             }
         }
@@ -1099,6 +1122,41 @@ namespace IronWASP
             {
                 Row.Cells[0].Value = ScanAllPluginsCB.Checked;
             }
+        }
+
+        private void ScanBranchWizard_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (IronUI.UI.CanShutdown) return;
+            if (!CanClose)
+            {
+                if (this.CurrentStep == 0)
+                {
+                    this.CanClose = true;
+                }
+                else if (this.CurrentStep == 4)
+                {
+                    e.Cancel = true;
+                    if (StepFourPreviousBtn.Enabled)
+                    {
+                        MessageBox.Show("This window can only be closed from the first step.\r\nUse the '<- Previous Step' button on the bottom left corner to go to the first step and then press the 'Cancel' button on the bottom left corner.");
+                    }
+                    else
+                    {
+                        MessageBox.Show("This window cannot be closed by the user now.\r\nAfter all scan jobs are created the window will automatically close.");
+                    }
+                }
+                else
+                {
+                    e.Cancel = true;
+                    MessageBox.Show("This window can only be closed from the first step.\r\nUse the '<- Previous Step' button on the bottom left corner to go to the first step and then press the 'Cancel' button on the bottom left corner.");
+                }
+            }
+        }
+
+        internal void CloseWindow()
+        {
+            this.CanClose = true;
+            this.Close();
         }
     }
 }

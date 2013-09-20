@@ -301,7 +301,7 @@ namespace IronWASP
 
                 XW.WriteEndElement();
 
-                if (OverviewEntries.Count == 13)
+                if (OverviewEntries[i].Length == 13)
                 {
                     XW.WriteStartElement("entry");
 

@@ -26,8 +26,9 @@ namespace IronWASP
 {
     public class Analyzer
     {
-        internal static Dictionary<string, Request> ProbeStrings = new Dictionary<string, Request>();
-        
+        //internal static Dictionary<string, Request> ProbeStrings = new Dictionary<string, Request>();
+        internal static Dictionary<string, int> ProbeStrings = new Dictionary<string, int>();
+
         static int ProbeStringCounter = 0;
 
         public static List<string> GetProbeStrings()
@@ -38,7 +39,7 @@ namespace IronWASP
 
         public static Request GetProbeStringRequest(string ProbeString)
         {
-            return ProbeStrings[ProbeString];
+            return Request.FromScanLog(ProbeStrings[ProbeString]);
         }
 
         public static int GetProbeCounter()
@@ -52,7 +53,7 @@ namespace IronWASP
             string[] Alphabets = new string[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
             Random R = new Random();
             string AlphaChar = Alphabets[R.Next(26)];
-            int FirstPartSize = R.Next(1,4);
+            int FirstPartSize = R.Next(1, 4);
             int LastPartSize = R.Next(4, 8);
             StringBuilder PS = new StringBuilder();
             for (int i = 0; i <= FirstPartSize; i++)
@@ -67,21 +68,21 @@ namespace IronWASP
             return PS.ToString();
         }
 
-        public static void AddProbeString(string ProbeString, Request InjectedRequest)
+        public static void AddProbeString(string ProbeString, int LogId)
         {
-            Request ClonedReq = InjectedRequest.GetClone();
             lock (ProbeStrings)
             {
-                ProbeStrings.Add(ProbeString, ClonedReq);
+                ProbeStrings.Add(ProbeString, LogId);
             }
         }
 
-        internal static string CheckReflections(Session IrSe)
+        internal static Reflections GetAllReflections(Session IrSe)
         {
-            StringBuilder Result = new StringBuilder();
-            if (IrSe == null) return Result.ToString();
-            if (IrSe.Request == null) return Result.ToString();
-            if (IrSe.Response == null) return Result.ToString();
+            Reflections AllReflections = new Reflections();
+
+            if (IrSe == null) return AllReflections;
+            if (IrSe.Request == null) return AllReflections;
+            if (IrSe.Response == null) return AllReflections;
             int TotalReflections = 0;
 
             List<Reflection> UrlReflections = new List<Reflection>();
@@ -199,6 +200,39 @@ namespace IronWASP
 
             TotalReflections = UrlReflections.Count + UrlPathPartReflections.Count + QueryReflections.Count + BodyReflections.Count + CookieReflections.Count + HeaderReflections.Count;
 
+            AllReflections.Url = UrlReflections;
+            AllReflections.UrlPathPart = UrlPathPartReflections;
+            AllReflections.Query = QueryReflections;
+            AllReflections.Body = BodyReflections;
+            AllReflections.Cookie = CookieReflections;
+            AllReflections.Header = HeaderReflections;
+
+            return AllReflections;
+        }
+
+        public static string CheckReflections(Session IrSe)
+        {
+            Reflections AllReflections = GetAllReflections(IrSe);
+            return CheckReflections(AllReflections);
+        }
+
+        public static string CheckReflections(Reflections AllReflections)
+        {
+            StringBuilder Result = new StringBuilder();
+            if (AllReflections.Count == 0) return Result.ToString();
+
+            int TotalReflections = 0;
+
+            List<Reflection> UrlReflections = AllReflections.Url;
+            List<Reflection> UrlPathPartReflections = AllReflections.UrlPathPart;
+            List<Reflection> QueryReflections = AllReflections.Query;
+            List<Reflection> BodyReflections = AllReflections.Body;
+            List<Reflection> CookieReflections = AllReflections.Cookie;
+            List<Reflection> HeaderReflections = AllReflections.Header;
+
+
+            TotalReflections = UrlReflections.Count + UrlPathPartReflections.Count + QueryReflections.Count + BodyReflections.Count + CookieReflections.Count + HeaderReflections.Count;
+
             Result.Append("<i<hh>>Total Reflections: "); Result.Append(TotalReflections.ToString()); Result.Append("<i</hh>> | ");
 
             if (UrlReflections.Count > 0)
@@ -229,9 +263,8 @@ namespace IronWASP
             Result.Append("<i<br>>");
 
             Dictionary<int, List<Reflection>> OrderedReflections = new Dictionary<int, List<Reflection>>();
-            List<List<Reflection>> AllReflections = new List<List<Reflection>>() { UrlReflections, UrlPathPartReflections, QueryReflections, BodyReflections, CookieReflections, HeaderReflections };
 
-            foreach (List<Reflection> ReflectionList in AllReflections)
+            foreach (List<Reflection> ReflectionList in AllReflections.GetList())
             {
                 foreach (Reflection Refl in ReflectionList)
                 {
@@ -253,7 +286,7 @@ namespace IronWASP
                     Result.Append("<i<h>>Section:<i</h>> "); Result.Append(Refl.Section); Result.Append(" | <i<h>>Parameter:<i</h>> "); Result.Append(Refl.Name); Result.Append(" | <i<h>>Count:<i</h>> "); Result.Append(Refl.Count.ToString()); Result.Append(" | <i<h>>Value:<i</h>><i<hlo>> "); Result.Append(Refl.Value); Result.Append("<i</hlo>>");
                     foreach (string R in Refl.GetReflections())
                     {
-                        Result.Append("<i<br>>    "); Result.Append(R.Replace(Refl.Value, "<i<hlo>>" + Refl.Value + "<i</hlo>>"));
+                        Result.Append("<i<br>>    "); Result.Append(R);
                     }
                 }
             }
@@ -269,10 +302,50 @@ namespace IronWASP
 
         public static Reflection GetReflections(string Input, string ResString)
         {
+            List<string> Variations = new List<string>();
+            Variations.Add(Input);
+            Variations.Add(Input.ToLower());
+            Variations.Add(Input.ToUpper());
+            Variations.Add(Tools.UrlEncode(Input));
+            Variations.Add(Tools.UrlPathEncode(Input));
+            Variations.Add(Tools.HtmlEncode(Input));
+            Variations.Add(Tools.XmlEncode(Input));
+            Variations.Add(Tools.JsonEncode(Input));
+            Variations.Add(Tools.RelaxedUrlEncode(Input));
+            Variations.Add(Tools.UrlUnicodeEncode(Input));
+            Variations.Add(Input.Replace("\"", "\\\""));
+            Variations.Add(Input.Replace("'", "\\\'"));
+
+            Dictionary<string, int> TempDict = new Dictionary<string, int>();
+            foreach (string V in Variations)
+            {
+                TempDict[V] = 0;
+            }
+            Variations = new List<string>(TempDict.Keys);
+
+
+            Reflection Result = new Reflection("", Input, "");
+            foreach (string V in Variations)
+            {
+                Reflection Ref = GetReflectionsFor(V, ResString);
+                if (Ref.Count > 0)
+                {
+                    foreach (string RefStr in Ref.GetReflections())
+                    {
+                        Result.Add(RefStr.Replace(V, string.Format("<i<hlo>>{0}<i</hlo>>", V)));
+                    }
+                }
+            }
+            return Result;
+        }
+
+        public static Reflection GetReflectionsFor(string Input, string ResString)
+        {
             Reflection Results = new Reflection("", Input, "");
             if (Input.Length == 0 || !ResString.Contains(Input)) return Results;
 
-            string Pattern = String.Format(@"\W{0}\W", Input.Replace("\\", "\\\\").Replace(".", "\\.").Replace("$", "\\$").Replace("^", "\\^").Replace("*", "\\*").Replace("|", "\\|").Replace("+", "\\+").Replace("?", "\\?").Replace("{", "\\{").Replace("}", "\\}").Replace("[", "\\[").Replace("]", "\\]").Replace("(", "\\(").Replace(")", "\\)"));
+            //string Pattern = String.Format(@"\W{0}\W", Input.Replace("\\", "\\\\").Replace(".", "\\.").Replace("$", "\\$").Replace("^", "\\^").Replace("*", "\\*").Replace("|", "\\|").Replace("+", "\\+").Replace("?", "\\?").Replace("{", "\\{").Replace("}", "\\}").Replace("[", "\\[").Replace("]", "\\]").Replace("(", "\\(").Replace(")", "\\)"));
+            string Pattern = String.Format(@"\W{0}\W", Regex.Escape(Input));
 
             MatchCollection MatchResults = Regex.Matches(ResString, Pattern, RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
             foreach (Match M in MatchResults)

@@ -25,6 +25,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Xml;
+using System.Net;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using Mathertel;
@@ -32,6 +33,9 @@ using Newtonsoft.Json;
 using Jint;
 using Jint.Expressions;
 using Antlr.Runtime;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Windows.Forms;
 
 
 namespace IronWASP
@@ -91,6 +95,8 @@ namespace IronWASP
             Text = Text.Replace("<i</co>>", "");
             Text = Text.Replace("<i<cw>>", "");
             Text = Text.Replace("<i</cw>>", "");
+            Text = Text.Replace("<i<cy>>", "");
+            Text = Text.Replace("<i</cy>>", "");
             Text = Text.Replace("<i<ac>>", "");
             Text = Text.Replace("<i</ac>>", "");
             Text = Text.Replace("<i<ar>>", "");
@@ -105,6 +111,8 @@ namespace IronWASP
             Text = Text.Replace("<i</hlb>>", "");
             Text = Text.Replace("<i<hlo>>", "");
             Text = Text.Replace("<i</hlo>>", "");
+            Text = Text.Replace("<i<hlw>>", "");
+            Text = Text.Replace("<i</hlw>>", "");
             Text = Text.Replace("<i<h1>>", "");
             Text = Text.Replace("<i</h1>>", "");
             return Text;
@@ -134,6 +142,8 @@ namespace IronWASP
             Text = Text.Replace("<i</cb>>", " \\cf0 ");
             Text = Text.Replace("<i<co>>", " \\cf2 ");
             Text = Text.Replace("<i</co>>", " \\cf0 ");
+            Text = Text.Replace("<i<cy>>", " \\cf6 ");
+            Text = Text.Replace("<i</cy>>", " \\cf0 ");
             Text = Text.Replace("<i<cw>>", " \\cf5 ");
             Text = Text.Replace("<i</cw>>", " \\cf0 ");
             Text = Text.Replace("<i<ac>>", " \\qc ");
@@ -150,8 +160,80 @@ namespace IronWASP
             Text = Text.Replace("<i</hlb>>", " \\highlight0 ");
             Text = Text.Replace("<i<hlo>>", " \\highlight2 ");
             Text = Text.Replace("<i</hlo>>", " \\highlight0 ");
+            Text = Text.Replace("<i<hly>>", " \\highlight6 ");
+            Text = Text.Replace("<i</hly>>", " \\highlight0 ");
             Text = Text.Replace("<i<h1>>", " \\fs30 ");
             Text = Text.Replace("<i</h1>>", " \\fs20 ");
+            return Text;
+        }
+
+        internal static string ConvertForHtmlReport(string Text)
+        {
+            Text = Tools.HtmlEncode(Text);
+            Text = Text.Replace("\r\n", Tools.HtmlEncode("<i<br>>"));
+            Text = Text.Replace("\n", Tools.HtmlEncode("<i<br>>"));
+            //Text = Text.Replace("\\", "\\\\");
+            //Text = Text.Replace("{", "\\{");
+            //Text = Text.Replace("}", "\\}");
+            Text = Text.Replace(Tools.HtmlEncode("<i<br>>"), "<br>");
+            
+            Text = Text.Replace(Tools.HtmlEncode("<i<hh>>"), "<span class='ihh'>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</hh>>"), "</span>");
+            
+            Text = Text.Replace(Tools.HtmlEncode("<i<h>>"), " <span class='ih'> ");
+            Text = Text.Replace(Tools.HtmlEncode("<i</h>>"), "</span>");
+            
+            Text = Text.Replace(Tools.HtmlEncode("<i<b>>"), "<b>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</b>>"), "</b>");
+
+            Text = Text.Replace(Tools.HtmlEncode("<i<i>>"), "<i>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</i>>"), "</b>");
+
+            Text = Text.Replace(Tools.HtmlEncode("<i<cr>>"), "<span class='icr'>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</cr>>"), "</span>");
+
+            Text = Text.Replace(Tools.HtmlEncode("<i<cg>>"), " <span class='icg'>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</cg>>"), "</span>");
+
+            Text = Text.Replace(Tools.HtmlEncode("<i<cb>>"), "<span class='icb'>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</cb>>"), "</span>");
+
+            Text = Text.Replace(Tools.HtmlEncode("<i<co>>"), "<span class='ico'>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</co>>"), "</span>");
+
+            Text = Text.Replace(Tools.HtmlEncode("<i<cy>>"), "<span class='icy'>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</cy>>"), "</span>");
+
+            Text = Text.Replace(Tools.HtmlEncode("<i<cw>>"), "<span class='icw'>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</cw>>"), "</span>");
+
+            Text = Text.Replace(Tools.HtmlEncode("<i<ac>>"), "<span class='iac'>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</ac>>"), "</span>");
+
+            Text = Text.Replace(Tools.HtmlEncode("<i<ar>>"), "<span class='iar'>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</ar>>"), "</span>");
+
+            Text = Text.Replace(Tools.HtmlEncode("<i<al>>"), "<span class='ial'>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</al>>"), "</span>");
+
+            Text = Text.Replace(Tools.HtmlEncode("<i<hlr>>"), "<span class='hlr'>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</hlr>>"), "</span>");
+
+            Text = Text.Replace(Tools.HtmlEncode("<i<hlg>>"), "<span class='hlg'>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</hlg>>"), "</span>");
+
+            Text = Text.Replace(Tools.HtmlEncode("<i<hlb>>"), "<span class='hlb'>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</hlb>>"), "</span>");
+
+            Text = Text.Replace(Tools.HtmlEncode("<i<hlo>>"), "<span class='hlo'>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</hlo>>"), "</span>");
+
+            Text = Text.Replace(Tools.HtmlEncode("<i<hly>>"), "<span class='hly'>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</hly>>"), "</span>");
+
+            Text = Text.Replace(Tools.HtmlEncode("<i<h1>>"), "<span class='ih1'>");
+            Text = Text.Replace(Tools.HtmlEncode("<i</h1>>"), "</span>");
+
             return Text;
         }
 
@@ -370,16 +452,88 @@ namespace IronWASP
 
         public static string XmlEncode(string Input)
         {
-            StringBuilder XB = new StringBuilder();
-		    XmlWriterSettings Settings = new XmlWriterSettings();
-		    XmlWriter XW = XmlWriter.Create(XB, Settings);
-            XW.WriteStartElement("xml");
-            XW.WriteValue(Input);
-            XW.WriteEndElement();
-            XW.Close();
-            string XML = XB.ToString();
-            int StartPoint = XML.IndexOf("<xml>") + 5;
-            return XML.Substring(StartPoint, XML.Length - (StartPoint + 6));
+            try
+            {
+                StringBuilder XB = new StringBuilder();
+                XmlWriterSettings Settings = new XmlWriterSettings();
+                XmlWriter XW = XmlWriter.Create(XB, Settings);
+                XW.WriteStartElement("xml");
+                XW.WriteValue(Input);
+                XW.WriteEndElement();
+                XW.Close();
+                string XML = XB.ToString();
+                int StartPoint = XML.IndexOf("<xml>") + 5;
+                return XML.Substring(StartPoint, XML.Length - (StartPoint + 6));
+            }
+            catch(Exception Exp)
+            {
+                if (Input.Length == 1)
+                {
+                    throw Exp;//to avoid infinite recursive loop when checking a single character
+                }
+                else
+                {
+                    StringBuilder SB = new StringBuilder();
+                    foreach (Char C in Input)
+                    {
+                        try
+                        {
+                            SB.Append(Tools.XmlEncode(C.ToString()));
+                        }
+                        catch { }
+                    }
+                    return SB.ToString();
+                }
+            }
+        }
+
+        public static string JsonEncode(string Input)
+        {
+            try
+            {
+                StringWriter JW = new StringWriter();
+                JsonTextWriter JTW = new JsonTextWriter(JW);
+                JTW.WriteStartObject();
+                JTW.WritePropertyName("a");
+                JTW.WriteValue(Input);
+                JTW.WriteEndObject();
+                JTW.Close();
+                JW.Close();
+
+                string Val = JW.ToString().Substring(5);
+                Val = Val.TrimEnd('}');
+                Val = Val.Trim();
+
+                if (Val.StartsWith("\""))
+                {
+                    Val = Val.Trim('"');
+                }
+                else if (Val.StartsWith("\'"))
+                {
+                    Val = Val.Trim('\'');
+                }
+                return Val;
+            }
+            catch (Exception Exp)
+            {
+                if (Input.Length == 1)
+                {
+                    throw Exp;//to avoid infinite recursive loop when checking a single character
+                }
+                else
+                {
+                    StringBuilder SB = new StringBuilder();
+                    foreach (Char C in Input)
+                    {
+                        try
+                        {
+                            SB.Append(Tools.JsonEncode(C.ToString()));
+                        }
+                        catch { }
+                    }
+                    return SB.ToString();
+                }
+            }
         }
 
         public static string EncodeForTrace(string Input)
@@ -802,6 +956,24 @@ namespace IronWASP
             }
         }
 
+        public static void RunInShellWith(string Executable, string Arguments)
+        {
+            try
+            {
+                ProcessStartInfo Info = new ProcessStartInfo();
+                Info.UseShellExecute = true;
+                Info.CreateNoWindow = false;
+                Info.Arguments = "/k " + Executable + " " + Arguments;
+                Info.FileName = "cmd";
+                Info.WindowStyle = ProcessWindowStyle.Normal;
+                Process P = Process.Start(Info);
+            }
+            catch (Exception Exp)
+            {
+                IronException.Report("Unable to start external application", Exp);
+            }
+        }
+
         public static int GetPercent(int One, int Two)
         {
             Double O;
@@ -968,6 +1140,84 @@ namespace IronWASP
             {
                 return false;
             }
+        }
+
+        public static string MultiplyString(string StrToMulti, int Factor)
+        {
+            StringBuilder SB = new StringBuilder();
+            for (int i = 0; i < Factor; i++)
+            {
+                SB.Append(StrToMulti);
+            }
+            return SB.ToString();
+        }
+
+        public static string GetRefreshHeaderUrl(string Header)
+        {
+            Match M = Regex.Match(Header, @"\s*\d+;\s*url\s*=\s*(.*)", RegexOptions.IgnoreCase);
+            if (M.Success)
+            {
+                if (M.Groups.Count > 1)
+                {
+                    string TrimmedUrl = M.Groups[1].Value.Trim();
+                    if (TrimmedUrl.StartsWith("'"))
+                    {
+                        return TrimmedUrl.Trim('\'');
+                    }
+                    else if (TrimmedUrl.StartsWith("\""))
+                    {
+                        return TrimmedUrl.Trim('"');
+                    }
+                    else
+                    {
+                        return TrimmedUrl;
+                    }
+                }
+            }
+            throw new Exception("Invalid Refresh Header");
+        }
+
+        public static Bitmap CaptureScreen()
+        {
+            Bitmap BM = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
+            Graphics G = Graphics.FromImage(BM as Image);
+            G.CopyFromScreen(0, 0, 0, 0, BM.Size);
+            //BM.Save(Config.Path + "\\sh.bmp", ImageFormat.Bmp);
+            return BM;
+        }
+
+        public static bool IsValidIpv4(string Input)
+        {
+            try
+            {
+                IPAddress IpAdd = IPAddress.Parse(Input);
+                if (IpAdd.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+            return false;
+        }
+
+        public static bool IsValidIpv6(string Input)
+        {
+            try
+            {
+                IPAddress IpAdd = IPAddress.Parse(Input);
+                if (IpAdd.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+            return false;
         }
 
         public static List<string> NwToIp(string NetworkAddress)

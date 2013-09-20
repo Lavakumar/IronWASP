@@ -152,7 +152,7 @@ namespace IronWASP
                 }
                 if (OriginalSession.Response != null)
                 {
-                    OriginalResponseView.SetResponse(OriginalSession.Response);
+                    OriginalResponseView.SetResponse(OriginalSession.Response, OriginalSession.Request);
                     OriginalResponseString = OriginalSession.Response.ToString();
                 }
                 if (ResentSession != null && ResentSession.Request != null)
@@ -162,7 +162,7 @@ namespace IronWASP
                 }
                 if (ResentSession != null && ResentSession.Response != null)
                 {
-                    ResentResponseView.SetResponse(ResentSession.Response);
+                    ResentResponseView.SetResponse(ResentSession.Response, ResentSession.Request);
                     ResentResponseString = ResentSession.Response.ToString();
                 }
                 if (TestSession != null && TestSession.Request != null)
@@ -172,7 +172,7 @@ namespace IronWASP
                 }
                 if (TestSession != null && TestSession.Response != null)
                 {
-                    TestResponseView.SetResponse(TestSession.Response);
+                    TestResponseView.SetResponse(TestSession.Response, TestSession.Request);
                     TestResponseString = TestSession.Response.ToString();
                 }
                 string[] OriginalVsResentRequestSidebySideResults = DiffWindow.DoSideBySideDiff(OriginalRequestString, ResentRequestString);
@@ -1197,10 +1197,10 @@ namespace IronWASP
                         if (T.Request != null)
                         {
                             PassivePluginLogRequestView.SetRequest(T.Request);
-                        }
-                        if (T.Response != null)
-                        {
-                            PassivePluginLogResponseView.SetResponse(T.Response);
+                            if (T.Response != null)
+                            {
+                                PassivePluginLogResponseView.SetResponse(T.Response, T.Request);
+                            }
                         }
                     }
                 }

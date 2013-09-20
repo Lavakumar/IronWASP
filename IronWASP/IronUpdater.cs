@@ -97,9 +97,24 @@ namespace IronWASP
         static void Run()
         {
             int Counter = 0;
+            int MemoryCounter = 0;
+
             while(IronUpdater.IsOn)
             {
-                if (Counter == 5) Counter = 0;
+                if (Counter == 5)
+                {
+                    Counter = 0;
+                    MemoryCounter++;
+                    
+                }
+                if (MemoryCounter == 10)
+                {
+                    MemoryCounter = 0;
+                    if (GC.GetTotalMemory(false) > 200000000)
+                    {
+                        GC.Collect();
+                    }
+                }
                 Thread.Sleep(IronUpdater.SleepTime);
                 Counter++;
 

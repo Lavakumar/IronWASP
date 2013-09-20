@@ -329,6 +329,7 @@ namespace IronWASP
             this.dataGridViewTextBoxColumn12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn15 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.textBox11 = new System.Windows.Forms.TextBox();
+            this.CopyScriptLL = new System.Windows.Forms.LinkLabel();
             this.ShowHideCommentsLL = new System.Windows.Forms.LinkLabel();
             this.CodeTabs = new System.Windows.Forms.TabControl();
             this.PyCodeTab = new System.Windows.Forms.TabPage();
@@ -336,7 +337,7 @@ namespace IronWASP
             this.RbCodeTab = new System.Windows.Forms.TabPage();
             this.RubyCTB = new IronWASP.CodeTextBox();
             this.PayloadFileOpener = new System.Windows.Forms.OpenFileDialog();
-            this.CopyScriptLL = new System.Windows.Forms.LinkLabel();
+            this.ErrorLbl = new System.Windows.Forms.Label();
             this.BaseSplit.Panel1.SuspendLayout();
             this.BaseSplit.Panel2.SuspendLayout();
             this.BaseSplit.SuspendLayout();
@@ -418,6 +419,7 @@ namespace IronWASP
             // 
             // BaseSplit.Panel2
             // 
+            this.BaseSplit.Panel2.Controls.Add(this.ErrorLbl);
             this.BaseSplit.Panel2.Controls.Add(this.CopyScriptLL);
             this.BaseSplit.Panel2.Controls.Add(this.ShowHideCommentsLL);
             this.BaseSplit.Panel2.Controls.Add(this.CodeTabs);
@@ -3793,6 +3795,18 @@ namespace IronWASP
             this.textBox11.TabStop = false;
             this.textBox11.Text = resources.GetString("textBox11.Text");
             // 
+            // CopyScriptLL
+            // 
+            this.CopyScriptLL.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.CopyScriptLL.AutoSize = true;
+            this.CopyScriptLL.Location = new System.Drawing.Point(628, 7);
+            this.CopyScriptLL.Name = "CopyScriptLL";
+            this.CopyScriptLL.Size = new System.Drawing.Size(156, 13);
+            this.CopyScriptLL.TabIndex = 2;
+            this.CopyScriptLL.TabStop = true;
+            this.CopyScriptLL.Text = "Copy Python Script to Clipboard";
+            this.CopyScriptLL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.CopyScriptLL_LinkClicked);
+            // 
             // ShowHideCommentsLL
             // 
             this.ShowHideCommentsLL.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -3869,17 +3883,15 @@ namespace IronWASP
             this.RubyCTB.Size = new System.Drawing.Size(876, 154);
             this.RubyCTB.TabIndex = 2;
             // 
-            // CopyScriptLL
+            // ErrorLbl
             // 
-            this.CopyScriptLL.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.CopyScriptLL.AutoSize = true;
-            this.CopyScriptLL.Location = new System.Drawing.Point(628, 7);
-            this.CopyScriptLL.Name = "CopyScriptLL";
-            this.CopyScriptLL.Size = new System.Drawing.Size(156, 13);
-            this.CopyScriptLL.TabIndex = 2;
-            this.CopyScriptLL.TabStop = true;
-            this.CopyScriptLL.Text = "Copy Python Script to Clipboard";
-            this.CopyScriptLL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.CopyScriptLL_LinkClicked);
+            this.ErrorLbl.AutoSize = true;
+            this.ErrorLbl.ForeColor = System.Drawing.Color.Red;
+            this.ErrorLbl.Location = new System.Drawing.Point(8, 7);
+            this.ErrorLbl.Name = "ErrorLbl";
+            this.ErrorLbl.Size = new System.Drawing.Size(76, 13);
+            this.ErrorLbl.TabIndex = 3;
+            this.ErrorLbl.Text = "                       ";
             // 
             // ScriptCreationAssistant
             // 
@@ -4267,5 +4279,6 @@ namespace IronWASP
         private System.Windows.Forms.DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn17;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn25;
         private System.Windows.Forms.LinkLabel CopyScriptLL;
+        private System.Windows.Forms.Label ErrorLbl;
     }
 }

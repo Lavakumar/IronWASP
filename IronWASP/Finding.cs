@@ -26,25 +26,25 @@ namespace IronWASP
 {
     public class Finding
     {
-        internal static Finding CurrentPluginResult=null;
+        internal static Finding CurrentPluginResult = null;
         internal static List<int> TriggersSelectedForDiff = new List<int>();
 
-        public int Id=0;
+        public int Id = 0;
         //public string Plugin="";
-        public string Title="";
-        public string Summary="";
+        public string Title = "";
+        public string Summary = "";
         public string AffectedHost = "";
         public Triggers Triggers = new Triggers();
         public FindingSeverity Severity = FindingSeverity.Low;
         public FindingConfidence Confidence = FindingConfidence.Low;
         public FindingType Type = FindingType.Vulnerability;
-        public string Signature="";
+        public string Signature = "";
 
         public string FinderName = "";
         public string FinderType = "";
 
         public int ScanId = 0;
-        
+
         public string AffectedSection = "";
         public string AffectedParameter = "";
         public List<FindingReason> Reasons = new List<FindingReason>();
@@ -76,9 +76,9 @@ namespace IronWASP
                 XDoc.LoadXml(value);
                 foreach (XmlElement Node in XDoc.DocumentElement.ChildNodes)
                 {
-                    switch(Node.Name)
+                    switch (Node.Name)
                     {
-                        case("desc"):
+                        case ("desc"):
                             this.Summary = Node.InnerText;
                             break;
                         case ("trace"):
@@ -94,9 +94,9 @@ namespace IronWASP
                                 string FalsePositiveCheck = "";
                                 foreach (XmlElement ReasonValue in ReasonNode.ChildNodes)
                                 {
-                                    switch(ReasonValue.Name)
+                                    switch (ReasonValue.Name)
                                     {
-                                        case("desc"):
+                                        case ("desc"):
                                             Reason = ReasonValue.InnerText;
                                             break;
                                         case ("type"):
@@ -123,7 +123,7 @@ namespace IronWASP
                 XmlWriter XW = XmlWriter.Create(SB);
                 XW.WriteStartDocument();
                 XW.WriteStartElement("summary");
-                
+
                 XW.WriteStartElement("desc"); XW.WriteValue(this.Summary); XW.WriteEndElement();
                 if (this.FromActiveScan)
                 {
@@ -138,7 +138,7 @@ namespace IronWASP
                             XW.WriteStartElement("type"); XW.WriteValue(Reason.ReasonType); XW.WriteEndElement();
                             XW.WriteStartElement("triggers"); XW.WriteValue(FindingReason.TriggerIdsToString(Reason.TriggerIds)); XW.WriteEndElement();
                             XW.WriteStartElement("fpcheck"); XW.WriteValue(Reason.FalsePositiveCheck); XW.WriteEndElement();
-                            
+
                             XW.WriteEndElement();
                         }
                         XW.WriteEndElement();
@@ -162,9 +162,9 @@ namespace IronWASP
                 XDoc.LoadXml(value);
                 foreach (XmlElement Node in XDoc.DocumentElement.ChildNodes)
                 {
-                    switch(Node.Name)
+                    switch (Node.Name)
                     {
-                        case("scanid"):
+                        case ("scanid"):
                             this.ScanId = Int32.Parse(Node.InnerText);
                             break;
                         case ("section"):
@@ -257,7 +257,7 @@ namespace IronWASP
                     if (!AddIfUnique) return true;
                 }
 
-                
+
                 if (!Signatures[PluginName].ContainsKey(Host))
                 {
                     IsUnique = true;
@@ -267,7 +267,7 @@ namespace IronWASP
                         return true;
                 }
 
-                
+
                 if (!Signatures[PluginName][Host].ContainsKey(Type.ToString()))
                 {
                     IsUnique = true;
@@ -277,18 +277,18 @@ namespace IronWASP
                         return true;
                 }
 
-                if(IsUnique && AddIfUnique)
+                if (IsUnique && AddIfUnique)
                 {
                     Signatures[PluginName][Host][Type.ToString()].Add(Signature);
                     return true;
                 }
                 else if (Signatures[PluginName][Host][Type.ToString()].Contains(Signature))
-                {   
+                {
                     return false;
                 }
                 else
                 {
-                    if(AddIfUnique)
+                    if (AddIfUnique)
                     {
                         Signatures[PluginName][Host][Type.ToString()].Add(Signature);
                     }
@@ -317,6 +317,11 @@ namespace IronWASP
         }
 
         public static string GetTriggerHighlighting(Trigger SelectedTrigger, string FinderType, bool IsNormal)
+        {
+            return GetTriggerHighlighting(SelectedTrigger, FinderType, IsNormal, true);
+        }
+
+        public static string GetTriggerHighlighting(Trigger SelectedTrigger, string FinderType, bool IsNormal, bool IncludeDesc)
         {
             if (IsNormal)
             {
@@ -371,15 +376,17 @@ Head to the <i<cb>><i<b>>Trigger Analysis Tools<i</b>><i</cb>> tab to:
             }
 
             StringBuilder SB = new StringBuilder();
-            switch(FinderType)
+            switch (FinderType)
             {
-                case("ActivePlugin"):
-                        
-                    SB.Append("One pair of Request and Response that was helpful in identifing this vulnerability is available in the adjacent tabs.");
-                    SB.Append("<i<br>>");
-                    SB.Append(GetHighlightDescription(RequestTriggerPresent, ResponseTriggerPresent));
-                    SB.Append("<i<br>>"); SB.Append("<i<br>>");
-                            
+                case ("ActivePlugin"):
+
+                    if (IncludeDesc)
+                    {
+                        SB.Append("One pair of Request and Response that was helpful in identifing this vulnerability is available in the adjacent tabs.");
+                        SB.Append("<i<br>>");
+                        SB.Append(GetHighlightDescription(RequestTriggerPresent, ResponseTriggerPresent));
+                        SB.Append("<i<br>>"); SB.Append("<i<br>>");
+                    }
                     if (RequestTriggerHighlighted)
                     {
                         SB.Append("<i<hh>> Request sent by Scanner: <i</hh>>");
@@ -414,7 +421,7 @@ Head to the <i<cb>><i<b>>Trigger Analysis Tools<i</b>><i</cb>> tab to:
                             SB.Append("<i<br>><i<br>>"); SB.Append("<i<cb>>"); SB.Append(SelectedTrigger.RequestTriggerDescription); SB.Append("<i</cb>>"); SB.Append("<i<br>><i<br>>");
                         }
                     }
-                            
+
                     if (ResponseTriggerHighlighted)
                     {
                         SB.Append("<i<hh>> Response from the Server: <i</hh>>");
@@ -459,12 +466,13 @@ Head to the <i<cb>><i<b>>Trigger Analysis Tools<i</b>><i</cb>> tab to:
                     break;
 
                 case ("PassivePlugin"):
-                        
-                    SB.Append("One pair of Request and Response that was analyzed to identify this vulnerability is available in the adjacent tabs.");
-                    SB.Append("<i<br>>");
-                    SB.Append(GetHighlightDescription(RequestTriggerPresent, ResponseTriggerPresent));
-                    SB.Append("<i<br>>");SB.Append("<i<br>>");
-                        
+                    if (IncludeDesc)
+                    {
+                        SB.Append("One pair of Request and Response that was analyzed to identify this vulnerability is available in the adjacent tabs.");
+                        SB.Append("<i<br>>");
+                        SB.Append(GetHighlightDescription(RequestTriggerPresent, ResponseTriggerPresent));
+                        SB.Append("<i<br>>"); SB.Append("<i<br>>");
+                    }
                     if (RequestTriggerHighlighted)
                     {
                         SB.Append("<i<hh>> Analyzed Request: <i</hh>>");
@@ -500,7 +508,7 @@ Head to the <i<cb>><i<b>>Trigger Analysis Tools<i</b>><i</cb>> tab to:
                         }
 
                     }
-                        
+
                     if (ResponseTriggerHighlighted)
                     {
                         SB.Append("<i<hh>> Analyzed Response: <i</hh>>");
@@ -538,12 +546,13 @@ Head to the <i<cb>><i<b>>Trigger Analysis Tools<i</b>><i</cb>> tab to:
                     break;
 
                 default:
-                        
-                    SB.Append("One pair of Request and Response that is associated with this vulnerability is available in the adjacent tabs.");
-                    SB.Append("<i<br>>");SB.Append("<i<br>>");
-                    SB.Append(GetHighlightDescription(RequestTriggerPresent, ResponseTriggerPresent));
-                    SB.Append("<i<br>>");SB.Append("<i<br>>");
-                        
+                    if (IncludeDesc)
+                    {
+                        SB.Append("One pair of Request and Response that is associated with this vulnerability is available in the adjacent tabs.");
+                        SB.Append("<i<br>>"); SB.Append("<i<br>>");
+                        SB.Append(GetHighlightDescription(RequestTriggerPresent, ResponseTriggerPresent));
+                        SB.Append("<i<br>>"); SB.Append("<i<br>>");
+                    }
                     if (RequestTriggerHighlighted)
                     {
                         SB.Append("<i<hh>> Associated Request: <i</hh>>");
@@ -613,7 +622,7 @@ Head to the <i<cb>><i<b>>Trigger Analysis Tools<i</b>><i</cb>> tab to:
             return SB.ToString();
         }
 
-        static string GetHighlightDescription(bool RequestTriggerPresent,  bool ResponseTriggerPresent)
+        static string GetHighlightDescription(bool RequestTriggerPresent, bool ResponseTriggerPresent)
         {
             if (RequestTriggerPresent && ResponseTriggerPresent)
             {
@@ -671,16 +680,16 @@ Head to the <i<cb>><i<b>>Trigger Analysis Tools<i</b>><i</cb>> tab to:
             catch { }
 
             List<string> HeaderTriggerVariations = new List<string>();
-            
-            
-            foreach(string CurrentVariation in AllTriggerVariations)
+
+
+            foreach (string CurrentVariation in AllTriggerVariations)
             {
                 if (!HeaderTriggerVariations.Contains(CurrentVariation) && ReqHeader.Contains(CurrentVariation))
                 {
                     HeaderTriggerVariations.Add(CurrentVariation);
                 }
             }
-            ReqHeader = InsertHighlights(ReqHeader, HeaderTriggerVariations);
+            ReqHeader = Highlighter.InsertHighlights(ReqHeader, HeaderTriggerVariations);
 
             ReqBody = GetRequestBodyHighlighting(ReqBody, Trigg);
             if (!ReqHeader.Contains("<i<hlg>>") && !ReqBody.Contains("<i<hlg>>"))
@@ -691,9 +700,9 @@ Head to the <i<cb>><i<b>>Trigger Analysis Tools<i</b>><i</cb>> tab to:
                 }
             }
 
-            SB.Append(SnipHeaderSection(ReqHeader).TrimEnd());
+            SB.Append(Highlighter.SnipHeaderSection(ReqHeader).TrimEnd());
             SB.AppendLine(); SB.AppendLine();
-            SB.Append(SnipBodySection(ReqBody));
+            SB.Append(Highlighter.SnipBodySection(ReqBody));
             return SB.ToString().Replace("\n", "<i<br>>");
         }
 
@@ -711,7 +720,7 @@ Head to the <i<cb>><i<b>>Trigger Analysis Tools<i</b>><i</cb>> tab to:
                     BodyTriggerVariations.Add(CurrentVariation);
                 }
             }
-            ReqBody = InsertHighlights(ReqBody, BodyTriggerVariations);
+            ReqBody = Highlighter.InsertHighlights(ReqBody, BodyTriggerVariations);
             return ReqBody;
         }
 
@@ -747,7 +756,7 @@ Head to the <i<cb>><i<b>>Trigger Analysis Tools<i</b>><i</cb>> tab to:
                     HeaderTriggerVariations.Add(CurrentVariation);
                 }
             }
-            ResHeader = InsertHighlights(ResHeader, HeaderTriggerVariations);
+            ResHeader = Highlighter.InsertHighlights(ResHeader, HeaderTriggerVariations);
 
             ResBody = GetResponseBodyHighlighting(ResBody, Trigg);
             if (!ResHeader.Contains("<i<hlg>>") && !ResBody.Contains("<i<hlg>>"))
@@ -758,9 +767,9 @@ Head to the <i<cb>><i<b>>Trigger Analysis Tools<i</b>><i</cb>> tab to:
                 }
             }
 
-            SB.Append(SnipHeaderSection(ResHeader).TrimEnd());
+            SB.Append(Highlighter.SnipHeaderSection(ResHeader).TrimEnd());
             SB.AppendLine(); SB.AppendLine();
-            SB.Append(SnipBodySection(ResBody));
+            SB.Append(Highlighter.SnipBodySection(ResBody));
             return SB.ToString().Replace("\n", "<i<br>>");
         }
 
@@ -777,7 +786,7 @@ Head to the <i<cb>><i<b>>Trigger Analysis Tools<i</b>><i</cb>> tab to:
                     BodyTriggerVariations.Add(Trigg);
                 }
             }
-            ResBody = InsertHighlights(ResBody, BodyTriggerVariations);
+            ResBody = Highlighter.InsertHighlights(ResBody, BodyTriggerVariations);
             return ResBody;
         }
 
@@ -805,20 +814,20 @@ Head to the <i<cb>><i<b>>Trigger Analysis Tools<i</b>><i</cb>> tab to:
                             }
                         }
                     }
-                    
+
                     List<string> Lines = Tools.SplitLines(HeaderString);
-                    foreach(string Line in Lines)
+                    foreach (string Line in Lines)
                     {
                         foreach (string[] Match in Matches)
                         {
                             string EncodedName = "";
                             string EncodedValue = "";
-                            
+
                             if (Line.StartsWith(Match[0]))
                             {
                                 EncodedName = Match[0];
                             }
-                            else if(Line.StartsWith(RequestHeaderParameters.Encode(Match[0])))
+                            else if (Line.StartsWith(RequestHeaderParameters.Encode(Match[0])))
                             {
                                 EncodedName = RequestHeaderParameters.Encode(Match[0]);
                             }
@@ -859,252 +868,6 @@ Head to the <i<cb>><i<b>>Trigger Analysis Tools<i</b>><i</cb>> tab to:
                 }
             }
             return FinalMatches;
-        }
-
-        public static string InsertHighlights(string Value, List<string> Triggs)
-        {
-            foreach (string Trigg in Triggs)
-            {
-                Value = InsertHighlight(Value, Trigg);
-            }
-            return Value;
-        }
-        public static string InsertHighlight(string Value, string Trigg)
-        {
-            return Value.Replace(Trigg, "<i<hlg>>" + Trigg + "<i</hlg>>");
-        }
-
-        static string SnipHeaderSection(string Header)
-        {
-            List<int> InterestingHeaders = new List<int>();
-            StringBuilder SB = new StringBuilder();
-            List<string> HeaderParts = Tools.SplitLines(Header);
-            if (HeaderParts.Count > 0)
-            {
-                SB.AppendLine(HeaderParts[0]);
-                bool BrevityAdded = false;
-                for (int i = 1; i < HeaderParts.Count; i++)
-                {
-                    if (HeaderParts[i].Contains("<i<hlg>>") && HeaderParts[i].Contains("<i</hlg>>"))
-                    {
-                        if (i > 1)
-                        {
-                            if (InterestingHeaders.Count > 0)
-                            {
-                                if (i == InterestingHeaders[InterestingHeaders.Count - 1] + 1)//Check if the previous header was the only header between this and the last interesting header. In the case add the header instead of the snipped message as both take up same space
-                                {
-                                    if (HeaderParts[i - 1].Length > 150)
-                                    {
-                                        SB.Append(HeaderParts[i - 1].Substring(0, 100)); SB.AppendLine("<i<cb>>[---- Snipped rest of this header for brevity ----]<i</cb>>");
-                                    }
-                                    else
-                                    {
-                                        SB.AppendLine(HeaderParts[i - 1]);
-                                    }
-                                }
-                                else
-                                {
-                                    SB.AppendLine("<i<cb>>[---- Snipped parts of HTTP headers section for brevity ----]<i</cb>>");
-                                }
-                            }
-                        }
-                        SB.AppendLine(HeaderParts[i]);
-                        BrevityAdded = false;
-                        InterestingHeaders.Add(i);
-                    }
-                    else
-                    {
-                        if (i == 1 || i == HeaderParts.Count - 1)
-                        {
-                            if (HeaderParts[i].Length > 150)
-                            {
-                                SB.Append(HeaderParts[i].Substring(0, 100)); SB.AppendLine("<i<cb>>[---- Snipped rest of this header for brevity ----]<i</cb>>");
-                            }
-                            else
-                            {
-                                SB.AppendLine(HeaderParts[i]);
-                            }
-                        }
-                        else
-                        {
-                            if (!BrevityAdded)
-                            {
-                                SB.AppendLine("<i<cb>>[---- Snipped parts of HTTP headers section for brevity ----]<i</cb>>");
-                                BrevityAdded = true;
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                return Header;
-            }
-            
-            return SB.ToString();
-        }
-        public static string SnipBodySection(string Body)
-        {
-            bool InTag = false;
-            int TagCount = 0;
-            int Pointer = 0;
-            int PartPointer = 0;
-            List<string> Parts = new List<string>();
-            while (Pointer < Body.Length)
-            {
-                if (IsOpeningTag(Body, Pointer))
-                {
-                    //Add the part before the highlight section
-                    if (!InTag && Pointer > 0)
-                    {
-                        string Part = Body.Substring(PartPointer, Pointer - PartPointer);
-                        if (Part.Length > 0)
-                        {
-                            Parts.Add(Part);
-                            PartPointer = PartPointer + Part.Length;
-                        }
-                    }
-                    InTag = true;
-                    TagCount++;
-                    Pointer = Pointer + 8;
-                }
-                else if (InTag && IsClosingTag(Body, Pointer))
-                {
-                    TagCount--;
-                    if (TagCount == 0)
-                    {
-                        InTag = false;
-                        string Part = Body.Substring(PartPointer, (Pointer + 9) - PartPointer);
-                        if (Part.Length > 0)
-                        {
-                            Parts.Add(Part);
-                            PartPointer = PartPointer + Part.Length;
-                        }
-                    }
-                    Pointer = Pointer + 9;
-                }
-                else
-                {
-                    Pointer++;
-                }
-            }
-            if (PartPointer < Body.Length)
-            {
-                string Part = Body.Substring(PartPointer);
-                if (Part.Length > 0)
-                {
-                    Parts.Add(Part);
-                }
-            }
-            StringBuilder SB = new StringBuilder();
-            
-            List<int> AddedFullParts = new List<int>();
-            List<int> AddedFirstParts = new List<int>();
-            List<int> AddedLastParts = new List<int>();
-
-            for (int i = 0; i < Parts.Count; i++)
-            {
-                if (Parts[i].StartsWith("<i<hlg>>") && Parts[i].EndsWith("<i</hlg>>"))
-                {
-                    if (i > 0)
-                    {
-                        if(!(Parts[i - 1].StartsWith("<i<hlg>>") && Parts[i - 1].EndsWith("<i</hlg>>")))
-                        {
-                            if (Parts[i - 1].Length <= 150)
-                            {
-                                if(!(AddedFullParts.Contains(i-1) || AddedFirstParts.Contains(i-1) || AddedLastParts.Contains(i-1)))
-                                {
-                                    SB.Append(Parts[i - 1]);
-                                    AddedFullParts.Add(i - 1);
-                                }
-                            }
-                            else
-                            {
-                                if (!(AddedFullParts.Contains(i - 1) || AddedLastParts.Contains(i - 1)))
-                                {
-                                    SB.Append("<i<cb>>[---- Snipped parts of HTTP body section for brevity ----]<i</cb>>");
-                                    SB.Append(Parts[i - 1].Substring(Parts[i - 1].Length - 150));
-                                    AddedLastParts.Add(i-1);
-                                }
-                            }
-                        }
-                    }
-                    if (!(AddedFullParts.Contains(i) || AddedFirstParts.Contains(i) || AddedLastParts.Contains(i)))
-                    {
-                        SB.Append(Parts[i]);
-                        AddedFullParts.Add(i);
-                    }
-                }
-                else
-                {
-                    if (i > 0)
-                    {
-                        if ((Parts[i - 1].StartsWith("<i<hlg>>") && Parts[i - 1].EndsWith("<i</hlg>>")))
-                        {
-                            if (Parts[i].Length <= 150)
-                            {
-                                if (!(AddedFullParts.Contains(i) || AddedFirstParts.Contains(i) || AddedLastParts.Contains(i)))
-                                {
-                                    SB.Append(Parts[i]);
-                                    AddedFullParts.Add(i);
-                                }
-                            }
-                            else
-                            {
-                                if (!(AddedFullParts.Contains(i) || AddedFirstParts.Contains(i)))
-                                {
-                                    SB.Append(Parts[i].Substring(0, 150));
-                                    SB.Append("<i<cb>>[---- Snipped parts of HTTP body section for brevity ----]<i</cb>>");
-                                    AddedFirstParts.Add(i);
-                                }
-                            }
-                        }
-                    }
-                    //else
-                    //{
-                        //SB.Append("<i<cb>>[---- Snipped parts of HTTP body section for brevity ----]<i</cb>>");
-                    //}
-                }
-            }
-            return SB.ToString();
-        }
-        static bool IsOpeningTag(string Body, int Position)
-        {
-            if (Position + 7 < Body.Length)
-            {
-                string Part = Body.Substring(Position, 8);
-                if (Body.Substring(Position, 8).Equals("<i<hlg>>"))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-        static bool IsClosingTag(string Body, int Position)
-        {
-            if (Position + 8 < Body.Length)
-            {
-                string Part = Body.Substring(Position, 9);
-                if (Body.Substring(Position, 9).Equals("<i</hlg>>"))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
         }
     }
 }

@@ -169,6 +169,23 @@ namespace IronWASP
             }
         }
 
+        internal static void LoadAllInternalActivePlugins()
+        {
+            ActivePlugin.Add((new CrossSiteScriptingCheck()).GetInstance());
+            ActivePlugin.Add((new SqlInjectionCheck()).GetInstance());
+            ActivePlugin.Add((new CodeInjectionCheck()).GetInstance());
+            ActivePlugin.Add((new CommandInjectionCheck()).GetInstance());
+            ActivePlugin.Add((new XpathInjectionCheck()).GetInstance());
+            ActivePlugin.Add((new LdapInjectionCheck()).GetInstance());
+            ActivePlugin.Add((new HeaderInjectionCheck()).GetInstance());
+            ActivePlugin.Add((new ExpressionLanguageInjectionCheck()).GetInstance());
+            ActivePlugin.Add((new ServerSideIncludesInjectionCheck()).GetInstance());
+            ActivePlugin.Add((new ServerSideRequestForgeryCheck()).GetInstance());
+            ActivePlugin.Add((new OpenRedirectCheck()).GetInstance());
+            ActivePlugin.Add((new LocalFileIncludeCheck()).GetInstance());
+            ActivePlugin.Add((new RemoteFileIncludeCheck()).GetInstance());
+        }
+
         internal static void LoadAllActivePlugins()
         {
             ScriptEngine Engine = GetScriptEngine();
@@ -184,6 +201,7 @@ namespace IronWASP
             lock (ActivePlugin.Collection)
             {
                 ActivePlugin.Collection.Clear();
+                LoadAllInternalActivePlugins();
                 string[] ActivePluginFiles = Directory.GetFiles(ActivePluginPath);
                 foreach (string ActivePluginFile in ActivePluginFiles)
                 {
@@ -380,15 +398,21 @@ namespace IronWASP
                 string ErrorMessage = "";
 
                 fileName = PluginFile.Substring(PluginFile.LastIndexOf('\\') + 1);
-                if(StartUp) IronUI.ShowLoadMessage("Loading Plugin - " + fileName);
+                if(StartUp) IronUI.LF.ShowLoadMessage("Loading Plugin - " + fileName);
                 if (PluginFile.EndsWith(".py", StringComparison.CurrentCultureIgnoreCase))
                 {
                     Engine.Runtime.TryGetEngine("py", out Engine);
                     PluginSource = Engine.CreateScriptSourceFromFile(PluginFile);
                     string IndentError = PluginEditor.CheckPythonIndentation(PluginSource.GetCode())[1];
+                    if (IndentError.Length > 0)
+                    {
+                        string UpdatedCode =  PluginEditor.FixPythonIndentation(PluginSource.GetCode());
+                        PluginSource = Engine.CreateScriptSourceFromString(UpdatedCode);
+                        //ErrorMessage = string.Format("{0}\r\n{1}", IndentError, ErrorMessage);
+                    }
                     CompiledPlugin = PluginSource.Compile(CompileErrors);
                     ErrorMessage = CompileErrors.GetErrors();
-                    if (IndentError.Length > 0)
+                    if (ErrorMessage.Length > 0 && IndentError.Length > 0)
                     {
                         ErrorMessage = string.Format("{0}\r\n{1}", IndentError, ErrorMessage);
                     }

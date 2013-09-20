@@ -51,7 +51,9 @@ namespace IronWASP
             this.WaitProgressBar = new System.Windows.Forms.ProgressBar();
             this.BaseTabs = new System.Windows.Forms.TabControl();
             this.HeadersTab = new System.Windows.Forms.TabPage();
+            this.HeadersTBP = new IronWASP.TextBoxPlus();
             this.BodyTab = new System.Windows.Forms.TabPage();
+            this.BodyTBP = new IronWASP.TextBoxPlus();
             this.BodyParametersTab = new System.Windows.Forms.TabPage();
             this.BodyParametersTabSplit = new System.Windows.Forms.SplitContainer();
             this.FormatPluginsGrid = new System.Windows.Forms.DataGridView();
@@ -67,18 +69,17 @@ namespace IronWASP
             this.FormatXmlBaseSplit = new System.Windows.Forms.SplitContainer();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.ConvertXmlToObjectBtn = new System.Windows.Forms.Button();
+            this.FormatXmlTBP = new IronWASP.TextBoxPlus();
             this.ReflectionsTab = new System.Windows.Forms.TabPage();
             this.ReflectionRTB = new System.Windows.Forms.RichTextBox();
             this.HelpTab = new System.Windows.Forms.TabPage();
             this.HelpTB = new System.Windows.Forms.TextBox();
             this.EditingTab = new System.Windows.Forms.TabPage();
-            this.RenderLbl = new System.Windows.Forms.LinkLabel();
-            this.RoundTripLbl = new System.Windows.Forms.Label();
-            this.HeadersTBP = new IronWASP.TextBoxPlus();
-            this.BodyTBP = new IronWASP.TextBoxPlus();
-            this.FormatXmlTBP = new IronWASP.TextBoxPlus();
             this.SaveEditsLbl = new System.Windows.Forms.LinkLabel();
             this.EditTBP = new IronWASP.TextBoxPlus();
+            this.RenderLbl = new System.Windows.Forms.LinkLabel();
+            this.RoundTripLbl = new System.Windows.Forms.Label();
+            this.ScreenshotBtn = new System.Windows.Forms.Button();
             this.BaseTabs.SuspendLayout();
             this.HeadersTab.SuspendLayout();
             this.BodyTab.SuspendLayout();
@@ -108,14 +109,14 @@ namespace IronWASP
             this.StatusAndErrorTB.Location = new System.Drawing.Point(59, 3);
             this.StatusAndErrorTB.Name = "StatusAndErrorTB";
             this.StatusAndErrorTB.ReadOnly = true;
-            this.StatusAndErrorTB.Size = new System.Drawing.Size(444, 13);
+            this.StatusAndErrorTB.Size = new System.Drawing.Size(421, 13);
             this.StatusAndErrorTB.TabIndex = 7;
             this.StatusAndErrorTB.Visible = false;
             // 
             // WaitProgressBar
             // 
             this.WaitProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.WaitProgressBar.Location = new System.Drawing.Point(509, 3);
+            this.WaitProgressBar.Location = new System.Drawing.Point(490, 3);
             this.WaitProgressBar.MarqueeAnimationSpeed = 10;
             this.WaitProgressBar.Name = "WaitProgressBar";
             this.WaitProgressBar.Size = new System.Drawing.Size(114, 13);
@@ -156,6 +157,17 @@ namespace IronWASP
             this.HeadersTab.Text = "  Raw Headers  ";
             this.HeadersTab.UseVisualStyleBackColor = true;
             // 
+            // HeadersTBP
+            // 
+            this.HeadersTBP.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.HeadersTBP.Location = new System.Drawing.Point(0, 0);
+            this.HeadersTBP.Margin = new System.Windows.Forms.Padding(0);
+            this.HeadersTBP.Name = "HeadersTBP";
+            this.HeadersTBP.ReadOnly = false;
+            this.HeadersTBP.Size = new System.Drawing.Size(674, 135);
+            this.HeadersTBP.TabIndex = 0;
+            this.HeadersTBP.ValueChanged += new IronWASP.TextBoxPlus.ValueChangedEvent(this.HeadersTBP_ValueChanged);
+            // 
             // BodyTab
             // 
             this.BodyTab.Controls.Add(this.BodyTBP);
@@ -165,6 +177,17 @@ namespace IronWASP
             this.BodyTab.TabIndex = 3;
             this.BodyTab.Text = "  Raw Body  ";
             this.BodyTab.UseVisualStyleBackColor = true;
+            // 
+            // BodyTBP
+            // 
+            this.BodyTBP.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BodyTBP.Location = new System.Drawing.Point(0, 0);
+            this.BodyTBP.Margin = new System.Windows.Forms.Padding(0);
+            this.BodyTBP.Name = "BodyTBP";
+            this.BodyTBP.ReadOnly = false;
+            this.BodyTBP.Size = new System.Drawing.Size(674, 135);
+            this.BodyTBP.TabIndex = 0;
+            this.BodyTBP.ValueChanged += new IronWASP.TextBoxPlus.ValueChangedEvent(this.BodyTBP_ValueChanged);
             // 
             // BodyParametersTab
             // 
@@ -191,7 +214,7 @@ namespace IronWASP
             // 
             this.BodyParametersTabSplit.Panel2.Controls.Add(this.ScanBodyFormatPluginTypeTabs);
             this.BodyParametersTabSplit.Size = new System.Drawing.Size(674, 135);
-            this.BodyParametersTabSplit.SplitterDistance = 101;
+            this.BodyParametersTabSplit.SplitterDistance = 98;
             this.BodyParametersTabSplit.SplitterWidth = 2;
             this.BodyParametersTabSplit.TabIndex = 0;
             // 
@@ -215,7 +238,7 @@ namespace IronWASP
             this.FormatPluginsGrid.Name = "FormatPluginsGrid";
             this.FormatPluginsGrid.RowHeadersVisible = false;
             this.FormatPluginsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.FormatPluginsGrid.Size = new System.Drawing.Size(101, 135);
+            this.FormatPluginsGrid.Size = new System.Drawing.Size(98, 135);
             this.FormatPluginsGrid.TabIndex = 0;
             this.FormatPluginsGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.FormatPluginsGrid_CellClick);
             // 
@@ -246,7 +269,7 @@ namespace IronWASP
             this.ScanBodyFormatPluginTypeTabs.Name = "ScanBodyFormatPluginTypeTabs";
             this.ScanBodyFormatPluginTypeTabs.Padding = new System.Drawing.Point(0, 0);
             this.ScanBodyFormatPluginTypeTabs.SelectedIndex = 0;
-            this.ScanBodyFormatPluginTypeTabs.Size = new System.Drawing.Size(571, 135);
+            this.ScanBodyFormatPluginTypeTabs.Size = new System.Drawing.Size(574, 135);
             this.ScanBodyFormatPluginTypeTabs.TabIndex = 0;
             // 
             // BodyTypeFormatPluginInjectionArrayGridTab
@@ -255,7 +278,7 @@ namespace IronWASP
             this.BodyTypeFormatPluginInjectionArrayGridTab.Location = new System.Drawing.Point(4, 22);
             this.BodyTypeFormatPluginInjectionArrayGridTab.Margin = new System.Windows.Forms.Padding(0);
             this.BodyTypeFormatPluginInjectionArrayGridTab.Name = "BodyTypeFormatPluginInjectionArrayGridTab";
-            this.BodyTypeFormatPluginInjectionArrayGridTab.Size = new System.Drawing.Size(563, 109);
+            this.BodyTypeFormatPluginInjectionArrayGridTab.Size = new System.Drawing.Size(566, 109);
             this.BodyTypeFormatPluginInjectionArrayGridTab.TabIndex = 0;
             this.BodyTypeFormatPluginInjectionArrayGridTab.Text = "  Name/Value ";
             this.BodyTypeFormatPluginInjectionArrayGridTab.UseVisualStyleBackColor = true;
@@ -278,7 +301,7 @@ namespace IronWASP
             this.BodyFormatPluginsParametersGrid.Margin = new System.Windows.Forms.Padding(0);
             this.BodyFormatPluginsParametersGrid.Name = "BodyFormatPluginsParametersGrid";
             this.BodyFormatPluginsParametersGrid.RowHeadersVisible = false;
-            this.BodyFormatPluginsParametersGrid.Size = new System.Drawing.Size(563, 109);
+            this.BodyFormatPluginsParametersGrid.Size = new System.Drawing.Size(566, 109);
             this.BodyFormatPluginsParametersGrid.TabIndex = 2;
             this.BodyFormatPluginsParametersGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.BodyFormatPluginsParametersGrid_CellClick);
             this.BodyFormatPluginsParametersGrid.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.BodyFormatPluginsParametersGrid_CellValueChanged);
@@ -310,7 +333,7 @@ namespace IronWASP
             this.BodyTypeFormatPluginXMLTab.Location = new System.Drawing.Point(4, 40);
             this.BodyTypeFormatPluginXMLTab.Margin = new System.Windows.Forms.Padding(0);
             this.BodyTypeFormatPluginXMLTab.Name = "BodyTypeFormatPluginXMLTab";
-            this.BodyTypeFormatPluginXMLTab.Size = new System.Drawing.Size(153, 30);
+            this.BodyTypeFormatPluginXMLTab.Size = new System.Drawing.Size(154, 30);
             this.BodyTypeFormatPluginXMLTab.TabIndex = 1;
             this.BodyTypeFormatPluginXMLTab.Text = "  Format Plugin XML (For Format Plugin Developers)  ";
             this.BodyTypeFormatPluginXMLTab.UseVisualStyleBackColor = true;
@@ -330,7 +353,7 @@ namespace IronWASP
             // FormatXmlBaseSplit.Panel2
             // 
             this.FormatXmlBaseSplit.Panel2.Controls.Add(this.FormatXmlTBP);
-            this.FormatXmlBaseSplit.Size = new System.Drawing.Size(153, 30);
+            this.FormatXmlBaseSplit.Size = new System.Drawing.Size(154, 30);
             this.FormatXmlBaseSplit.SplitterDistance = 28;
             this.FormatXmlBaseSplit.SplitterWidth = 2;
             this.FormatXmlBaseSplit.TabIndex = 5;
@@ -358,6 +381,16 @@ namespace IronWASP
             this.ConvertXmlToObjectBtn.Text = "Convert this XML to object";
             this.ConvertXmlToObjectBtn.UseVisualStyleBackColor = true;
             this.ConvertXmlToObjectBtn.Click += new System.EventHandler(this.ConvertXmlToObjectBtn_Click);
+            // 
+            // FormatXmlTBP
+            // 
+            this.FormatXmlTBP.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.FormatXmlTBP.Location = new System.Drawing.Point(0, 0);
+            this.FormatXmlTBP.Name = "FormatXmlTBP";
+            this.FormatXmlTBP.ReadOnly = false;
+            this.FormatXmlTBP.Size = new System.Drawing.Size(124, 30);
+            this.FormatXmlTBP.TabIndex = 4;
+            this.FormatXmlTBP.ValueChanged += new IronWASP.TextBoxPlus.ValueChangedEvent(this.FormatXmlTBP_ValueChanged);
             // 
             // ReflectionsTab
             // 
@@ -419,59 +452,6 @@ namespace IronWASP
             this.EditingTab.Text = "  ";
             this.EditingTab.UseVisualStyleBackColor = true;
             // 
-            // RenderLbl
-            // 
-            this.RenderLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.RenderLbl.AutoSize = true;
-            this.RenderLbl.Location = new System.Drawing.Point(631, 3);
-            this.RenderLbl.Name = "RenderLbl";
-            this.RenderLbl.Size = new System.Drawing.Size(42, 13);
-            this.RenderLbl.TabIndex = 8;
-            this.RenderLbl.TabStop = true;
-            this.RenderLbl.Text = "Render";
-            this.RenderLbl.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.RenderLbl_LinkClicked);
-            // 
-            // RoundTripLbl
-            // 
-            this.RoundTripLbl.AutoSize = true;
-            this.RoundTripLbl.ForeColor = System.Drawing.Color.Blue;
-            this.RoundTripLbl.Location = new System.Drawing.Point(3, 3);
-            this.RoundTripLbl.Name = "RoundTripLbl";
-            this.RoundTripLbl.Size = new System.Drawing.Size(0, 13);
-            this.RoundTripLbl.TabIndex = 9;
-            // 
-            // HeadersTBP
-            // 
-            this.HeadersTBP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.HeadersTBP.Location = new System.Drawing.Point(0, 0);
-            this.HeadersTBP.Margin = new System.Windows.Forms.Padding(0);
-            this.HeadersTBP.Name = "HeadersTBP";
-            this.HeadersTBP.ReadOnly = false;
-            this.HeadersTBP.Size = new System.Drawing.Size(674, 135);
-            this.HeadersTBP.TabIndex = 0;
-            this.HeadersTBP.ValueChanged += new IronWASP.TextBoxPlus.ValueChangedEvent(this.HeadersTBP_ValueChanged);
-            // 
-            // BodyTBP
-            // 
-            this.BodyTBP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.BodyTBP.Location = new System.Drawing.Point(0, 0);
-            this.BodyTBP.Margin = new System.Windows.Forms.Padding(0);
-            this.BodyTBP.Name = "BodyTBP";
-            this.BodyTBP.ReadOnly = false;
-            this.BodyTBP.Size = new System.Drawing.Size(674, 135);
-            this.BodyTBP.TabIndex = 0;
-            this.BodyTBP.ValueChanged += new IronWASP.TextBoxPlus.ValueChangedEvent(this.BodyTBP_ValueChanged);
-            // 
-            // FormatXmlTBP
-            // 
-            this.FormatXmlTBP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.FormatXmlTBP.Location = new System.Drawing.Point(0, 0);
-            this.FormatXmlTBP.Name = "FormatXmlTBP";
-            this.FormatXmlTBP.ReadOnly = false;
-            this.FormatXmlTBP.Size = new System.Drawing.Size(123, 30);
-            this.FormatXmlTBP.TabIndex = 4;
-            this.FormatXmlTBP.ValueChanged += new IronWASP.TextBoxPlus.ValueChangedEvent(this.FormatXmlTBP_ValueChanged);
-            // 
             // SaveEditsLbl
             // 
             this.SaveEditsLbl.AutoSize = true;
@@ -495,10 +475,45 @@ namespace IronWASP
             this.EditTBP.Size = new System.Drawing.Size(674, 119);
             this.EditTBP.TabIndex = 11;
             // 
+            // RenderLbl
+            // 
+            this.RenderLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.RenderLbl.AutoSize = true;
+            this.RenderLbl.Location = new System.Drawing.Point(607, 2);
+            this.RenderLbl.Name = "RenderLbl";
+            this.RenderLbl.Size = new System.Drawing.Size(42, 13);
+            this.RenderLbl.TabIndex = 8;
+            this.RenderLbl.TabStop = true;
+            this.RenderLbl.Text = "Render";
+            this.RenderLbl.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.RenderLbl_LinkClicked);
+            // 
+            // RoundTripLbl
+            // 
+            this.RoundTripLbl.AutoSize = true;
+            this.RoundTripLbl.ForeColor = System.Drawing.Color.Blue;
+            this.RoundTripLbl.Location = new System.Drawing.Point(3, 3);
+            this.RoundTripLbl.Name = "RoundTripLbl";
+            this.RoundTripLbl.Size = new System.Drawing.Size(0, 13);
+            this.RoundTripLbl.TabIndex = 9;
+            // 
+            // ScreenshotBtn
+            // 
+            this.ScreenshotBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ScreenshotBtn.BackgroundImage = global::IronWASP.Properties.Resources.camera;
+            this.ScreenshotBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.ScreenshotBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ScreenshotBtn.Location = new System.Drawing.Point(652, 1);
+            this.ScreenshotBtn.Name = "ScreenshotBtn";
+            this.ScreenshotBtn.Size = new System.Drawing.Size(29, 17);
+            this.ScreenshotBtn.TabIndex = 10;
+            this.ScreenshotBtn.UseVisualStyleBackColor = true;
+            this.ScreenshotBtn.Click += new System.EventHandler(this.ScreenshotBtn_Click);
+            // 
             // ResponseView
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
+            this.Controls.Add(this.ScreenshotBtn);
             this.Controls.Add(this.RoundTripLbl);
             this.Controls.Add(this.RenderLbl);
             this.Controls.Add(this.StatusAndErrorTB);
@@ -567,5 +582,6 @@ namespace IronWASP
         private System.Windows.Forms.TabPage EditingTab;
         private System.Windows.Forms.LinkLabel SaveEditsLbl;
         private TextBoxPlus EditTBP;
+        private System.Windows.Forms.Button ScreenshotBtn;
     }
 }

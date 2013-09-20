@@ -1269,7 +1269,10 @@ namespace IronWASP
             {
                 this.LogTrace();
             }
-            catch { }
+            catch(Exception Exp)
+            {
+                IronException.Report("Error Logging Scan Trace", Exp);
+            }
             if (E != null) throw E;
         }
         internal void ReloadRequestFromString(string RequestString)

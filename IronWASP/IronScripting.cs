@@ -260,15 +260,21 @@ namespace IronWASP
             InteractiveShellResult ISR = new InteractiveShellResult();
             try
             {
+                string ProcessedCode = Commands;
                 if (IronScripting.Engine.Setup.DisplayName.Contains("IronPython"))
                 {
-                    string[] Results = PluginEditor.CheckPythonIndentation(Commands);
+                    string[] Results = PluginEditor.CheckPythonIndentation(ProcessedCode);
                     if (Results[1].Length > 0)
                     {
-                        throw new Exception(Results[1]);
+                        ProcessedCode = PluginEditor.FixPythonIndentation(ProcessedCode);
+                        Results = PluginEditor.CheckPythonIndentation(ProcessedCode);
+                        if (Results[1].Length > 0)
+                        {
+                            throw new Exception(Results[1]);
+                        }
                     }
                 }
-                ScriptSource Source = IronScripting.Engine.CreateScriptSourceFromString(Commands, SourceCodeKind.AutoDetect);
+                ScriptSource Source = IronScripting.Engine.CreateScriptSourceFromString(ProcessedCode, SourceCodeKind.AutoDetect);
                 Source.Execute(IronScripting.Scope);
                 Reset();
                 return ISR;
@@ -374,13 +380,41 @@ namespace IronWASP
                     On = false;
                     if (QueuedCommands.Length > 0)
                     {
+                        try
+                        {
+                            IronDB.CommandsLogFile.WriteLine(QueuedCommands);
+                            IronDB.CommandsLogFile.Flush();
+                        }
+                        catch { }
                         InteractiveShellResult Result = IronScripting.ExecuteMultiLineShellInput(QueuedCommands);
                         IronUI.UpdateInteractiveShellResult(Result);
+                        try
+                        {
+                            if (Result.ResultString.Length > 0)
+                            {
+                                IronDB.CommandsLogFile.WriteLine(Result.ResultString);
+                            }
+                        }
+                        catch { }
                     }
                     else
                     {
+                        try
+                        {
+                            IronDB.CommandsLogFile.WriteLine(QueuedCommand);
+                            IronDB.CommandsLogFile.Flush();
+                        }
+                        catch { }
                         InteractiveShellResult Result = IronScripting.ExecuteInteractiveShellInput(QueuedCommand);
                         IronUI.UpdateInteractiveShellResult(Result);
+                        try
+                        {
+                            if (Result.ResultString.Length > 0)
+                            {
+                                IronDB.CommandsLogFile.WriteLine(Result.ResultString);
+                            }
+                        }
+                        catch { }
                     }
                 }
                 catch (ThreadAbortException)

@@ -884,6 +884,11 @@ namespace IronWASP
                 IronException.Report("Error reading ScanTrace Message from DB", Exp.Message, Exp.StackTrace);
             }
         }
+
+        private void ScanTraceBehaviourAnalysis_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            StopAnalysis(true);
+        }
     }
 
     internal class ScanTraceBehaviourAnalysisResultsUiInformation

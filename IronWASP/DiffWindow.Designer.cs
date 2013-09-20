@@ -163,13 +163,14 @@ namespace IronWASP
             // 
             // DiffSourceTB
             // 
-            this.DiffSourceTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.DiffSourceTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.DiffSourceTB.Location = new System.Drawing.Point(0, 25);
             this.DiffSourceTB.MaxLength = 2147483647;
             this.DiffSourceTB.Multiline = true;
             this.DiffSourceTB.Name = "DiffSourceTB";
+            this.DiffSourceTB.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.DiffSourceTB.Size = new System.Drawing.Size(676, 234);
             this.DiffSourceTB.TabIndex = 3;
             // 
@@ -208,14 +209,15 @@ namespace IronWASP
             // 
             // DiffDestinationTB
             // 
-            this.DiffDestinationTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.DiffDestinationTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.DiffDestinationTB.BackColor = System.Drawing.SystemColors.Window;
             this.DiffDestinationTB.Location = new System.Drawing.Point(0, 25);
             this.DiffDestinationTB.MaxLength = 2147483647;
             this.DiffDestinationTB.Multiline = true;
             this.DiffDestinationTB.Name = "DiffDestinationTB";
+            this.DiffDestinationTB.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.DiffDestinationTB.Size = new System.Drawing.Size(676, 220);
             this.DiffDestinationTB.TabIndex = 4;
             // 
@@ -254,8 +256,8 @@ namespace IronWASP
             // 
             // DiffStatusTB
             // 
-            this.DiffStatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.DiffStatusTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.DiffStatusTB.BackColor = System.Drawing.SystemColors.Control;
             this.DiffStatusTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.DiffStatusTB.Location = new System.Drawing.Point(92, 4);
@@ -331,9 +333,9 @@ namespace IronWASP
             // 
             // BaseTabs
             // 
-            this.BaseTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.BaseTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.BaseTabs.Controls.Add(this.InputTab);
             this.BaseTabs.Controls.Add(this.ResultsTab);
             this.BaseTabs.Location = new System.Drawing.Point(0, 30);

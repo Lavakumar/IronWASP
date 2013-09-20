@@ -47,21 +47,21 @@ namespace IronWASP
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScanTraceBehaviourAnalysis));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle61 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle62 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle63 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle64 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle65 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle66 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle67 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle68 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle69 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle70 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle71 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle72 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle73 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle74 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle75 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
             this.BaseTabs = new System.Windows.Forms.TabControl();
             this.SearchFilterTab = new System.Windows.Forms.TabPage();
             this.SearchFilterPanel = new System.Windows.Forms.Panel();
@@ -113,7 +113,6 @@ namespace IronWASP
             this.BaselineRoundtripClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.BaselineCodeClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.XmlClmn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.LoadTraceViewerBtn = new System.Windows.Forms.Button();
             this.BottomTabs = new System.Windows.Forms.TabControl();
             this.SummaryTab = new System.Windows.Forms.TabPage();
             this.SummaryRTB = new System.Windows.Forms.RichTextBox();
@@ -149,6 +148,7 @@ namespace IronWASP
             this.dataGridViewTextBoxColumn11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn17 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.LoadTraceViewerBtn = new System.Windows.Forms.Button();
             this.BaseTabs.SuspendLayout();
             this.SearchFilterTab.SuspendLayout();
             this.SearchFilterPanel.SuspendLayout();
@@ -610,14 +610,14 @@ namespace IronWASP
             this.TraceGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.TraceGrid.BackgroundColor = System.Drawing.Color.White;
             this.TraceGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle61.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle61.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle61.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle61.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle61.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle61.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle61.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.TraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle61;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.TraceGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.TraceGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.TraceGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.IDClmn,
@@ -759,17 +759,6 @@ namespace IronWASP
             this.XmlClmn.ReadOnly = true;
             this.XmlClmn.Visible = false;
             // 
-            // LoadTraceViewerBtn
-            // 
-            this.LoadTraceViewerBtn.Enabled = false;
-            this.LoadTraceViewerBtn.Location = new System.Drawing.Point(6, 6);
-            this.LoadTraceViewerBtn.Name = "LoadTraceViewerBtn";
-            this.LoadTraceViewerBtn.Size = new System.Drawing.Size(237, 24);
-            this.LoadTraceViewerBtn.TabIndex = 6;
-            this.LoadTraceViewerBtn.Text = "Load the Logs associated with this entry";
-            this.LoadTraceViewerBtn.UseVisualStyleBackColor = true;
-            this.LoadTraceViewerBtn.Click += new System.EventHandler(this.LoadTraceViewerBtn_Click);
-            // 
             // BottomTabs
             // 
             this.BottomTabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -819,7 +808,7 @@ namespace IronWASP
             this.CodeTab.Location = new System.Drawing.Point(4, 22);
             this.CodeTab.Margin = new System.Windows.Forms.Padding(0);
             this.CodeTab.Name = "CodeTab";
-            this.CodeTab.Size = new System.Drawing.Size(868, 193);
+            this.CodeTab.Size = new System.Drawing.Size(868, 212);
             this.CodeTab.TabIndex = 0;
             this.CodeTab.Text = "  Code Variation  ";
             this.CodeTab.UseVisualStyleBackColor = true;
@@ -833,14 +822,14 @@ namespace IronWASP
             this.CodeGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.CodeGrid.BackgroundColor = System.Drawing.Color.White;
             this.CodeGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle62.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle62.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle62.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle62.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle62.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle62.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle62.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.CodeGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle62;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.CodeGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.CodeGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.CodeGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column2,
@@ -857,7 +846,7 @@ namespace IronWASP
             this.CodeGrid.RowHeadersVisible = false;
             this.CodeGrid.RowHeadersWidth = 10;
             this.CodeGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.CodeGrid.Size = new System.Drawing.Size(868, 193);
+            this.CodeGrid.Size = new System.Drawing.Size(868, 212);
             this.CodeGrid.TabIndex = 4;
             // 
             // Column2
@@ -871,8 +860,8 @@ namespace IronWASP
             // Column1
             // 
             this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle63.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Column1.DefaultCellStyle = dataGridViewCellStyle63;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Column1.DefaultCellStyle = dataGridViewCellStyle3;
             this.Column1.FillWeight = 101.5228F;
             this.Column1.HeaderText = "Response Code";
             this.Column1.Name = "Column1";
@@ -893,7 +882,7 @@ namespace IronWASP
             this.KeywordsTab.Location = new System.Drawing.Point(4, 22);
             this.KeywordsTab.Margin = new System.Windows.Forms.Padding(0);
             this.KeywordsTab.Name = "KeywordsTab";
-            this.KeywordsTab.Size = new System.Drawing.Size(868, 193);
+            this.KeywordsTab.Size = new System.Drawing.Size(868, 212);
             this.KeywordsTab.TabIndex = 1;
             this.KeywordsTab.Text = "  Keywords Inserted  ";
             // 
@@ -906,14 +895,14 @@ namespace IronWASP
             this.KeywordsGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.KeywordsGrid.BackgroundColor = System.Drawing.Color.White;
             this.KeywordsGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle64.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle64.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle64.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle64.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle64.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle64.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle64.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.KeywordsGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle64;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.KeywordsGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.KeywordsGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.KeywordsGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn2,
@@ -930,7 +919,7 @@ namespace IronWASP
             this.KeywordsGrid.RowHeadersVisible = false;
             this.KeywordsGrid.RowHeadersWidth = 10;
             this.KeywordsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.KeywordsGrid.Size = new System.Drawing.Size(868, 193);
+            this.KeywordsGrid.Size = new System.Drawing.Size(868, 212);
             this.KeywordsGrid.TabIndex = 5;
             // 
             // dataGridViewTextBoxColumn2
@@ -944,8 +933,8 @@ namespace IronWASP
             // dataGridViewTextBoxColumn4
             // 
             this.dataGridViewTextBoxColumn4.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle65.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn4.DefaultCellStyle = dataGridViewCellStyle65;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn4.DefaultCellStyle = dataGridViewCellStyle5;
             this.dataGridViewTextBoxColumn4.FillWeight = 101.5228F;
             this.dataGridViewTextBoxColumn4.HeaderText = "Keywords Inserted";
             this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
@@ -964,7 +953,7 @@ namespace IronWASP
             this.BodyTab.Controls.Add(this.BodyGrid);
             this.BodyTab.Location = new System.Drawing.Point(4, 22);
             this.BodyTab.Name = "BodyTab";
-            this.BodyTab.Size = new System.Drawing.Size(868, 193);
+            this.BodyTab.Size = new System.Drawing.Size(868, 212);
             this.BodyTab.TabIndex = 2;
             this.BodyTab.Text = "  Body Variation  ";
             this.BodyTab.UseVisualStyleBackColor = true;
@@ -978,14 +967,14 @@ namespace IronWASP
             this.BodyGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.BodyGrid.BackgroundColor = System.Drawing.Color.White;
             this.BodyGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle66.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle66.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle66.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle66.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle66.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle66.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle66.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.BodyGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle66;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.BodyGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle6;
             this.BodyGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.BodyGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn5,
@@ -1002,7 +991,7 @@ namespace IronWASP
             this.BodyGrid.RowHeadersVisible = false;
             this.BodyGrid.RowHeadersWidth = 10;
             this.BodyGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.BodyGrid.Size = new System.Drawing.Size(868, 193);
+            this.BodyGrid.Size = new System.Drawing.Size(868, 212);
             this.BodyGrid.TabIndex = 5;
             // 
             // dataGridViewTextBoxColumn5
@@ -1016,8 +1005,8 @@ namespace IronWASP
             // dataGridViewTextBoxColumn6
             // 
             this.dataGridViewTextBoxColumn6.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle67.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn6.DefaultCellStyle = dataGridViewCellStyle67;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn6.DefaultCellStyle = dataGridViewCellStyle7;
             this.dataGridViewTextBoxColumn6.FillWeight = 101.5228F;
             this.dataGridViewTextBoxColumn6.HeaderText = "Response Body Variation (No. of New Characters Inserted due to Payload)";
             this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
@@ -1036,7 +1025,7 @@ namespace IronWASP
             this.SetCookieTab.Controls.Add(this.SetCookieGrid);
             this.SetCookieTab.Location = new System.Drawing.Point(4, 22);
             this.SetCookieTab.Name = "SetCookieTab";
-            this.SetCookieTab.Size = new System.Drawing.Size(868, 193);
+            this.SetCookieTab.Size = new System.Drawing.Size(868, 212);
             this.SetCookieTab.TabIndex = 3;
             this.SetCookieTab.Text = "  Set-Cookie Variations";
             this.SetCookieTab.UseVisualStyleBackColor = true;
@@ -1050,14 +1039,14 @@ namespace IronWASP
             this.SetCookieGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.SetCookieGrid.BackgroundColor = System.Drawing.Color.White;
             this.SetCookieGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle68.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle68.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle68.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle68.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle68.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle68.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle68.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.SetCookieGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle68;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle8.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.SetCookieGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle8;
             this.SetCookieGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.SetCookieGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn7,
@@ -1075,7 +1064,7 @@ namespace IronWASP
             this.SetCookieGrid.RowHeadersVisible = false;
             this.SetCookieGrid.RowHeadersWidth = 10;
             this.SetCookieGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.SetCookieGrid.Size = new System.Drawing.Size(868, 193);
+            this.SetCookieGrid.Size = new System.Drawing.Size(868, 212);
             this.SetCookieGrid.TabIndex = 5;
             // 
             // dataGridViewTextBoxColumn7
@@ -1089,8 +1078,8 @@ namespace IronWASP
             // dataGridViewTextBoxColumn8
             // 
             this.dataGridViewTextBoxColumn8.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle69.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn8.DefaultCellStyle = dataGridViewCellStyle69;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn8.DefaultCellStyle = dataGridViewCellStyle9;
             this.dataGridViewTextBoxColumn8.FillWeight = 101.5228F;
             this.dataGridViewTextBoxColumn8.HeaderText = "Cookie Name";
             this.dataGridViewTextBoxColumn8.Name = "dataGridViewTextBoxColumn8";
@@ -1100,8 +1089,8 @@ namespace IronWASP
             // Column3
             // 
             this.Column3.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle70.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Column3.DefaultCellStyle = dataGridViewCellStyle70;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Column3.DefaultCellStyle = dataGridViewCellStyle10;
             this.Column3.FillWeight = 1F;
             this.Column3.HeaderText = "Variation";
             this.Column3.Name = "Column3";
@@ -1121,7 +1110,7 @@ namespace IronWASP
             this.HeadersTab.Controls.Add(this.HeadersGrid);
             this.HeadersTab.Location = new System.Drawing.Point(4, 22);
             this.HeadersTab.Name = "HeadersTab";
-            this.HeadersTab.Size = new System.Drawing.Size(868, 193);
+            this.HeadersTab.Size = new System.Drawing.Size(868, 212);
             this.HeadersTab.TabIndex = 4;
             this.HeadersTab.Text = "  Headers Variation  ";
             this.HeadersTab.UseVisualStyleBackColor = true;
@@ -1135,14 +1124,14 @@ namespace IronWASP
             this.HeadersGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.HeadersGrid.BackgroundColor = System.Drawing.Color.White;
             this.HeadersGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle71.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle71.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle71.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle71.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle71.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle71.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle71.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.HeadersGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle71;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle11.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle11.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.HeadersGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle11;
             this.HeadersGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.HeadersGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn9,
@@ -1160,7 +1149,7 @@ namespace IronWASP
             this.HeadersGrid.RowHeadersVisible = false;
             this.HeadersGrid.RowHeadersWidth = 10;
             this.HeadersGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.HeadersGrid.Size = new System.Drawing.Size(868, 193);
+            this.HeadersGrid.Size = new System.Drawing.Size(868, 212);
             this.HeadersGrid.TabIndex = 5;
             // 
             // dataGridViewTextBoxColumn9
@@ -1174,8 +1163,8 @@ namespace IronWASP
             // dataGridViewTextBoxColumn10
             // 
             this.dataGridViewTextBoxColumn10.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle72.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn10.DefaultCellStyle = dataGridViewCellStyle72;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn10.DefaultCellStyle = dataGridViewCellStyle12;
             this.dataGridViewTextBoxColumn10.FillWeight = 101.5228F;
             this.dataGridViewTextBoxColumn10.HeaderText = "Response Header Name";
             this.dataGridViewTextBoxColumn10.Name = "dataGridViewTextBoxColumn10";
@@ -1185,8 +1174,8 @@ namespace IronWASP
             // dataGridViewTextBoxColumn16
             // 
             this.dataGridViewTextBoxColumn16.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle73.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn16.DefaultCellStyle = dataGridViewCellStyle73;
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn16.DefaultCellStyle = dataGridViewCellStyle13;
             this.dataGridViewTextBoxColumn16.FillWeight = 1F;
             this.dataGridViewTextBoxColumn16.HeaderText = "Variation";
             this.dataGridViewTextBoxColumn16.Name = "dataGridViewTextBoxColumn16";
@@ -1206,7 +1195,7 @@ namespace IronWASP
             this.TimeTab.Controls.Add(this.RoundtripGrid);
             this.TimeTab.Location = new System.Drawing.Point(4, 22);
             this.TimeTab.Name = "TimeTab";
-            this.TimeTab.Size = new System.Drawing.Size(868, 193);
+            this.TimeTab.Size = new System.Drawing.Size(868, 212);
             this.TimeTab.TabIndex = 5;
             this.TimeTab.Text = "  Time Variation  ";
             this.TimeTab.UseVisualStyleBackColor = true;
@@ -1220,14 +1209,14 @@ namespace IronWASP
             this.RoundtripGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.RoundtripGrid.BackgroundColor = System.Drawing.Color.White;
             this.RoundtripGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle74.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle74.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle74.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle74.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle74.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle74.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle74.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.RoundtripGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle74;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle14.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle14.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.RoundtripGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle14;
             this.RoundtripGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.RoundtripGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn11,
@@ -1244,7 +1233,7 @@ namespace IronWASP
             this.RoundtripGrid.RowHeadersVisible = false;
             this.RoundtripGrid.RowHeadersWidth = 10;
             this.RoundtripGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.RoundtripGrid.Size = new System.Drawing.Size(868, 193);
+            this.RoundtripGrid.Size = new System.Drawing.Size(868, 212);
             this.RoundtripGrid.TabIndex = 5;
             // 
             // dataGridViewTextBoxColumn11
@@ -1258,8 +1247,8 @@ namespace IronWASP
             // dataGridViewTextBoxColumn12
             // 
             this.dataGridViewTextBoxColumn12.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle75.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dataGridViewTextBoxColumn12.DefaultCellStyle = dataGridViewCellStyle75;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dataGridViewTextBoxColumn12.DefaultCellStyle = dataGridViewCellStyle15;
             this.dataGridViewTextBoxColumn12.FillWeight = 101.5228F;
             this.dataGridViewTextBoxColumn12.HeaderText = "Response Roundtrip Time Variation";
             this.dataGridViewTextBoxColumn12.Name = "dataGridViewTextBoxColumn12";
@@ -1274,6 +1263,17 @@ namespace IronWASP
             this.dataGridViewTextBoxColumn17.Name = "dataGridViewTextBoxColumn17";
             this.dataGridViewTextBoxColumn17.ReadOnly = true;
             // 
+            // LoadTraceViewerBtn
+            // 
+            this.LoadTraceViewerBtn.Enabled = false;
+            this.LoadTraceViewerBtn.Location = new System.Drawing.Point(6, 6);
+            this.LoadTraceViewerBtn.Name = "LoadTraceViewerBtn";
+            this.LoadTraceViewerBtn.Size = new System.Drawing.Size(237, 24);
+            this.LoadTraceViewerBtn.TabIndex = 6;
+            this.LoadTraceViewerBtn.Text = "Load the Logs associated with this entry";
+            this.LoadTraceViewerBtn.UseVisualStyleBackColor = true;
+            this.LoadTraceViewerBtn.Click += new System.EventHandler(this.LoadTraceViewerBtn_Click);
+            // 
             // ScanTraceBehaviourAnalysis
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1283,6 +1283,7 @@ namespace IronWASP
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ScanTraceBehaviourAnalysis";
             this.Text = "Payload Effect Analysis using Scan Trace";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScanTraceBehaviourAnalysis_FormClosing);
             this.Load += new System.EventHandler(this.ScanTraceBehaviourAnalysis_Load);
             this.BaseTabs.ResumeLayout(false);
             this.SearchFilterTab.ResumeLayout(false);

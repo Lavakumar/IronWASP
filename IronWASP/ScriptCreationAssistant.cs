@@ -239,21 +239,35 @@ namespace IronWASP
                 LogErrorTB.Visible = false;
         }
 
+        void ShowCodeError(string Message)
+        {
+            ErrorLbl.Text = Message;
+        }
+
         void ShowCode(string PyCode, string RbCode)
         {
-            FullPyCode = PyCode;
-            FullRbCode = RbCode;
+            ShowCodeError("");
+            try
+            {
+                FullPyCode = PyCode;
+                FullRbCode = RbCode;
 
-            if (ShowHideCommentsLL.Text.Equals("Show Comments"))
-            {
-                string[] StrippedCode = StripComments(new string[] { PyCode, RbCode });
-                PythonCTB.Text = StrippedCode[0];
-                RubyCTB.Text = StrippedCode[1];
+                if (ShowHideCommentsLL.Text.Equals("Show Comments"))
+                {
+                    string[] StrippedCode = StripComments(new string[] { PyCode, RbCode });
+                    PythonCTB.Text = StrippedCode[0];
+                    RubyCTB.Text = StrippedCode[1];
+                }
+                else
+                {
+                    PythonCTB.Text = PyCode;
+                    RubyCTB.Text = RbCode;
+                }
             }
-            else
+            catch(Exception Exp)
             {
-                PythonCTB.Text = PyCode;
-                RubyCTB.Text = RbCode;
+                ShowCodeError("There was some error displaying code, try clicking on the 'Generate Code' button again.");
+                IronException.Report("Error displaying Code in Script Creation Assistant", Exp);
             }
         }
 
@@ -473,18 +487,26 @@ You want to create a custom fuzzer or scanner to check for an issue:
 
         private void ShowHideCommentsLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            if (ShowHideCommentsLL.Text.Equals("Show Comments"))
+            try
             {
-                PythonCTB.Text = FullPyCode;
-                RubyCTB.Text = FullRbCode;
-                ShowHideCommentsLL.Text = "Hide Comments";
+                if (ShowHideCommentsLL.Text.Equals("Show Comments"))
+                {
+                    PythonCTB.Text = FullPyCode;
+                    RubyCTB.Text = FullRbCode;
+                    ShowHideCommentsLL.Text = "Hide Comments";
+                }
+                else
+                {
+                    string[] StrippedCode = StripComments(new string[] { FullPyCode, FullRbCode });
+                    PythonCTB.Text = StrippedCode[0];
+                    RubyCTB.Text = StrippedCode[1];
+                    ShowHideCommentsLL.Text = "Show Comments";
+                }
             }
-            else
+            catch(Exception Exp)
             {
-                string[] StrippedCode = StripComments(new string[] { FullPyCode, FullRbCode });
-                PythonCTB.Text = StrippedCode[0];
-                RubyCTB.Text = StrippedCode[1];
-                ShowHideCommentsLL.Text = "Show Comments";
+                ShowCodeError("There was an error when hiding comments, please try again.");
+                IronException.Report("Error Hiding Comments in Script Creation Assistant", Exp);
             }
         }
 
@@ -2418,43 +2440,43 @@ Gets all elements that have the 'onclick' event handlers in the HTML
             switch (LogSource)
             {
                 case ("Proxy"):
-                    Py.AppendLine("for i in range(1, Config.LastProxyLogId):");
-                    Py.Append("  "); Py.AppendLine("sess = Session.FromProxyLog(i)");
+                    Py.AppendLine("for i in range(Config.LastProxyLogId):");
+                    Py.Append("  "); Py.AppendLine("sess = Session.FromProxyLog(i+1)");
 
                     Rb.AppendLine("for i in (1..Config.last_proxy_log_id)");
                     Rb.Append("  "); Rb.AppendLine("sess = Session.from_proxy_log(i)");
                     break;
                 case ("Probe"):
-                    Py.AppendLine("for i in range(1, Config.LastProbeLogId):");
-                    Py.Append("  "); Py.AppendLine("sess = Session.FromProbeLog(i)");
+                    Py.AppendLine("for i in range(Config.LastProbeLogId):");
+                    Py.Append("  "); Py.AppendLine("sess = Session.FromProbeLog(i+1)");
 
                     Rb.AppendLine("for i in (1..Config.last_probe_log_id)");
                     Rb.Append("  "); Rb.AppendLine("sess = Session.from_probe_log(i)");
                     break;
                 case ("Shell"):
-                    Py.AppendLine("for i in range(1, Config.LastShellLogId):");
-                    Py.Append("  "); Py.AppendLine("sess = Session.FromShellLog(i)");
+                    Py.AppendLine("for i in range(Config.LastShellLogId):");
+                    Py.Append("  "); Py.AppendLine("sess = Session.FromShellLog(i+1)");
 
                     Rb.AppendLine("for i in (1..Config.last_shell_log_id)");
                     Rb.Append("  "); Rb.AppendLine("sess = Session.from_shell_log(i)");
                     break;
                 case ("Scan"):
-                    Py.AppendLine("for i in range(1, Config.LastScanLogId):");
-                    Py.Append("  "); Py.AppendLine("sess = Session.FromScanLog(i)");
+                    Py.AppendLine("for i in range(Config.LastScanLogId):");
+                    Py.Append("  "); Py.AppendLine("sess = Session.FromScanLog(i+1)");
 
                     Rb.AppendLine("for i in (1..Config.last_scan_log_id)");
                     Rb.Append("  "); Rb.AppendLine("sess = Session.from_scan_log(i)");
                     break;
                 case ("Test"):
-                    Py.AppendLine("for i in range(1, Config.LastTestLogId):");
-                    Py.Append("  "); Py.AppendLine("sess = Session.FromTestLog(i)");
+                    Py.AppendLine("for i in range(Config.LastTestLogId):");
+                    Py.Append("  "); Py.AppendLine("sess = Session.FromTestLog(i+1)");
 
                     Rb.AppendLine("for i in (1..Config.last_test_log_id)");
                     Rb.Append("  "); Rb.AppendLine("sess = Session.from_test_log(i)");
                     break;
                 default:
-                    Py.AppendLine(string.Format(@"for i in range(1, Config.GetLastLogId(""{0}"")):", LogSource));
-                    Py.Append("  "); Py.AppendLine(string.Format(@"sess = Session.FromLog(i, ""{0}"")", LogSource));
+                    Py.AppendLine(string.Format(@"for i in range(Config.GetLastLogId(""{0}"")):", LogSource));
+                    Py.Append("  "); Py.AppendLine(string.Format(@"sess = Session.FromLog(i+1, ""{0}"")", LogSource));
 
                     Rb.AppendLine(string.Format(@"for i in (1..Config.get_last_log_id(""{0}""))", LogSource));
                     Rb.Append("  "); Rb.AppendLine(string.Format(@"sess = Session.from_log(i, ""{0}"")", LogSource));
@@ -2874,14 +2896,18 @@ Gets all elements that have the 'onclick' event handlers in the HTML
                     break;
                 case ("exec"):
                     Py.AppendLine("#Run an external executable named test.exe located inside c:\\ drive");
-                    Py.AppendLine(@"Tools.Run(""c:\  ext.exe"")");
+                    Py.AppendLine(@"Tools.Run(""c:\\test.exe"")");
                     Py.AppendLine("#Run an external executable named test.exe located inside c:\\ drive and pass it some arguments");
-                    Py.AppendLine(@"Tools.RunWith(""c:\  ext.exe"", ""-h 127.0.0.1"")");
+                    Py.AppendLine(@"Tools.RunWith(""c:\\test.exe"", ""-h 127.0.0.1"")");
+                    Py.AppendLine("#Similar to Tools.RunWith function but it executes test.exe in a command prompt and keeps the prompt open after test.exe terminates.");
+                    Py.AppendLine(@"Tools.RunInShellWith(""c:\\test.exe"", ""-h 127.0.0.1"")#If you don't want to pass any arguments to the executable then simply use an empty string");
 
                     Rb.AppendLine("#Run an external executable named test.exe located inside c:\\ drive");
-                    Rb.AppendLine(@"Tools.run(""c:\  ext.exe"")");
+                    Rb.AppendLine(@"Tools.run(""c:\\test.exe"")");
                     Rb.AppendLine("#Run an external executable named test.exe located inside c:\\ drive and pass it some arguments");
-                    Rb.AppendLine(@"Tools.run_with(""c:\  ext.exe"", ""-h 127.0.0.1"")");
+                    Rb.AppendLine(@"Tools.run_with(""c:\\test.exe"", ""-h 127.0.0.1"")");                   
+                    Rb.AppendLine("#Similar to Tools.run_with function but it executes test.exe in a command prompt and keeps the prompt open after test.exe terminates.");
+                    Rb.AppendLine(@"Tools.run_in_shell_with(""c:\\test.exe"", ""-h 127.0.0.1"")#If you don't want to pass any arguments to the executable then simply use an empty string");
                     break;
                 case ("debug"):
                     Py.AppendLine("#Debug plugins and scripts by printing trace messages. This similar to using the print command for debugging");
@@ -4622,6 +4648,7 @@ Gets all elements that have the 'onclick' event handlers in the HTML
 
         private void CopyScriptLL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            ShowCodeError("");
             try
             {
                 if(CodeTabs.SelectedIndex == 0)
@@ -4641,6 +4668,7 @@ Gets all elements that have the 'onclick' event handlers in the HTML
             }
             catch(Exception Exp)
             {
+                ShowCodeError("There was some error copying code, try again.");
                 IronException.Report("Unable to copy code from Script Creation Assistant", Exp);
             }
         }

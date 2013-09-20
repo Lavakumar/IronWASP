@@ -49,7 +49,9 @@ namespace IronWASP
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EncodeDecodeWindow));
             this.EncDecBaseSplit = new System.Windows.Forms.SplitContainer();
             this.EncDecRightSplit = new System.Windows.Forms.SplitContainer();
+            this.InputTB = new IronWASP.TextBoxPlus();
             this.label1 = new System.Windows.Forms.Label();
+            this.OutputTB = new IronWASP.TextBoxPlus();
             this.label2 = new System.Windows.Forms.Label();
             this.EncodeOutToEncodeInBtn = new System.Windows.Forms.Button();
             this.SHA512Btn = new System.Windows.Forms.Button();
@@ -68,8 +70,6 @@ namespace IronWASP
             this.UrlEncodeBtn = new System.Windows.Forms.Button();
             this.StatusTB = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.OutputTB = new System.Windows.Forms.TextBox();
-            this.InputTB = new System.Windows.Forms.TextBox();
             this.EncDecBaseSplit.Panel1.SuspendLayout();
             this.EncDecBaseSplit.Panel2.SuspendLayout();
             this.EncDecBaseSplit.SuspendLayout();
@@ -81,6 +81,7 @@ namespace IronWASP
             // EncDecBaseSplit
             // 
             this.EncDecBaseSplit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.EncDecBaseSplit.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.EncDecBaseSplit.IsSplitterFixed = true;
             this.EncDecBaseSplit.Location = new System.Drawing.Point(0, 0);
             this.EncDecBaseSplit.Margin = new System.Windows.Forms.Padding(0);
@@ -109,8 +110,8 @@ namespace IronWASP
             this.EncDecBaseSplit.Panel2.Controls.Add(this.UrlEncodeBtn);
             this.EncDecBaseSplit.Panel2.Controls.Add(this.StatusTB);
             this.EncDecBaseSplit.Panel2.Controls.Add(this.label3);
-            this.EncDecBaseSplit.Size = new System.Drawing.Size(684, 562);
-            this.EncDecBaseSplit.SplitterDistance = 503;
+            this.EncDecBaseSplit.Size = new System.Drawing.Size(784, 561);
+            this.EncDecBaseSplit.SplitterDistance = 603;
             this.EncDecBaseSplit.SplitterWidth = 2;
             this.EncDecBaseSplit.TabIndex = 0;
             // 
@@ -124,17 +125,28 @@ namespace IronWASP
             // 
             // EncDecRightSplit.Panel1
             // 
-            this.EncDecRightSplit.Panel1.Controls.Add(this.label1);
             this.EncDecRightSplit.Panel1.Controls.Add(this.InputTB);
+            this.EncDecRightSplit.Panel1.Controls.Add(this.label1);
             // 
             // EncDecRightSplit.Panel2
             // 
-            this.EncDecRightSplit.Panel2.Controls.Add(this.label2);
             this.EncDecRightSplit.Panel2.Controls.Add(this.OutputTB);
-            this.EncDecRightSplit.Size = new System.Drawing.Size(503, 562);
-            this.EncDecRightSplit.SplitterDistance = 270;
+            this.EncDecRightSplit.Panel2.Controls.Add(this.label2);
+            this.EncDecRightSplit.Size = new System.Drawing.Size(603, 561);
+            this.EncDecRightSplit.SplitterDistance = 269;
             this.EncDecRightSplit.SplitterWidth = 2;
             this.EncDecRightSplit.TabIndex = 0;
+            // 
+            // InputTB
+            // 
+            this.InputTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.InputTB.Location = new System.Drawing.Point(0, 20);
+            this.InputTB.Name = "InputTB";
+            this.InputTB.ReadOnly = false;
+            this.InputTB.Size = new System.Drawing.Size(603, 249);
+            this.InputTB.TabIndex = 2;
             // 
             // label1
             // 
@@ -144,6 +156,17 @@ namespace IronWASP
             this.label1.Size = new System.Drawing.Size(34, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "Input:";
+            // 
+            // OutputTB
+            // 
+            this.OutputTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.OutputTB.Location = new System.Drawing.Point(0, 20);
+            this.OutputTB.Name = "OutputTB";
+            this.OutputTB.ReadOnly = false;
+            this.OutputTB.Size = new System.Drawing.Size(603, 270);
+            this.OutputTB.TabIndex = 3;
             // 
             // label2
             // 
@@ -156,9 +179,12 @@ namespace IronWASP
             // 
             // EncodeOutToEncodeInBtn
             // 
+            this.EncodeOutToEncodeInBtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.EncodeOutToEncodeInBtn.BackColor = System.Drawing.Color.Transparent;
             this.EncodeOutToEncodeInBtn.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("EncodeOutToEncodeInBtn.BackgroundImage")));
             this.EncodeOutToEncodeInBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.EncodeOutToEncodeInBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.EncodeOutToEncodeInBtn.ForeColor = System.Drawing.Color.Transparent;
             this.EncodeOutToEncodeInBtn.Location = new System.Drawing.Point(4, 226);
             this.EncodeOutToEncodeInBtn.Name = "EncodeOutToEncodeInBtn";
@@ -326,41 +352,13 @@ namespace IronWASP
             this.label3.TabIndex = 2;
             this.label3.Text = "Tools API";
             // 
-            // OutputTB
-            // 
-            this.OutputTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.OutputTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.OutputTB.Location = new System.Drawing.Point(0, 20);
-            this.OutputTB.Multiline = true;
-            this.OutputTB.Name = "OutputTB";
-            this.OutputTB.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.OutputTB.Size = new System.Drawing.Size(503, 270);
-            this.OutputTB.TabIndex = 1;
-            // 
-            // InputTB
-            // 
-            this.InputTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.InputTB.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.InputTB.Location = new System.Drawing.Point(0, 20);
-            this.InputTB.Multiline = true;
-            this.InputTB.Name = "InputTB";
-            this.InputTB.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.InputTB.Size = new System.Drawing.Size(503, 250);
-            this.InputTB.TabIndex = 0;
-            // 
             // EncodeDecodeWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(684, 562);
+            this.ClientSize = new System.Drawing.Size(784, 561);
             this.Controls.Add(this.EncDecBaseSplit);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(700, 600);
             this.MinimumSize = new System.Drawing.Size(700, 600);
             this.Name = "EncodeDecodeWindow";
             this.Text = "EncodeDecodeWindow";
@@ -400,7 +398,7 @@ namespace IronWASP
         internal System.Windows.Forms.Button MD5Btn;
         internal System.Windows.Forms.Button SHA512Btn;
         private System.Windows.Forms.Button EncodeOutToEncodeInBtn;
-        internal System.Windows.Forms.TextBox OutputTB;
-        internal System.Windows.Forms.TextBox InputTB;
+        private TextBoxPlus InputTB;
+        private TextBoxPlus OutputTB;
     }
 }

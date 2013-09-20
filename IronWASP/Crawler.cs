@@ -89,7 +89,7 @@ namespace IronWASP
             {
                 if (HTTP)
                 {
-                    Request HttpRequest = new Request("http://" + PrimaryHost + StartingUrl);
+                    Request HttpRequest = new Request(string.Format("http://{0}{1}", PrimaryHost, StartingUrl));
                     lock (ToCrawlQueue)
                     {
                         ToCrawlQueue.Enqueue(new object[] { HttpRequest, 0, true });
@@ -97,7 +97,7 @@ namespace IronWASP
                 }
                 if (HTTPS)
                 {
-                    Request HttpsRequest = new Request("https://" + PrimaryHost + StartingUrl);
+                    Request HttpsRequest = new Request(string.Format("https://{0}{1}", PrimaryHost, StartingUrl));
                     lock (ToCrawlQueue)
                     {
                         ToCrawlQueue.Enqueue(new object[] { HttpsRequest, 0, true });
@@ -229,14 +229,14 @@ namespace IronWASP
                 foreach (string File in FileNamesToCheck)
                 {
                     Request FileCheck = DirCheck.GetClone();
-                    FileCheck.Url = FileCheck.Url + File;
+                    FileCheck.Url = string.Format("{0}{1}", FileCheck.Url, File);
                     AddToCrawlQueue(FileCheck, Depth + 1, false);
                 }
 
                 foreach (string Dir in DirNamesToCheck)
                 {
                     Request DirectoryCheck = DirCheck.GetClone();
-                    DirectoryCheck.Url = DirectoryCheck.Url + Dir + "/";
+                    DirectoryCheck.Url = string.Format("{0}{1}/", DirectoryCheck.Url, Dir);
                     AddToCrawlQueue(DirectoryCheck, Depth + 1, false);
                 }
             }
@@ -245,7 +245,7 @@ namespace IronWASP
             {
                 lock (CrawledRequests)
                 {
-                    CrawledRequests.Enqueue(Req);
+                    CrawledRequests.Enqueue(Req.GetClone());
                 }
                 IronUpdater.AddToSiteMap(Req);
             }
@@ -326,7 +326,7 @@ namespace IronWASP
                 }
                 else
                 {
-                    if (!Req.Url.StartsWith(BaseUrl + "?")) return false;
+                    if (!Req.Url.StartsWith(string.Format("{0}?", BaseUrl))) return false;
                 }
             }
             if (UrlsToAvoid.Contains(Req.Url) || UrlsToAvoid.Contains(Req.UrlPath)) return false;
@@ -345,11 +345,11 @@ namespace IronWASP
         bool IsHostAllowed(string Host)
         {
             if(Host.Equals(PrimaryHost)) return true;
-            if(IncludeSubDomains && Host.EndsWith("." + PrimaryHost)) return true;
+            if(IncludeSubDomains && Host.EndsWith(string.Format(".{0}", PrimaryHost))) return true;
             foreach(string AH in HostsToInclude)
             {
                 if(Host.Equals(AH)) return true;
-                if(IncludeSubDomains && Host.EndsWith("." + AH)) return true;
+                if(IncludeSubDomains && Host.EndsWith(string.Format(".{0}", AH))) return true;
             }
             return false;
         }
@@ -359,9 +359,9 @@ namespace IronWASP
             Response NotFoundResponse = null;
             lock (NotFoundSignatures)
             {
-                if (NotFoundSignatures.ContainsKey(Req.SSL.ToString() + Req.Host + Req.UrlDir + Req.File))
+                if (NotFoundSignatures.ContainsKey(string.Format("{0}{1}{2}{3}", Req.SSL, Req.Host, Req.UrlDir, Req.File)))
                 {
-                    NotFoundResponse = NotFoundSignatures[Req.SSL.ToString() + Req.Host + Req.UrlDir + Req.File];
+                    NotFoundResponse = NotFoundSignatures[string.Format("{0}{1}{2}{3}", Req.SSL, Req.Host, Req.UrlDir, Req.File)];
                 }
             }
             if(NotFoundResponse == null)
@@ -370,9 +370,9 @@ namespace IronWASP
                 NotFoundGetter.Method = "GET";
                 NotFoundGetter.Body.RemoveAll();
                 if (Req.File.Length > 0)
-                    NotFoundGetter.Url = NotFoundGetter.UrlDir + "should_not_xist_" + Tools.GetRandomString(10, 15) + "." + Req.File;
+                    NotFoundGetter.Url = string.Format("{0}should_not_xist_{1}.{2}", NotFoundGetter.UrlDir, Tools.GetRandomString(10, 15), Req.File);
                 else
-                    NotFoundGetter.Url = NotFoundGetter.UrlDir + "should_not_xist_" + Tools.GetRandomString(10, 15);
+                    NotFoundGetter.Url = string.Format("{0}should_not_xist_{1}", NotFoundGetter.UrlDir, Tools.GetRandomString(10, 15));
                 NotFoundResponse = NotFoundGetter.Send();
                 if (Stopped) return true;
                 NotFoundResponse.BodyString = "";
@@ -387,8 +387,8 @@ namespace IronWASP
                 NotFoundResponse.Flags.Add("Url", NotFoundGetter.Url);
                 lock (NotFoundSignatures)
                 {
-                    if (!NotFoundSignatures.ContainsKey(Req.SSL.ToString() + Req.Host + Req.UrlDir + Req.File))
-                        NotFoundSignatures.Add(Req.SSL.ToString() + Req.Host + Req.UrlDir + Req.File, NotFoundResponse);
+                    if (!NotFoundSignatures.ContainsKey(string.Format("{0}{1}{2}{3}", Req.SSL, Req.Host, Req.UrlDir, Req.File)))
+                        NotFoundSignatures.Add(string.Format("{0}{1}{2}{3}", Req.SSL, Req.Host, Req.UrlDir, Req.File), NotFoundResponse);
                 }
             }
             if(Res.Code == 200 && NotFoundResponse.Code != 200) return false;
@@ -667,9 +667,9 @@ namespace IronWASP
             else if (RawLink.StartsWith("//"))
             {
                 if (Req.SSL)
-                    RawLink = "https:" + RawLink;
+                    RawLink = string.Format("https:{0}", RawLink);
                 else
-                    RawLink = "http:" + RawLink;
+                    RawLink = string.Format("http:{0}", RawLink);
             }
             else if (RawLink.StartsWith("/"))
             {
@@ -720,7 +720,7 @@ namespace IronWASP
                     NormaliserRequest.Url = "/";
                     NormaliserRequest.UrlPathParts = UrlPathParts;
                     TempReq.Url = NormaliserRequest.Url;
-                    TempReq.Url = TempReq.Url.TrimEnd(new char[] { '/' }) + TreatedRawUrl;
+                    TempReq.Url = string.Format("{0}{1}", TempReq.Url.TrimEnd(new char[] { '/' }), TreatedRawUrl);
                     return TempReq.FullUrl;
                 }
                 else if (RawLink.Length > 0)
@@ -733,11 +733,11 @@ namespace IronWASP
 
                     if (TempReq.Url.EndsWith("/"))
                     {
-                        TempReq.Url = TempReq.Url + RawLink;
+                        TempReq.Url = string.Format("{0}{1}", TempReq.Url, RawLink);
                     }
                     else
                     {
-                        TempReq.Url = TempReq.Url + "/" + RawLink;
+                        TempReq.Url = string.Format("{0}/{1}", TempReq.Url, RawLink);
                     }
                     return TempReq.FullURL;
                 }
